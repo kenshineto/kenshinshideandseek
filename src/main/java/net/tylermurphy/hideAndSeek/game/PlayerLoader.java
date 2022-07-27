@@ -27,9 +27,11 @@ import net.tylermurphy.hideAndSeek.configuration.Items;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -45,6 +47,9 @@ public class PlayerLoader {
         loadPlayer(player);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
         Titles.sendTitle(player, 10, 70, 20, ChatColor.WHITE + "" + message("HIDER_TEAM_NAME"), ChatColor.WHITE + message("HIDERS_SUBTITLE").toString());
+        if(blockhuntEnabled){
+            openBlockHuntPicker(player);
+        }
     }
 
     public static void loadSeeker(Player player, String gameWorld){
@@ -139,6 +144,15 @@ public class PlayerLoader {
         } else {
             player.setHealth(player.getMaxHealth());
         }
+    }
+
+    public static void openBlockHuntPicker(Player player){
+        int slots = ((blockhuntBlocks.size()-1)/9)*9+9;
+        Inventory inventory = Main.getInstance().getServer().createInventory(null, slots, "Select a Block");
+        for(int i=0;i<blockhuntBlocks.size();i++){
+            inventory.setItem(i, new ItemStack(blockhuntBlocks.get(i)));
+        }
+        player.openInventory(inventory);
     }
 
 }

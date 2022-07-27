@@ -90,7 +90,8 @@ public class Config {
 		leaveOnEnd,
 		mapSaveEnabled,
 		allowNaturalCauses,
-		saveInventory;
+		saveInventory,
+		blockhuntEnabled;
 	
 	public static int 
 		minPlayers,
@@ -125,6 +126,9 @@ public class Config {
 	public static List<String>
 		blockedCommands,
 		blockedInteracts;
+
+	public static List<Material>
+		blockhuntBlocks;
 
 	public static String
 		LOBBY_TITLE,
@@ -288,6 +292,18 @@ public class Config {
 		}
 		bungeeLeave = config.getString("leaveType") == null || config.getString("leaveType").equalsIgnoreCase("proxy");
 		leaveServer = config.getString("leaveServer");
+		blockhuntEnabled = config.getBoolean("blockhunt.enabled");
+		blockhuntBlocks = new ArrayList<>();
+		tempInteracts = config.getStringList("blockhunt.blocks");
+		for(String id : tempInteracts) {
+			Optional<XMaterial> optional_mat = XMaterial.matchXMaterial(id);
+			if (optional_mat.isPresent()) {
+				Material mat = optional_mat.get().parseMaterial();
+				if (mat != null) {
+					blockhuntBlocks.add(mat);
+				}
+			}
+		}
 
 		//Leaderboard
 		LOBBY_TITLE = leaderboard.getString("lobby.title");

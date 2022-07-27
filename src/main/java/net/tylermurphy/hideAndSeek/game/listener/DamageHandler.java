@@ -15,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Config.spawnPosition;
@@ -94,6 +95,8 @@ public class DamageHandler implements Listener {
         } else {
             XSound.ENTITY_PLAYER_HURT.play(player, 1, 1);
         }
+        // Reveal player if they are disguised
+        Main.getInstance().getDisguiser().reveal(player);
         // Teleport player to seeker spawn
         player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
         // Add leaderboard stats
@@ -113,6 +116,11 @@ public class DamageHandler implements Listener {
         //Reload player
         PlayerLoader.resetPlayer(player, board);
         board.reloadBoardTeams();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerDeath(PlayerDeathEvent event){
+        Main.getInstance().getDisguiser().reveal(event.getEntity());
     }
 
 }

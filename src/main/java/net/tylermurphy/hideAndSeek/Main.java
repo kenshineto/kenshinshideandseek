@@ -24,6 +24,7 @@ import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
 import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.game.Board;
+import net.tylermurphy.hideAndSeek.game.Disguiser;
 import net.tylermurphy.hideAndSeek.game.PlayerLoader;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import net.tylermurphy.hideAndSeek.util.CommandHandler;
@@ -56,6 +57,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	private final Database database;
 	private final Board board;
+	private final Disguiser disguiser;
 
 	private Game game;
 
@@ -64,6 +66,7 @@ public class Main extends JavaPlugin implements Listener {
 		onConstructed();
 		board = new Board();
 		database = new Database();
+		disguiser = new Disguiser();
 	}
 
 	protected Main(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
@@ -71,6 +74,7 @@ public class Main extends JavaPlugin implements Listener {
 		onConstructed();
 		board = new Board();
 		database = new Database();
+		disguiser = new Disguiser();
 	}
 
 	private void onConstructed(){
@@ -123,12 +127,14 @@ public class Main extends JavaPlugin implements Listener {
 	private void onTick() {
 		if(game.getStatus() == Status.ENDED) game = new Game(board);
 		game.onTick();
+		disguiser.check();
 	}
 
 	private void registerListeners() {
 		getServer().getPluginManager().registerEvents(new BlockedCommandHandler(), this);
 		getServer().getPluginManager().registerEvents(new ChatHandler(), this);
 		getServer().getPluginManager().registerEvents(new DamageHandler(), this);
+		getServer().getPluginManager().registerEvents(new DisguiseHandler(), this);
 		getServer().getPluginManager().registerEvents(new InteractHandler(), this);
 		getServer().getPluginManager().registerEvents(new InventoryHandler(), this);
 		getServer().getPluginManager().registerEvents(new JoinLeaveHandler(), this);
@@ -164,6 +170,8 @@ public class Main extends JavaPlugin implements Listener {
 	public Game getGame(){
 		return game;
 	}
+
+	public Disguiser getDisguiser() { return disguiser; }
 
 	public boolean supports(int v){
 		return version >= v;

@@ -19,26 +19,29 @@
 
 package net.tylermurphy.hideAndSeek.game.listener;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+
 import com.cryptomorin.xseries.XMaterial;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.Debug;
 import net.tylermurphy.hideAndSeek.game.util.Status;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public class InventoryHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) return;
-
-        Player player = (Player) event.getWhoClicked();
         checkForInventoryMove(event);
         checkForSpectatorTeleportMenu(event);
         checkForDebugMenu(event);
+        checkForBlockHuntMenu(event);
     }
 
     private void checkForInventoryMove(InventoryClickEvent event){
@@ -72,6 +75,40 @@ public class InventoryHandler implements Listener {
             player.closeInventory();
             Debug.handleOption(player, event.getRawSlot());
         }
+    }
+
+    private void checkForBlockHuntMenu(InventoryClickEvent event){
+        boolean test;
+        if(Main.getInstance().supports(14)){
+            test = event.getView().getTitle().equals("Select a Block");
+        } else {
+            test = event.getInventory().getName().equals("Select a Block");
+        }
+        if(!test) return;
+        event.setCancelled(true);
+        Material mat = blockhuntBlocks.get(event.getRawSlot());
+        if(mat == null) return;
+        Player player = (Player) event.getWhoClicked();
+        Main.getInstance().getDisguiser().disguise(player, mat);
+        player.closeInventory();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onInventoryClose(InventoryCloseEvent event){
+        if (!(event.getPlayer() instanceof Player)) return;
+        boolean test;
+        if(Main.getInstance().supports(14)){
+            test = event.getView().getTitle().equals("Select a Block");
+        } else {
+            test = event.getInventory().getName().equals("Select a Block");
+        }
+        if(!test) return;
+        Material mat = blockhuntBlocks.get(0);
+        if(mat == null) return;
+        Player player = (Player) event.getPlayer();
+        if(Main.getInstance().getDisguiser().disguised(player)) return;
+        Main.getInstance().getDisguiser().disguise(player, mat);
+        player.closeInventory();
     }
 
 }
