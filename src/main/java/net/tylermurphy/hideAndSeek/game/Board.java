@@ -401,6 +401,8 @@ class CustomBoard {
                 hiderTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
                 seekerTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
             }
+            hiderTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+            seekerTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
         } else {
             if (nameTagsVisible) {
                 hiderTeam.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);

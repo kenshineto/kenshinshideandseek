@@ -1,62 +1,69 @@
 package net.tylermurphy.hideAndSeek.game;
 
+import net.tylermurphy.hideAndSeek.game.util.Disguise;
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.BlockVector;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Vector;
 
 public class Disguiser {
 
-    private final Map<Player, FallingBlock> blocks;
+    private final Map<Player, Disguise> disguises;
 
     public Disguiser(){
-        this.blocks = new HashMap<>();
+        this.disguises = new HashMap<>();
     }
 
-    public FallingBlock getBlock(Player player){
-        return blocks.get(player);
+    public Disguise getDisguise(Player player){
+        return disguises.get(player);
     }
 
-    public boolean contains(FallingBlock block) { return blocks.containsValue(block); }
+    public boolean disguised(Player player) { return disguises.containsKey(player); }
 
-    public boolean disguised(Player player) { return blocks.containsKey(player); }
+    @Nullable
+    public Disguise getByEntityID(int ID){
+        return disguises.values().stream().filter(disguise -> disguise.getEntityID() == ID).findFirst().orElse(null);
+    }
+
+    @Nullable
+    public Disguise getByBlockLocation(BlockVector loc){
+        return disguises.values().stream().filter(disguise -> {
+            if(disguise.getSolidLocation() == null) return false;
+            return disguise.getSolidLocation().toVector().toBlockVector() == loc;
+        }).findFirst().orElse(null);
+    }
 
     public void check(){
-        for(Map.Entry<Player, FallingBlock> set : blocks.entrySet()){
+        for(Map.Entry<Player, Disguise> set : disguises.entrySet()){
+            Disguise disguise = set.getValue();
             Player player = set.getKey();
-            FallingBlock block = set.getValue();
-            if(block.isDead()){
-                block.remove();
-                FallingBlock replacement = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), block.getMaterial(), (byte)0);
-                replacement.setGravity(false);
-                replacement.setDropItem(false);
-                blocks.put(player, replacement);
+            if(!player.isOnline()) {
+                disguise.remove();
+                disguises.remove(player);
+            } else {
+                disguise.update();
             }
         }
     }
 
     public void disguise(Player player, Material material){
-        if(blocks.containsKey(player)){
-            FallingBlock block = blocks.get(player);
-            block.remove();
+        if(disguises.containsKey(player)){
+            disguises.get(player).remove();
         }
-        FallingBlock block = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), material, (byte)0);
-        block.setGravity(false);
-        block.setDropItem(false);
-        blocks.put(player, block);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1000000, 0,false, false));
+        Disguise disguise = new Disguise(player, material);
+        disguises.put(player, disguise);
     }
 
     public void reveal(Player player){
-        if(!blocks.containsKey(player)) return;
-        FallingBlock block = blocks.get(player);
-        block.remove();
-        blocks.remove(player);
-        player.removePotionEffect(PotionEffectType.INVISIBILITY);
+        if(disguises.containsKey(player))
+            disguises.get(player).remove();
+        disguises.remove(player);
     }
 
 }

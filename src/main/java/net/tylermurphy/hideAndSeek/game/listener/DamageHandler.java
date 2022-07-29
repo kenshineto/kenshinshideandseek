@@ -25,10 +25,8 @@ public class DamageHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageEvent event) {
-
         Board board = Main.getInstance().getBoard();
         Game game = Main.getInstance().getGame();
-
         // If you are not a player, get out of here
         if (!(event.getEntity() instanceof Player)) return;
         // Define variables
@@ -46,6 +44,7 @@ public class DamageHandler implements Listener {
         }
         // Makes sure that if there was an attacking player, that the event is allowed for the game
         if (attacker != null) {
+            System.out.println(event.getFinalDamage() + " " + player.getDisplayName() + " " + attacker.getDisplayName());
             // Cancel if one player is in the game but other isn't
             if ((board.contains(player) && !board.contains(attacker)) || (!board.contains(player) && board.contains(attacker))) {
                 event.setCancelled(true);

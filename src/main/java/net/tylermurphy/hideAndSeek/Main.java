@@ -23,12 +23,9 @@ import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
 import net.tylermurphy.hideAndSeek.database.Database;
-import net.tylermurphy.hideAndSeek.game.Board;
-import net.tylermurphy.hideAndSeek.game.Disguiser;
-import net.tylermurphy.hideAndSeek.game.PlayerLoader;
+import net.tylermurphy.hideAndSeek.game.*;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import net.tylermurphy.hideAndSeek.util.CommandHandler;
-import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.game.listener.*;
 import net.tylermurphy.hideAndSeek.util.PAPIExpansion;
 import net.tylermurphy.hideAndSeek.util.TabCompleter;
@@ -55,46 +52,23 @@ public class Main extends JavaPlugin implements Listener {
 	private static Main instance;
 	private static int version;
 
-	private final Database database;
-	private final Board board;
-	private final Disguiser disguiser;
-
+	private Database database;
+	private Board board;
+	private Disguiser disguiser;
+	private EntityHider entityHider;
 	private Game game;
 
-	public Main() {
-		super();
-		onConstructed();
-		board = new Board();
-		database = new Database();
-		disguiser = new Disguiser();
-	}
-
-	protected Main(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
-		super(loader, description, dataFolder, file);
-		onConstructed();
-		board = new Board();
-		database = new Database();
-		disguiser = new Disguiser();
-	}
-
-	private void onConstructed(){
-
-		instance = this;
-
-		Matcher matcher = Pattern.compile("MC: \\d\\.(\\d+)").matcher(Bukkit.getVersion());
-		if (matcher.find()) {
-			version = Integer.parseInt(matcher.group(1));
-		} else {
-			throw new IllegalArgumentException("Failed to parse server version from: " + Bukkit.getVersion());
-		}
-
+	public void onEnable() {
+		Main.instance = this;
 		Config.loadConfig();
 		Localization.loadLocalization();
 		Items.loadItems();
-	}
 
-	public void onEnable() {
-
+		this.updateVersion();
+		this.board = new Board();
+		this.database = new Database();
+		this.disguiser = new Disguiser();
+		this.entityHider = new EntityHider(this, EntityHider.Policy.BLACKLIST);
 		this.registerListeners();
 
 		CommandHandler.registerCommands();
@@ -142,6 +116,15 @@ public class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(new PlayerHandler(), this);
 		getServer().getPluginManager().registerEvents(new RespawnHandler(), this);
 	}
+
+	private void updateVersion(){
+		Matcher matcher = Pattern.compile("MC: \\d\\.(\\d+)").matcher(Bukkit.getVersion());
+		if (matcher.find()) {
+			version = Integer.parseInt(matcher.group(1));
+		} else {
+			throw new IllegalArgumentException("Failed to parse server version from: " + Bukkit.getVersion());
+		}
+	}
 	
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
 		return CommandHandler.handleCommand(sender, args);
@@ -172,6 +155,8 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public Disguiser getDisguiser() { return disguiser; }
+
+	public EntityHider getEntityHider() { return entityHider; }
 
 	public boolean supports(int v){
 		return version >= v;
