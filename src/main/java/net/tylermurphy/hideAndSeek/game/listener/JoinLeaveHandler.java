@@ -56,6 +56,10 @@ public class JoinLeaveHandler implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onKick(PlayerKickEvent event) {
+        if(event.getReason().equals("Flying is not enabled on this server!")){
+            event.setCancelled(true);
+            return;
+        }
         handleLeave(event.getPlayer());
     }
 
