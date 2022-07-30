@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
+@SuppressWarnings("deprecation")
 public class Board {
 
     private final List<String> Hider = new ArrayList<>(), Seeker = new ArrayList<>(), Spectator = new ArrayList<>();
@@ -363,6 +364,7 @@ public class Board {
 
 }
 
+@SuppressWarnings("deprecation")
 class CustomBoard {
 
     private final Scoreboard board;

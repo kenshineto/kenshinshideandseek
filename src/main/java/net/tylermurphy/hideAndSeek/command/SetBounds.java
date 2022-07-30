@@ -37,12 +37,11 @@ public class SetBounds implements ICommand {
 			sender.sendMessage(errorPrefix + message("ERROR_GAME_SPAWN"));
 			return;
 		}
-		Player player = (Player) sender;
-		if (!player.getWorld().getName().equals(spawnWorld)) {
+		if (!sender.getWorld().getName().equals(spawnWorld)) {
 			sender.sendMessage(errorPrefix + message("BOUNDS_WRONG_WORLD"));
 			return;
 		}
-		if (player.getLocation().getBlockX() == 0 || player.getLocation().getBlockZ() == 0) {
+		if (sender.getLocation().getBlockX() == 0 || sender.getLocation().getBlockZ() == 0) {
 			sender.sendMessage(errorPrefix + message("NOT_AT_ZERO"));
 			return;
 		}
@@ -51,32 +50,32 @@ public class SetBounds implements ICommand {
 			saveMinX = 0; saveMinZ= 0; saveMaxX = 0; saveMaxZ = 0;
 		}
 		if (saveMaxX == 0) {
-			addToConfig("bounds.max.x", player.getLocation().getBlockX());
-			saveMaxX = player.getLocation().getBlockX();
-		} else if (saveMaxX < player.getLocation().getBlockX()) {
+			addToConfig("bounds.max.x", sender.getLocation().getBlockX());
+			saveMaxX = sender.getLocation().getBlockX();
+		} else if (saveMaxX < sender.getLocation().getBlockX()) {
 			first = false;
-			addToConfig("bounds.max.x", player.getLocation().getBlockX());
+			addToConfig("bounds.max.x", sender.getLocation().getBlockX());
 			addToConfig("bounds.min.x", saveMaxX);
 			saveMinX = saveMaxX;
-			saveMaxX = player.getLocation().getBlockX();
+			saveMaxX = sender.getLocation().getBlockX();
 		} else {
 			first = false;
-			addToConfig("bounds.min.x", player.getLocation().getBlockX());
-			saveMinX = player.getLocation().getBlockX();
+			addToConfig("bounds.min.x", sender.getLocation().getBlockX());
+			saveMinX = sender.getLocation().getBlockX();
 		}
 		if (saveMaxZ == 0) {
-			addToConfig("bounds.max.z", player.getLocation().getBlockZ());
-			saveMaxZ = player.getLocation().getBlockZ();
-		} else if (saveMaxZ < player.getLocation().getBlockZ()) {
+			addToConfig("bounds.max.z", sender.getLocation().getBlockZ());
+			saveMaxZ = sender.getLocation().getBlockZ();
+		} else if (saveMaxZ < sender.getLocation().getBlockZ()) {
 			first = false;
-			addToConfig("bounds.max.z", player.getLocation().getBlockZ());
+			addToConfig("bounds.max.z", sender.getLocation().getBlockZ());
 			addToConfig("bounds.min.z", saveMaxZ);
 			saveMinZ = saveMaxZ;
-			saveMaxZ = player.getLocation().getBlockZ();
+			saveMaxZ = sender.getLocation().getBlockZ();
 		} else {
 			first = false;
-			addToConfig("bounds.min.z", player.getLocation().getBlockZ());
-			saveMinZ = player.getLocation().getBlockZ();
+			addToConfig("bounds.min.z", sender.getLocation().getBlockZ());
+			saveMinZ = sender.getLocation().getBlockZ();
 		}
 		sender.sendMessage(messagePrefix + message("BOUNDS").addAmount(first ? 1 : 2));
 		saveConfig();

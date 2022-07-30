@@ -22,6 +22,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Config.glowPowerupItem;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
+@SuppressWarnings("deprecation")
 public class InteractHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -96,25 +97,21 @@ public class InteractHandler implements Listener {
             int amount = Main.getInstance().getBoard().getHiders().size() + Main.getInstance().getBoard().getSeekers().size();
             Inventory teleportMenu = Main.getInstance().getServer().createInventory(null, 9*(((amount-1)/9)+1), ChatColor.stripColor(teleportItem.getItemMeta().getDisplayName()));
             List<String> hider_lore = new ArrayList<>(); hider_lore.add(message("HIDER_TEAM_NAME").toString());
-            Main.getInstance().getBoard().getHiders().forEach(hider -> {
-                teleportMenu.addItem(getSkull(hider, hider_lore));
-            });
+            Main.getInstance().getBoard().getHiders().forEach(hider -> teleportMenu.addItem(getSkull(hider, hider_lore)));
             List<String> seeker_lore = new ArrayList<>(); seeker_lore.add(message("SEEKER_TEAM_NAME").toString());
-            Main.getInstance().getBoard().getSeekers().forEach(seeker -> {
-                teleportMenu.addItem(getSkull(seeker, seeker_lore));
-            });
+            Main.getInstance().getBoard().getSeekers().forEach(seeker -> teleportMenu.addItem(getSkull(seeker, seeker_lore)));
             event.getPlayer().openInventory(teleportMenu);
         }
     }
 
     private ItemStack getSkull(Player player, List<String> lore){
         assert XMaterial.PLAYER_HEAD.parseMaterial() != null;
-        ItemStack playerhead = new ItemStack(XMaterial.PLAYER_HEAD.parseMaterial(), 1, (byte) 3);
-        SkullMeta playerheadmeta = (SkullMeta) playerhead.getItemMeta();
-        playerheadmeta.setOwner(player.getName());
-        playerheadmeta.setDisplayName(player.getName());
-        playerheadmeta.setLore(lore);
-        playerhead.setItemMeta(playerheadmeta);
-        return playerhead;
+        ItemStack playerHead = new ItemStack(XMaterial.PLAYER_HEAD.parseMaterial(), 1, (byte) 3);
+        SkullMeta playerHeadMeta = (SkullMeta) playerHead.getItemMeta();
+        playerHeadMeta.setOwner(player.getName());
+        playerHeadMeta.setDisplayName(player.getName());
+        playerHeadMeta.setLore(lore);
+        playerHead.setItemMeta(playerHeadMeta);
+        return playerHead;
     }
 }

@@ -19,8 +19,6 @@
 
 package net.tylermurphy.hideAndSeek.database;
 
-import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.database.util.LegacyPlayerInfo;
 
 import java.sql.Connection;
@@ -63,7 +61,6 @@ public class LegacyTable {
             while(resultSet.next()){
                 legacyPlayerInfoList.add(new LegacyPlayerInfo(
                     resultSet.getBytes("uuid"),
-                    resultSet.getInt("wins"),
                     resultSet.getInt("hider_wins"),
                     resultSet.getInt("seeker_wins"),
                     resultSet.getInt("games_played")

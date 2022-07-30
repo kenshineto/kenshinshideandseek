@@ -19,7 +19,6 @@
 
 package net.tylermurphy.hideAndSeek.game;
 
-import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.messages.Titles;
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.Main;
@@ -27,7 +26,6 @@ import net.tylermurphy.hideAndSeek.configuration.Items;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
@@ -40,6 +38,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Config.lobbyPosition;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
+@SuppressWarnings("deprecation")
 public class PlayerLoader {
 
     public static void loadHider(Player player, String gameWorld){
@@ -69,9 +68,7 @@ public class PlayerLoader {
         player.setFallDistance(0.0F);
         player.getInventory().setItem(flightToggleItemPosition, flightToggleItem);
         player.getInventory().setItem(teleportItemPosition, teleportItem);
-        Main.getInstance().getBoard().getPlayers().forEach(otherPlayer -> {
-            otherPlayer.hidePlayer(player);
-        });
+        Main.getInstance().getBoard().getPlayers().forEach(otherPlayer -> otherPlayer.hidePlayer(player));
         Titles.sendTitle(player, 10, 70, 20, ChatColor.GRAY + "" + ChatColor.BOLD + "SPECTATING", ChatColor.WHITE + message("SPECTATOR_SUBTITLE").toString());
     }
 

@@ -25,7 +25,6 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.management.BufferPoolMXBean;
 import java.sql.*;
 import java.util.UUID;
 
@@ -66,13 +65,14 @@ public class NameDataTable {
             e.printStackTrace();
         }
         OfflinePlayer retry = Bukkit.getOfflinePlayer(uuid);
-        if(retry != null){
+        if(retry != null && retry.getName() != null){
             this.update(uuid, retry.getName());
             return retry.getName();
         }
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     @Nullable
     public UUID getUUID(@NotNull String name) {
         String sql = "SELECT * FROM hs_names WHERE name = ?;";

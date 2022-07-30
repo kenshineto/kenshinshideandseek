@@ -107,7 +107,8 @@ public class Game {
 	public void start() {
 		try {
 			Optional<Player> rand = board.getPlayers().stream().skip(new Random().nextInt(board.size())).findFirst();
-			String seekerName = rand.get().getName();
+			Player picked = rand.orElse(board.getPlayers().get(0));
+			String seekerName = picked.getName();
 			Player temp = Bukkit.getPlayer(seekerName);
 			Player seeker = board.getPlayer(temp.getUniqueId());
 			start(seeker);
@@ -210,6 +211,7 @@ public class Game {
 		handleBungeeLeave(player);
 	}
 
+	@SuppressWarnings("UnstableApiUsage")
 	private void handleBungeeLeave(Player player) {
 		if (bungeeLeave) {
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();

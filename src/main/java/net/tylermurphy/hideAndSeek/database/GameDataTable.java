@@ -200,8 +200,7 @@ public class GameDataTable {
         }
     }
 
-    protected boolean updateInfo(@NotNull byte[] uuid, int hider_wins, int seeker_wins, int hider_games, int seeker_games, int hider_kills, int seeker_kills, int hider_deaths, int seeker_deaths){
-        boolean success;
+    protected void updateInfo(byte[] uuid, int hider_wins, int seeker_wins, int hider_games, int seeker_games, int hider_kills, int seeker_kills, int hider_deaths, int seeker_deaths){
         String sql = "INSERT OR REPLACE INTO hs_data (uuid, hider_wins, seeker_wins, hider_games, seeker_games, hider_kills, seeker_kills, hider_deaths, seeker_deaths) VALUES (?,?,?,?,?,?,?,?,?)";
         try(Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setBytes(1, uuid);
@@ -214,16 +213,12 @@ public class GameDataTable {
             statement.setInt(8, hider_deaths);
             statement.setInt(9, seeker_deaths);
             statement.execute();
-            statement.close();
-            success = true;
         } catch (SQLException e) {
             Main.getInstance().getLogger().severe("SQL Error: " + e.getMessage());
             e.printStackTrace();
-            success = false;
         } finally {
             CACHE.remove(database.decodeUUID(uuid));
         }
-        return success;
     }
 
 }

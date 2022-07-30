@@ -1,6 +1,5 @@
 package net.tylermurphy.hideAndSeek.game.listener;
 
-import com.comphenix.protocol.PacketType;
 import com.google.common.collect.Sets;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.listener.events.PlayerJumpEvent;

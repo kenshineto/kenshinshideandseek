@@ -3,7 +3,7 @@ package net.tylermurphy.hideAndSeek.game;
 import static com.comphenix.protocol.PacketType.Play.Server.*;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 import org.bukkit.entity.Entity;
@@ -30,9 +30,9 @@ public class EntityHider implements Listener {
     protected Table<Integer, Integer, Boolean> observerEntityMap = HashBasedTable.create();
 
     private static final PacketType[] ENTITY_PACKETS = {
-            ENTITY_EQUIPMENT, BED, ANIMATION, NAMED_ENTITY_SPAWN,
+            ENTITY_EQUIPMENT, ANIMATION, NAMED_ENTITY_SPAWN,
             COLLECT, SPAWN_ENTITY, SPAWN_ENTITY_LIVING, SPAWN_ENTITY_PAINTING, SPAWN_ENTITY_EXPERIENCE_ORB,
-            ENTITY_VELOCITY, REL_ENTITY_MOVE, ENTITY_LOOK, ENTITY_MOVE_LOOK, ENTITY_MOVE_LOOK,
+            ENTITY_VELOCITY, REL_ENTITY_MOVE, ENTITY_LOOK,
             ENTITY_TELEPORT, ENTITY_HEAD_ROTATION, ENTITY_STATUS, ATTACH_ENTITY, ENTITY_METADATA,
             ENTITY_EFFECT, REMOVE_ENTITY_EFFECT, BLOCK_BREAK_ANIMATION
     };
@@ -193,6 +193,7 @@ public class EntityHider implements Listener {
      * @param entity - the entity to toggle.
      * @return TRUE if the entity was visible before, FALSE otherwise.
      */
+    @SuppressWarnings("unused")
     public final boolean toggleEntity(Player observer, Entity entity) {
         if (isVisible(observer, entity.getEntityId())) {
             return hideEntity(observer, entity);
@@ -213,7 +214,7 @@ public class EntityHider implements Listener {
 
         // Resend packets
         if (manager != null && hiddenBefore) {
-            manager.updateEntity(entity, Arrays.asList(observer));
+            manager.updateEntity(entity, Collections.singletonList(observer));
         }
         return hiddenBefore;
     }
@@ -253,6 +254,7 @@ public class EntityHider implements Listener {
      * @param entity - the entity that may be hidden.
      * @return TRUE if the player may see the entity, FALSE if the entity has been hidden.
      */
+    @SuppressWarnings("unused")
     public final boolean canSee(Player observer, Entity entity) {
         validate(observer, entity);
 
@@ -268,10 +270,12 @@ public class EntityHider implements Listener {
      * Retrieve the current visibility policy.
      * @return The current visibility policy.
      */
+    @SuppressWarnings("unused")
     public Policy getPolicy() {
         return policy;
     }
 
+    @SuppressWarnings("unused")
     public void close() {
         if (manager != null) {
             HandlerList.unregisterAll(bukkitListener);

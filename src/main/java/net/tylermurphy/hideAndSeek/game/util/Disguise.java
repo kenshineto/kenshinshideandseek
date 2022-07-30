@@ -1,12 +1,8 @@
 package net.tylermurphy.hideAndSeek.game.util;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.BlockPosition;
-import com.comphenix.protocol.wrappers.WrappedBlockData;
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.util.packet.BlockChangePacket;
+import net.tylermurphy.hideAndSeek.util.packet.EntityTeleportPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,17 +12,14 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import java.lang.reflect.InvocationTargetException;
-
+@SuppressWarnings("deprecation")
 public class Disguise {
-
-    private static final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
     final Player hider;
     final Material material;
     FallingBlock block;
     Horse hitBox;
-    Location solidLocation;
+    Location blockLocation;
     boolean solid, solidify;
     static Team hidden;
 
@@ -64,7 +57,7 @@ public class Disguise {
             hitBox.remove();
         }
         if(solid)
-            sendBlockUpdate(Material.AIR);
+            sendBlockUpdate(blockLocation, Material.AIR);
         hider.removePotionEffect(PotionEffectType.INVISIBILITY);
         if(Main.getInstance().supports(9)) {
             hidden.removeEntry(hider.getName());
@@ -97,18 +90,18 @@ public class Disguise {
         if(solidify){
             if(!solid) {
                 solid = true;
-                solidLocation = hider.getLocation().getBlock().getLocation();
-                respawnHotbox();
-                teleportEntity(hitBox, false);
+                blockLocation = hider.getLocation().getBlock().getLocation();
+                respawnHitbox();
+                teleportEntity(hitBox, true);
             }
-            sendBlockUpdate(material);
+            sendBlockUpdate(blockLocation, material);
         } else if(solid){
             solid = false;
             if(Main.getInstance().supports(9))
                 hidden.removeEntry(hitBox.getUniqueId().toString());
             hitBox.remove();
             hitBox = null;
-            sendBlockUpdate(Material.AIR);
+            sendBlockUpdate(blockLocation, Material.AIR);
         }
         toggleEntityVisibility(block, !solid);
         teleportEntity(block, solid);
@@ -118,38 +111,33 @@ public class Disguise {
         this.solidify = value;
     }
 
-    private void sendBlockUpdate(Material material){
-        final PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.BLOCK_CHANGE);
-        packet.getModifier().writeDefaults();
-        packet.getBlockPositionModifier().write(0, new BlockPosition(solidLocation.toVector()));
-        packet.getBlockData().write(0, WrappedBlockData.createData(material));
+    private void sendBlockUpdate(Location location, Material material){
+        BlockChangePacket packet = new BlockChangePacket();
+        packet.setBlockPosition(location);
+        packet.setMaterial(material);
         Bukkit.getOnlinePlayers().forEach(receiver -> {
-            if(receiver == hider) return;
-            try {
-                protocolManager.sendServerPacket(receiver, packet);
-            } catch (InvocationTargetException ignored) {}
+            if(receiver.getName().equals(hider.getName())) return;
+            packet.send(receiver);
         });
     }
 
     private void teleportEntity(Entity entity, boolean center) {
-        final PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
-        Location location = hider.getLocation();
-        packet.getModifier().writeDefaults();
-        packet.getIntegers().write(0, entity.getEntityId());
+        EntityTeleportPacket packet = new EntityTeleportPacket();
+        packet.setEntity(entity);
+        double x,y,z;
         if(center){
-            packet.getDoubles().write(0, Math.round(location.getX()+.5)-.5);
-            packet.getDoubles().write(1, (double)Math.round(location.getY()));
-            packet.getDoubles().write(2, Math.round(location.getZ()+.5)-.5);
+            x = Math.round(hider.getLocation().getX()+.5)-.5;
+            y = Math.round(hider.getLocation().getY());
+            z = Math.round(hider.getLocation().getZ()+.5)-.5;
         } else {
-            packet.getDoubles().write(0, location.getX());
-            packet.getDoubles().write(1, location.getY());
-            packet.getDoubles().write(2, location.getZ());
+            x = hider.getLocation().getX();
+            y = hider.getLocation().getY();
+            z = hider.getLocation().getZ();
         }
-        Bukkit.getOnlinePlayers().forEach(receiver -> {
-            try {
-                protocolManager.sendServerPacket(receiver, packet);
-            } catch (InvocationTargetException ignored) {}
-        });
+        packet.setX(x);
+        packet.setY(y);
+        packet.setZ(z);
+        Bukkit.getOnlinePlayers().forEach(packet::send);
     }
 
     private void toggleEntityVisibility(Entity entity, boolean show){
@@ -164,13 +152,13 @@ public class Disguise {
     }
 
     private void respawnFallingBlock(){
-        block = hider.getLocation().getWorld().spawnFallingBlock(hider.getLocation(), material, (byte)0);
+        block = hider.getLocation().getWorld().spawnFallingBlock(hider.getLocation().add(0, 1000, 0), material, (byte)0);
         block.setGravity(false);
         block.setDropItem(false);
         block.setInvulnerable(true);
     }
 
-    private void respawnHotbox(){
+    private void respawnHitbox(){
         hitBox = (Horse) hider.getLocation().getWorld().spawnEntity(hider.getLocation().add(0, 1000, 0), EntityType.HORSE);
         hitBox.setAI(false);
         hitBox.setGravity(false);

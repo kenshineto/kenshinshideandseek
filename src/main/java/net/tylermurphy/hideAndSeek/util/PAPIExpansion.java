@@ -36,6 +36,7 @@ public class PAPIExpansion extends PlaceholderExpansion  {
         return true;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         Database database = Main.getInstance().getDatabase();

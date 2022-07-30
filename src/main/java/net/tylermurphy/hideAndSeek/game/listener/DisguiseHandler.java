@@ -7,7 +7,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.BlockPosition;
 import com.cryptomorin.xseries.XMaterial;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.util.Disguise;
@@ -27,19 +26,17 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.BlockVector;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("deprecation")
 public class DisguiseHandler implements Listener {
 
     private static final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-    private final PacketAdapter packetListener;
 
     public DisguiseHandler(){
-        packetListener = createProtocol();
-        protocolManager.addPacketListener(packetListener);
+        protocolManager.addPacketListener(createProtocol());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
