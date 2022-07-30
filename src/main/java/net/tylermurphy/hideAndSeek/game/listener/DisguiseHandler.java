@@ -65,40 +65,28 @@ public class DisguiseHandler implements Listener {
 //    }
 
     private PacketAdapter createProtocol(){
-        return new PacketAdapter(Main.getInstance(), USE_ITEM, USE_ENTITY) {
+        return new PacketAdapter(Main.getInstance(), USE_ENTITY) {
 
             @Override
             public void onPacketReceiving(PacketEvent event){
                 PacketContainer packet = event.getPacket();
                 Player player = event.getPlayer();
 //                if(!Main.getInstance().getBoard().isSeeker(player)) return;
-                if(packet.getType() == USE_ITEM) {
-                    System.out.print("\nUse Item: ");
-                    BlockPosition data;
-                    try { data = packet.getBlockPositionModifier().read(0); }
-                    catch (Exception e) { return; }
-                    System.out.print(data + " ");
-                    BlockVector loc = new BlockVector(data.getX(), data.getY(), data.getZ());
-                    System.out.print(loc + " ");
-                    Disguise disguise = Main.getInstance().getDisguiser().getByBlockLocation(loc);
-                    System.out.print("FOUND");
-                    handleAttack(disguise, player);
-                } else if(packet.getType() == USE_ENTITY) {
-                    System.out.print("\nUse Entity: ");
-                    int id = packet.getIntegers().read(0);
-                    System.out.print(id + " ");
-                    Disguise disguise = Main.getInstance().getDisguiser().getByEntityID(id);
-                    System.out.print("FOUND");
-                    handleAttack(disguise, player);
-                }
+                int id = packet.getIntegers().read(0);
+                Disguise disguise = Main.getInstance().getDisguiser().getByEntityID(id);
+                if(disguise == null) disguise = Main.getInstance().getDisguiser().getByHitBoxID(id);
+                if(disguise == null) return;
+                event.setCancelled(true);
+                handleAttack(disguise, player);
             }
-
         };
     }
 
     private final List<Player> debounce = new ArrayList<>();
 
     private void handleAttack(Disguise disguise, Player seeker){
+
+        if(disguise.getPlayer() == seeker) return;
 
         double amount;
         if(Main.getInstance().supports(9)) {
@@ -107,7 +95,6 @@ public class DisguiseHandler implements Listener {
             amount = getItemDamageValue(seeker.getItemInHand(), disguise.getPlayer(), seeker);
         }
 
-        if(disguise == null) return;
         disguise.setSolidify(false);
         if(debounce.contains(disguise.getPlayer())) return;
         debounce.add(disguise.getPlayer());
@@ -197,4 +184,5 @@ public class DisguiseHandler implements Listener {
 
         return (int) Math.round(Math.max(damageValue, 0.0));
     }
+
 }

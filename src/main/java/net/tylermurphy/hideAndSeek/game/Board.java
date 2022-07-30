@@ -103,6 +103,9 @@ public class Board {
     }
 
     public void addHider(Player player) {
+        if(!Main.getInstance().supports(9)){
+            player.spigot().setCollidesWithEntities(false);
+        }
         Hider.add(player.getUniqueId().toString());
         Seeker.remove(player.getUniqueId().toString());
         Spectator.remove(player.getUniqueId().toString());
@@ -110,6 +113,9 @@ public class Board {
     }
 
     public void addSeeker(Player player) {
+        if(!Main.getInstance().supports(9)){
+            player.spigot().setCollidesWithEntities(false);
+        }
         Hider.remove(player.getUniqueId().toString());
         Seeker.add(player.getUniqueId().toString());
         Spectator.remove(player.getUniqueId().toString());
@@ -117,6 +123,9 @@ public class Board {
     }
 
     public void addSpectator(Player player) {
+        if(!Main.getInstance().supports(9)){
+            player.spigot().setCollidesWithEntities(false);
+        }
         Hider.remove(player.getUniqueId().toString());
         Seeker.remove(player.getUniqueId().toString());
         Spectator.add(player.getUniqueId().toString());
@@ -124,6 +133,9 @@ public class Board {
     }
 
     public void remove(Player player) {
+        if(!Main.getInstance().supports(9)){
+            player.spigot().setCollidesWithEntities(true);
+        }
         Hider.remove(player.getUniqueId().toString());
         Seeker.remove(player.getUniqueId().toString());
         Spectator.remove(player.getUniqueId().toString());

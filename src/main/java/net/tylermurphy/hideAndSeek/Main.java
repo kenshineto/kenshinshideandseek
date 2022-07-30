@@ -96,6 +96,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		Bukkit.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
 		board.cleanup();
+		disguiser.cleanUp();
 	}
 
 	private void onTick() {

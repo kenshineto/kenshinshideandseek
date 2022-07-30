@@ -22,6 +22,7 @@ public class MovementHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMove(PlayerMoveEvent event) {
+
         if (event.getTo() == null || event.getTo().getWorld() == null) return;
         checkJumping(event);
         checkBounds(event);
