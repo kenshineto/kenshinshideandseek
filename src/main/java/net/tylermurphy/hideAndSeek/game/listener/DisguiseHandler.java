@@ -11,6 +11,7 @@ import com.cryptomorin.xseries.XMaterial;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.util.Disguise;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -73,6 +74,7 @@ public class DisguiseHandler implements Listener {
                 Disguise disguise = Main.getInstance().getDisguiser().getByEntityID(id);
                 if(disguise == null) disguise = Main.getInstance().getDisguiser().getByHitBoxID(id);
                 if(disguise == null) return;
+                if(disguise.getPlayer().getGameMode() == GameMode.CREATIVE) return;
                 event.setCancelled(true);
                 handleAttack(disguise, player);
             }
