@@ -58,11 +58,12 @@ public class Main extends JavaPlugin implements Listener {
 
 	public void onEnable() {
 		Main.instance = this;
+		this.updateVersion();
+
 		Config.loadConfig();
 		Localization.loadLocalization();
 		Items.loadItems();
 
-		this.updateVersion();
 		this.board = new Board();
 		this.database = new Database();
 		this.disguiser = new Disguiser();
