@@ -34,10 +34,6 @@
                                     <pattern>org.ibex.nestedvm</pattern>
                                     <shadedPattern>net.tylermurphy.dependencies.nestedvm</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>org.sqlite</pattern>
-                                    <shadedPattern>net.tylermurphy.dependencies.sqlite</shadedPattern>
-                                </relocation>
                             </relocations>
                             <artifactSet>
                                 <includes>
