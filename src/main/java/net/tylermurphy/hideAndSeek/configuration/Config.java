@@ -292,7 +292,7 @@ public class Config {
 		}
 		bungeeLeave = config.getString("leaveType") == null || config.getString("leaveType").equalsIgnoreCase("proxy");
 		leaveServer = config.getString("leaveServer");
-		blockhuntEnabled = config.getBoolean("blockhunt.enabled");
+		blockhuntEnabled = config.getBoolean("blockhunt.enabled") && Main.getInstance().supports(9);
 		blockhuntBlocks = new ArrayList<>();
 		tempInteracts = config.getStringList("blockhunt.blocks");
 		for(String id : tempInteracts) {

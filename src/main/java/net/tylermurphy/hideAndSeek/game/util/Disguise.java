@@ -92,7 +92,6 @@ public class Disguise {
                 solid = true;
                 blockLocation = hider.getLocation().getBlock().getLocation();
                 respawnHitbox();
-                teleportEntity(hitBox, true);
             }
             sendBlockUpdate(blockLocation, material);
         } else if(solid){
@@ -104,6 +103,7 @@ public class Disguise {
             sendBlockUpdate(blockLocation, Material.AIR);
         }
         toggleEntityVisibility(block, !solid);
+        teleportEntity(hitBox, true);
         teleportEntity(block, solid);
     }
 
@@ -122,6 +122,7 @@ public class Disguise {
     }
 
     private void teleportEntity(Entity entity, boolean center) {
+        if(entity == null) return;
         EntityTeleportPacket packet = new EntityTeleportPacket();
         packet.setEntity(entity);
         double x,y,z;

@@ -1,5 +1,7 @@
 package net.tylermurphy.hideAndSeek.game;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+
 import net.tylermurphy.hideAndSeek.game.util.Disguise;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -46,6 +48,10 @@ public class Disguiser {
     }
 
     public void disguise(Player player, Material material){
+        if(!blockhuntEnabled){
+            player.sendMessage(errorPrefix + "Please enable blockhunt in config.yml to enable disguises. Blockhunt does not work on 1.8");
+            return;
+        }
         if(disguises.containsKey(player)){
             disguises.get(player).remove();
         }
