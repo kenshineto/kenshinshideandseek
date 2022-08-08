@@ -68,10 +68,9 @@ public class SetBorder implements ICommand {
 			return;
 		}
 		Vector vec = new Vector();
-		Player player = (Player) sender;
-		vec.setX(player.getLocation().getBlockX());
+		vec.setX(sender.getLocation().getBlockX());
 		vec.setY(0);
-		vec.setZ(player.getLocation().getBlockZ());
+		vec.setZ(sender.getLocation().getBlockZ());
 		if (spawnPosition.distance(vec) > 100) {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
 			return;

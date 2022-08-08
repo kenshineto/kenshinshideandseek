@@ -15,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Config.spawnPosition;
@@ -24,10 +25,8 @@ public class DamageHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageEvent event) {
-
         Board board = Main.getInstance().getBoard();
         Game game = Main.getInstance().getGame();
-
         // If you are not a player, get out of here
         if (!(event.getEntity() instanceof Player)) return;
         // Define variables
@@ -45,6 +44,7 @@ public class DamageHandler implements Listener {
         }
         // Makes sure that if there was an attacking player, that the event is allowed for the game
         if (attacker != null) {
+            System.out.println(event.getFinalDamage() + " " + player.getDisplayName() + " " + attacker.getDisplayName());
             // Cancel if one player is in the game but other isn't
             if ((board.contains(player) && !board.contains(attacker)) || (!board.contains(player) && board.contains(attacker))) {
                 event.setCancelled(true);
@@ -94,6 +94,8 @@ public class DamageHandler implements Listener {
         } else {
             XSound.ENTITY_PLAYER_HURT.play(player, 1, 1);
         }
+        // Reveal player if they are disguised
+        Main.getInstance().getDisguiser().reveal(player);
         // Teleport player to seeker spawn
         player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
         // Add leaderboard stats
@@ -113,6 +115,11 @@ public class DamageHandler implements Listener {
         //Reload player
         PlayerLoader.resetPlayer(player, board);
         board.reloadBoardTeams();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerDeath(PlayerDeathEvent event){
+        Main.getInstance().getDisguiser().reveal(event.getEntity());
     }
 
 }

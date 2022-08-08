@@ -19,7 +19,6 @@
 
 package net.tylermurphy.hideAndSeek.game;
 
-import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.messages.Titles;
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.Main;
@@ -30,6 +29,7 @@ import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -38,6 +38,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Config.lobbyPosition;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
+@SuppressWarnings("deprecation")
 public class PlayerLoader {
 
     public static void loadHider(Player player, String gameWorld){
@@ -45,6 +46,9 @@ public class PlayerLoader {
         loadPlayer(player);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
         Titles.sendTitle(player, 10, 70, 20, ChatColor.WHITE + "" + message("HIDER_TEAM_NAME"), ChatColor.WHITE + message("HIDERS_SUBTITLE").toString());
+        if(blockhuntEnabled){
+            openBlockHuntPicker(player);
+        }
     }
 
     public static void loadSeeker(Player player, String gameWorld){
@@ -64,9 +68,7 @@ public class PlayerLoader {
         player.setFallDistance(0.0F);
         player.getInventory().setItem(flightToggleItemPosition, flightToggleItem);
         player.getInventory().setItem(teleportItemPosition, teleportItem);
-        Main.getInstance().getBoard().getPlayers().forEach(otherPlayer -> {
-            otherPlayer.hidePlayer(player);
-        });
+        Main.getInstance().getBoard().getPlayers().forEach(otherPlayer -> otherPlayer.hidePlayer(player));
         Titles.sendTitle(player, 10, 70, 20, ChatColor.GRAY + "" + ChatColor.BOLD + "SPECTATING", ChatColor.WHITE + message("SPECTATOR_SUBTITLE").toString());
     }
 
@@ -94,6 +96,7 @@ public class PlayerLoader {
     public static void unloadPlayer(Player player){
         player.setGameMode(GameMode.ADVENTURE);
         player.getInventory().clear();
+        Main.getInstance().getDisguiser().reveal(player);
         for(PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
@@ -130,6 +133,8 @@ public class PlayerLoader {
         player.setGameMode(GameMode.ADVENTURE);
         player.getInventory().clear();
         for(PotionEffect effect : player.getActivePotionEffects()) {
+            Main.getInstance().getLogger().severe(player.getName() + " " + effect.getType());
+            if(effect.getType().getName().equals("INVISIBILITY") && Main.getInstance().getDisguiser().disguised(player)) continue;
             player.removePotionEffect(effect.getType());
         }
         player.setFoodLevel(20);
@@ -139,6 +144,15 @@ public class PlayerLoader {
         } else {
             player.setHealth(player.getMaxHealth());
         }
+    }
+
+    public static void openBlockHuntPicker(Player player){
+        int slots = ((blockhuntBlocks.size()-1)/9)*9+9;
+        Inventory inventory = Main.getInstance().getServer().createInventory(null, slots, "Select a Block");
+        for(int i=0;i<blockhuntBlocks.size();i++){
+            inventory.setItem(i, new ItemStack(blockhuntBlocks.get(i)));
+        }
+        player.openInventory(inventory);
     }
 
 }

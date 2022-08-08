@@ -104,6 +104,7 @@ public class Database {
         }
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     protected UUID decodeUUID(byte[] bytes) {
         InputStream is = new ByteArrayInputStream(bytes);
         ByteBuffer buffer = ByteBuffer.allocate(16);

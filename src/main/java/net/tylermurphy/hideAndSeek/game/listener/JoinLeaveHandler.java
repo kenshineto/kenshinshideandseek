@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Config.exitPosition;
@@ -56,6 +55,10 @@ public class JoinLeaveHandler implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onKick(PlayerKickEvent event) {
+        if(event.getReason().equals("Flying is not enabled on this server!")){
+            event.setCancelled(true);
+            return;
+        }
         handleLeave(event.getPlayer());
     }
 

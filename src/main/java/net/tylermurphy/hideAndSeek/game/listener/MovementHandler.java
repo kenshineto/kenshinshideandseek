@@ -1,6 +1,5 @@
 package net.tylermurphy.hideAndSeek.game.listener;
 
-import com.comphenix.protocol.PacketType;
 import com.google.common.collect.Sets;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.listener.events.PlayerJumpEvent;
@@ -22,6 +21,7 @@ public class MovementHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMove(PlayerMoveEvent event) {
+
         if (event.getTo() == null || event.getTo().getWorld() == null) return;
         checkJumping(event);
         checkBounds(event);

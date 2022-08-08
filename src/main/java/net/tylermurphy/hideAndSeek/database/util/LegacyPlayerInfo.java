@@ -19,19 +19,15 @@
 
 package net.tylermurphy.hideAndSeek.database.util;
 
-import java.util.UUID;
-
 public class LegacyPlayerInfo {
 
     private final byte[] uniqueId;
-    private final int totalWins;
     private final int hiderWins;
     private final int seekerWins;
     private final int gamesPlayed;
 
-    public LegacyPlayerInfo(byte[] uniqueId, int totalWins, int hiderWins, int seekerWins, int gamesPlayed) {
+    public LegacyPlayerInfo(byte[] uniqueId, int hiderWins, int seekerWins, int gamesPlayed) {
         this.uniqueId = uniqueId;
-        this.totalWins = totalWins;
         this.hiderWins = hiderWins;
         this.seekerWins = seekerWins;
         this.gamesPlayed = gamesPlayed;
@@ -40,8 +36,6 @@ public class LegacyPlayerInfo {
     public byte[] getUniqueId() {
         return uniqueId;
     }
-
-    public int getTotalWins() { return totalWins; }
 
     public int getHiderWins() {
         return hiderWins;

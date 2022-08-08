@@ -58,19 +58,16 @@ public class InventoryTable {
         return null;
     }
 
-    public boolean saveInventory(@NotNull UUID uuid, @NotNull ItemStack[] itemArray) {
+    public void saveInventory(@NotNull UUID uuid, @NotNull ItemStack[] itemArray) {
         String sql = "INSERT OR REPLACE INTO hs_inventory (uuid, inventory) VALUES (?,?)";
         String data = itemStackArrayToBase64(itemArray);
         try(Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setBytes(1, database.encodeUUID(uuid));
             statement.setString(2, data);
             statement.execute();
-            statement.close();
-            return true;
         } catch (SQLException e) {
             Main.getInstance().getLogger().severe("SQL Error: " + e.getMessage());
             e.printStackTrace();
-            return false;
         }
     }
 

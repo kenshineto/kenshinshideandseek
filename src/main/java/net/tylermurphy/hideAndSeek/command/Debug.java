@@ -31,7 +31,7 @@ public class Debug implements ICommand {
     }
 
     private void createMenu(){
-        debugMenu = Main.getInstance().getServer().createInventory(null, 9, "Debug Menu");
+        debugMenu = Main.getInstance().getServer().createInventory(null, 18, "Debug Menu");
         debugMenu.setItem(0, createOption(0, XMaterial.LEATHER_CHESTPLATE.parseMaterial(), "&6Become a &lHider", 1, player -> {
             if(mapSaveEnabled) {
                 if(Bukkit.getWorld(Main.getInstance().getGame().getGameWorld()) == null) Main.getInstance().getGame().getWorldLoader().loadMap();
@@ -73,12 +73,10 @@ public class Debug implements ICommand {
             }
             player.teleport(new Location(Bukkit.getWorld(Main.getInstance().getGame().getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
         }));
-        debugMenu.setItem(7, createOption(7, Material.ENDER_PEARL, "&d&lTeleport: &fLobby", 2, player -> {
-            player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(), lobbyPosition.getY(), lobbyPosition.getZ()));
-        }));
-        debugMenu.setItem(8, createOption(8, Material.ENDER_PEARL, "&d&lTeleport: &fExit", 3, player -> {
-            player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
-        }));
+        debugMenu.setItem(7, createOption(7, Material.ENDER_PEARL, "&d&lTeleport: &fLobby", 2, player -> player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(), lobbyPosition.getY(), lobbyPosition.getZ()))));
+        debugMenu.setItem(8, createOption(8, Material.ENDER_PEARL, "&d&lTeleport: &fExit", 3, player -> player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()))));
+        debugMenu.setItem(9, createOption(9, XMaterial.GLASS.parseMaterial(), "&dEnable Disguise", 1, PlayerLoader::openBlockHuntPicker));
+        debugMenu.setItem(10, createOption(10, XMaterial.PLAYER_HEAD.parseMaterial(), "&dDisable Disguise", 1, player -> Main.getInstance().getDisguiser().reveal(player)));
     }
 
     private ItemStack createOption(int slow, Material material, String name, int amount, Consumer<Player> callback){

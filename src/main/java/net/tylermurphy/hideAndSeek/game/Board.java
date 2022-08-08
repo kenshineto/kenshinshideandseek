@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
+@SuppressWarnings("deprecation")
 public class Board {
 
     private final List<String> Hider = new ArrayList<>(), Seeker = new ArrayList<>(), Spectator = new ArrayList<>();
@@ -103,6 +104,9 @@ public class Board {
     }
 
     public void addHider(Player player) {
+        if(!Main.getInstance().supports(9)){
+            player.spigot().setCollidesWithEntities(false);
+        }
         Hider.add(player.getUniqueId().toString());
         Seeker.remove(player.getUniqueId().toString());
         Spectator.remove(player.getUniqueId().toString());
@@ -110,6 +114,9 @@ public class Board {
     }
 
     public void addSeeker(Player player) {
+        if(!Main.getInstance().supports(9)){
+            player.spigot().setCollidesWithEntities(false);
+        }
         Hider.remove(player.getUniqueId().toString());
         Seeker.add(player.getUniqueId().toString());
         Spectator.remove(player.getUniqueId().toString());
@@ -117,6 +124,9 @@ public class Board {
     }
 
     public void addSpectator(Player player) {
+        if(!Main.getInstance().supports(9)){
+            player.spigot().setCollidesWithEntities(false);
+        }
         Hider.remove(player.getUniqueId().toString());
         Seeker.remove(player.getUniqueId().toString());
         Spectator.add(player.getUniqueId().toString());
@@ -124,6 +134,9 @@ public class Board {
     }
 
     public void remove(Player player) {
+        if(!Main.getInstance().supports(9)){
+            player.spigot().setCollidesWithEntities(true);
+        }
         Hider.remove(player.getUniqueId().toString());
         Seeker.remove(player.getUniqueId().toString());
         Spectator.remove(player.getUniqueId().toString());
@@ -351,6 +364,7 @@ public class Board {
 
 }
 
+@SuppressWarnings("deprecation")
 class CustomBoard {
 
     private final Scoreboard board;
@@ -401,6 +415,8 @@ class CustomBoard {
                 hiderTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
                 seekerTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
             }
+            hiderTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+            seekerTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
         } else {
             if (nameTagsVisible) {
                 hiderTeam.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
