@@ -7,7 +7,8 @@ public enum Locations {
 
     GAME("spawns.game"),
     LOBBY("spawns.lobby"),
-    EXIT("spawns.exit");
+    EXIT("spawns.exit"),
+    SEEKER("spawns.seeker");
 
     private final String path;
     Locations(String path) {

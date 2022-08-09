@@ -47,6 +47,7 @@ Localization:
   SETUP: "&f&lThe following is needed for setup..."
   SETUP_GAME: "&c&l- &fGame spawn isn't set, /hs setspawn"
   SETUP_LOBBY: "&c&l- &fLobby spawn isn't set, /hs setlobby"
+  SET_SEEKER_LOBBY: "&c&l- &fSeeker Lobby spawn isn't set, /hs setseekerlobby"
   SETUP_EXIT: "&c&l- &fQuit/exit teleport location isn't set, /hs setexit"
   SETUP_SAVEMAP: "&c&l- &fHide and seek map isn't saved, /hs savemap (after /hs setspawn)"
   SETUP_BOUNDS: "&c&l- &fPlease set game bounds in 2 opposite corners of the game map, /hs setbounds"

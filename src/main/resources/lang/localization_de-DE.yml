@@ -46,6 +46,7 @@ Localization:
   SETUP: "&f&lFühre die folgenden Schritte zur Einrichtung aus:"
   SETUP_GAME: "&c&l- &fTeleport-Position für den Spielbeginn festlegen mit /hs setspawn"
   SETUP_LOBBY: "&c&l- &fTeleport-Position für die Lobby festlegen mit /hs setlobby"
+  SETUP_SEEKER_LOBBY: "&c&l- &fTeleport-Position für die Lobby Seekern festlegen mit /hs setseekerlobby"
   SETUP_EXIT: "&c&l- &fTeleport-Position für das Spielende festlegen mit /hs setexit"
   SETUP_SAVEMAP: "&c&l- &fHide and Seek Weltkarte speichern mit /hs savemap (nach /hs setspawn)"
   SETUP_COMPLETE: "Alles eingerichtet! Hide and Seek ist spielbereit."

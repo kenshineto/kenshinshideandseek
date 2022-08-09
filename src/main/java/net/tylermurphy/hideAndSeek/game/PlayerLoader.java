@@ -52,11 +52,8 @@ public class PlayerLoader {
     }
 
     public static void loadSeeker(Player player, String gameWorld){
-        player.teleport(new Location(Bukkit.getWorld(gameWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+        player.teleport(new Location(Bukkit.getWorld(gameWorld), seekerLobbyPosition.getX(),seekerLobbyPosition.getY(),seekerLobbyPosition.getZ()));
         loadPlayer(player);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,1000000,127,false,false));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,1000000,127,false,false));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP,1000000,128,false,false));
         Titles.sendTitle(player, 10, 70, 20, ChatColor.WHITE + "" + message("SEEKER_TEAM_NAME"), ChatColor.WHITE + message("SEEKERS_SUBTITLE").toString());
     }
 

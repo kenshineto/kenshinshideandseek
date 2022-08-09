@@ -1,6 +1,6 @@
 name: KenshinsHideAndSeek
 main: net.tylermurphy.hideAndSeek.Main
-version: 1.6.0
+version: 1.6.1
 author: KenshinEto
 load: STARTUP
 api-version: 1.13
@@ -21,6 +21,7 @@ permissions:
       hideandseek.setborder: true
       hideandseek.setspawn: true
       hideandseek.setlobby: true
+      hideandseek.setseekerlobby: true
       hideandseek.setexit: true
       hideadnseek.setbounds: true
       hideandseek.setup: true
@@ -50,6 +51,9 @@ permissions:
     default: op
   hideandseek.setlobby:
     description: Allows you to set the game lobby point
+    default: op
+  hideandseek.setseekerlobby:
+    description: Allows you to set the game seeker lobby point
     default: op
   hideandseek.setexit:
     description: Allows you to set the game exit point
