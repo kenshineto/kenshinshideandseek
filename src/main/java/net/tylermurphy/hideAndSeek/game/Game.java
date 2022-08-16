@@ -107,10 +107,7 @@ public class Game {
 	public void start() {
 		try {
 			Optional<Player> rand = board.getPlayers().stream().skip(new Random().nextInt(board.size())).findFirst();
-			Player picked = rand.orElse(board.getPlayers().get(0));
-			String seekerName = picked.getName();
-			Player temp = Bukkit.getPlayer(seekerName);
-			Player seeker = board.getPlayer(temp.getUniqueId());
+			Player seeker = rand.orElse(board.getPlayers().get(0));
 			start(seeker);
 		} catch (Exception e){
 			Main.getInstance().getLogger().warning("Failed to select random seeker.");
