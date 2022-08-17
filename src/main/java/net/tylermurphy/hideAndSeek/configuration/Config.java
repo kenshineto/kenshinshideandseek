@@ -93,7 +93,8 @@ public class Config {
 		mapSaveEnabled,
 		allowNaturalCauses,
 		saveInventory,
-		blockhuntEnabled;
+		blockhuntEnabled,
+		delayedRespawn;
 	
 	public static int 
 		minPlayers,
@@ -119,7 +120,8 @@ public class Config {
 		lobbyItemStartPosition,
 		flightToggleItemPosition,
 		teleportItemPosition,
-		solidifyTime;
+		solidifyTime,
+		delayedRespawnDelay;
 
 	public static float
 		seekerPingLeadingVolume,
@@ -365,6 +367,10 @@ public class Config {
 			Main.getInstance().getLogger().warning("databaseType: "+databaseType+" is not a valid configuration option!");
 			databaseType = "SQLITE";
 		}
+
+		delayedRespawn = config.getBoolean("delayedRespawn.enabled");
+		delayedRespawnDelay = Math.max(0,config.getInt("delayedRespawn.delay"));
+
 	}
 	
 	public static void addToConfig(String path, Object value) {

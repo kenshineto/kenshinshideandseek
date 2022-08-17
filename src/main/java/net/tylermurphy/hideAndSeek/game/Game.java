@@ -254,7 +254,12 @@ public class Game {
 				if (startingTimer == 0) {
 					message = message("START").toString();
 					status = Status.PLAYING;
-					board.getPlayers().forEach(player -> PlayerLoader.resetPlayer(player, board));
+					board.getPlayers().forEach(player -> {
+						PlayerLoader.resetPlayer(player, board);
+						if(board.isSeeker(player)){
+							player.teleport(new Location(Bukkit.getWorld(getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+						}
+					});
 				} else if (startingTimer == 1){
 					message = message("START_COUNTDOWN_LAST").addAmount(startingTimer).toString();
 				} else {

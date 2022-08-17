@@ -74,6 +74,7 @@ Localization:
   BLOCKED_COMMAND: "Command blocked by Kenshin's Hide And Seek"
   FLYING_ENABLED: "Fliegen aktiviert"
   FLYING_DISABLED: "Fliegen deaktiviert"
+  RESPAWN_NOTICE: "Du wirst in {AMOUNT} Sekunden respawnen."
 
 # DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
 version: 3
