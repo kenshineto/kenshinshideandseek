@@ -75,15 +75,11 @@ public class VoidGenerator extends ChunkGenerator {
 
     // 1.8
     public byte[] generate(World world, Random random, int x, int z) {
-        return null;
-    }
-
-    public short[][] generateExtBlockSections(World world, Random random, int x, int z, ChunkGenerator.BiomeGrid biomes) {
-        return null;
+        return new byte[world.getMaxHeight() / 16];
     }
 
     public byte[][] generateBlockSections(World world, Random random, int x, int z, ChunkGenerator.BiomeGrid biomes) {
-        return null;
+        return new byte[world.getMaxHeight() / 16][];
     }
 
 
