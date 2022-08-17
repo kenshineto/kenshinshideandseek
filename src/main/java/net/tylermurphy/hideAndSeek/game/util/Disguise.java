@@ -26,9 +26,9 @@ public class Disguise {
     static {
         if(Main.getInstance().supports(9)) {
             Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
-            hidden = board.getTeam("KenshinHideAndSeek_CollisionGroup");
+            hidden = board.getTeam("KHS_Collision");
             if (hidden == null) {
-                hidden = board.registerNewTeam("KenshinHideAndSeek_CollisionGroup");
+                hidden = board.registerNewTeam("KHS_Collision");
             }
             hidden.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
             hidden.setCanSeeFriendlyInvisibles(false);
