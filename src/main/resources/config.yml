@@ -100,6 +100,14 @@ mapSaveEnabled: true
 # default: false
 saveInventory: false
 
+# By default, if you die in game, you will have to wait [delay] seconds until you respawn. This make is so that if you are killed as a seeker, you cannot
+# instally go to where the Hider that killed you was. Or if you were a Hider and died, you cant instally go to where you know other Hiders are. It gives some
+# breathing room. This can be disabled.
+# default: true
+delayedRespawn:
+  enabled: true
+  delay: 5
+
 # How you want to store game data. If you are running a single server, sqlite is fine, as no setup is necessary.
 # But if you want the data to go across multiple servers, you can switch it to mysql.
 # WARNING: Data is not saved across databases. You have to migrate the data yourself!
@@ -128,8 +136,11 @@ databaseName: hideandseek
 # You want block hunt? We have block hunt! Just enable it below, and set the
 # available blocks to pick from, and you're all set! It's that easy!
 # Items are displayed in the order that they are listed below.
+# The solidifyTime is the time in server ticks that it takes players to solidify.
+# Every 20 ticks is a second. Minimum solidifyTime is 20 ticks.
 blockhunt:
   enabled: false
+  solidifyTime: 60
   blocks: [CRAFTING_TABLE, GRASS_BLOCK, DIRT, BEACON, BOOKSHELF]
 
 worldBorder:
@@ -305,6 +316,13 @@ spawns:
     x: 0
     y: 0
     z: 0
+    world: world
+  # Location where seekers wait during the hiding grace period
+  seeker:
+    x: 0
+    y: 0
+    z: 0
+    # Currently is not used, seekers are teleported to spawns.game.world
     world: world
   # Location where players are teleported when they exit (/hs leave)
   exit:

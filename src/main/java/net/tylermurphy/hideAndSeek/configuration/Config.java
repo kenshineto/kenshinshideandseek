@@ -50,6 +50,7 @@ public class Config {
 		gameOverPrefix,
 		warningPrefix,
 		spawnWorld,
+		seekerLobbyWorld,
 		exitWorld,
 		lobbyWorld,
 		locale,
@@ -67,6 +68,7 @@ public class Config {
 		spawnPosition,
 		lobbyPosition,
 		exitPosition,
+		seekerLobbyPosition,
 		worldBorderPosition;
 	
 	public static boolean
@@ -91,7 +93,8 @@ public class Config {
 		mapSaveEnabled,
 		allowNaturalCauses,
 		saveInventory,
-		blockhuntEnabled;
+		blockhuntEnabled,
+		delayedRespawn;
 	
 	public static int 
 		minPlayers,
@@ -116,7 +119,9 @@ public class Config {
 		lobbyItemLeavePosition,
 		lobbyItemStartPosition,
 		flightToggleItemPosition,
-		teleportItemPosition;
+		teleportItemPosition,
+		solidifyTime,
+		delayedRespawnDelay;
 
 	public static float
 		seekerPingLeadingVolume,
@@ -183,6 +188,14 @@ public class Config {
 				config.getDouble("spawns.lobby.z")
 		);
 		lobbyWorld = config.getString("spawns.lobby.world");
+
+		///Seeker Lobby
+		seekerLobbyPosition = new Vector(
+				config.getDouble("spawns.seeker.x"),
+				Math.max(Main.getInstance().supports(18) ? -64 : 0, Math.min(255, config.getDouble("spawns.seeker.y"))),
+				config.getDouble("spawns.seeker.z")
+		);
+		seekerLobbyWorld = config.getString("spawns.seeker.world");
 
 		announceMessagesToNonPlayers = config.getBoolean("announceMessagesToNonPlayers");
 
@@ -304,6 +317,7 @@ public class Config {
 				}
 			}
 		}
+		solidifyTime = Math.max(20,config.getInt("blockhunt.solidifyTime"));
 
 		//Leaderboard
 		LOBBY_TITLE = leaderboard.getString("lobby.title");
@@ -353,6 +367,10 @@ public class Config {
 			Main.getInstance().getLogger().warning("databaseType: "+databaseType+" is not a valid configuration option!");
 			databaseType = "SQLITE";
 		}
+
+		delayedRespawn = config.getBoolean("delayedRespawn.enabled");
+		delayedRespawnDelay = Math.max(0,config.getInt("delayedRespawn.delay"));
+
 	}
 	
 	public static void addToConfig(String path, Object value) {

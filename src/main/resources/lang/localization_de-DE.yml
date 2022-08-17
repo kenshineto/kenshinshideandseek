@@ -46,6 +46,7 @@ Localization:
   SETUP: "&f&lFühre die folgenden Schritte zur Einrichtung aus:"
   SETUP_GAME: "&c&l- &fTeleport-Position für den Spielbeginn festlegen mit /hs setspawn"
   SETUP_LOBBY: "&c&l- &fTeleport-Position für die Lobby festlegen mit /hs setlobby"
+  SETUP_SEEKER_LOBBY: "&c&l- &fTeleport-Position für die Lobby Seekern festlegen mit /hs setseekerlobby"
   SETUP_EXIT: "&c&l- &fTeleport-Position für das Spielende festlegen mit /hs setexit"
   SETUP_SAVEMAP: "&c&l- &fHide and Seek Weltkarte speichern mit /hs savemap (nach /hs setspawn)"
   SETUP_COMPLETE: "Alles eingerichtet! Hide and Seek ist spielbereit."
@@ -73,6 +74,7 @@ Localization:
   BLOCKED_COMMAND: "Command blocked by Kenshin's Hide And Seek"
   FLYING_ENABLED: "Fliegen aktiviert"
   FLYING_DISABLED: "Fliegen deaktiviert"
+  RESPAWN_NOTICE: "Du wirst in {AMOUNT} Sekunden respawnen."
 
 # DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
 version: 3

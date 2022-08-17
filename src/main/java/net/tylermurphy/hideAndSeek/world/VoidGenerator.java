@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Random;
 
 @SuppressWarnings({"unused"})
-public class VoidGenerator extends ChunkGenerator{
+public class VoidGenerator extends ChunkGenerator {
 
     // 1.14 And On
     public @NotNull List<BlockPopulator> getDefaultPopulators(@NotNull World world) {
@@ -69,6 +69,22 @@ public class VoidGenerator extends ChunkGenerator{
     }
 
     // 1.13 And Prev
-    public @NotNull ChunkData generateChunkData(@NotNull World world, @NotNull Random random, int x, int z, @NotNull BiomeGrid biome) { return createChunkData(world); }
+    public @NotNull ChunkData generateChunkData(@NotNull World world, @NotNull Random random, int x, int z, @NotNull BiomeGrid biome) {
+        return createChunkData(world);
+    }
+
+    // 1.8
+    public byte[] generate(World world, Random random, int x, int z) {
+        return null;
+    }
+
+    public short[][] generateExtBlockSections(World world, Random random, int x, int z, ChunkGenerator.BiomeGrid biomes) {
+        return null;
+    }
+
+    public byte[][] generateBlockSections(World world, Random random, int x, int z, ChunkGenerator.BiomeGrid biomes) {
+        return null;
+    }
+
 
 }

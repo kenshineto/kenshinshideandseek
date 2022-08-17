@@ -22,6 +22,7 @@ package net.tylermurphy.hideAndSeek.util;
 import net.tylermurphy.hideAndSeek.command.*;
 import net.tylermurphy.hideAndSeek.command.location.SetExitLocation;
 import net.tylermurphy.hideAndSeek.command.location.SetLobbyLocation;
+import net.tylermurphy.hideAndSeek.command.location.SetSeekerLobbyLocation;
 import net.tylermurphy.hideAndSeek.command.location.SetSpawnLocation;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -53,6 +54,7 @@ public class CommandHandler {
 		registerCommand(new Stop());
 		registerCommand(new SetSpawnLocation());
 		registerCommand(new SetLobbyLocation());
+		registerCommand(new SetSeekerLobbyLocation());
 		registerCommand(new SetExitLocation());
 		registerCommand(new SetBorder());
 		registerCommand(new Reload());

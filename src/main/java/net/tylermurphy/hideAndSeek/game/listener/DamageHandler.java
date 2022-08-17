@@ -80,7 +80,7 @@ public class DamageHandler implements Listener {
             return;
         }
         // Players cannot take damage while game is not in session
-        if (board.contains(player) && (game.getStatus() == Status.STANDBY || game.getStatus() == Status.STARTING)){
+        if (board.contains(player) && game.getStatus() != Status.PLAYING){
             event.setCancelled(true);
             return;
         }
@@ -97,7 +97,17 @@ public class DamageHandler implements Listener {
         // Reveal player if they are disguised
         Main.getInstance().getDisguiser().reveal(player);
         // Teleport player to seeker spawn
-        player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+        if(delayedRespawn){
+            player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), seekerLobbyPosition.getX(), seekerLobbyPosition.getY(), seekerLobbyPosition.getZ()));
+            player.sendMessage(messagePrefix + message("RESPAWN_NOTICE").addAmount(delayedRespawnDelay));
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+                if(game.getStatus() == Status.PLAYING){
+                    player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+                }
+            }, delayedRespawnDelay * 20L);
+        } else {
+            player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+        }
         // Add leaderboard stats
         board.addDeath(player.getUniqueId());
         if (attacker != null) board.addKill(attacker.getUniqueId());

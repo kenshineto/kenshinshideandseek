@@ -42,6 +42,10 @@ public class Setup implements ICommand {
 			msg = msg + "\n" + message("SETUP_LOBBY");
 			count++;
 		}
+		if (seekerLobbyPosition.getBlockX() == 0 && seekerLobbyPosition.getBlockY() == 0 && seekerLobbyPosition.getBlockZ() == 0) {
+			msg = msg + "\n" + message("SETUP_SEEKER_LOBBY");
+			count++;
+		}
 		if (exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0) {
 			msg = msg + "\n" + message("SETUP_EXIT");
 			count++;
