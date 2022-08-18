@@ -54,6 +54,7 @@ Localization:
   GAME_SPAWN: "Teleport-Position für Spielbeginn festgelegt"
   LOBBY_SPAWN: "Teleport-Position für Lobby festgelegt"
   EXIT_SPAWN: "Teleport-Position für Spielende festgelegt"
+  SEEKER_SPAWN: "Teleport-Position für Seeker Lobby festgelegt"
   START_MIN_PLAYERS: "Um das Spiel zu starten benötigst du mindestens {AMOUNT} Spieler."
   START_INVALID_NAME: "Ungültiger Spieler: {PLAYER}."
   START_COUNTDOWN: "Die Hider haben {AMOUNT} Sekunden Zeit sich zu verstecken!"
