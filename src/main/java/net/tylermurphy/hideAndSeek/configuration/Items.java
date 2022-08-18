@@ -21,6 +21,7 @@ package net.tylermurphy.hideAndSeek.configuration;
 
 import com.cryptomorin.xseries.XItemStack;
 import net.tylermurphy.hideAndSeek.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -129,4 +130,23 @@ public class Items {
                 item.getBoolean("particles")
         );
     }
+
+    public static boolean matchItem(ItemStack stack){
+        for(ItemStack check : HIDER_ITEMS)
+            if(equals(stack,check)) return true;
+        for(ItemStack check : SEEKER_ITEMS)
+            if(equals(stack,check)) return true;
+        return false;
+    }
+
+    private static boolean equals(ItemStack a, ItemStack b) {
+        if (a == null) {
+            return false;
+        } else if (a == b) {
+            return true;
+        } else {
+            return a.getType() == b.getType() && a.hasItemMeta() == b.hasItemMeta() && (!a.hasItemMeta() || Bukkit.getItemFactory().equals(a.getItemMeta(), b.getItemMeta()));
+        }
+    }
+
 }
