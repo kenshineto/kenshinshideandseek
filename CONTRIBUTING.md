@@ -3,6 +3,7 @@
 - Do not send any pull requests to the master branch
   - Any pull requests sent to master will be closed
   - Send pull requests to the dev branch
+  - The github repo is a mirror, please do not make pull requests there thank you
 - Please tell us why you think this change is necessary
   - We don't want to spend lots of time browsing through your code changes
   - Describe your changes
