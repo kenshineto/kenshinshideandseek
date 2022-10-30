@@ -24,6 +24,8 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import com.cryptomorin.xseries.XMaterial;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.Debug;
+import net.tylermurphy.hideAndSeek.configuration.Map;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -79,17 +81,22 @@ public class InventoryHandler implements Listener {
 
     private void checkForBlockHuntMenu(InventoryClickEvent event){
         boolean test;
+        String mapName;
         if(Main.getInstance().supports(14)){
-            test = event.getView().getTitle().equals("Select a Block");
+            test = event.getView().getTitle().startsWith("Select a Block: ");
+            mapName = event.getView().getTitle().substring("Select a Block: ".length());
         } else {
-            test = event.getInventory().getName().equals("Select a Block");
+            test = event.getInventory().getName().startsWith("Select a Block: ");
+            mapName = event.getInventory().getName().substring("Select a Block: ".length());
         }
         if(!test) return;
         event.setCancelled(true);
-        Material mat = blockhuntBlocks.get(event.getRawSlot());
+        Map map = Maps.getMap(mapName);
+        if(map == null) return;
+        Material mat = map.getBlockHunt().get(event.getRawSlot());
         if(mat == null) return;
         Player player = (Player) event.getWhoClicked();
-        Main.getInstance().getDisguiser().disguise(player, mat);
+        Main.getInstance().getDisguiser().disguise(player, mat, map);
         player.closeInventory();
     }
 
@@ -97,17 +104,22 @@ public class InventoryHandler implements Listener {
     public void onInventoryClose(InventoryCloseEvent event){
         if (!(event.getPlayer() instanceof Player)) return;
         boolean test;
+        String mapName;
         if(Main.getInstance().supports(14)){
-            test = event.getView().getTitle().equals("Select a Block");
+            test = event.getView().getTitle().startsWith("Select a Block: ");
+            mapName = event.getView().getTitle().substring("Select a Block: ".length());
         } else {
-            test = event.getInventory().getName().equals("Select a Block");
+            test = event.getInventory().getName().startsWith("Select a Block: ");
+            mapName = event.getInventory().getName().substring("Select a Block: ".length());
         }
         if(!test) return;
-        Material mat = blockhuntBlocks.get(0);
+        Map map = Maps.getMap(mapName);
+        if(map == null) return;
+        Material mat = map.getBlockHunt().get(0);
         if(mat == null) return;
         Player player = (Player) event.getPlayer();
         if(Main.getInstance().getDisguiser().disguised(player)) return;
-        Main.getInstance().getDisguiser().disguise(player, mat);
+        Main.getInstance().getDisguiser().disguise(player, mat, map);
         player.closeInventory();
     }
 

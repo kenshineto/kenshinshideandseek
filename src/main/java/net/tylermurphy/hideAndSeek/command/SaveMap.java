@@ -20,8 +20,9 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.configuration.Map;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -42,21 +43,26 @@ public class SaveMap implements ICommand {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
-		if (spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) {
+		Map map = Maps.getMap(args[0]);
+		if(map == null) {
+			sender.sendMessage(errorPrefix + message("INVALID_MAP"));
+			return;
+		}
+		if (map.isSpawnNotSetup()) {
 			sender.sendMessage(errorPrefix + message("ERROR_GAME_SPAWN"));
 			return;
 		}
 		sender.sendMessage(messagePrefix + message("MAPSAVE_START"));
 		sender.sendMessage(warningPrefix + message("MAPSAVE_WARNING"));
-		World world = Bukkit.getServer().getWorld(spawnWorld);
+		World world = map.getSpawn().getWorld();
 		if (world == null) {
-			throw new RuntimeException("Unable to get world: " + spawnWorld);
+			throw new RuntimeException("Unable to get spawn world");
 		}
 		world.save();
 		BukkitRunnable runnable = new BukkitRunnable() {
 			public void run() {
 				sender.sendMessage(
-						Main.getInstance().getGame().getWorldLoader().save()
+						map.getWorldLoader().save()
 						);
 				runningBackup = false;
 			}
@@ -70,7 +76,7 @@ public class SaveMap implements ICommand {
 	}
 
 	public String getUsage() {
-		return "";
+		return "<map>";
 	}
 
 	public String getDescription() {

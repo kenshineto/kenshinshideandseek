@@ -20,6 +20,8 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.configuration.Map;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
 
@@ -33,11 +35,16 @@ public class SetBounds implements ICommand {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
-		if (spawnPosition == null) {
+		Map map = Maps.getMap(args[0]);
+		if(map == null) {
+			sender.sendMessage(errorPrefix + message("INVALID_MAP"));
+			return;
+		}
+		if (map.isSpawnNotSetup()) {
 			sender.sendMessage(errorPrefix + message("ERROR_GAME_SPAWN"));
 			return;
 		}
-		if (!sender.getWorld().getName().equals(spawnWorld)) {
+		if (!sender.getWorld().getName().equals(map.getSpawn().getWorld().getName())) {
 			sender.sendMessage(errorPrefix + message("BOUNDS_WRONG_WORLD"));
 			return;
 		}
@@ -46,37 +53,35 @@ public class SetBounds implements ICommand {
 			return;
 		}
 		boolean first = true;
-		if (saveMinX != 0 && saveMinZ != 0 && saveMaxX != 0 && saveMaxZ != 0) {
-			saveMinX = 0; saveMinZ= 0; saveMaxX = 0; saveMaxZ = 0;
+		int bxs = map.getBoundsMin().getBlockX();
+		int bzs = map.getBoundsMin().getBlockZ();
+		int bxl = map.getBoundsMax().getBlockX();
+		int bzl = map.getBoundsMax().getBlockZ();
+		if (bxs != 0 && bzs != 0 && bxl != 0 && bzl != 0) {
+			bxs = bzs = bxl = bzl = 0;
 		}
-		if (saveMaxX == 0) {
-			addToConfig("bounds.max.x", sender.getLocation().getBlockX());
-			saveMaxX = sender.getLocation().getBlockX();
-		} else if (saveMaxX < sender.getLocation().getBlockX()) {
+		if (bxl == 0) {
+			bxl = sender.getLocation().getBlockX();
+		} else if (map.getBoundsMax().getX() < sender.getLocation().getBlockX()) {
 			first = false;
-			addToConfig("bounds.max.x", sender.getLocation().getBlockX());
-			addToConfig("bounds.min.x", saveMaxX);
-			saveMinX = saveMaxX;
-			saveMaxX = sender.getLocation().getBlockX();
+			bxs = bxl;
+			bxl = sender.getLocation().getBlockX();
 		} else {
 			first = false;
-			addToConfig("bounds.min.x", sender.getLocation().getBlockX());
-			saveMinX = sender.getLocation().getBlockX();
+			bxs = sender.getLocation().getBlockX();
 		}
-		if (saveMaxZ == 0) {
-			addToConfig("bounds.max.z", sender.getLocation().getBlockZ());
-			saveMaxZ = sender.getLocation().getBlockZ();
-		} else if (saveMaxZ < sender.getLocation().getBlockZ()) {
+		if (bzl == 0) {
+			bzl = sender.getLocation().getBlockZ();
+		} else if (map.getBoundsMax().getX() < sender.getLocation().getBlockZ()) {
 			first = false;
-			addToConfig("bounds.max.z", sender.getLocation().getBlockZ());
-			addToConfig("bounds.min.z", saveMaxZ);
-			saveMinZ = saveMaxZ;
-			saveMaxZ = sender.getLocation().getBlockZ();
+			bzs = bzl;
+			bzl = sender.getLocation().getBlockZ();
 		} else {
 			first = false;
-			addToConfig("bounds.min.z", sender.getLocation().getBlockZ());
-			saveMinZ = sender.getLocation().getBlockZ();
+			bzs = sender.getLocation().getBlockZ();
 		}
+		map.setBoundMin(bxs, bzs);
+		map.setBoundMax(bxl, bzl);
 		sender.sendMessage(messagePrefix + message("BOUNDS").addAmount(first ? 1 : 2));
 		saveConfig();
 	}
@@ -86,7 +91,7 @@ public class SetBounds implements ICommand {
 	}
 	
 	public String getUsage() {
-		return "";
+		return "<map>";
 	}
 
 	public String getDescription() {

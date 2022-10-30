@@ -1,12 +1,11 @@
 package net.tylermurphy.hideAndSeek.command.location.util;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.configuration.Map;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
@@ -18,42 +17,31 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
  */
 public class LocationUtils {
 
-    /**
-     * Provides a vector for a player
-     * @param player the player to create the vector for
-     * @return the vector
-     */
-    private static @Nullable Vector vector(Player player) {
+    public static void setLocation(@NotNull Player player, @NotNull Locations place, String mapName, @NotNull Consumer<Map> consumer) {
+
         if (Main.getInstance().getGame().getStatus() != Status.STANDBY) {
             player.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
-            return null;
+            return;
         }
 
         if (player.getLocation().getBlockX() == 0 || player.getLocation().getBlockZ() == 0 || player.getLocation().getBlockY() == 0){
             player.sendMessage(errorPrefix + message("NOT_AT_ZERO"));
-            return null;
+            return;
         }
 
-        Location loc = player.getLocation();
-        return new Vector(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-    }
-
-    public static void setLocation(Player player, Locations place, @Nullable Consumer<Vector> consumer) {
-        Vector vec = vector(player);
-
-        World world = player.getLocation().getWorld();
-        if(world == null) {
-            throw new RuntimeException("Unable to get world: " + spawnWorld);
+        Map map = null;
+        if(mapName != null) {
+            map = Maps.getMap(mapName);
+            if (map == null) {
+                player.sendMessage(errorPrefix + message("INVALID_MAP"));
+                return;
+            }
         }
 
-        consumer.accept(vec);
-
+        consumer.accept(map);
+        if(map != null)
+            Maps.setMap(mapName, map);
         player.sendMessage(messagePrefix + message(place.message()));
-        addToConfig(place.path("x"), vec.getX());
-        addToConfig(place.path("y"), vec.getY());
-        addToConfig(place.path("z"), vec.getZ());
-        addToConfig(place.path("world"), player.getLocation().getWorld().getName());
-        saveConfig();
     }
 
 }

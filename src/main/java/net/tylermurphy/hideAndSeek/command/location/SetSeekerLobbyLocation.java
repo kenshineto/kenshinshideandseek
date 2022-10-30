@@ -10,9 +10,8 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 public class SetSeekerLobbyLocation  implements ICommand {
 
     public void execute(Player sender, String[] args) {
-        LocationUtils.setLocation(sender, Locations.SEEKER, vector -> {
-            seekerLobbyWorld = sender.getLocation().getWorld().getName();
-            seekerLobbyPosition = vector;
+        LocationUtils.setLocation(sender, Locations.SEEKER, args[0], map -> {
+            map.setSeekerLobby(sender.getLocation());
         });
     }
 

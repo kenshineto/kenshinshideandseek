@@ -20,6 +20,8 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.configuration.Map;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -34,16 +36,21 @@ public class SetBorder implements ICommand {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
-		if (spawnPosition == null) {
+		Map map = Maps.getMap(args[0]);
+		if(map == null) {
+			sender.sendMessage(errorPrefix + message("INVALID_MAP"));
+			return;
+		}
+		if (map.isSpawnNotSetup()) {
 			sender.sendMessage(errorPrefix + message("ERROR_GAME_SPAWN"));
 			return;
 		}
 		if (args.length < 3) {
-			worldBorderEnabled = false;
+			map.setWorldBorderData(0, 0, 0, 0, 0);
 			addToConfig("worldBorder.enabled",false);
 			saveConfig();
 			sender.sendMessage(messagePrefix + message("WORLDBORDER_DISABLE"));
-			Main.getInstance().getGame().getBorder().resetWorldBorder(spawnWorld);
+			Main.getInstance().getGame().getCurrentMap().getWorldBorder().resetWorldBorder();
 			return;
 		}
 		int num,delay,change;
@@ -67,28 +74,16 @@ public class SetBorder implements ICommand {
 			sender.sendMessage(errorPrefix + message("WORLDBORDER_CHANGE_SIZE"));
 			return;
 		}
-		Vector vec = new Vector();
-		vec.setX(sender.getLocation().getBlockX());
-		vec.setY(0);
-		vec.setZ(sender.getLocation().getBlockZ());
-		if (spawnPosition.distance(vec) > 100) {
-			sender.sendMessage(errorPrefix + message("WORLDBORDER_POSITION"));
-			return;
-		}
-		worldBorderPosition = vec;
-		worldBorderSize = num;
-		worldBorderDelay = delay;
-		worldBorderChange = change;
-		worldBorderEnabled = true;
-		addToConfig("worldBorder.x", worldBorderPosition.getBlockX());
-		addToConfig("worldBorder.z", worldBorderPosition.getBlockZ());
-		addToConfig("worldBorder.delay", worldBorderDelay);
-		addToConfig("worldBorder.size", worldBorderSize);
-		addToConfig("worldBorder.enabled", true);
-		addToConfig("worldBorder.move", worldBorderChange);
+		map.setWorldBorderData(
+				sender.getLocation().getBlockX(),
+				sender.getLocation().getBlockZ(),
+				num,
+				delay,
+				change
+		);
+		Maps.setMap(map.getName(), map);
 		sender.sendMessage(messagePrefix + message("WORLDBORDER_ENABLE").addAmount(num).addAmount(delay));
-		saveConfig();
-		Main.getInstance().getGame().getBorder().resetWorldBorder(spawnWorld);
+		map.getWorldBorder().resetWorldBorder();
 	}
 
 	public String getLabel() {
@@ -96,7 +91,7 @@ public class SetBorder implements ICommand {
 	}
 	
 	public String getUsage() {
-		return "<size> <delay> <move>";
+		return "<map> <size> <delay> <move>";
 	}
 
 	public String getDescription() {

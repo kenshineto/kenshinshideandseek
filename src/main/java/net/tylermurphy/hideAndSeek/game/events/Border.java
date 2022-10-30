@@ -1,8 +1,7 @@
 package net.tylermurphy.hideAndSeek.game.events;
 
 import net.tylermurphy.hideAndSeek.Main;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
+import net.tylermurphy.hideAndSeek.configuration.Map;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
@@ -11,9 +10,13 @@ public class Border {
 
     private int delay;
     private boolean running;
+    private final Map map;
+    private int currentSize;
 
-    public Border() {
-        delay = 60 * worldBorderDelay;
+    public Border(Map map) {
+        this.map = map;
+        this.delay = (int) (60 * map.getWorldBorderData().getY());
+        this.currentSize = (int) map.getWorldBorderData().getX();
     }
 
     public void update() {
@@ -21,7 +24,7 @@ public class Border {
             Main.getInstance().getGame().broadcastMessage(worldBorderPrefix + message("WORLDBORDER_WARN"));
         } else if (delay == 0) {
             if (running) {
-                delay = 60 * worldBorderDelay;
+                delay = (int) (60 * map.getWorldBorderData().getY());
                 running = false;
             }
             else decreaseWorldBorder();
@@ -30,34 +33,30 @@ public class Border {
     }
 
     private void decreaseWorldBorder() {
-        if (currentWorldborderSize == 100) return;
-        int change = worldBorderChange;
-        if (currentWorldborderSize-worldBorderChange < 100) {
-            change = currentWorldborderSize-100;
+        if (currentSize == 100) return;
+        int change = (int) map.getWorldBorderData().getZ();
+        if (currentSize-change < 100) {
+            change = currentSize-100;
         }
         running = true;
         Main.getInstance().getGame().broadcastMessage(worldBorderPrefix + message("WORLDBORDER_DECREASING").addAmount(change));
-        currentWorldborderSize -= worldBorderChange;
-        World world = Bukkit.getWorld(Main.getInstance().getGame().getGameWorld());
-        assert world != null;
-        org.bukkit.WorldBorder border = world.getWorldBorder();
+        currentSize -= map.getWorldBorderData().getZ();
+        org.bukkit.WorldBorder border = map.getSpawn().getWorld().getWorldBorder();
         border.setSize(border.getSize()-change,30);
         delay = 30;
     }
 
-    public void resetWorldBorder(String worldName) {
-        World world = Bukkit.getWorld(worldName);
-        assert world != null;
-        org.bukkit.WorldBorder border = world.getWorldBorder();
-        if (worldBorderEnabled) {
-            border.setSize(worldBorderSize);
-            border.setCenter(worldBorderPosition.getX(), worldBorderPosition.getZ());
-            currentWorldborderSize = worldBorderSize;
+    public void resetWorldBorder() {
+        org.bukkit.WorldBorder border = map.getSpawn().getWorld().getWorldBorder();
+        if (map.isWorldBorderEnabled()) {
+            border.setSize(map.getWorldBorderData().getX());
+            border.setCenter(map.getWorldBorderPos().getX(), map.getWorldBorderPos().getY());
+            currentSize = (int) map.getWorldBorderData().getX();
         } else {
             border.setSize(30000000);
             border.setCenter(0, 0);
         }
-        delay = 60 * worldBorderDelay;
+        delay = (int) (60 * map.getWorldBorderData().getY());
     }
 
     public int getDelay() {

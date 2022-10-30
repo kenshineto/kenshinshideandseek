@@ -292,41 +292,9 @@ blockedInteracts: [FURNACE, CRAFTING_TABLE, ANVIL, CHEST, BARREL]
 # ONLY EDIT BEYOND THIS POINT IF YOU KNOW WHAT YOU ARE DOING #
 # ---------------------------------------------------------- #
 
-# The 2 coordinate bounds that will contain your hideAndSeek map. Its recommended
-# that you use /hs setbounds for this, and not edit this directly, as breaking
-# this section will completely break the entire plugin when you run /hs savemap.
-bounds:
-  min:
-    x: 0
-    z: 0
-  max:
-    x: 0
-    z: 0
-
-# Spawn locations where players are teleported
-spawns:
-  # Location where players are teleported into the game (/hs start)
-  game:
-    x: 0
-    y: 0
-    z: 0
-    world: world
-  # Location where players are teleported into the lobby (/hs join)
-  lobby:
-    x: 0
-    y: 0
-    z: 0
-    world: world
-  # Location where seekers wait during the hiding grace period
-  seeker:
-    x: 0
-    y: 0
-    z: 0
-    # Currently is not used, seekers are teleported to spawns.game.world
-    world: world
-  # Location where players are teleported when they exit (/hs leave)
-  exit:
-    x: 0
-    y: 0
-    z: 0
-    world: world
+# Location where players are teleported when they exit (/hs leave)
+exit:
+  x: 0
+  y: 0
+  z: 0
+  world: world

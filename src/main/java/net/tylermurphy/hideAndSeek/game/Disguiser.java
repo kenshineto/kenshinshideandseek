@@ -2,17 +2,17 @@ package net.tylermurphy.hideAndSeek.game;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
+import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.game.util.Disguise;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class Disguiser {
 
-    private final Map<Player, Disguise> disguises;
+    private final HashMap<Player, Disguise> disguises;
 
     public Disguiser(){
         this.disguises = new HashMap<>();
@@ -35,7 +35,7 @@ public class Disguiser {
     }
 
     public void check(){
-        for(Map.Entry<Player, Disguise> set : disguises.entrySet()){
+        for(HashMap.Entry<Player, Disguise> set : disguises.entrySet()){
             Disguise disguise = set.getValue();
             Player player = set.getKey();
             if(!player.isOnline()) {
@@ -47,9 +47,9 @@ public class Disguiser {
         }
     }
 
-    public void disguise(Player player, Material material){
-        if(!blockhuntEnabled){
-            player.sendMessage(errorPrefix + "Please enable blockhunt in config.yml to enable disguises. Blockhunt does not work on 1.8");
+    public void disguise(Player player, Material material, Map map){
+        if(!map.isBlockHuntEnabled()){
+            player.sendMessage(errorPrefix + "Please enable blockhunt in this map inside maps.yml to enable disguises. Blockhunt does not work on 1.8");
             return;
         }
         if(disguises.containsKey(player)){

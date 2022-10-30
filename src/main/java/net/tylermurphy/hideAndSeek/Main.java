@@ -39,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -90,7 +91,8 @@ public class Main extends JavaPlugin implements Listener {
 		board.getPlayers().forEach(player -> {
 			board.removeBoard(player);
 			PlayerLoader.unloadPlayer(player);
-			player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+			if(!Objects.equals(exitWorld, ""))
+				player.teleport(exitPosition);
 		});
 
 		Bukkit.getServer().getMessenger().unregisterOutgoingPluginChannel(this);

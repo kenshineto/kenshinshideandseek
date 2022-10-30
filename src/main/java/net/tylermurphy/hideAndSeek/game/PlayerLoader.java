@@ -23,9 +23,8 @@ import com.cryptomorin.xseries.messages.Titles;
 import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.configuration.Items;
-import org.bukkit.Bukkit;
+import net.tylermurphy.hideAndSeek.configuration.Map;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
@@ -35,30 +34,29 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-import static net.tylermurphy.hideAndSeek.configuration.Config.lobbyPosition;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 @SuppressWarnings("deprecation")
 public class PlayerLoader {
 
-    public static void loadHider(Player player, String gameWorld){
-        player.teleport(new Location(Bukkit.getWorld(gameWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+    public static void loadHider(Player player, Map map){
+        player.teleport(map.getSpawn());
         loadPlayer(player);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
         Titles.sendTitle(player, 10, 70, 20, ChatColor.WHITE + "" + message("HIDER_TEAM_NAME"), ChatColor.WHITE + message("HIDERS_SUBTITLE").toString());
-        if(blockhuntEnabled){
-            openBlockHuntPicker(player);
+        if(map.isBlockHuntEnabled()){
+            openBlockHuntPicker(player, map);
         }
     }
 
-    public static void loadSeeker(Player player, String gameWorld){
-        player.teleport(new Location(Bukkit.getWorld(gameWorld), seekerLobbyPosition.getX(),seekerLobbyPosition.getY(),seekerLobbyPosition.getZ()));
+    public static void loadSeeker(Player player, Map map){
+        player.teleport(map.getSeekerLobby());
         loadPlayer(player);
         Titles.sendTitle(player, 10, 70, 20, ChatColor.WHITE + "" + message("SEEKER_TEAM_NAME"), ChatColor.WHITE + message("SEEKERS_SUBTITLE").toString());
     }
 
-    public static void loadSpectator(Player player, String gameWorld){
-        player.teleport(new Location(Bukkit.getWorld(gameWorld), spawnPosition.getX(),spawnPosition.getY(),spawnPosition.getZ()));
+    public static void loadSpectator(Player player, Map map){
+        player.teleport(map.getSpawn());
         loadPlayer(player);
         player.setAllowFlight(true);
         player.setFlying(true);
@@ -115,8 +113,8 @@ public class PlayerLoader {
         player.setFallDistance(0.0F);
     }
 
-    public static void joinPlayer(Player player){
-        player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
+    public static void joinPlayer(Player player, Map map){
+        player.teleport(map.getLobby());
         loadPlayer(player);
         if (lobbyStartItem != null && (!lobbyItemStartAdmin || player.hasPermission("hideandseek.start")))
             player.getInventory().setItem(lobbyItemStartPosition, lobbyStartItem);
@@ -143,11 +141,11 @@ public class PlayerLoader {
         }
     }
 
-    public static void openBlockHuntPicker(Player player){
-        int slots = ((blockhuntBlocks.size()-1)/9)*9+9;
-        Inventory inventory = Main.getInstance().getServer().createInventory(null, slots, "Select a Block");
-        for(int i=0;i<blockhuntBlocks.size();i++){
-            inventory.setItem(i, new ItemStack(blockhuntBlocks.get(i)));
+    public static void openBlockHuntPicker(Player player, Map map){
+        int slots = ((map.getBlockHunt().size()-1)/9)*9+9;
+        Inventory inventory = Main.getInstance().getServer().createInventory(null, slots, "Select a Block: " + map.getName());
+        for(int i=0;i<map.getBlockHunt().size();i++){
+            inventory.setItem(i, new ItemStack(map.getBlockHunt().get(i)));
         }
         player.openInventory(inventory);
     }

@@ -20,8 +20,8 @@
 package net.tylermurphy.hideAndSeek.world;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.configuration.Map;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
@@ -32,17 +32,20 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class WorldLoader {
-	
+
+	private Map map;
 	private String mapName;
 	private String saveName;
 	
-	public WorldLoader(String mapName) {
-		this.mapName = mapName;
+	public WorldLoader(Map map) {
+		this.map = map;
+		this.mapName = map.getSpawn() == null ? "world" : map.getSpawn().getWorld().getName();
 		this.saveName = "hideandseek_"+ mapName;
 	}
 
-	public void setNewMap(String mapName){
-		this.mapName = mapName;
+	public void setNewMap(Map map){
+		this.map = map;
+		this.mapName = map.getSpawn() == null ? "world" : map.getSpawn().getWorld().getName();
 		this.saveName = "hideandseek_"+ mapName;
 	}
 
@@ -56,7 +59,7 @@ public class WorldLoader {
 			Main.getInstance().getLogger().warning(saveName + " already unloaded.");
 			return;
 		}
-		world.getPlayers().forEach(player -> player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ())));
+		world.getPlayers().forEach(player -> player.teleport(exitPosition));
         if (Bukkit.getServer().unloadWorld(world, false)) {
             Main.getInstance().getLogger().info("Successfully unloaded " + saveName);
         }else{
@@ -127,10 +130,10 @@ public class WorldLoader {
 			}
     		for (String file : files) {
     			if (isMca) {
-	    			int minX = (int)Math.floor(saveMinX / 512.0);
-	    			int minZ = (int)Math.floor(saveMinZ / 512.0);
-	    			int maxX = (int)Math.floor(saveMaxX / 512.0);
-	    			int maxZ = (int)Math.floor(saveMaxZ / 512.0);
+	    			int minX = (int)Math.floor(map.getBoundsMin().getX() / 512.0);
+	    			int minZ = (int)Math.floor(map.getBoundsMin().getZ() / 512.0);
+	    			int maxX = (int)Math.floor(map.getBoundsMax().getX() / 512.0);
+	    			int maxZ = (int)Math.floor(map.getBoundsMax().getZ() / 512.0);
 	    			
 	    			String[] parts = file.split("\\.");
 	    			if (parts.length > 1) {

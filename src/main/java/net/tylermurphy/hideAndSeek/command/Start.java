@@ -34,7 +34,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class Start implements ICommand {
 
 	public void execute(Player sender, String[] args) {
-		if (Main.getInstance().getGame().isNotSetup()) {
+		if (Main.getInstance().getGame().getCurrentMap().isNotSetup()) {
 			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}

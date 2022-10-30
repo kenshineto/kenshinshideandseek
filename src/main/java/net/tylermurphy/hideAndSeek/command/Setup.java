@@ -20,6 +20,8 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.configuration.Map;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -33,16 +35,20 @@ public class Setup implements ICommand {
 		
 		String msg = message("SETUP").toString();
 		int count = 0;
-		
-		if (spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) {
+		Map map = Maps.getMap(args[0]);
+		if(map == null) {
+			sender.sendMessage(errorPrefix + message("INVALID_MAP"));
+			return;
+		}
+		if (map.getSpawn().getBlockX() == 0 && map.getSpawn().getBlockY() == 0 && map.getSpawn().getBlockZ() == 0) {
 			msg = msg + "\n" + message("SETUP_GAME");
 			count++;
 		}
-		if (lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0) {
+		if (map.getLobby().getBlockX() == 0 && map.getLobby().getBlockY() == 0 && map.getLobby().getBlockZ() == 0) {
 			msg = msg + "\n" + message("SETUP_LOBBY");
 			count++;
 		}
-		if (seekerLobbyPosition.getBlockX() == 0 && seekerLobbyPosition.getBlockY() == 0 && seekerLobbyPosition.getBlockZ() == 0) {
+		if (map.getSeekerLobby().getBlockX() == 0 && map.getSeekerLobby().getBlockY() == 0 && map.getSeekerLobby().getBlockZ() == 0) {
 			msg = msg + "\n" + message("SETUP_SEEKER_LOBBY");
 			count++;
 		}
@@ -50,12 +56,13 @@ public class Setup implements ICommand {
 			msg = msg + "\n" + message("SETUP_EXIT");
 			count++;
 		}
-		if (saveMinX == 0 || saveMinZ == 0 || saveMaxX == 0 || saveMaxZ == 0) {
+		if (map.getBoundsMin().getBlockX() == 0 || map.getBoundsMin().getBlockZ() == 0 ||
+			map.getBoundsMax().getBlockX() == 0 || map.getBoundsMax().getBlockX() == 0) {
 			msg = msg + "\n" + message("SETUP_BOUNDS");
 			count++;
 		}
 		if (mapSaveEnabled) {
-			File destenation = new File(Main.getInstance().getWorldContainer() + File.separator + Main.getInstance().getGame().getGameWorld());
+			File destenation = new File(Main.getInstance().getWorldContainer() + File.separator + map.getSpawn().getWorld().getName());
 			if (!destenation.exists()) {
 				msg = msg + "\n" + message("SETUP_SAVEMAP");
 				count++;
@@ -73,7 +80,7 @@ public class Setup implements ICommand {
 	}
 
 	public String getUsage() {
-		return "";
+		return "<map>";
 	}
 
 	public String getDescription() {

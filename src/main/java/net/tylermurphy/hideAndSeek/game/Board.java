@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-@SuppressWarnings("deprecation")
 public class Board {
 
     private final List<String> Hider = new ArrayList<>(), Seeker = new ArrayList<>(), Spectator = new ArrayList<>();
@@ -244,7 +243,7 @@ public class Board {
         Status status = Main.getInstance().getGame().getStatus();
 
         Taunt taunt = Main.getInstance().getGame().getTaunt();
-        Border worldBorder = Main.getInstance().getGame().getBorder();
+        Border worldBorder = Main.getInstance().getGame().getCurrentMap().getWorldBorder();
         Glow glow = Main.getInstance().getGame().getGlow();
 
         int i = 0;
@@ -259,7 +258,7 @@ public class Board {
                     String value = getTeam(player);
                     board.setLine(String.valueOf(i), line.replace("{TEAM}", value));
                 } else if (line.contains("{BORDER}")) {
-                    if (!worldBorderEnabled) continue;
+                    if (!Main.getInstance().getGame().getCurrentMap().isWorldBorderEnabled()) continue;
                     if (worldBorder == null || status == Status.STARTING) {
                         board.setLine(String.valueOf(i), line.replace("{BORDER}", BORDER_COUNTING.replace("{AMOUNT}", "0")));
                     } else if (!worldBorder.isRunning()) {

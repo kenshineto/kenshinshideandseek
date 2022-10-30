@@ -28,9 +28,14 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 public class SetExitLocation implements ICommand {
 
 	public void execute(Player sender, String[] args) {
-		LocationUtils.setLocation(sender, Locations.EXIT, vector -> {
+		LocationUtils.setLocation(sender, Locations.EXIT, args[0], map -> {
+			addToConfig("exit.x", sender.getLocation().getBlockX());
+			addToConfig("exit.y", sender.getLocation().getBlockY());
+			addToConfig("exit.z", sender.getLocation().getBlockZ());
+			addToConfig("exit.world", sender.getLocation().getWorld().getName());
+			exitPosition = sender.getLocation();
 			exitWorld = sender.getLocation().getWorld().getName();
-			exitPosition = vector;
+			saveConfig();
 		});
 	}
 

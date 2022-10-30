@@ -25,8 +25,8 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -188,6 +188,10 @@ public class ConfigManager {
         config.set(path, defaultConfig.get(path));
     }
 
+    public void resetAll() {
+        config = new YamlConfiguration();
+    }
+
     public void resetFile(String newDefaultFilename) {
         this.defaultFilename = newDefaultFilename;
 
@@ -226,6 +230,14 @@ public class ConfigManager {
         config.set(path, value);
     }
 
+    public void overwriteConfig() {
+        try {
+            this.config.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void saveConfig() {
         try {
             InputStream is = Main.getInstance().getResource(defaultFilename);
@@ -233,7 +245,7 @@ public class ConfigManager {
                 throw new RuntimeException("Could not create input stream for "+defaultFilename);
             }
             StringBuilder textBuilder = new StringBuilder(new String("".getBytes(), StandardCharsets.UTF_8));
-            Reader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(StandardCharsets.UTF_8.name())));
+            Reader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             int c;
             while((c = reader.read()) != -1) {
                 textBuilder.append((char) c);
@@ -285,7 +297,7 @@ public class ConfigManager {
                     yamlString = builder.toString();
                 }
             }
-            Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
+            Writer fileWriter = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8));
             fileWriter.write(yamlString);
             fileWriter.close();
         } catch (IOException e) {
