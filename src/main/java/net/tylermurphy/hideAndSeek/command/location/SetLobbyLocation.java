@@ -22,7 +22,11 @@ package net.tylermurphy.hideAndSeek.command.location;
 import net.tylermurphy.hideAndSeek.command.ICommand;
 import net.tylermurphy.hideAndSeek.command.location.util.LocationUtils;
 import net.tylermurphy.hideAndSeek.command.location.util.Locations;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
 import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
@@ -39,11 +43,18 @@ public class SetLobbyLocation implements ICommand {
 	}
 	
 	public String getUsage() {
-		return "";
+		return "<map>";
 	}
 
 	public String getDescription() {
 		return "Sets hide and seeks lobby location to current position";
+	}
+
+	public List<String> autoComplete(String parameter) {
+		if(parameter != null && parameter.equals("map")) {
+			return Maps.getAllMaps().stream().map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
+		}
+		return null;
 	}
 
 }

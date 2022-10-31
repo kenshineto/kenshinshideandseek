@@ -24,6 +24,8 @@ import net.tylermurphy.hideAndSeek.database.util.PlayerInfo;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
@@ -70,10 +72,14 @@ public class Wins implements ICommand {
     }
 
     public String getUsage() {
-        return "<player>";
+        return "<*player>";
     }
 
     public String getDescription() {
         return "Get the win information for yourself or another player.";
+    }
+
+    public List<String> autoComplete(String parameter) {
+        return Collections.singletonList(parameter);
     }
 }

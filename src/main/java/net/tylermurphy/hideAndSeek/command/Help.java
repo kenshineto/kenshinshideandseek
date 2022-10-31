@@ -23,6 +23,8 @@ import net.md_5.bungee.api.ChatColor;
 import net.tylermurphy.hideAndSeek.util.CommandHandler;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public class Help implements ICommand {
 
 	public void execute(Player sender, String[] args) {
@@ -44,6 +46,10 @@ public class Help implements ICommand {
 
 	public String getDescription() {
 		return "Get the commands for the plugin";
+	}
+
+	public List<String> autoComplete(String parameter) {
+		return null;
 	}
 
 }

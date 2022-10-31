@@ -30,6 +30,7 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Config.permissionsRequired;
@@ -65,6 +66,10 @@ public class CommandHandler {
 		registerCommand(new Top());
 		registerCommand(new Wins());
 		registerCommand(new Debug());
+		registerCommand(new AddMap());
+		registerCommand(new RemoveMap());
+		registerCommand(new ListMaps());
+		registerCommand(new SetMap());
 	}
 	
 	public static boolean handleCommand(CommandSender sender, String[] args) {
@@ -85,8 +90,15 @@ public class CommandHandler {
 			} else if (permissionsRequired && !sender.hasPermission("hideandseek."+args[0].toLowerCase())) {
 				sender.sendMessage(errorPrefix + message("COMMAND_NOT_ALLOWED"));
 			} else {
+
 				try {
-					COMMAND_REGISTER.get(args[0].toLowerCase()).execute(player,Arrays.copyOfRange(args, 1, args.length));
+					ICommand command = COMMAND_REGISTER.get(args[0].toLowerCase());
+					int parameters = (int) Arrays.stream(command.getUsage().split(" ")).filter(p -> p.startsWith("<") && !p.startsWith("<*")).count();
+					if(args.length - 1 < parameters) {
+						sender.sendMessage(errorPrefix + message("ARGUMENT_COUNT"));
+						return true;
+					}
+					command.execute(player,Arrays.copyOfRange(args, 1, args.length));
 				} catch (Exception e) {
 					sender.sendMessage(errorPrefix + "An error has occurred.");
 					e.printStackTrace();

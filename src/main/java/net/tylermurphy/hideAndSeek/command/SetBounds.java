@@ -25,6 +25,9 @@ import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
@@ -44,7 +47,7 @@ public class SetBounds implements ICommand {
 			sender.sendMessage(errorPrefix + message("ERROR_GAME_SPAWN"));
 			return;
 		}
-		if (!sender.getWorld().getName().equals(map.getSpawn().getWorld().getName())) {
+		if (!sender.getWorld().getName().equals(map.getSpawnName())) {
 			sender.sendMessage(errorPrefix + message("BOUNDS_WRONG_WORLD"));
 			return;
 		}
@@ -72,7 +75,7 @@ public class SetBounds implements ICommand {
 		}
 		if (bzl == 0) {
 			bzl = sender.getLocation().getBlockZ();
-		} else if (map.getBoundsMax().getX() < sender.getLocation().getBlockZ()) {
+		} else if (map.getBoundsMax().getZ() < sender.getLocation().getBlockZ()) {
 			first = false;
 			bzs = bzl;
 			bzl = sender.getLocation().getBlockZ();
@@ -82,8 +85,8 @@ public class SetBounds implements ICommand {
 		}
 		map.setBoundMin(bxs, bzs);
 		map.setBoundMax(bxl, bzl);
+		Maps.setMap(map.getName(), map);
 		sender.sendMessage(messagePrefix + message("BOUNDS").addAmount(first ? 1 : 2));
-		saveConfig();
 	}
 
 	public String getLabel() {
@@ -96,6 +99,13 @@ public class SetBounds implements ICommand {
 
 	public String getDescription() {
 		return "Sets the map bounds for the game.";
+	}
+
+	public List<String> autoComplete(String parameter) {
+		if(parameter != null && parameter.equals("map")) {
+			return Maps.getAllMaps().stream().map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
+		}
+		return null;
 	}
 
 }

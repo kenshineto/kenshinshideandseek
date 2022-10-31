@@ -23,13 +23,15 @@ import net.tylermurphy.hideAndSeek.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Join implements ICommand {
 
 	public void execute(Player sender, String[] args) {
-		if (Main.getInstance().getGame().getCurrentMap().isNotSetup()) {
+		if (Main.getInstance().getGame().checkCurrentMap()) {
 			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
@@ -56,6 +58,10 @@ public class Join implements ICommand {
 
 	public String getDescription() {
 		return "Joins the lobby if game is set to manual join/leave";
+	}
+
+	public List<String> autoComplete(String parameter) {
+		return null;
 	}
 
 }

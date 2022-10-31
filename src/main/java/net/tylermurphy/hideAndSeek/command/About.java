@@ -22,11 +22,13 @@ package net.tylermurphy.hideAndSeek.command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public class About implements ICommand {
 
 	public void execute(Player sender, String[] args) {
 		sender.sendMessage(
-				String.format("%s%sHide and Seek %s(%s1.6.2%s)\n", ChatColor.AQUA, ChatColor.BOLD, ChatColor.GRAY,ChatColor.WHITE,ChatColor.GRAY) +
+				String.format("%s%sHide and Seek %s(%s1.7.0 ALPHA%s)\n", ChatColor.AQUA, ChatColor.BOLD, ChatColor.GRAY,ChatColor.WHITE,ChatColor.GRAY) +
 				String.format("%sAuthor: %s[KenshinEto]\n", ChatColor.GRAY, ChatColor.WHITE) + 
 				String.format("%sHelp Command: %s/hs %shelp", ChatColor.GRAY, ChatColor.AQUA, ChatColor.WHITE)
 			);
@@ -42,6 +44,10 @@ public class About implements ICommand {
 
 	public String getDescription() {
 		return "Get information about the plugin";
+	}
+
+	public List<String> autoComplete(String parameter) {
+		return null;
 	}
 
 }

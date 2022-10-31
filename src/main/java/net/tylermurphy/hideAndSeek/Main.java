@@ -22,6 +22,7 @@ package net.tylermurphy.hideAndSeek;
 import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.game.*;
 import net.tylermurphy.hideAndSeek.game.util.Status;
@@ -30,7 +31,6 @@ import net.tylermurphy.hideAndSeek.game.listener.*;
 import net.tylermurphy.hideAndSeek.util.PAPIExpansion;
 import net.tylermurphy.hideAndSeek.util.TabCompleter;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
@@ -62,6 +62,7 @@ public class Main extends JavaPlugin implements Listener {
 		this.updateVersion();
 
 		Config.loadConfig();
+		Maps.loadMaps();
 		Localization.loadLocalization();
 		Items.loadItems();
 
@@ -73,7 +74,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		CommandHandler.registerCommands();
 
-		game = new Game(board);
+		game = new Game(game.getCurrentMap(), board);
 
 		getServer().getScheduler().runTaskTimer(this, this::onTick,0,1).getTaskId();
 

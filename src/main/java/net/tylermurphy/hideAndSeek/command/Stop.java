@@ -23,6 +23,9 @@ import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static net.tylermurphy.hideAndSeek.configuration.Config.abortPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
@@ -30,7 +33,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class Stop implements ICommand {
 
 	public void execute(Player sender, String[] args) {
-		if (Main.getInstance().getGame().getCurrentMap().isNotSetup()) {
+		if (Main.getInstance().getGame().checkCurrentMap()) {
 			sender.sendMessage(errorPrefix + "Game is not setup. Run /hs setup to see what you needed to do");
 			return;
 		}
@@ -52,6 +55,10 @@ public class Stop implements ICommand {
 
 	public String getDescription() {
 		return "Stops the game";
+	}
+
+	public List<String> autoComplete(String parameter) {
+		return null;
 	}
 
 }

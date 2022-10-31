@@ -27,6 +27,9 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
@@ -82,5 +85,12 @@ public class SaveMap implements ICommand {
 	public String getDescription() {
 		return "Saves current map for the game. May lag server.";
 	}
-	
+
+	public List<String> autoComplete(String parameter) {
+		if(parameter != null && parameter.equals("map")) {
+			return Maps.getAllMaps().stream().map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
+		}
+		return null;
+	}
+
 }

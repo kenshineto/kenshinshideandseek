@@ -20,12 +20,15 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Config.minPlayers;
@@ -34,7 +37,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class Start implements ICommand {
 
 	public void execute(Player sender, String[] args) {
-		if (Main.getInstance().getGame().getCurrentMap().isNotSetup()) {
+		if (Main.getInstance().getGame().checkCurrentMap()) {
 			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
@@ -84,6 +87,13 @@ public class Start implements ICommand {
 
 	public String getDescription() {
 		return "Starts the game either with a random seeker or chosen one";
+	}
+
+	public List<String> autoComplete(String parameter) {
+		if(parameter != null && parameter.equals("player")) {
+			return Main.getInstance().getBoard().getPlayers().stream().map(Player::getName).collect(Collectors.toList());
+		}
+		return null;
 	}
 
 }

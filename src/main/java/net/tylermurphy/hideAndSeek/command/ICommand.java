@@ -20,6 +20,9 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public interface ICommand {
 
@@ -30,5 +33,7 @@ public interface ICommand {
 	String getUsage();
 	
 	String getDescription();
+
+	List<String> autoComplete(@Nullable String parameter);
 	
 }

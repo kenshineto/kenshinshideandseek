@@ -22,8 +22,13 @@ package net.tylermurphy.hideAndSeek.command.location;
 import net.tylermurphy.hideAndSeek.command.ICommand;
 import net.tylermurphy.hideAndSeek.command.location.util.LocationUtils;
 import net.tylermurphy.hideAndSeek.command.location.util.Locations;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
@@ -41,7 +46,12 @@ public class SetSpawnLocation implements ICommand {
 
 			map.setSpawn(sender.getLocation());
 
-			if (!sender.getLocation().getWorld().getName().equals(map.getSpawn().getWorld().getName()) && mapSaveEnabled) {
+			if(map.getSeekerLobby().getWorld() != null && !map.getSeekerLobby().getWorld().getName().equals(sender.getLocation().getWorld().getName())) {
+				sender.sendMessage(message("SEEKER_LOBBY_SPAWN_RESET").toString());
+				map.setSeekerLobby(new Location(null, 0, 0, 0));
+			}
+
+			if (!sender.getLocation().getWorld().getName().equals(map.getSpawnName()) && mapSaveEnabled) {
 				map.getWorldLoader().unloadMap();
 			}
 		});
@@ -57,6 +67,13 @@ public class SetSpawnLocation implements ICommand {
 
 	public String getDescription() {
 		return "Sets hide and seeks spawn location to current position";
+	}
+
+	public List<String> autoComplete(String parameter) {
+		if(parameter != null && parameter.equals("map")) {
+			return Maps.getAllMaps().stream().map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
+		}
+		return null;
 	}
 
 }

@@ -19,6 +19,7 @@
 
 package net.tylermurphy.hideAndSeek.util;
 
+import net.tylermurphy.hideAndSeek.command.ICommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -36,21 +37,20 @@ public class TabCompleter {
 					.collect(Collectors.toList());
 		} else if (args.length > 1) {
 			if (!CommandHandler.COMMAND_REGISTER.containsKey(args[0].toLowerCase())) {
-				return null;
+				return new ArrayList<>();
 			} else {
-				String[] usage = CommandHandler.COMMAND_REGISTER.get(args[0].toLowerCase()).getUsage().split(" ");
+				ICommand command = CommandHandler.COMMAND_REGISTER.get(args[0].toLowerCase());
+				String[] usage = command.getUsage().split(" ");
+				List<String> complete;
 				if (args.length - 2 < usage.length) {
 					String parameter = usage[args.length-2];
-					if (parameter.equals("<player>")) {
-						return null;
-					} else {
-						List<String> temp = new ArrayList<>();
-						temp.add(parameter.replace("<", "").replace(">", ""));
-						return temp;
-					}
+					String name = parameter.replace("<", "").replace(">", "");
+					complete = command.autoComplete(name);
 				} else {
-					return null;
+					complete = command.autoComplete(null);
 				}
+				if(complete == null) return new ArrayList<>();
+				else return complete;
 			}
 		}
 		return null;

@@ -21,15 +21,28 @@ public class Maps {
     }
 
     public static Map getRandomMap() {
-        Optional<Map> map = MAPS.values().stream().skip(new Random().nextInt(MAPS.values().size())).findFirst();
-        if(map.isPresent()) return map.get();
-        setMap("default", new Map("default"));
-        return MAPS.get("default");
+        Optional<Map> map;
+        if(MAPS.values().size() > 0) {
+            Collection<Map> setupMaps = MAPS.values().stream().filter(m -> !m.isNotSetup()).collect(Collectors.toList());
+            if(setupMaps.size() < 1) {
+                return null;
+            }
+            map = setupMaps.stream().skip(new Random().nextInt(setupMaps.size())).findFirst();
+        } else {
+            map = Optional.empty();
+        }
+        return map.orElse(null);
     }
 
     public static void setMap(String name, Map map) {
         MAPS.put(name, map);
         saveMaps();
+    }
+
+    public static boolean removeMap(String name) {
+        boolean status = MAPS.remove(name) != null;
+        saveMaps();
+        return status;
     }
 
     public static Collection<Map> getAllMaps() {
@@ -69,9 +82,11 @@ public class Maps {
                 data.getInt("worldborder.delay"),
                 data.getInt("worldborder.change")
         );
+        List<String> blockhunt = data.getStringList("blockhunt.blocks");
+        if(blockhunt == null) blockhunt = new ArrayList<>();
         map.setBlockhunt(
-            data.getBoolean("blockhunt.enabled"), 
-            data.getStringList("blockhunt.blocks")
+            data.getBoolean("blockhunt.enabled"),
+            blockhunt
             .stream()
             .map(XMaterial::matchXMaterial)
             .filter(Optional::isPresent)
@@ -113,8 +128,8 @@ public class Maps {
             data.set("worldborder.pos.delay", map.getWorldBorderData().getY());
             data.set("worldborder.pos.change", map.getWorldBorderData().getZ());
             data.set("blockhunt.enabled", map.isBlockHuntEnabled());
-            data.set("blockhunt.blocks", map.getBlockHunt().stream().map(Material::name));
-            maps.set(map.getName(), map);
+            data.set("blockhunt.blocks", map.getBlockHunt().stream().map(Material::name).collect(Collectors.toList()));
+            maps.set(map.getName(), data);
         }
 
         manager.set("maps", maps);
@@ -128,9 +143,9 @@ public class Maps {
         } else {
             data.set("spawns." + name + ".world", "world");
         }
-        data.set("spawns.." + name + ".x", spawn.getX());
-        data.set("spawns.." + name + ".y", spawn.getY());
-        data.set("spawns.." + name + ".z", spawn.getZ());
+        data.set("spawns." + name + ".x", spawn.getX());
+        data.set("spawns." + name + ".y", spawn.getY());
+        data.set("spawns." + name + ".z", spawn.getZ());
     }
 
 }

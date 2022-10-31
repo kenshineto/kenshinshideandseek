@@ -59,8 +59,12 @@ public class Game {
 	private boolean hiderLeft;
 
 	public Game(Board board) {
+		this(Maps.getRandomMap(), board);
+	}
 
-		this.currentMap = Maps.getRandomMap();
+	public Game(Map map, Board board) {
+
+		this.currentMap = map;
 
 		this.taunt = new Taunt();
 		this.glow = new Glow();
@@ -140,6 +144,8 @@ public class Game {
 	public void end() {
 		board.getPlayers().forEach(PlayerLoader::unloadPlayer);
 		currentMap.getWorldBorder().resetWorldBorder();
+		Map nextMap = Maps.getRandomMap();
+		if(nextMap != null) this.currentMap = nextMap;
 		board.getPlayers().forEach(player -> {
 			if (leaveOnEnd) {
 				board.removeBoard(player);
@@ -213,7 +219,7 @@ public class Game {
 	}
 
 	public void onTick() {
-		if (currentMap.isNotSetup()) return;
+		if (currentMap == null || currentMap.isNotSetup()) return;
 		if (status == Status.STANDBY) whileWaiting();
 		else if (status == Status.STARTING) whileStarting();
 		else if (status == Status.PLAYING) whilePlaying();
@@ -249,7 +255,7 @@ public class Game {
 					board.getPlayers().forEach(player -> {
 						PlayerLoader.resetPlayer(player, board);
 						if(board.isSeeker(player)){
-							player.teleport(currentMap.getSpawn());
+							player.teleport(currentMap.getGameSpawn());
 						}
 					});
 				} else if (startingTimer == 1){
@@ -327,13 +333,19 @@ public class Game {
 		return currentMap;
 	}
 
+	public boolean checkCurrentMap() {
+		if(currentMap != null) return false;
+		this.currentMap = Maps.getRandomMap();
+		return this.currentMap == null;
+	}
+
 	public void setCurrentMap(Map map) {
 		this.currentMap = map;
 	}
 
-	public World getGameWorld() {
-		if(currentMap == null || currentMap.getSpawn() == null) return null;
-		else return currentMap.getSpawn().getWorld();
+	public String getGameWorld() {
+		if(currentMap == null) return null;
+		else return currentMap.getGameSpawnName();
 	}
 
 	private void checkWinConditions() {

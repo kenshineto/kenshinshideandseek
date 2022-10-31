@@ -38,7 +38,13 @@ public class LocationUtils {
             }
         }
 
-        consumer.accept(map);
+        try {
+            consumer.accept(map);
+        } catch (Exception e) {
+            player.sendMessage(errorPrefix + e.getMessage());
+            return;
+        }
+
         if(map != null)
             Maps.setMap(mapName, map);
         player.sendMessage(messagePrefix + message(place.message()));

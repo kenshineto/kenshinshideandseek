@@ -22,13 +22,18 @@ package net.tylermurphy.hideAndSeek.command.location;
 import net.tylermurphy.hideAndSeek.command.ICommand;
 import net.tylermurphy.hideAndSeek.command.location.util.LocationUtils;
 import net.tylermurphy.hideAndSeek.command.location.util.Locations;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
 import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
 public class SetExitLocation implements ICommand {
 
 	public void execute(Player sender, String[] args) {
-		LocationUtils.setLocation(sender, Locations.EXIT, args[0], map -> {
+		LocationUtils.setLocation(sender, Locations.EXIT, null, map -> {
 			addToConfig("exit.x", sender.getLocation().getBlockX());
 			addToConfig("exit.y", sender.getLocation().getBlockY());
 			addToConfig("exit.z", sender.getLocation().getBlockZ());
@@ -49,6 +54,10 @@ public class SetExitLocation implements ICommand {
 
 	public String getDescription() {
 		return "Sets hide and seeks exit location to current position and world";
+	}
+
+	public List<String> autoComplete(String parameter) {
+		return null;
 	}
 
 }

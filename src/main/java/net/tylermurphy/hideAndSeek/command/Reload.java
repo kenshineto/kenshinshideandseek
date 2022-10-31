@@ -23,8 +23,11 @@ import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Config.messagePrefix;
@@ -39,6 +42,7 @@ public class Reload implements ICommand {
 			return;
 		}
 		Config.loadConfig();
+		Maps.loadMaps();
 		Localization.loadLocalization();
 		Items.loadItems();
 		sender.sendMessage(messagePrefix + message("CONFIG_RELOAD"));
@@ -55,5 +59,9 @@ public class Reload implements ICommand {
 	public String getDescription() {
 		return "Reloads the config";
 	}
-	
+
+	public List<String> autoComplete(String parameter) {
+		return null;
+	}
+
 }

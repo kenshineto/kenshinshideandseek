@@ -26,6 +26,11 @@ import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
@@ -45,7 +50,7 @@ public class SetBorder implements ICommand {
 			sender.sendMessage(errorPrefix + message("ERROR_GAME_SPAWN"));
 			return;
 		}
-		if (args.length < 3) {
+		if (args.length < 4) {
 			map.setWorldBorderData(0, 0, 0, 0, 0);
 			addToConfig("worldBorder.enabled",false);
 			saveConfig();
@@ -91,11 +96,18 @@ public class SetBorder implements ICommand {
 	}
 	
 	public String getUsage() {
-		return "<map> <size> <delay> <move>";
+		return "<map> <*size> <*delay> <*move>";
 	}
 
 	public String getDescription() {
 		return "Sets worldboarder's center location, size in blocks, and delay in minutes per shrink. Add no arguments to disable.";
+	}
+
+	public List<String> autoComplete(String parameter) {
+		if(parameter != null && parameter.equals("map")) {
+			return Maps.getAllMaps().stream().map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
+		}
+		return Collections.singletonList(parameter);
 	}
 
 }

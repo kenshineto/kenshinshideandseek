@@ -1,6 +1,6 @@
 name: KenshinsHideAndSeek
 main: net.tylermurphy.hideAndSeek.Main
-version: 1.6.2
+version: 1.7.0
 author: KenshinEto
 load: STARTUP
 api-version: 1.13
@@ -34,6 +34,10 @@ permissions:
       hideandseek.wins: true
       hideandseek.top: true
       hideandseek.debug: true
+      hideandseek.addmap: true
+      hideandseek.removemap: true
+      hideandseek.listmaps: true
+      hideandseek.setmap: true
   hideandseek.about:
     description: Allows you to run the about command
     default: true
@@ -90,4 +94,16 @@ permissions:
     default: true
   hideandseek.debug:
     description: Opens the debug menu
+    default: op
+  hideandseek.addmap:
+    description: Adds a map to the plugin
+    default: op
+  hideandseek.removemap:
+    description: Removes a map from the plugin
+    default: op
+  hideandseek.listmaps:
+    description: Lists all maps in the plugin
+    default: op
+  hideandseek.setmap:
+    description: Sets the current lobby to a new map
     default: op

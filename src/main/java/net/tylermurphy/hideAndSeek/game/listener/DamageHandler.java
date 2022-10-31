@@ -31,7 +31,7 @@ public class DamageHandler implements Listener {
         Player player = (Player) event.getEntity();
         Player attacker = null;
         // If map is not setup we won't be able to process on it :o
-        if (game.getCurrentMap().isNotSetup()) { return; }
+        if (game.getCurrentMap() == null || game.getCurrentMap().isNotSetup()) { return; }
         // If there is an attacker, find them
         if (event instanceof EntityDamageByEntityEvent) {
             if (((EntityDamageByEntityEvent) event).getDamager() instanceof Player)
@@ -71,9 +71,9 @@ public class DamageHandler implements Listener {
         if (board.isSpectator(player)) {
             event.setCancelled(true);
             if (Main.getInstance().supports(18) && player.getLocation().getBlockY() < -64) {
-                player.teleport(game.getCurrentMap().getSpawn());
+                player.teleport(game.getCurrentMap().getGameSpawn());
             } else if (!Main.getInstance().supports(18) && player.getLocation().getY() < 0) {
-                player.teleport(game.getCurrentMap().getSpawn());
+                player.teleport(game.getCurrentMap().getGameSpawn());
             }
             return;
         }
@@ -96,15 +96,15 @@ public class DamageHandler implements Listener {
         Main.getInstance().getDisguiser().reveal(player);
         // Teleport player to seeker spawn
         if(delayedRespawn){
-            player.teleport(game.getCurrentMap().getSeekerLobby());
+            player.teleport(game.getCurrentMap().getGameSeekerLobby());
             player.sendMessage(messagePrefix + message("RESPAWN_NOTICE").addAmount(delayedRespawnDelay));
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
                 if(game.getStatus() == Status.PLAYING){
-                    player.teleport(game.getCurrentMap().getSpawn());
+                    player.teleport(game.getCurrentMap().getGameSpawn());
                 }
             }, delayedRespawnDelay * 20L);
         } else {
-            player.teleport(game.getCurrentMap().getSpawn());
+            player.teleport(game.getCurrentMap().getGameSpawn());
         }
         // Add leaderboard stats
         board.addDeath(player.getUniqueId());

@@ -33,45 +33,35 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class WorldLoader {
 
-	private Map map;
-	private String mapName;
-	private String saveName;
+	private final Map map;
 	
 	public WorldLoader(Map map) {
 		this.map = map;
-		this.mapName = map.getSpawn() == null ? "world" : map.getSpawn().getWorld().getName();
-		this.saveName = "hideandseek_"+ mapName;
-	}
-
-	public void setNewMap(Map map){
-		this.map = map;
-		this.mapName = map.getSpawn() == null ? "world" : map.getSpawn().getWorld().getName();
-		this.saveName = "hideandseek_"+ mapName;
 	}
 
 	public World getWorld() {
-		return Bukkit.getServer().getWorld(saveName);
+		return Bukkit.getServer().getWorld(map.getGameSpawnName());
 	}
 
 	public void unloadMap() {
-		World world = Bukkit.getServer().getWorld(saveName);
+		World world = Bukkit.getServer().getWorld(map.getGameSpawnName());
 		if (world == null) {
-			Main.getInstance().getLogger().warning(saveName + " already unloaded.");
+			Main.getInstance().getLogger().warning(map.getGameSpawnName() + " already unloaded.");
 			return;
 		}
 		world.getPlayers().forEach(player -> player.teleport(exitPosition));
         if (Bukkit.getServer().unloadWorld(world, false)) {
-            Main.getInstance().getLogger().info("Successfully unloaded " + saveName);
+            Main.getInstance().getLogger().info("Successfully unloaded " + map.getGameSpawnName());
         }else{
-            Main.getInstance().getLogger().severe("COULD NOT UNLOAD " + saveName);
+            Main.getInstance().getLogger().severe("COULD NOT UNLOAD " + map.getGameSpawnName());
         }
     }
 
     public void loadMap() {
-		Bukkit.getServer().createWorld(new WorldCreator(saveName).generator(new VoidGenerator()));
-		World world = Bukkit.getServer().getWorld(saveName);
+		Bukkit.getServer().createWorld(new WorldCreator(map.getGameSpawnName()).generator(new VoidGenerator()));
+		World world = Bukkit.getServer().getWorld(map.getGameSpawnName());
 		if (world == null) {
-			Main.getInstance().getLogger().severe("COULD NOT LOAD " + saveName);
+			Main.getInstance().getLogger().severe("COULD NOT LOAD " + map.getGameSpawnName());
 			return;
 		}
 		world.setAutoSave(false);
@@ -83,15 +73,15 @@ public class WorldLoader {
     }
     
     public String save() {
-		World world = Bukkit.getServer().getWorld(mapName);
+		World world = Bukkit.getServer().getWorld(map.getSpawnName());
 		if(world == null){
-			throw new RuntimeException("Invalid world to save: " + mapName);
+			return errorPrefix + "Invalid world to save: " + map.getSpawnName();
 		}
-    	File current = new File(Main.getInstance().getWorldContainer()+File.separator+ mapName);
+    	File current = new File(Main.getInstance().getWorldContainer()+File.separator+ map.getSpawnName());
     	if (current.exists()) {
 			try {
-				File destination = new File(Main.getInstance().getWorldContainer()+File.separator+ saveName);
-				File temp_destination = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+ saveName);
+				File destination = new File(Main.getInstance().getWorldContainer()+File.separator+ map.getGameSpawnName());
+				File temp_destination = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+ map.getGameSpawnName());
 				copyFileFolder("region",true);
 				copyFileFolder("entities",true);
 				copyFileFolder("datapacks",false);
@@ -104,7 +94,7 @@ public class WorldLoader {
 				}
 
 				if (!temp_destination.renameTo(destination)) {
-					throw new RuntimeException("Failed to rename directory: "+temp_destination.getPath());
+					return errorPrefix + "Failed to rename directory: " + temp_destination.getPath();
 				}
 			} catch(IOException e) {
 				e.printStackTrace();
@@ -117,8 +107,8 @@ public class WorldLoader {
     }
     
     private void copyFileFolder(String name, Boolean isMca) throws IOException {
-    	File region = new File(Main.getInstance().getWorldContainer()+File.separator+ mapName +File.separator+name);
-    	File temp = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+ saveName +File.separator+name);
+    	File region = new File(Main.getInstance().getWorldContainer()+File.separator+ map.getSpawnName() +File.separator+name);
+    	File temp = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+ map.getGameSpawnName() +File.separator+name);
     	if (region.exists() && region.isDirectory()) {
     		if (!temp.exists())
     			if (!temp.mkdirs())

@@ -24,16 +24,16 @@ public class JoinLeaveHandler implements Listener {
         }
         Main.getInstance().getBoard().remove(event.getPlayer());
         removeItems(event.getPlayer());
-        if (Main.getInstance().getGame().getCurrentMap().isNotSetup()) return;
+        if (Main.getInstance().getGame().checkCurrentMap()) return;
         if (autoJoin) {
             Main.getInstance().getGame().join(event.getPlayer());
         } else if (teleportToExit) {
-            if (event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getGameWorld().getName()) || event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getCurrentMap().getLobby().getWorld().getName())) {
+            if (event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getGameWorld()) || event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getCurrentMap().getLobby().getWorld().getName())) {
                 event.getPlayer().teleport(exitPosition);
                 event.getPlayer().setGameMode(GameMode.ADVENTURE);
             }
         } else {
-            if (mapSaveEnabled && event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getGameWorld().getName())) {
+            if (mapSaveEnabled && event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getGameWorld())) {
                 if (Main.getInstance().getGame().getStatus() != Status.STANDBY && Main.getInstance().getGame().getStatus() != Status.ENDING) {
                     Main.getInstance().getGame().join(event.getPlayer());
                 } else {

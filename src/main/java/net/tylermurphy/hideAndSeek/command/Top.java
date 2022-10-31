@@ -24,6 +24,7 @@ import net.tylermurphy.hideAndSeek.database.util.PlayerInfo;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.List;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
@@ -80,4 +81,9 @@ public class Top implements ICommand {
     public String getDescription() {
         return "Gets the top players in the server.";
     }
+
+    public List<String> autoComplete(String parameter) {
+        return Collections.singletonList(parameter);
+    }
+
 }

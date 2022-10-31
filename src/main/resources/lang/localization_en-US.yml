@@ -17,7 +17,7 @@ Localization:
   GAME_GAMEOVER_SEEKERS_QUIT: "All seekers have quit."
   GAME_GAMEOVER_HIDERS_QUIT: "All hiders have quit."
   GAME_GAMEOVER_TIME: "Seekers ran out of time. Hiders win!"
-  GAME_SETUP: "Game is not setup. Run /hs setup to see what you need to do."
+  GAME_SETUP: "There are no setup maps! Run /hs setup on a map to see what you need to do."
   GAME_INGAME: "You are already in the lobby/game."
   GAME_NOT_INGAME: "You are not in a lobby/game."
   GAME_INPROGRESS: "There is currently a game in progress."
@@ -77,6 +77,19 @@ Localization:
   FLYING_ENABLED: "&l&bFlying Enabled"
   FLYING_DISABLED: "&l&bFlying Disabled"
   RESPAWN_NOTICE: "You will respawn in {AMOUNT} seconds."
+  INVALID_MAP: "That is an invalid map name!!"
+  MAP_ALREADY_EXISTS: "This map already exists!"
+  INVALID_MAP_NAME: "A map name can only contain numbers or letters"
+  MAP_CREATED: "Created new map: {AMOUNT}"
+  MAP_FAIL_DELETE: "Failed to delete map: {AMOUNT}"
+  MAP_DELETED: "Deleted map: {AMOUNT}"
+  NO_MAPS: "There are no maps in the plugin rn (/hs addmap)"
+  MAP_NOT_SETUP: "Map {AMOUNT} is not setup (/hs setup <map>)"
+  LIST_MAPS: "The current maps are:"
+  ARGUMENT_COUNT: "This command requires more arguments to run."
+  GAME_SPAWN_NEEDED: "Game spawn must be set before seeker spawn."
+  SEEKER_LOBBY_SPAWN_RESET: "Seeker lobby spawn reset since the game spawn was moved to a new world"
+  SEEKER_LOBBY_INVALID: "Seeker lobby must be in the same world as game spawn"
 
 # DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
 version: 3
