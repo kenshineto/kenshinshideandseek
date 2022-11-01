@@ -17,23 +17,27 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.command;
+package net.tylermurphy.hideAndSeek.command.util;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface ICommand {
+public abstract class Command {
 
-	void execute(Player sender, String[] args);
-	
-	String getLabel();
+	public abstract void execute(Player sender, String[] args);
 
-	String getUsage();
-	
-	String getDescription();
+	public abstract String getLabel();
 
-	List<String> autoComplete(@Nullable String parameter);
+	public abstract String getUsage();
+
+	public abstract String getDescription();
+
+	public abstract List<String> autoComplete(@Nullable String parameter);
+
+	public boolean hasPermission(Player sender, String permission) {
+		return sender.hasPermission(permission+"."+getLabel());
+	}
 	
 }

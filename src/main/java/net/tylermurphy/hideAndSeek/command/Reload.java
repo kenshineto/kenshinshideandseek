@@ -20,6 +20,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.command.util.Command;
 import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
@@ -33,7 +34,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Config.messagePrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Reload implements ICommand {
+public class Reload extends Command {
 
 	public void execute(Player sender, String[] args) {
 		

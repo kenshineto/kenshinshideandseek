@@ -19,7 +19,7 @@
 
 package net.tylermurphy.hideAndSeek.command.location;
 
-import net.tylermurphy.hideAndSeek.command.ICommand;
+import net.tylermurphy.hideAndSeek.command.util.Command;
 import net.tylermurphy.hideAndSeek.command.location.util.LocationUtils;
 import net.tylermurphy.hideAndSeek.command.location.util.Locations;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class SetSpawnLocation implements ICommand {
+public class SetSpawnLocation extends Command {
 
 	public void execute(Player sender, String[] args) {
 		LocationUtils.setLocation(sender, Locations.GAME, args[0], map -> {
@@ -58,7 +58,7 @@ public class SetSpawnLocation implements ICommand {
 	}
 
 	public String getLabel() {
-		return "setspawn";
+		return "spawn";
 	}
 	
 	public String getUsage() {

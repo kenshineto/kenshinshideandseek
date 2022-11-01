@@ -20,7 +20,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.configuration.Maps;
+import net.tylermurphy.hideAndSeek.command.util.Command;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -34,7 +34,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Config.minPlayers;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Start implements ICommand {
+public class Start extends Command {
 
 	public void execute(Player sender, String[] args) {
 		if (Main.getInstance().getGame().checkCurrentMap()) {

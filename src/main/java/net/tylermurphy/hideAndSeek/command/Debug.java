@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek.command;
 
 import com.cryptomorin.xseries.XMaterial;
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.command.util.Command;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.PlayerLoader;
 import net.tylermurphy.hideAndSeek.game.util.Status;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Debug implements ICommand {
+public class Debug extends Command {
 
     private static final Map<Player, Map<Integer, Consumer<Player>>> debugMenuFunctions = new HashMap<>();
 

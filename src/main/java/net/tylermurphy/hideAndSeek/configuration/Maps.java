@@ -60,7 +60,6 @@ public class Maps {
 
         MAPS.clear();
         for(String key : keys) {
-            System.out.println(key);
             MAPS.put(key, parseMap(maps, key));
         }
 
@@ -71,8 +70,11 @@ public class Maps {
         if(data == null) return null;
         Map map = new Map(name);
         map.setSpawn(setSpawn(data, "game"));
+        map.setSpawnName(data.getString("spawns.game.world"));
         map.setLobby(setSpawn(data, "lobby"));
+        map.setLobbyName(data.getString("spawns.lobby.world"));
         map.setSeekerLobby(setSpawn(data, "seeker"));
+        map.setSeekerLobbyName(data.getString("spawns.seeker.world"));
         map.setBoundMin(data.getInt("bounds.min.x"), data.getInt("bounds.min.z"));
         map.setBoundMax(data.getInt("bounds.max.x"), data.getInt("bounds.max.z"));
         map.setWorldBorderData(
@@ -100,8 +102,8 @@ public class Maps {
     private static Location setSpawn(ConfigurationSection data, String spawn) {
         String worldName = data.getString("spawns."+spawn+".world");
         if(worldName == null) return new Location(null, 0, 0, 0);
+        if(!Map.worldExists(worldName)) return new Location(null, 0, 0, 0);
         World world = Bukkit.getWorld(worldName);
-        if(world == null) return new Location(null, 0, 0, 0);
         double x = data.getDouble("spawns."+spawn+".x");
         double y = data.getDouble("spawns."+spawn+".y");
         double z = data.getDouble("spawns."+spawn+".z");
@@ -115,9 +117,9 @@ public class Maps {
 
         for(Map map : MAPS.values()) {
             ConfigurationSection data = new YamlConfiguration();
-            saveSpawn(data, map.getSpawn(), "game");
-            saveSpawn(data, map.getLobby(), "lobby");
-            saveSpawn(data, map.getSeekerLobby(), "seeker");
+            saveSpawn(data, map.getSpawn(), "game", map);
+            saveSpawn(data, map.getLobby(), "lobby", map);
+            saveSpawn(data, map.getSeekerLobby(), "seeker", map);
             data.set("bounds.min.x", map.getBoundsMin().getX());
             data.set("bounds.min.z", map.getBoundsMin().getZ());
             data.set("bounds.max.x", map.getBoundsMax().getX());
@@ -137,15 +139,25 @@ public class Maps {
 
     }
 
-    private static void saveSpawn(ConfigurationSection data, Location spawn, String name) {
-        if(spawn.getWorld() != null) {
-            data.set("spawns." + name + ".world", spawn.getWorld().getName());
-        } else {
+    private static void saveSpawn(ConfigurationSection data, Location spawn, String name, Map map) {
+        String worldName = getWorldName(name, map);
+        if(worldName == null || !Map.worldExists(worldName)) {
             data.set("spawns." + name + ".world", "world");
+        } else {
+            data.set("spawns." + name + ".world", worldName);
         }
         data.set("spawns." + name + ".x", spawn.getX());
         data.set("spawns." + name + ".y", spawn.getY());
         data.set("spawns." + name + ".z", spawn.getZ());
+    }
+
+    private static String getWorldName(String name, Map map) {
+        switch (name) {
+            case "game": return map.getSpawnName();
+            case "lobby": return map.getLobbyName();
+            case "seeker": return map.getSeekerLobbyName();
+            default: return null;
+        }
     }
 
 }

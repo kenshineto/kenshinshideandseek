@@ -23,7 +23,9 @@ public class Map {
     seekerLobbyPosition = new Location(null, 0, 0, 0);
 
   private String
-    gameWorldName = "world";
+    spawnWorldName = "world",
+    lobbyWorldName = "world",
+    seekerLobbyWorldName = "world";
 
   private int 
     xBoundMin = 0,
@@ -57,15 +59,31 @@ public class Map {
   public void setSpawn(Location pos) {
     this.spawnPosition = pos;
     if(pos.getWorld() != null)
-      this.gameWorldName = pos.getWorld().getName();
+      this.spawnWorldName = pos.getWorld().getName();
   }
 
   public void setLobby(Location pos) {
     this.lobbyPosition = pos;
+    if(pos.getWorld() != null)
+      this.lobbyWorldName = pos.getWorld().getName();
   }
 
   public void setSeekerLobby(Location pos) {
     this.seekerLobbyPosition = pos;
+    if(pos.getWorld() != null)
+      this.seekerLobbyWorldName = pos.getWorld().getName();
+  }
+
+  public void setSpawnName(String name) {
+    this.spawnWorldName = name;
+  }
+
+  public void setLobbyName(String name) {
+    this.lobbyWorldName = name;
+  }
+
+  public void setSeekerLobbyName(String name) {
+    this.seekerLobbyWorldName = name;
   }
 
   public void setWorldBorderData(int x, int z, int size, int delay, int move) {
@@ -103,7 +121,7 @@ public class Map {
   public Location getGameSpawn() {
     if(mapSaveEnabled) {
       return new Location(
-              Bukkit.getWorld("hs_" + gameWorldName),
+              Bukkit.getWorld("hs_" + spawnWorldName),
               spawnPosition.getX(),
               spawnPosition.getY(),
               spawnPosition.getZ()
@@ -114,7 +132,10 @@ public class Map {
   }
 
   public String getGameSpawnName() {
-    return "hs_"+gameWorldName;
+    if(mapSaveEnabled)
+      return "hs_"+ spawnWorldName;
+    else
+      return spawnWorldName;
   }
 
   public Location getSpawn() {
@@ -122,21 +143,29 @@ public class Map {
   }
 
   public String getSpawnName() {
-    return gameWorldName;
+    return spawnWorldName;
   }
 
   public Location getLobby() {
     return lobbyPosition;
   }
 
+  public String getLobbyName() {
+    return lobbyWorldName;
+  }
+
   public Location getSeekerLobby() {
     return seekerLobbyPosition;
+  }
+
+  public String getSeekerLobbyName() {
+    return seekerLobbyWorldName;
   }
 
   public Location getGameSeekerLobby() {
     if(mapSaveEnabled) {
       return new Location(
-              Bukkit.getWorld("hs_" + gameWorldName),
+              Bukkit.getWorld("hs_" + getSeekerLobbyName()),
               seekerLobbyPosition.getX(),
               seekerLobbyPosition.getY(),
               seekerLobbyPosition.getZ()
@@ -203,19 +232,11 @@ public class Map {
   }
 
   public boolean isNotSetup() {
-    if (spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) return true;
-    if (lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0) return true;
-    if (exitPosition == null || exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0) return true;
-    if (exitPosition.getWorld() == null) {
-      Bukkit.getServer().createWorld(new WorldCreator(exitWorld).generator(new VoidGenerator()));
-      World world = Bukkit.getServer().getWorld(exitWorld);
-      if(world == null) return true;
-    }
-    if (seekerLobbyPosition.getBlockX() == 0 && seekerLobbyPosition.getBlockY() == 0 && seekerLobbyPosition.getBlockZ() == 0) return true;
-    if (mapSaveEnabled) {
-      File destination = new File(Main.getInstance().getWorldContainer() + File.separator + spawnPosition.getWorld().getName());
-      if (!destination.exists()) return true;
-    }
+    if (spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0 || !Map.worldExists(spawnWorldName)) return true;
+    if (lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0 || !Map.worldExists(lobbyWorldName)) return true;
+    if (exitPosition == null || exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0 || !Map.worldExists(exitWorld) ) return true;
+    if (seekerLobbyPosition.getBlockX() == 0 && seekerLobbyPosition.getBlockY() == 0 && seekerLobbyPosition.getBlockZ() == 0 || !Map.worldExists(seekerLobbyWorldName)) return true;
+    if (mapSaveEnabled && !Map.worldExists(getGameSpawnName())) return true;
     if(isWorldBorderEnabled() &&
         new Vector(spawnPosition.getX(), 0, spawnPosition.getZ()).distance(new Vector(xWorldBorder, 0, zWorldBorder)) > 100) return true;
     return xBoundMin == 0 || zBoundMin == 0 || xBoundMax == 0 || zBoundMax == 0;
@@ -223,6 +244,11 @@ public class Map {
 
   public boolean isSpawnNotSetup() {
     return spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0;
+  }
+
+  public static boolean worldExists(String worldName) {
+    File destination = new File(Main.getInstance().getWorldContainer()+File.separator+worldName);
+    return destination.isDirectory();
   }
 
 }

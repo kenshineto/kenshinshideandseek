@@ -20,20 +20,21 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.md_5.bungee.api.ChatColor;
-import net.tylermurphy.hideAndSeek.util.CommandHandler;
+import net.tylermurphy.hideAndSeek.command.util.Command;
+import net.tylermurphy.hideAndSeek.command.util.CommandGroup;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class Help implements ICommand {
+public class Help extends Command {
 
 	public void execute(Player sender, String[] args) {
-		StringBuilder message = new StringBuilder();
-		for(ICommand command : CommandHandler.COMMAND_REGISTER.values()) {
-			message.append(String.format("%s/hs %s%s %s%s\n  %s%s%s", ChatColor.AQUA, ChatColor.WHITE, command.getLabel().toLowerCase(), ChatColor.BLUE, command.getUsage(), ChatColor.GRAY, ChatColor.ITALIC, command.getDescription() + "\n"));
-		}
-		message = new StringBuilder(message.substring(0, message.length() - 1));
-		sender.sendMessage(message.toString());
+//		StringBuilder message = new StringBuilder();
+//		for(Command command : CommandGroup.COMMAND_REGISTER.values()) {
+//			message.append(String.format("%s/hs %s%s %s%s\n  %s%s%s", ChatColor.AQUA, ChatColor.WHITE, command.getLabel().toLowerCase(), ChatColor.BLUE, command.getUsage(), ChatColor.GRAY, ChatColor.ITALIC, command.getDescription() + "\n"));
+//		}
+//		message = new StringBuilder(message.substring(0, message.length() - 1));
+//		sender.sendMessage(message.toString());
 	}
 
 	public String getLabel() {

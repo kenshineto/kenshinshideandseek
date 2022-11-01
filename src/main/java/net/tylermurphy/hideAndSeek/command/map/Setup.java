@@ -17,9 +17,10 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.command;
+package net.tylermurphy.hideAndSeek.command.map;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.command.util.Command;
 import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import org.bukkit.entity.Player;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Setup implements ICommand {
+public class Setup extends Command {
 	
 	public void execute(Player sender, String[] args) {
 		
@@ -42,19 +43,19 @@ public class Setup implements ICommand {
 			sender.sendMessage(errorPrefix + message("INVALID_MAP"));
 			return;
 		}
-		if (map.getSpawn().getWorld() == null || map.getSpawn().getBlockX() == 0 && map.getSpawn().getBlockY() == 0 && map.getSpawn().getBlockZ() == 0) {
+		if (map.getSpawn().getBlockX() == 0 && map.getSpawn().getBlockY() == 0 && map.getSpawn().getBlockZ() == 0 || !Map.worldExists(map.getLobbyName())) {
 			msg = msg + "\n" + message("SETUP_GAME");
 			count++;
 		}
-		if (map.getLobby().getWorld() == null || map.getLobby().getBlockX() == 0 && map.getLobby().getBlockY() == 0 && map.getLobby().getBlockZ() == 0) {
+		if (map.getLobby().getBlockX() == 0 && map.getLobby().getBlockY() == 0 && map.getLobby().getBlockZ() == 0 || !Map.worldExists(map.getLobbyName())) {
 			msg = msg + "\n" + message("SETUP_LOBBY");
 			count++;
 		}
-		if (map.getSeekerLobby().getWorld() == null || map.getSeekerLobby().getBlockX() == 0 && map.getSeekerLobby().getBlockY() == 0 && map.getSeekerLobby().getBlockZ() == 0) {
+		if (map.getSeekerLobby().getBlockX() == 0 && map.getSeekerLobby().getBlockY() == 0 && map.getSeekerLobby().getBlockZ() == 0 || !Map.worldExists(map.getSeekerLobbyName())) {
 			msg = msg + "\n" + message("SETUP_SEEKER_LOBBY");
 			count++;
 		}
-		if (exitWorld == null || exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0) {
+		if (exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0 || !Map.worldExists(exitWorld)) {
 			msg = msg + "\n" + message("SETUP_EXIT");
 			count++;
 		}
@@ -63,12 +64,9 @@ public class Setup implements ICommand {
 			msg = msg + "\n" + message("SETUP_BOUNDS");
 			count++;
 		}
-		if (mapSaveEnabled) {
-			File destenation = new File(Main.getInstance().getWorldContainer() + File.separator + map.getGameSpawnName());
-			if (!destenation.exists()) {
-				msg = msg + "\n" + message("SETUP_SAVEMAP");
-				count++;
-			}
+		if (mapSaveEnabled && !Map.worldExists(map.getGameSpawnName())) {
+			msg = msg + "\n" + message("SETUP_SAVEMAP");
+			count++;
 		}
 		if (count < 1) {
 			sender.sendMessage(messagePrefix + message("SETUP_COMPLETE"));

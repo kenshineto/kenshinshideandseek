@@ -58,10 +58,6 @@ public class Game {
 	private int gameTimer;
 	private boolean hiderLeft;
 
-	public Game(Board board) {
-		this(Maps.getRandomMap(), board);
-	}
-
 	public Game(Map map, Board board) {
 
 		this.currentMap = map;

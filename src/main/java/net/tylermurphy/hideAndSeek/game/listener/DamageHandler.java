@@ -42,7 +42,6 @@ public class DamageHandler implements Listener {
         }
         // Makes sure that if there was an attacking player, that the event is allowed for the game
         if (attacker != null) {
-            System.out.println(event.getFinalDamage() + " " + player.getDisplayName() + " " + attacker.getDisplayName());
             // Cancel if one player is in the game but other isn't
             if ((board.contains(player) && !board.contains(attacker)) || (!board.contains(player) && board.contains(attacker))) {
                 event.setCancelled(true);

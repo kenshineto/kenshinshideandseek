@@ -20,6 +20,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.command.util.Command;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -28,7 +29,7 @@ import java.util.List;
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Leave implements ICommand {
+public class Leave extends Command {
 
 	public void execute(Player sender, String[] args) {
 		if (Main.getInstance().getGame().checkCurrentMap()) {

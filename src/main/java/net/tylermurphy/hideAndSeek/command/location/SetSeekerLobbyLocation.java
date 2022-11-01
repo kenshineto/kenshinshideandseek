@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.command.location;
 
-import net.tylermurphy.hideAndSeek.command.ICommand;
+import net.tylermurphy.hideAndSeek.command.util.Command;
 import net.tylermurphy.hideAndSeek.command.location.util.LocationUtils;
 import net.tylermurphy.hideAndSeek.command.location.util.Locations;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class SetSeekerLobbyLocation  implements ICommand {
+public class SetSeekerLobbyLocation  extends Command {
 
     public void execute(Player sender, String[] args) {
         LocationUtils.setLocation(sender, Locations.SEEKER, args[0], map -> {
@@ -26,7 +26,7 @@ public class SetSeekerLobbyLocation  implements ICommand {
     }
 
     public String getLabel() {
-        return "setseekerlobby";
+        return "seekerlobby";
     }
 
     public String getUsage() {

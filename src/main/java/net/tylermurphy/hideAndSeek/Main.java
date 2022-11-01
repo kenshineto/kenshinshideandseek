@@ -19,6 +19,9 @@
 
 package net.tylermurphy.hideAndSeek;
 
+import net.tylermurphy.hideAndSeek.command.*;
+import net.tylermurphy.hideAndSeek.command.location.*;
+import net.tylermurphy.hideAndSeek.command.map.*;
 import net.tylermurphy.hideAndSeek.configuration.Config;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.configuration.Localization;
@@ -26,13 +29,13 @@ import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.game.*;
 import net.tylermurphy.hideAndSeek.game.util.Status;
-import net.tylermurphy.hideAndSeek.util.CommandHandler;
+import net.tylermurphy.hideAndSeek.command.util.CommandGroup;
 import net.tylermurphy.hideAndSeek.game.listener.*;
 import net.tylermurphy.hideAndSeek.util.PAPIExpansion;
-import net.tylermurphy.hideAndSeek.util.TabCompleter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -43,8 +46,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.exitPosition;
-import static net.tylermurphy.hideAndSeek.configuration.Config.exitWorld;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Main extends JavaPlugin implements Listener {
 	
@@ -56,6 +59,7 @@ public class Main extends JavaPlugin implements Listener {
 	private Disguiser disguiser;
 	private EntityHider entityHider;
 	private Game game;
+	private CommandGroup commandGroup;
 
 	public void onEnable() {
 		Main.instance = this;
@@ -72,9 +76,36 @@ public class Main extends JavaPlugin implements Listener {
 		this.entityHider = new EntityHider(this, EntityHider.Policy.BLACKLIST);
 		this.registerListeners();
 
-		CommandHandler.registerCommands();
+		this.commandGroup = new CommandGroup("hs",
+				new About(),
+				new Debug(),
+				new Help(),
+				new Reload(),
+				new Join(),
+				new Leave(),
+				new Start(),
+				new Stop(),
+				new CommandGroup("map",
+						new CommandGroup("set",
+								new SetLobbyLocation(),
+								new SetSpawnLocation(),
+								new SetSeekerLobbyLocation(),
+								new SetBorder(),
+								new SetBounds()
+						),
+						new AddMap(),
+						new RemoveMap(),
+						new ListMaps(),
+						new SetMap(),
+						new Setup(),
+						new SaveMap()
+				),
+				new SetExitLocation(),
+				new Top(),
+				new Wins()
+		);
 
-		game = new Game(game.getCurrentMap(), board);
+		game = new Game(null, board);
 
 		getServer().getScheduler().runTaskTimer(this, this::onTick,0,1).getTaskId();
 
@@ -102,7 +133,7 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	private void onTick() {
-		if(game.getStatus() == Status.ENDED) game = new Game(board);
+		if(game.getStatus() == Status.ENDED) game = new Game(game.getCurrentMap(), board);
 		game.onTick();
 		disguiser.check();
 	}
@@ -130,11 +161,15 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
-		return CommandHandler.handleCommand(sender, args);
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(errorPrefix + message("COMMAND_PLAYER_ONLY"));
+			return true;
+		}
+		return commandGroup.handleCommand((Player)sender, "", args);
 	}
 	
 	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-		return TabCompleter.handleTabComplete(sender, args);
+		return commandGroup.handleTabComplete(sender, args);
 	}
 
 	public static Main getInstance() {

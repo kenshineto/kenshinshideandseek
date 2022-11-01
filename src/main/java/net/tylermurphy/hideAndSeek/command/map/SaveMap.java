@@ -17,9 +17,10 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.command;
+package net.tylermurphy.hideAndSeek.command.map;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.command.util.Command;
 import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class SaveMap implements ICommand {
+public class SaveMap extends Command {
 
 	public static boolean runningBackup = false;
 	
@@ -75,7 +76,7 @@ public class SaveMap implements ICommand {
 	}
 
 	public String getLabel() {
-		return "saveMap";
+		return "save";
 	}
 
 	public String getUsage() {

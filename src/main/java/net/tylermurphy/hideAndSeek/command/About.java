@@ -19,12 +19,13 @@
 
 package net.tylermurphy.hideAndSeek.command;
 
+import net.tylermurphy.hideAndSeek.command.util.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class About implements ICommand {
+public class About extends Command {
 
 	public void execute(Player sender, String[] args) {
 		sender.sendMessage(

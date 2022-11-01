@@ -17,24 +17,22 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.command;
+package net.tylermurphy.hideAndSeek.command.map;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.command.util.Command;
 import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class SetBorder implements ICommand {
+public class SetBounds extends Command {
 
 	public void execute(Player sender, String[] args) {
 		if (Main.getInstance().getGame().getStatus() != Status.STANDBY) {
@@ -50,64 +48,65 @@ public class SetBorder implements ICommand {
 			sender.sendMessage(errorPrefix + message("ERROR_GAME_SPAWN"));
 			return;
 		}
-		if (args.length < 4) {
-			map.setWorldBorderData(0, 0, 0, 0, 0);
-			addToConfig("worldBorder.enabled",false);
-			saveConfig();
-			sender.sendMessage(messagePrefix + message("WORLDBORDER_DISABLE"));
-			Main.getInstance().getGame().getCurrentMap().getWorldBorder().resetWorldBorder();
+		if (!sender.getWorld().getName().equals(map.getSpawnName())) {
+			sender.sendMessage(errorPrefix + message("BOUNDS_WRONG_WORLD"));
 			return;
 		}
-		int num,delay,change;
-		try { num = Integer.parseInt(args[0]); } catch (Exception e) {
-			sender.sendMessage(errorPrefix + message("WORLDBORDER_INVALID_INPUT").addAmount(args[0]));
+		if (sender.getLocation().getBlockX() == 0 || sender.getLocation().getBlockZ() == 0) {
+			sender.sendMessage(errorPrefix + message("NOT_AT_ZERO"));
 			return;
 		}
-		try { delay = Integer.parseInt(args[1]); } catch (Exception e) {
-			sender.sendMessage(errorPrefix + message("WORLDBORDER_INVALID_INPUT").addAmount(args[1]));
-			return;
+		boolean first = true;
+		int bxs = map.getBoundsMin().getBlockX();
+		int bzs = map.getBoundsMin().getBlockZ();
+		int bxl = map.getBoundsMax().getBlockX();
+		int bzl = map.getBoundsMax().getBlockZ();
+		if (bxs != 0 && bzs != 0 && bxl != 0 && bzl != 0) {
+			bxs = bzs = bxl = bzl = 0;
 		}
-		try { change = Integer.parseInt(args[2]); } catch (Exception e) {
-			sender.sendMessage(errorPrefix + message("WORLDBORDER_INVALID_INPUT").addAmount(args[2]));
-			return;
+		if (bxl == 0) {
+			bxl = sender.getLocation().getBlockX();
+		} else if (map.getBoundsMax().getX() < sender.getLocation().getBlockX()) {
+			first = false;
+			bxs = bxl;
+			bxl = sender.getLocation().getBlockX();
+		} else {
+			first = false;
+			bxs = sender.getLocation().getBlockX();
 		}
-		if (num < 100) {
-			sender.sendMessage(errorPrefix + message("WORLDBORDER_MIN_SIZE"));
-			return;
+		if (bzl == 0) {
+			bzl = sender.getLocation().getBlockZ();
+		} else if (map.getBoundsMax().getZ() < sender.getLocation().getBlockZ()) {
+			first = false;
+			bzs = bzl;
+			bzl = sender.getLocation().getBlockZ();
+		} else {
+			first = false;
+			bzs = sender.getLocation().getBlockZ();
 		}
-		if (change < 1) {
-			sender.sendMessage(errorPrefix + message("WORLDBORDER_CHANGE_SIZE"));
-			return;
-		}
-		map.setWorldBorderData(
-				sender.getLocation().getBlockX(),
-				sender.getLocation().getBlockZ(),
-				num,
-				delay,
-				change
-		);
+		map.setBoundMin(bxs, bzs);
+		map.setBoundMax(bxl, bzl);
 		Maps.setMap(map.getName(), map);
-		sender.sendMessage(messagePrefix + message("WORLDBORDER_ENABLE").addAmount(num).addAmount(delay));
-		map.getWorldBorder().resetWorldBorder();
+		sender.sendMessage(messagePrefix + message("BOUNDS").addAmount(first ? 1 : 2));
 	}
 
 	public String getLabel() {
-		return "setBorder";
+		return "bounds";
 	}
 	
 	public String getUsage() {
-		return "<map> <*size> <*delay> <*move>";
+		return "<map>";
 	}
 
 	public String getDescription() {
-		return "Sets worldboarder's center location, size in blocks, and delay in minutes per shrink. Add no arguments to disable.";
+		return "Sets the map bounds for the game.";
 	}
 
 	public List<String> autoComplete(String parameter) {
 		if(parameter != null && parameter.equals("map")) {
 			return Maps.getAllMaps().stream().map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
 		}
-		return Collections.singletonList(parameter);
+		return null;
 	}
 
 }
