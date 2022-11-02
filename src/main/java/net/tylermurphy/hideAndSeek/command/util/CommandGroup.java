@@ -67,7 +67,7 @@ public class CommandGroup {
 				player.sendMessage(errorPrefix + message("COMMAND_NOT_ALLOWED"));
 			} else {
 				player.sendMessage(
-						String.format("%s%sHide and Seek %s(%s1.7.0 ALPHA%s)\n", ChatColor.AQUA, ChatColor.BOLD, ChatColor.GRAY,ChatColor.WHITE,ChatColor.GRAY) +
+						String.format("%s%sHide and Seek %s(%s1.7.0 BETA%s)\n", ChatColor.AQUA, ChatColor.BOLD, ChatColor.GRAY,ChatColor.WHITE,ChatColor.GRAY) +
 						String.format("%sAuthor: %s[KenshinEto]\n", ChatColor.GRAY, ChatColor.WHITE) +
 						String.format("%sHelp Command: %s/hs %shelp", ChatColor.GRAY, ChatColor.AQUA, ChatColor.WHITE)
 				);

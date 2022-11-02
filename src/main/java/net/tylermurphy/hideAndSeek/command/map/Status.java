@@ -41,30 +41,32 @@ public class Status extends Command {
 			sender.sendMessage(errorPrefix + message("INVALID_MAP"));
 			return;
 		}
-		if (map.getSpawn().getBlockX() == 0 && map.getSpawn().getBlockY() == 0 && map.getSpawn().getBlockZ() == 0 || !Map.worldExists(map.getLobbyName())) {
+		if (map.getSpawn().getBlockX() == 0 && map.getSpawn().getBlockY() == 0 && map.getSpawn().getBlockZ() == 0 || Map.worldDoesntExist(map.getLobbyName())) {
 			msg = msg + "\n" + message("SETUP_GAME");
 			count++;
 		}
-		if (map.getLobby().getBlockX() == 0 && map.getLobby().getBlockY() == 0 && map.getLobby().getBlockZ() == 0 || !Map.worldExists(map.getLobbyName())) {
+		if (map.getLobby().getBlockX() == 0 && map.getLobby().getBlockY() == 0 && map.getLobby().getBlockZ() == 0 || Map.worldDoesntExist(map.getLobbyName())) {
 			msg = msg + "\n" + message("SETUP_LOBBY");
 			count++;
 		}
-		if (map.getSeekerLobby().getBlockX() == 0 && map.getSeekerLobby().getBlockY() == 0 && map.getSeekerLobby().getBlockZ() == 0 || !Map.worldExists(map.getSeekerLobbyName())) {
+		if (map.getSeekerLobby().getBlockX() == 0 && map.getSeekerLobby().getBlockY() == 0 && map.getSeekerLobby().getBlockZ() == 0 || Map.worldDoesntExist(map.getSeekerLobbyName())) {
 			msg = msg + "\n" + message("SETUP_SEEKER_LOBBY");
 			count++;
 		}
-		if (exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0 || !Map.worldExists(exitWorld)) {
+		if (exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0 || Map.worldDoesntExist(exitWorld)) {
 			msg = msg + "\n" + message("SETUP_EXIT");
 			count++;
 		}
-		if (map.getBoundsMin().getBlockX() == 0 || map.getBoundsMin().getBlockZ() == 0 ||
-			map.getBoundsMax().getBlockX() == 0 || map.getBoundsMax().getBlockX() == 0) {
+		if (map.isBoundsNotSetup()) {
 			msg = msg + "\n" + message("SETUP_BOUNDS");
 			count++;
 		}
-		if (mapSaveEnabled && !Map.worldExists(map.getGameSpawnName())) {
+		if (mapSaveEnabled && Map.worldDoesntExist(map.getGameSpawnName())) {
 			msg = msg + "\n" + message("SETUP_SAVEMAP");
 			count++;
+		}
+		if (map.isBlockHuntEnabled() && map.getBlockHunt().isEmpty()) {
+			msg = msg + "\n" + message("SETUP_BLOCKHUNT");
 		}
 		if (count < 1) {
 			sender.sendMessage(messagePrefix + message("SETUP_COMPLETE"));

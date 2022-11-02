@@ -330,7 +330,7 @@ public class Game {
 	}
 
 	public boolean checkCurrentMap() {
-		if(currentMap != null) return false;
+		if(currentMap != null && !currentMap.isNotSetup()) return false;
 		this.currentMap = Maps.getRandomMap();
 		return this.currentMap == null;
 	}

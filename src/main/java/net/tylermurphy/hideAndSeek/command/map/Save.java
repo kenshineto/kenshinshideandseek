@@ -56,6 +56,10 @@ public class Save extends Command {
 			sender.sendMessage(errorPrefix + message("ERROR_GAME_SPAWN"));
 			return;
 		}
+		if (map.isBoundsNotSetup()) {
+			sender.sendMessage(errorPrefix + message("ERROR_MAP_BOUNDS"));
+			return;
+		}
 		sender.sendMessage(messagePrefix + message("MAPSAVE_START"));
 		sender.sendMessage(warningPrefix + message("MAPSAVE_WARNING"));
 		World world = map.getSpawn().getWorld();

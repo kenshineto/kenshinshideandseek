@@ -137,16 +137,16 @@ public class Config {
 		announceMessagesToNonPlayers = config.getBoolean("announceMessagesToNonPlayers");
 
 		//Prefix
-		char SYMBOLE = '\u00A7';
-		String SYMBOLE_STRING = String.valueOf(SYMBOLE);
+		char SYMBOL = '\u00A7';
+		String SYMBOL_STRING = String.valueOf(SYMBOL);
 
-		messagePrefix = config.getString("prefix.default").replace("&", SYMBOLE_STRING);
-		errorPrefix = config.getString("prefix.error").replace("&", SYMBOLE_STRING);
-		tauntPrefix = config.getString("prefix.taunt").replace("&", SYMBOLE_STRING);
-		worldBorderPrefix = config.getString("prefix.border").replace("&", SYMBOLE_STRING);
-		abortPrefix = config.getString("prefix.abort").replace("&", SYMBOLE_STRING);
-		gameOverPrefix = config.getString("prefix.gameover").replace("&", SYMBOLE_STRING);
-		warningPrefix = config.getString("prefix.warning").replace("&", SYMBOLE_STRING);
+		messagePrefix = config.getString("prefix.default").replace("&", SYMBOL_STRING);
+		errorPrefix = config.getString("prefix.error").replace("&", SYMBOL_STRING);
+		tauntPrefix = config.getString("prefix.taunt").replace("&", SYMBOL_STRING);
+		worldBorderPrefix = config.getString("prefix.border").replace("&", SYMBOL_STRING);
+		abortPrefix = config.getString("prefix.abort").replace("&", SYMBOL_STRING);
+		gameOverPrefix = config.getString("prefix.gameover").replace("&", SYMBOL_STRING);
+		warningPrefix = config.getString("prefix.warning").replace("&", SYMBOL_STRING);
 
 		// Locations
 		exitPosition = new Location(
@@ -211,8 +211,7 @@ public class Config {
 		try {
 			countdownDisplay = CountdownDisplay.valueOf(config.getString("hideCountdownDisplay"));
 		} catch (IllegalArgumentException e) {
-			countdownDisplay = CountdownDisplay.CHAT;
-			Main.getInstance().getLogger().warning("hideCountdownDisplay: "+config.getString("hideCountdownDisplay")+" is not a valid configuration option!");
+			throw new RuntimeException("hideCountdownDisplay: "+config.getString("hideCountdownDisplay")+", is not a valid configuration option!");
 		}
 		blockedInteracts = new ArrayList<>();
 		List<String> tempInteracts = config.getStringList("blockedInteracts");
@@ -255,8 +254,7 @@ public class Config {
 
 		databaseType = config.getString("databaseType").toUpperCase();
 		if(!databaseType.equals("SQLITE") && !databaseType.equals("MYSQL")){
-			Main.getInstance().getLogger().warning("databaseType: "+databaseType+" is not a valid configuration option!");
-			databaseType = "SQLITE";
+			throw new RuntimeException("databaseType: "+databaseType+" is not a valid configuration option!");
 		}
 
 		delayedRespawn = config.getBoolean("delayedRespawn.enabled");

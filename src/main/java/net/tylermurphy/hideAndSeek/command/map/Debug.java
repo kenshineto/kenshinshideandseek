@@ -74,20 +74,12 @@ public class Debug extends Command {
                 player.setHealth(0.1);
             }
         }));
-        debugMenu.setItem(6, createOption(functions, 6, Material.ENDER_PEARL, "&d&lTeleport: &fGame spawn", 1, player -> {
-            if(mapSaveEnabled) {
-                if(map.getGameSpawn().getWorld() == null) map.getWorldLoader().loadMap();
-            }
-            player.teleport(map.getGameSpawn());
-        }));
-        debugMenu.setItem(7, createOption(functions, 7, Material.ENDER_PEARL, "&d&lTeleport: &fLobby", 2, player -> {
-            player.teleport(map.getLobby());
-        }));
-        debugMenu.setItem(8, createOption(functions, 8, Material.ENDER_PEARL, "&d&lTeleport: &fExit", 3,  player -> player.teleport(exitPosition)));
-        debugMenu.setItem(9, createOption(functions, 9, XMaterial.GLASS.parseMaterial(), "&dEnable Disguise", 1,  player -> {
-            PlayerLoader.openBlockHuntPicker(player, map);
-        }));
-        debugMenu.setItem(10, createOption(functions, 10, XMaterial.PLAYER_HEAD.parseMaterial(), "&dDisable Disguise", 1, player -> Main.getInstance().getDisguiser().reveal(player)));
+        if(map.isBlockHuntEnabled()) {
+            debugMenu.setItem(9, createOption(functions, 7, XMaterial.GLASS.parseMaterial(), "&dEnable Disguise", 1, player -> {
+                PlayerLoader.openBlockHuntPicker(player, map);
+            }));
+            debugMenu.setItem(10, createOption(functions, 8, XMaterial.PLAYER_HEAD.parseMaterial(), "&dDisable Disguise", 1, player -> Main.getInstance().getDisguiser().reveal(player)));
+        }
         debugMenuFunctions.put(sender, functions);
         return debugMenu;
     }

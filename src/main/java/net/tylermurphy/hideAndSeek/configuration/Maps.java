@@ -11,15 +11,19 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.cryptomorin.xseries.XMaterial;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class Maps {
 
     private static final HashMap<String, Map> MAPS = new HashMap<>();
 
+    @Nullable
     public static Map getMap(String name) {
         return MAPS.get(name);
     }
 
+    @Nullable
     public static Map getRandomMap() {
         Optional<Map> map;
         if(MAPS.values().size() > 0) {
@@ -45,6 +49,7 @@ public class Maps {
         return status;
     }
 
+    @NotNull
     public static Collection<Map> getAllMaps() {
         return MAPS.values();
     }
@@ -102,7 +107,7 @@ public class Maps {
     private static Location setSpawn(ConfigurationSection data, String spawn) {
         String worldName = data.getString("spawns."+spawn+".world");
         if(worldName == null) return new Location(null, 0, 0, 0);
-        if(!Map.worldExists(worldName)) return new Location(null, 0, 0, 0);
+        if(Map.worldDoesntExist(worldName)) return new Location(null, 0, 0, 0);
         World world = Bukkit.getWorld(worldName);
         double x = data.getDouble("spawns."+spawn+".x");
         double y = data.getDouble("spawns."+spawn+".y");
@@ -141,7 +146,7 @@ public class Maps {
 
     private static void saveSpawn(ConfigurationSection data, Location spawn, String name, Map map) {
         String worldName = getWorldName(name, map);
-        if(worldName == null || !Map.worldExists(worldName)) {
+        if(worldName == null || Map.worldDoesntExist(worldName)) {
             data.set("spawns." + name + ".world", "world");
         } else {
             data.set("spawns." + name + ".world", worldName);

@@ -344,6 +344,8 @@ public class ConfigManager {
     private String convert(Object o) {
         if(o instanceof String) {
             return "\"" + o + "\"";
+        } else if (o instanceof Boolean) {
+            return (boolean)o ? "true" : "false";
         }
         return o.toString();
     }

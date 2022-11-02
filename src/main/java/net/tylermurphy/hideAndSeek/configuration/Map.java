@@ -6,10 +6,10 @@ import java.util.List;
 
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.events.Border;
-import net.tylermurphy.hideAndSeek.world.VoidGenerator;
 import net.tylermurphy.hideAndSeek.world.WorldLoader;
 import org.bukkit.*;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
@@ -118,6 +118,7 @@ public class Map {
     this.zBoundMax = z;
   }
 
+  @NotNull
   public Location getGameSpawn() {
     if(mapSaveEnabled) {
       return new Location(
@@ -131,6 +132,7 @@ public class Map {
     }
   }
 
+  @NotNull
   public String getGameSpawnName() {
     if(mapSaveEnabled)
       return "hs_"+ spawnWorldName;
@@ -138,30 +140,37 @@ public class Map {
       return spawnWorldName;
   }
 
+  @NotNull
   public Location getSpawn() {
     return spawnPosition;
   }
 
+  @NotNull
   public String getSpawnName() {
     return spawnWorldName;
   }
 
+  @NotNull
   public Location getLobby() {
     return lobbyPosition;
   }
 
+  @NotNull
   public String getLobbyName() {
     return lobbyWorldName;
   }
 
+  @NotNull
   public Location getSeekerLobby() {
     return seekerLobbyPosition;
   }
 
+  @NotNull
   public String getSeekerLobbyName() {
     return seekerLobbyWorldName;
   }
 
+  @NotNull
   public Location getGameSeekerLobby() {
     if(mapSaveEnabled) {
       return new Location(
@@ -179,6 +188,7 @@ public class Map {
     return worldBorderSize > 0;
   }
 
+  @NotNull
   public Vector getWorldBorderPos() {
     return new Vector(
       xWorldBorder,
@@ -187,6 +197,7 @@ public class Map {
     );
   }
 
+  @NotNull
   public Vector getWorldBorderData() {
     return new Vector(
       worldBorderSize,
@@ -195,6 +206,7 @@ public class Map {
     );
   }
 
+  @NotNull
   public Border getWorldBorder() {
     return worldBorder;
   }
@@ -203,10 +215,12 @@ public class Map {
     return blockhunt;
   }
 
+  @NotNull
   public List<Material> getBlockHunt() {
     return blockhuntBlocks;
   }
 
+  @NotNull
   public Vector getBoundsMin() {
     return new Vector(
       xBoundMin,
@@ -215,6 +229,7 @@ public class Map {
     );
   }
 
+  @NotNull
   public Vector getBoundsMax() {
     return new Vector(
       xBoundMax,
@@ -223,20 +238,23 @@ public class Map {
     );
   }
 
+  @NotNull
   public String getName() {
     return name;
   }
 
+  @NotNull
   public WorldLoader getWorldLoader() {
     return worldLoader;
   }
 
   public boolean isNotSetup() {
-    if (spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0 || !Map.worldExists(spawnWorldName)) return true;
-    if (lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0 || !Map.worldExists(lobbyWorldName)) return true;
-    if (exitPosition == null || exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0 || !Map.worldExists(exitWorld) ) return true;
-    if (seekerLobbyPosition.getBlockX() == 0 && seekerLobbyPosition.getBlockY() == 0 && seekerLobbyPosition.getBlockZ() == 0 || !Map.worldExists(seekerLobbyWorldName)) return true;
-    if (mapSaveEnabled && !Map.worldExists(getGameSpawnName())) return true;
+    if (spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0 || Map.worldDoesntExist(spawnWorldName)) return true;
+    if (lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0 || Map.worldDoesntExist(lobbyWorldName)) return true;
+    if (exitPosition == null || exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0 || Map.worldDoesntExist(exitWorld)) return true;
+    if (seekerLobbyPosition.getBlockX() == 0 && seekerLobbyPosition.getBlockY() == 0 && seekerLobbyPosition.getBlockZ() == 0 || Map.worldDoesntExist(seekerLobbyWorldName)) return true;
+    if (mapSaveEnabled && Map.worldDoesntExist(getGameSpawnName())) return true;
+    if (blockhunt && blockhuntBlocks.isEmpty()) return true;
     if(isWorldBorderEnabled() &&
         new Vector(spawnPosition.getX(), 0, spawnPosition.getZ()).distance(new Vector(xWorldBorder, 0, zWorldBorder)) > 100) return true;
     return xBoundMin == 0 || zBoundMin == 0 || xBoundMax == 0 || zBoundMax == 0;
@@ -246,9 +264,13 @@ public class Map {
     return spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0;
   }
 
-  public static boolean worldExists(String worldName) {
+  public boolean isBoundsNotSetup() {
+    return xBoundMin == 0 || zBoundMin == 0 || xBoundMax == 0 || zBoundMax == 0;
+  }
+
+  public static boolean worldDoesntExist(String worldName) {
     File destination = new File(Main.getInstance().getWorldContainer()+File.separator+worldName);
-    return destination.isDirectory();
+    return !destination.isDirectory();
   }
 
 }

@@ -82,12 +82,13 @@ public class InventoryHandler implements Listener {
         String mapName;
         if(Main.getInstance().supports(14)){
             test = event.getView().getTitle().startsWith("Select a Block: ");
+            if(!test) return;
             mapName = event.getView().getTitle().substring("Select a Block: ".length());
         } else {
             test = event.getInventory().getName().startsWith("Select a Block: ");
+            if(!test) return;
             mapName = event.getInventory().getName().substring("Select a Block: ".length());
         }
-        if(!test) return;
         event.setCancelled(true);
         Map map = Maps.getMap(mapName);
         if(map == null) return;
@@ -105,12 +106,13 @@ public class InventoryHandler implements Listener {
         String mapName;
         if(Main.getInstance().supports(14)){
             test = event.getView().getTitle().startsWith("Select a Block: ");
+            if(!test) return;
             mapName = event.getView().getTitle().substring("Select a Block: ".length());
         } else {
             test = event.getInventory().getName().startsWith("Select a Block: ");
+            if(!test) return;
             mapName = event.getInventory().getName().substring("Select a Block: ".length());
         }
-        if(!test) return;
         Map map = Maps.getMap(mapName);
         if(map == null) return;
         Material mat = map.getBlockHunt().get(0);

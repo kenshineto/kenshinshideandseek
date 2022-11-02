@@ -21,6 +21,7 @@ package net.tylermurphy.hideAndSeek;
 
 import net.tylermurphy.hideAndSeek.command.*;
 import net.tylermurphy.hideAndSeek.command.map.*;
+import net.tylermurphy.hideAndSeek.command.map.blockhunt.Enabled;
 import net.tylermurphy.hideAndSeek.command.map.set.*;
 import net.tylermurphy.hideAndSeek.configuration.*;
 import net.tylermurphy.hideAndSeek.database.Database;
@@ -87,6 +88,14 @@ public class Main extends JavaPlugin implements Listener {
 				new Start(),
 				new Stop(),
 				new CommandGroup("map",
+						new CommandGroup("blockhunt",
+								new CommandGroup("blocks",
+									new net.tylermurphy.hideAndSeek.command.map.blockhunt.blocks.Add(),
+									new net.tylermurphy.hideAndSeek.command.map.blockhunt.blocks.Remove(),
+									new net.tylermurphy.hideAndSeek.command.map.blockhunt.blocks.List()
+								),
+								new Enabled()
+						),
 						new CommandGroup("set",
 								new Lobby(),
 								new Spawn(),
@@ -99,7 +108,8 @@ public class Main extends JavaPlugin implements Listener {
 						new List(),
 						new Status(),
 						new Save(),
-						new Debug()
+						new Debug(),
+						new GoTo()
 				),
 				new SetExitLocation(),
 				new Top(),
