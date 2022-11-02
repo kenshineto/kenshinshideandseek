@@ -75,7 +75,7 @@ public class WorldLoader {
     public String save() {
 		World world = Bukkit.getServer().getWorld(map.getSpawnName());
 		if(world == null){
-			return errorPrefix + "Invalid world to save: " + map.getSpawnName();
+			return errorPrefix + message("MAPSAVE_INVALID").addAmount(map.getSpawnName());
 		}
     	File current = new File(Main.getInstance().getWorldContainer()+File.separator+ map.getSpawnName());
     	if (current.exists()) {
@@ -94,7 +94,7 @@ public class WorldLoader {
 				}
 
 				if (!temp_destination.renameTo(destination)) {
-					return errorPrefix + "Failed to rename directory: " + temp_destination.getPath();
+					return errorPrefix + message("MAPSAVE_FAIL_DIR").addAmount(temp_destination.getPath());
 				}
 			} catch(IOException e) {
 				e.printStackTrace();

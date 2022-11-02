@@ -57,7 +57,7 @@ public class Start extends Command {
 		if (args.length < 1) {
 			Optional<Player> rand = Main.getInstance().getBoard().getPlayers().stream().skip(new Random().nextInt(Main.getInstance().getBoard().size())).findFirst();
 			if (!rand.isPresent()) {
-				Main.getInstance().getLogger().warning("Failed to select random seeker.");
+				sender.sendMessage(errorPrefix + message("START_FAILED_SEEKER"));
 				return;
 			}
 			seekerName = rand.get().getName();
@@ -82,7 +82,7 @@ public class Start extends Command {
 	}
 	
 	public String getUsage() {
-		return "<player>";
+		return "<*player>";
 	}
 
 	public String getDescription() {

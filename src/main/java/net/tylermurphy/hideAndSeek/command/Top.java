@@ -76,7 +76,7 @@ public class Top extends Command {
     }
 
     public String getUsage() {
-        return "<page>";
+        return "<*page>";
     }
 
     public String getDescription() {

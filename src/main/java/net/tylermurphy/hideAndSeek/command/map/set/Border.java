@@ -17,7 +17,7 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.command.map;
+package net.tylermurphy.hideAndSeek.command.map.set;
 
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.util.Command;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class SetBorder extends Command {
+public class Border extends Command {
 
 	public void execute(Player sender, String[] args) {
 		if (Main.getInstance().getGame().getStatus() != Status.STANDBY) {
@@ -86,7 +86,7 @@ public class SetBorder extends Command {
 				change
 		);
 		Maps.setMap(map.getName(), map);
-		sender.sendMessage(messagePrefix + message("WORLDBORDER_ENABLE").addAmount(num).addAmount(delay));
+		sender.sendMessage(messagePrefix + message("WORLDBORDER_ENABLE").addAmount(num).addAmount(delay).addAmount(change));
 		map.getWorldBorder().resetWorldBorder();
 	}
 

@@ -31,7 +31,7 @@ public class Localization {
 	public static final Map<String,LocalizationString> DEFAULT_LOCAL = new HashMap<>();
 
 	private static final Map<String,String[][]> CHANGES = new HashMap<String,String[][]>() {{
-		put("en-US", new String[][]{{"WORLDBORDER_DECREASING"},{"START","TAUNTED"}});
+		put("en-US", new String[][]{{"WORLDBORDER_DECREASING"},{"START","TAUNTED"},{"GAME_SETUP"}});
 		put("de-DE", new String[][]{{},{"TAUNTED"}});
 	}};
 

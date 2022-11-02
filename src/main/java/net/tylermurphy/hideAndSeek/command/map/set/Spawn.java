@@ -17,11 +17,11 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.command.location;
+package net.tylermurphy.hideAndSeek.command.map.set;
 
 import net.tylermurphy.hideAndSeek.command.util.Command;
-import net.tylermurphy.hideAndSeek.command.location.util.LocationUtils;
-import net.tylermurphy.hideAndSeek.command.location.util.Locations;
+import net.tylermurphy.hideAndSeek.command.location.LocationUtils;
+import net.tylermurphy.hideAndSeek.command.location.Locations;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class SetSpawnLocation extends Command {
+public class Spawn extends Command {
 
 	public void execute(Player sender, String[] args) {
 		LocationUtils.setLocation(sender, Locations.GAME, args[0], map -> {

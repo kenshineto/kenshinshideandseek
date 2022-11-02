@@ -20,7 +20,8 @@
 package net.tylermurphy.hideAndSeek.command.util;
 
 import net.tylermurphy.hideAndSeek.command.*;
-import net.tylermurphy.hideAndSeek.command.map.SaveMap;
+import net.tylermurphy.hideAndSeek.command.map.Save;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -38,7 +39,7 @@ public class CommandGroup {
 
 	public CommandGroup(String label, Object... data) {
 		this.label = label;
-		this.commandRegister = new HashMap<>();
+		this.commandRegister = new LinkedHashMap<>();
 		for(Object o : data) registerCommand(o);
 	}
 
@@ -65,11 +66,15 @@ public class CommandGroup {
 			if (permissionsRequired && !player.hasPermission("hs.about")) {
 				player.sendMessage(errorPrefix + message("COMMAND_NOT_ALLOWED"));
 			} else {
-				new About().execute(player, null);
+				player.sendMessage(
+						String.format("%s%sHide and Seek %s(%s1.7.0 ALPHA%s)\n", ChatColor.AQUA, ChatColor.BOLD, ChatColor.GRAY,ChatColor.WHITE,ChatColor.GRAY) +
+						String.format("%sAuthor: %s[KenshinEto]\n", ChatColor.GRAY, ChatColor.WHITE) +
+						String.format("%sHelp Command: %s/hs %shelp", ChatColor.GRAY, ChatColor.AQUA, ChatColor.WHITE)
+				);
 			}
 		} else {
 			String invoke = args[0].toLowerCase();
-			if (!invoke.equals("about") && !invoke.equals("help") && SaveMap.runningBackup) {
+			if (!invoke.equals("about") && !invoke.equals("help") && Save.runningBackup) {
 				player.sendMessage(errorPrefix + message("MAPSAVE_INPROGRESS"));
 			} else if (permissionsRequired && !player.hasPermission(permission+"."+invoke)) {
 				player.sendMessage(errorPrefix + message("COMMAND_NOT_ALLOWED"));

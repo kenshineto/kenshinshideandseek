@@ -17,37 +17,41 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.command;
+package net.tylermurphy.hideAndSeek.command.map.set;
 
 import net.tylermurphy.hideAndSeek.command.util.Command;
-import org.bukkit.ChatColor;
+import net.tylermurphy.hideAndSeek.command.location.LocationUtils;
+import net.tylermurphy.hideAndSeek.command.location.Locations;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class About extends Command {
+public class Lobby extends Command {
 
 	public void execute(Player sender, String[] args) {
-		sender.sendMessage(
-				String.format("%s%sHide and Seek %s(%s1.7.0 ALPHA%s)\n", ChatColor.AQUA, ChatColor.BOLD, ChatColor.GRAY,ChatColor.WHITE,ChatColor.GRAY) +
-				String.format("%sAuthor: %s[KenshinEto]\n", ChatColor.GRAY, ChatColor.WHITE) + 
-				String.format("%sHelp Command: %s/hs %shelp", ChatColor.GRAY, ChatColor.AQUA, ChatColor.WHITE)
-			);
+		LocationUtils.setLocation(sender, Locations.LOBBY, args[0], map -> {
+			map.setLobby(sender.getLocation());
+		});
 	}
 
 	public String getLabel() {
-		return "about";
+		return "lobby";
 	}
-
+	
 	public String getUsage() {
-		return "";
+		return "<map>";
 	}
 
 	public String getDescription() {
-		return "Get information about the plugin";
+		return "Sets hide and seeks lobby location to current position";
 	}
 
 	public List<String> autoComplete(String parameter) {
+		if(parameter != null && parameter.equals("map")) {
+			return Maps.getAllMaps().stream().map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
+		}
 		return null;
 	}
 

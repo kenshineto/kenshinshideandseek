@@ -1,7 +1,6 @@
 package net.tylermurphy.hideAndSeek.game.listener;
 
 import static com.comphenix.protocol.PacketType.Play.Client.*;
-import static net.tylermurphy.hideAndSeek.configuration.Config.solidifyTime;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -42,7 +41,7 @@ public class DisguiseHandler implements Listener {
             if(lastLocation.getWorld() != currentLocation.getWorld()) return;
             double distance = lastLocation.distance(currentLocation);
             disguise.setSolidify(distance < .1);
-        }, solidifyTime);
+        }, 20 * 3);
         if(event.getFrom().distance(event.getTo()) > .1)
             disguise.setSolidify(false);
     }

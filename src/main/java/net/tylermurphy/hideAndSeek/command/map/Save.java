@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class SaveMap extends Command {
+public class Save extends Command {
 
 	public static boolean runningBackup = false;
 	
@@ -60,7 +60,8 @@ public class SaveMap extends Command {
 		sender.sendMessage(warningPrefix + message("MAPSAVE_WARNING"));
 		World world = map.getSpawn().getWorld();
 		if (world == null) {
-			throw new RuntimeException("Unable to get spawn world");
+			sender.sendMessage(warningPrefix + message("MAPSAVE_FAIL_WORLD"));
+			return;
 		}
 		world.save();
 		BukkitRunnable runnable = new BukkitRunnable() {

@@ -11,42 +11,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
+import static net.tylermurphy.hideAndSeek.configuration.Config.messagePrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class SetMap extends Command {
+public class Remove extends Command {
 
     public void execute(Player sender, String[] args) {
-
         if (Main.getInstance().getGame().getStatus() != Status.STANDBY) {
             sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
             return;
         }
-
         Map map = Maps.getMap(args[0]);
         if(map == null) {
             sender.sendMessage(errorPrefix + message("INVALID_MAP"));
-            return;
+        } else if(!Maps.removeMap(args[0])){
+            sender.sendMessage(errorPrefix + message("MAP_FAIL_DELETE").addAmount(args[0]));
+        } else {
+            sender.sendMessage(messagePrefix + message("MAP_DELETED").addAmount(args[0]));
         }
-
-        if(map.isNotSetup()){
-            sender.sendMessage(errorPrefix + message("MAP_NOT_SETUP"));
-            return;
-        }
-
-        if (!Main.getInstance().getBoard().contains(sender)) {
-            sender.sendMessage(errorPrefix + message("GAME_NOT_INGAME"));
-            return;
-        }
-
-        Main.getInstance().getGame().setCurrentMap(map);
-        for(Player player : Main.getInstance().getBoard().getPlayers()) {
-            player.teleport(map.getLobby());
-        }
-
     }
 
     public String getLabel() {
-        return "goto";
+        return "remove";
     }
 
     public String getUsage() {
@@ -54,12 +40,12 @@ public class SetMap extends Command {
     }
 
     public String getDescription() {
-        return "Set the current lobby to another map";
+        return "Remove a map from the plugin!";
     }
 
     public List<String> autoComplete(String parameter) {
         if(parameter != null && parameter.equals("map")) {
-            return Maps.getAllMaps().stream().filter(map -> !map.isNotSetup()).map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
+            return Maps.getAllMaps().stream().map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
         }
         return null;
     }

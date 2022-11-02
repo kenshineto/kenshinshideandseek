@@ -93,6 +93,7 @@ public class ConfigManager {
         try {
             this.config.load(reader);
         } catch(InvalidConfigurationException e) {
+            Main.getInstance().getLogger().severe(e.getMessage());
             throw new RuntimeException("Invalid configuration in config file: "+file.getPath());
         } catch(IOException e) {
             throw new RuntimeException("Could not access file: "+file.getPath());
@@ -107,9 +108,10 @@ public class ConfigManager {
         try {
             this.defaultConfig.load(default_reader);
         } catch(InvalidConfigurationException e) {
-            throw new RuntimeException("Invalid configuration in config file: "+file.getPath());
+            Main.getInstance().getLogger().severe(e.getMessage());
+            throw new RuntimeException("Invalid configuration in internal config file: "+defaultFilename);
         } catch(IOException e) {
-            throw new RuntimeException("Could not access file: "+file.getPath());
+            throw new RuntimeException("Could not access internal file: "+defaultFilename);
         }
 
         try{
@@ -240,69 +242,110 @@ public class ConfigManager {
 
     public void saveConfig() {
         try {
+            // open config file
             InputStream is = Main.getInstance().getResource(defaultFilename);
+            // if failed error
             if (is == null) {
                 throw new RuntimeException("Could not create input stream for "+defaultFilename);
             }
+            // manually read in each character to preserve string data
             StringBuilder textBuilder = new StringBuilder(new String("".getBytes(), StandardCharsets.UTF_8));
             Reader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             int c;
-            while((c = reader.read()) != -1) {
+            while((c = reader.read()) != -1)
                 textBuilder.append((char) c);
-            }
-            String yamlString = new String(textBuilder.toString().getBytes(), StandardCharsets.UTF_8);
-            Map<String, Object> temp = config.getValues(true);
-            for(Map.Entry<String, Object> entry: temp.entrySet()) {
-                if (entry.getValue() instanceof Integer || entry.getValue() instanceof Double || entry.getValue() instanceof String || entry.getValue() instanceof Boolean || entry.getValue() instanceof List) {
-                    String[] parts = entry.getKey().split("\\.");
-                    int index = 0;
-                    int i = 0;
-                    for(String part : parts) {
-                        if (i == 0) {
-                            index = yamlString.indexOf(part+":", index);
-                        } else {
-                            index = yamlString.indexOf(" " + part+":", index);
-                            index++;
-                        }
-                        i++;
-                        if (index == -1) break;
-                    }
-                    if (index < 10)  continue;
-                    int start = yamlString.indexOf(' ', index);
-                    int end = yamlString.indexOf('\n', index);
-                    if (end == -1) end = yamlString.length();
-                    StringBuilder replace = new StringBuilder(new String("".getBytes(), StandardCharsets.UTF_8));
-                    if (entry.getValue() instanceof List) {
-                        if (((List<?>) entry.getValue()).isEmpty()) {
-                            replace.append("[]");
-                        } else {
-                            replace.append("[");
-                            for (Object o : (List<?>) entry.getValue()) {
-                                replace.append(o.toString()).append(", ");
-                            }
-                            replace = new StringBuilder(replace.substring(0, replace.length() - 2));
-                            replace.append("]");
-                        }
+            // store yaml file into a string
+            String yaml = new String(textBuilder.toString().getBytes(), StandardCharsets.UTF_8);
+            // get config values
+            Map<String, Object> data = config.getValues(true);
+            // write each stored config value into the yaml string
+            for(Map.Entry<String, Object> entry: data.entrySet()) {
+                // if type isn't supported, skip
+                if(!isSupported(entry.getValue())) continue;
+                // get index of key in yaml string
+                int index = getIndex(yaml, entry.getKey());
+                // if index not found, skip
+                if (index < 10)  continue;
+                // get start and end of the value
+                int start = yaml.indexOf(' ', index) + 1;
+                int end = yaml.indexOf('\n', index);
+                // if end not found, set it to the end of the file
+                if (end == -1) end = yaml.length();
+                // create new replace sting
+                StringBuilder replace = new StringBuilder(new String("".getBytes(), StandardCharsets.UTF_8));
+                // get value
+                Object value = entry.getValue();
+                // if the value is a list,
+                if (value instanceof List) {
+                    end = yaml.indexOf(']', start) + 1;
+                    List<?> list = (List<?>) entry.getValue();
+                    if (list.isEmpty()) {
+                        // if list is empty, put an empty list
+                        replace.append("[]");
                     } else {
-                        replace.append(entry.getValue());
+                        // if list has values, populate values into the string
+                        // get gap before key
+                        int gap = whitespaceBefore(yaml, index);
+                        String space = new String(new char[gap]).replace('\0', ' ');
+                        replace.append("[\n");
+                        for (int i = 0; i < list.size(); i++) {
+                            replace.append(space).append("  ").append(convert(list.get(i)));
+                            if(i != list.size() -1) replace.append(",\n");
+                        }
+                        replace.append('\n').append(space).append("]");
                     }
-                    if (entry.getValue() instanceof String) {
-                        replace.append("\"");
-                        replace.reverse();
-                        replace.append("\"");
-                        replace.reverse();
-                    }
-                    StringBuilder builder = new StringBuilder(yamlString);
-                    builder.replace(start+1, end, replace.toString());
-                    yamlString = builder.toString();
+                // otherwise just put the value directly
+                } else {
+                    replace.append(convert(value));
                 }
+                // replace the new value in the yaml string
+                StringBuilder builder = new StringBuilder(yaml);
+                builder.replace(start, end, replace.toString());
+                yaml = builder.toString();
             }
+
+            // write yaml string to file
             Writer fileWriter = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8));
-            fileWriter.write(yamlString);
+            fileWriter.write(yaml);
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private int getIndex(String yaml, String key) {
+        String[] parts = key.split("\\.");
+        int index = 0;
+        for(String part : parts) {
+            if (index == 0) {
+                index = yaml.indexOf(part + ":", index);
+            } else {
+                index = yaml.indexOf(" " + part + ":", index) + 1;
+            }
+            if (index == -1) break;
+        }
+        return index;
+    }
+
+    public boolean isSupported(Object o) {
+        return o instanceof Integer ||
+                o instanceof Double ||
+                o instanceof String ||
+                o instanceof Boolean ||
+                o instanceof List;
+    }
+
+    public int whitespaceBefore(String yaml, int index) {
+        int count = 0;
+        for(int i = index - 1; yaml.charAt(i) == ' '; i--) count++;
+        return count;
+    }
+
+    private String convert(Object o) {
+        if(o instanceof String) {
+            return "\"" + o + "\"";
+        }
+        return o.toString();
     }
 
 }

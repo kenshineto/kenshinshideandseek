@@ -19,11 +19,9 @@
 
 package net.tylermurphy.hideAndSeek.game.listener;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-
 import com.cryptomorin.xseries.XMaterial;
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.command.Debug;
+import net.tylermurphy.hideAndSeek.command.map.Debug;
 import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;

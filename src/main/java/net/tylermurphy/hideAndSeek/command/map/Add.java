@@ -7,14 +7,14 @@ import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Config.messagePrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class RemoveMap extends Command {
+public class Add extends Command {
 
     public void execute(Player sender, String[] args) {
         if (Main.getInstance().getGame().getStatus() != Status.STANDBY) {
@@ -22,30 +22,31 @@ public class RemoveMap extends Command {
             return;
         }
         Map map = Maps.getMap(args[0]);
-        if(map == null) {
-            sender.sendMessage(errorPrefix + message("INVALID_MAP"));
-        } else if(!Maps.removeMap(args[0])){
-            sender.sendMessage(errorPrefix + message("MAP_FAIL_DELETE").addAmount(args[0]));
+        if(map != null) {
+            sender.sendMessage(errorPrefix + message("MAP_ALREADY_EXISTS"));
+        } else if(!args[0].matches("[a-zA-Z0-9]*") || args[0].length() < 1) {
+            sender.sendMessage(errorPrefix + message("INVALID_MAP_NAME"));
         } else {
-            sender.sendMessage(messagePrefix + message("MAP_DELETED").addAmount(args[0]));
+            Maps.setMap(args[0], new Map(args[0]));
+            sender.sendMessage(messagePrefix + message("MAP_CREATED").addAmount(args[0]));
         }
     }
 
     public String getLabel() {
-        return "remove";
+        return "add";
     }
 
     public String getUsage() {
-        return "<map>";
+        return "<name>";
     }
 
     public String getDescription() {
-        return "Remove a map from the plugin!";
+        return "Add a map to the plugin!";
     }
 
     public List<String> autoComplete(String parameter) {
-        if(parameter != null && parameter.equals("map")) {
-            return Maps.getAllMaps().stream().map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
+        if(parameter != null && parameter.equals("name")) {
+            return Collections.singletonList("name");
         }
         return null;
     }

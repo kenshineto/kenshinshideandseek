@@ -33,6 +33,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Leaderboard.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Board {
@@ -218,7 +219,9 @@ public class Board {
             } else if (line.contains("{SEEKER%}")) {
                 board.setLine(String.valueOf(i), line.replace("{SEEKER%}", getSeekerPercent()+""));
             } else if (line.contains("{HIDER%}")) {
-                board.setLine(String.valueOf(i), line.replace("{HIDER%}", getHiderPercent()+""));
+                board.setLine(String.valueOf(i), line.replace("{HIDER%}", getHiderPercent() + ""));
+            } else if (line.contains("{MAP}")) {
+                board.setLine(String.valueOf(i), line.replace("{MAP}", getMapName() + ""));
             } else {
                 board.setLine(String.valueOf(i), line);
             }
@@ -226,6 +229,12 @@ public class Board {
         }
         board.display();
         customBoards.put(player.getUniqueId().toString(), board);
+    }
+
+    public String getMapName() {
+        net.tylermurphy.hideAndSeek.configuration.Map map = Main.getInstance().getGame().getCurrentMap();
+        if(map == null) return "Invalid";
+        else return map.getName();
     }
 
     public void createGameBoard(Player player) {
@@ -288,6 +297,8 @@ public class Board {
                     board.setLine(String.valueOf(i), line.replace("{#SEEKER}", getSeekers().size()+""));
                 } else if (line.contains("{#HIDER}")) {
                     board.setLine(String.valueOf(i), line.replace("{#HIDER}", getHiders().size()+""));
+                } else if (line.contains("{MAP}")) {
+                    board.setLine(String.valueOf(i), line.replace("{MAP}", getMapName() + ""));
                 } else {
                     board.setLine(String.valueOf(i), line);
                 }

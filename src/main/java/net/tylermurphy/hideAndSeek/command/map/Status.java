@@ -19,20 +19,18 @@
 
 package net.tylermurphy.hideAndSeek.command.map;
 
-import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.util.Command;
 import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import org.bukkit.entity.Player;
 
-import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Setup extends Command {
+public class Status extends Command {
 	
 	public void execute(Player sender, String[] args) {
 		
@@ -76,7 +74,7 @@ public class Setup extends Command {
 	}
 
 	public String getLabel() {
-		return "setup";
+		return "status";
 	}
 
 	public String getUsage() {

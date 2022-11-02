@@ -7,13 +7,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.List;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Config.messagePrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class ListMaps extends Command {
+public class List extends Command {
 
     public void execute(Player sender, String[] args) {
         Collection<Map> maps = Maps.getAllMaps();
@@ -40,7 +39,7 @@ public class ListMaps extends Command {
         return "List all maps in the plugin";
     }
 
-    public List<String> autoComplete(String parameter) {
+    public java.util.List<String> autoComplete(String parameter) {
         return null;
     }
 

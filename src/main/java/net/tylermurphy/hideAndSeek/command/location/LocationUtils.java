@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek.command.location.util;
+package net.tylermurphy.hideAndSeek.command.location;
 
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.configuration.Map;

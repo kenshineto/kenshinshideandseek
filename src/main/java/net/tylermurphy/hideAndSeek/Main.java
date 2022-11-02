@@ -20,15 +20,11 @@
 package net.tylermurphy.hideAndSeek;
 
 import net.tylermurphy.hideAndSeek.command.*;
-import net.tylermurphy.hideAndSeek.command.location.*;
 import net.tylermurphy.hideAndSeek.command.map.*;
-import net.tylermurphy.hideAndSeek.configuration.Config;
-import net.tylermurphy.hideAndSeek.configuration.Items;
-import net.tylermurphy.hideAndSeek.configuration.Localization;
-import net.tylermurphy.hideAndSeek.configuration.Maps;
+import net.tylermurphy.hideAndSeek.command.map.set.*;
+import net.tylermurphy.hideAndSeek.configuration.*;
 import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.game.*;
-import net.tylermurphy.hideAndSeek.game.util.Status;
 import net.tylermurphy.hideAndSeek.command.util.CommandGroup;
 import net.tylermurphy.hideAndSeek.game.listener.*;
 import net.tylermurphy.hideAndSeek.util.PAPIExpansion;
@@ -41,7 +37,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,10 +60,17 @@ public class Main extends JavaPlugin implements Listener {
 		Main.instance = this;
 		this.updateVersion();
 
-		Config.loadConfig();
-		Maps.loadMaps();
-		Localization.loadLocalization();
-		Items.loadItems();
+		try {
+			Config.loadConfig();
+			Maps.loadMaps();
+			Localization.loadLocalization();
+			Items.loadItems();
+			Leaderboard.loadLeaderboard();
+		} catch (Exception e) {
+			getLogger().severe(e.getMessage());
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
+		}
 
 		this.board = new Board();
 		this.database = new Database();
@@ -77,28 +79,27 @@ public class Main extends JavaPlugin implements Listener {
 		this.registerListeners();
 
 		this.commandGroup = new CommandGroup("hs",
-				new About(),
-				new Debug(),
 				new Help(),
 				new Reload(),
 				new Join(),
 				new Leave(),
+				new Send(),
 				new Start(),
 				new Stop(),
 				new CommandGroup("map",
 						new CommandGroup("set",
-								new SetLobbyLocation(),
-								new SetSpawnLocation(),
-								new SetSeekerLobbyLocation(),
-								new SetBorder(),
-								new SetBounds()
+								new Lobby(),
+								new Spawn(),
+								new SeekerLobby(),
+								new Border(),
+								new Bounds()
 						),
-						new AddMap(),
-						new RemoveMap(),
-						new ListMaps(),
-						new SetMap(),
-						new Setup(),
-						new SaveMap()
+						new Add(),
+						new Remove(),
+						new List(),
+						new Status(),
+						new Save(),
+						new Debug()
 				),
 				new SetExitLocation(),
 				new Top(),
@@ -120,20 +121,25 @@ public class Main extends JavaPlugin implements Listener {
 
 		version = 0;
 
-		board.getPlayers().forEach(player -> {
-			board.removeBoard(player);
-			PlayerLoader.unloadPlayer(player);
-			if(!Objects.equals(exitWorld, ""))
-				player.teleport(exitPosition);
-		});
+		if(board != null) {
+			board.getPlayers().forEach(player -> {
+				board.removeBoard(player);
+				PlayerLoader.unloadPlayer(player);
+				if (!Objects.equals(exitWorld, ""))
+					player.teleport(exitPosition);
+			});
+			board.cleanup();
+		}
+
+		if(disguiser != null) {
+			disguiser.cleanUp();
+		}
 
 		Bukkit.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
-		board.cleanup();
-		disguiser.cleanUp();
 	}
 
 	private void onTick() {
-		if(game.getStatus() == Status.ENDED) game = new Game(game.getCurrentMap(), board);
+		if(game.getStatus() == net.tylermurphy.hideAndSeek.game.util.Status.ENDED) game = new Game(game.getCurrentMap(), board);
 		game.onTick();
 		disguiser.check();
 	}
@@ -168,7 +174,7 @@ public class Main extends JavaPlugin implements Listener {
 		return commandGroup.handleCommand((Player)sender, "", args);
 	}
 	
-	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+	public java.util.List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
 		return commandGroup.handleTabComplete(sender, args);
 	}
 

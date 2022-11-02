@@ -17,11 +17,11 @@
  *
  */
 
-package net.tylermurphy.hideAndSeek.command.location;
+package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.command.util.Command;
-import net.tylermurphy.hideAndSeek.command.location.util.LocationUtils;
-import net.tylermurphy.hideAndSeek.command.location.util.Locations;
+import net.tylermurphy.hideAndSeek.command.location.LocationUtils;
+import net.tylermurphy.hideAndSeek.command.location.Locations;
 import org.bukkit.entity.Player;
 
 import java.util.List;

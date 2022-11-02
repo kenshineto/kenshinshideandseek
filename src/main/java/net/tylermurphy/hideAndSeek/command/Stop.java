@@ -34,7 +34,7 @@ public class Stop extends Command {
 
 	public void execute(Player sender, String[] args) {
 		if (Main.getInstance().getGame().checkCurrentMap()) {
-			sender.sendMessage(errorPrefix + "Game is not setup. Run /hs setup to see what you needed to do");
+			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
 		if (Main.getInstance().getGame().getStatus() == Status.STARTING || Main.getInstance().getGame().getStatus() == Status.PLAYING) {

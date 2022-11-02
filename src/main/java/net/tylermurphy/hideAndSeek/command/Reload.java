@@ -21,10 +21,7 @@ package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.util.Command;
-import net.tylermurphy.hideAndSeek.configuration.Config;
-import net.tylermurphy.hideAndSeek.configuration.Items;
-import net.tylermurphy.hideAndSeek.configuration.Localization;
-import net.tylermurphy.hideAndSeek.configuration.Maps;
+import net.tylermurphy.hideAndSeek.configuration.*;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
 
@@ -42,10 +39,18 @@ public class Reload extends Command {
 			sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
 			return;
 		}
-		Config.loadConfig();
-		Maps.loadMaps();
-		Localization.loadLocalization();
-		Items.loadItems();
+
+		try {
+			Config.loadConfig();
+			Maps.loadMaps();
+			Localization.loadLocalization();
+			Items.loadItems();
+			Leaderboard.loadLeaderboard();
+		} catch (Exception e) {
+			sender.sendMessage(errorPrefix + message("CONFIG_ERROR"));
+			return;
+		}
+
 		sender.sendMessage(messagePrefix + message("CONFIG_RELOAD"));
 	}
 

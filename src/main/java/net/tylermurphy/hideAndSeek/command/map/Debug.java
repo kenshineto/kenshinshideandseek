@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek.command;
+package net.tylermurphy.hideAndSeek.command.map;
 
 import com.cryptomorin.xseries.XMaterial;
 import net.tylermurphy.hideAndSeek.Main;

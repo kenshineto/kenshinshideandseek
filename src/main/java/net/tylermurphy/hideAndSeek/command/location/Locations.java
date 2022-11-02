@@ -1,4 +1,4 @@
-package net.tylermurphy.hideAndSeek.command.location.util;
+package net.tylermurphy.hideAndSeek.command.location;
 
 /**
  * @author bobby29831
