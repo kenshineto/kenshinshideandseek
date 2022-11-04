@@ -23,6 +23,7 @@ import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.util.Command;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class Stop extends Command {
 		return "Stops the game";
 	}
 
-	public List<String> autoComplete(String parameter) {
+	public List<String> autoComplete(@NotNull String parameter, @NotNull String typed) {
 		return null;
 	}
 

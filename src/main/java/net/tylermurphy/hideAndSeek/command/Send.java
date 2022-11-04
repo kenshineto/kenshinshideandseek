@@ -6,6 +6,7 @@ import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,8 +58,8 @@ public class Send extends Command {
         return "Set the current lobby to another map";
     }
 
-    public List<String> autoComplete(String parameter) {
-        if(parameter != null && parameter.equals("map")) {
+    public List<String> autoComplete(@NotNull String parameter, @NotNull String typed) {
+        if(parameter.equals("map")) {
             return Maps.getAllMaps().stream().filter(map -> !map.isNotSetup()).map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
         }
         return null;

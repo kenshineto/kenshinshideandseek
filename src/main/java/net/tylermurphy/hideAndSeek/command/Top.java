@@ -24,6 +24,7 @@ import net.tylermurphy.hideAndSeek.command.util.Command;
 import net.tylermurphy.hideAndSeek.database.util.PlayerInfo;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -83,7 +84,7 @@ public class Top extends Command {
         return "Gets the top players in the server.";
     }
 
-    public List<String> autoComplete(String parameter) {
+    public List<String> autoComplete(@NotNull String parameter, @NotNull String typed) {
         return Collections.singletonList(parameter);
     }
 

@@ -20,7 +20,7 @@
 package net.tylermurphy.hideAndSeek.command.util;
 
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -34,10 +34,6 @@ public abstract class Command {
 
 	public abstract String getDescription();
 
-	public abstract List<String> autoComplete(@Nullable String parameter);
+	public abstract List<String> autoComplete(@NotNull String parameter, @NotNull String typed);
 
-	public boolean hasPermission(Player sender, String permission) {
-		return sender.hasPermission(permission+"."+getLabel());
-	}
-	
 }

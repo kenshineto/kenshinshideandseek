@@ -24,6 +24,7 @@ import net.tylermurphy.hideAndSeek.command.util.Command;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -89,8 +90,8 @@ public class Start extends Command {
 		return "Starts the game either with a random seeker or chosen one";
 	}
 
-	public List<String> autoComplete(String parameter) {
-		if(parameter != null && parameter.equals("player")) {
+	public List<String> autoComplete(@NotNull String parameter, @NotNull String typed) {
+		if(parameter.equals("player")) {
 			return Main.getInstance().getBoard().getPlayers().stream().map(Player::getName).collect(Collectors.toList());
 		}
 		return null;

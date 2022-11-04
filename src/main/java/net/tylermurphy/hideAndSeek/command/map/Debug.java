@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,7 @@ public class Debug extends Command {
 
     private Inventory createMenu(net.tylermurphy.hideAndSeek.configuration.Map map, Player sender){
         Map<Integer, Consumer<Player>> functions = new HashMap<>();
-        Inventory debugMenu = Main.getInstance().getServer().createInventory(null, 18, "Debug Menu");
+        Inventory debugMenu = Main.getInstance().getServer().createInventory(null, 9, "Debug Menu");
         debugMenu.setItem(0, createOption(functions, 0, XMaterial.LEATHER_CHESTPLATE.parseMaterial(), "&6Become a &lHider", 1, player -> {
             if(mapSaveEnabled) {
                 if(map.getGameSpawn().getWorld() == null) map.getWorldLoader().loadMap();
@@ -75,10 +76,10 @@ public class Debug extends Command {
             }
         }));
         if(map.isBlockHuntEnabled()) {
-            debugMenu.setItem(9, createOption(functions, 7, XMaterial.GLASS.parseMaterial(), "&dEnable Disguise", 1, player -> {
+            debugMenu.setItem(7, createOption(functions, 7, XMaterial.GLASS.parseMaterial(), "&dEnable Disguise", 1, player -> {
                 PlayerLoader.openBlockHuntPicker(player, map);
             }));
-            debugMenu.setItem(10, createOption(functions, 8, XMaterial.PLAYER_HEAD.parseMaterial(), "&dDisable Disguise", 1, player -> Main.getInstance().getDisguiser().reveal(player)));
+            debugMenu.setItem(8, createOption(functions, 8, XMaterial.PLAYER_HEAD.parseMaterial(), "&dDisable Disguise", 1, player -> Main.getInstance().getDisguiser().reveal(player)));
         }
         debugMenuFunctions.put(sender, functions);
         return debugMenu;
@@ -112,8 +113,8 @@ public class Debug extends Command {
         return "Run debug commands";
     }
 
-    public List<String> autoComplete(String parameter) {
-        if(parameter != null && parameter.equals("map")) {
+    public List<String> autoComplete(@NotNull String parameter, @NotNull String typed) {
+        if(parameter.equals("map")) {
             return Maps.getAllMaps().stream().map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
         }
         return null;

@@ -5,6 +5,7 @@ import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -39,7 +40,7 @@ public class List extends Command {
         return "List all maps in the plugin";
     }
 
-    public java.util.List<String> autoComplete(String parameter) {
+    public java.util.List<String> autoComplete(@NotNull String parameter, @NotNull String typed) {
         return null;
     }
 

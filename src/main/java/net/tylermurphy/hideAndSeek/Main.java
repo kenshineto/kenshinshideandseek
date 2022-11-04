@@ -212,6 +212,8 @@ public class Main extends JavaPlugin implements Listener {
 
 	public EntityHider getEntityHider() { return entityHider; }
 
+	public CommandGroup getCommandGroup() { return commandGroup; }
+
 	public boolean supports(int v){
 		return version >= v;
 	}

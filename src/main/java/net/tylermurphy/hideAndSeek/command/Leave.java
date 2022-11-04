@@ -23,6 +23,7 @@ import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.util.Command;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class Leave extends Command {
 		return "Leaves the lobby if game is set to manual join/leave";
 	}
 
-	public List<String> autoComplete(String parameter) {
+	public List<String> autoComplete(@NotNull String parameter, @NotNull String typed) {
 		return null;
 	}
 

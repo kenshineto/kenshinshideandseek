@@ -4,6 +4,7 @@ import net.tylermurphy.hideAndSeek.command.util.Command;
 import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,13 +49,13 @@ public class GoTo extends Command {
     }
 
     public String getDescription() {
-        return "Get the commands for the plugin";
+        return "Teleport to a map spawn zone";
     }
 
-    public List<String> autoComplete(String parameter) {
-        if(parameter != null && parameter.equals("map")) {
+    public List<String> autoComplete(@NotNull String parameter, @NotNull String typed) {
+        if(parameter.equals("map")) {
             return Maps.getAllMaps().stream().map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
-        } else if(parameter != null && parameter.equals("spawn")) {
+        } else if(parameter.equals("spawn")) {
             return Arrays.asList("spawn","lobby","seekerlobby","exit");
         }
         return null;

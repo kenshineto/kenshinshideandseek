@@ -6,6 +6,7 @@ import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,8 +45,8 @@ public class Add extends Command {
         return "Add a map to the plugin!";
     }
 
-    public List<String> autoComplete(String parameter) {
-        if(parameter != null && parameter.equals("name")) {
+    public List<String> autoComplete(@NotNull String parameter, @NotNull String typed) {
+        if(parameter.equals("name")) {
             return Collections.singletonList("name");
         }
         return null;

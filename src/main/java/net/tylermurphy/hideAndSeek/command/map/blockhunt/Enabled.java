@@ -7,6 +7,7 @@ import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,11 +48,11 @@ public class Enabled extends Command {
         return "Sets blockhunt enabled or disabled in a current map";
     }
 
-    public List<String> autoComplete(String parameter) {
-        if(parameter != null && parameter.equals("map")) {
+    public List<String> autoComplete(@NotNull String parameter, @NotNull String typed) {
+        if(parameter.equals("map")) {
             return Maps.getAllMaps().stream().map(net.tylermurphy.hideAndSeek.configuration.Map::getName).collect(Collectors.toList());
         }
-        if(parameter != null && parameter.equals("bool")) {
+        if(parameter.equals("bool")) {
             return Arrays.asList("true", "false");
         }
         return null;
