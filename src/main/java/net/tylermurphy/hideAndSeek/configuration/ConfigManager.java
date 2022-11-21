@@ -318,11 +318,11 @@ public class ConfigManager {
         int index = 0;
         for(String part : parts) {
             if (index == 0) {
-                index = yaml.indexOf(part + ":", index);
+                index = yaml.indexOf("\n" + part + ":", index) + 1;
             } else {
                 index = yaml.indexOf(" " + part + ":", index) + 1;
             }
-            if (index == -1) break;
+            if (index == 0) break;
         }
         return index;
     }

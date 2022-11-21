@@ -155,7 +155,7 @@ public class WorldLoader {
         out.close();
     }
 	
-	private void deleteDirectory(File directoryToBeDeleted) {
+	public static void deleteDirectory(File directoryToBeDeleted) {
 	    File[] allContents = directoryToBeDeleted.listFiles();
 	    if (allContents != null) {
 	        for (File file : allContents) {

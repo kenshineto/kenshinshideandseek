@@ -21,6 +21,7 @@ package net.tylermurphy.hideAndSeek.database.connections;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import net.tylermurphy.hideAndSeek.Main;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -34,6 +35,13 @@ public class MySQLConnection implements DatabaseConnection {
     public MySQLConnection(){
 
         HikariConfig config = new HikariConfig();
+
+        Main.getInstance().getLogger().info("Database host: " + databaseHost);
+        Main.getInstance().getLogger().info("Database port: " + databasePort);
+        Main.getInstance().getLogger().info("Database user: " + databaseUser);
+        Main.getInstance().getLogger().info("Database pass: xxxxxxxxxxx");
+        Main.getInstance().getLogger().info("Database name: " + databaseName);
+
 
         config.setJdbcUrl("jdbc:mariadb://"+databaseHost+":"+databasePort+"/"+databaseName);
         config.addDataSourceProperty("cachePrepStmts", "true");

@@ -4,6 +4,7 @@ import net.tylermurphy.hideAndSeek.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,11 +43,28 @@ public class Location {
         this.z = z;
     }
 
-    public World load() {
+    public Location(@NotNull String world, @NotNull org.bukkit.Location location) {
+        this.world = world;
+        this.x = location.getX();
+        this.y = location.getY();
+        this.z = location.getZ();
+    }
+
+    public World load(WorldType type) {
         World bukkitWorld = Bukkit.getWorld(world);
         if(bukkitWorld != null) return bukkitWorld;
-        Bukkit.getServer().createWorld(new WorldCreator(world));
+        if (type == null) {
+            Bukkit.getServer().createWorld(new WorldCreator(world));
+        } else {
+            Bukkit.getServer().createWorld(new WorldCreator(world).type(type));
+        }
         return Bukkit.getWorld(world);
+    }
+
+    public World load() {
+        if(!exists()) return null;
+        if(!Main.getInstance().isLoaded()) return null;
+        return load(null);
     }
 
     private org.bukkit.Location toBukkit() {

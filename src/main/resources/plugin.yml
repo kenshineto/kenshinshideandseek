@@ -62,4 +62,14 @@ permissions:
     default: op
   hs.map.blockhunt.list:
     default: op
+  hs.world.create:
+    default: op
+  hs.world.delete:
+    default: op
+  hs.world.list:
+    default: op
+  hs.world.tp:
+    default: op
+  hs.confirm:
+    default: op
 

@@ -107,6 +107,20 @@ Localization:
   BLOCKHUNT_BLOCK_REMOVED: "Removed {AMOUNT} from blockhunt config."
   BLOCKHUNT_LIST_BLOCKS: "The following blockhunt blocks are:"
   NO_BLOCKS: "There are no blockhunt blocks in this map."
+  WORLD_EXISTS: "A world named {AMOUNT} already exists."
+  WORLD_DOESNT_EXIST: "There is no world named {AMOUNT} that exists."
+  WORLD_ADDED: "Created a world named {AMOUNT}."
+  WORLD_ADDED_FAILED: "Failed to create new world."
+  WORLD_REMOVED: "Deleted a world named {AMOUNT}."
+  WORLD_REMOVED_FAILED: "Failed to delete world."
+  WORLD_NOT_EMPTY: "World must be empty to be deleted."
+  LIST_WORLDS: "The following worlds are:"
+  NO_WORLDS: "Failed to fetch any worlds."
+  WORLD_LOAD_FAILED: "Failed to load world."
+  INVALID_WORLD_TYPE: "Invalid world type: {AMOUNT}."
+  NO_CONFIRMATION: "You have nothing to confirm."
+  CONFIRMATION_TIMED_OUT: "The confirmation has timed out."
+  CONFIRMATION: "Run /hs confirm within 10s to confirm."
 
 # DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
 version: 4

@@ -3,6 +3,7 @@ package net.tylermurphy.hideAndSeek.configuration;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.util.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -72,6 +73,7 @@ public class Maps {
         ConfigurationSection data = maps.getConfigurationSection(name);
         if(data == null) return null;
         Map map = new Map(name);
+        Main.getInstance().getLogger().info("Loading map: " + name + "...");
         map.setSpawn(getSpawn(data, "game"));
         map.setLobby(getSpawn(data, "lobby"));
         map.setSeekerLobby(getSpawn(data, "seeker"));

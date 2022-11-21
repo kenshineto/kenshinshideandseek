@@ -45,8 +45,10 @@ public class Database {
     public Database(){
 
         if(databaseType.equals("SQLITE")) {
+            Main.getInstance().getLogger().info("SQLITE database chosen");
             connection = new SQLiteConnection();
         } else {
+            Main.getInstance().getLogger().info("MYSQL database chosen");
             connection = new MySQLConnection();
         }
 

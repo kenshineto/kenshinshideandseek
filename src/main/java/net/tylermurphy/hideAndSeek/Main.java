@@ -23,6 +23,9 @@ import net.tylermurphy.hideAndSeek.command.*;
 import net.tylermurphy.hideAndSeek.command.map.*;
 import net.tylermurphy.hideAndSeek.command.map.blockhunt.Enabled;
 import net.tylermurphy.hideAndSeek.command.map.set.*;
+import net.tylermurphy.hideAndSeek.command.world.Create;
+import net.tylermurphy.hideAndSeek.command.world.Delete;
+import net.tylermurphy.hideAndSeek.command.world.Tp;
 import net.tylermurphy.hideAndSeek.configuration.*;
 import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.game.*;
@@ -39,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,16 +60,28 @@ public class Main extends JavaPlugin implements Listener {
 	private EntityHider entityHider;
 	private Game game;
 	private CommandGroup commandGroup;
+	private boolean loaded;
 
 	public void onEnable() {
+
+		long start = System.currentTimeMillis();
+
+		getLogger().info("Loading Kenshin's Hide and Seek");
 		Main.instance = this;
-		this.updateVersion();
+
+		getLogger().info("Getting minecraft version...");
+		this.updateVersion();;
 
 		try {
+			getLogger().info("Loading config.yml...");
 			Config.loadConfig();
+			getLogger().info("Loading maps.yml...");
 			Maps.loadMaps();
+			getLogger().info("Loading localization.yml...");
 			Localization.loadLocalization();
+			getLogger().info("Loading items.yml...");
 			Items.loadItems();
+			getLogger().info("Loading leaderboard.yml...");
 			Leaderboard.loadLeaderboard();
 		} catch (Exception e) {
 			getLogger().severe(e.getMessage());
@@ -73,12 +89,18 @@ public class Main extends JavaPlugin implements Listener {
 			return;
 		}
 
+		getLogger().info("Creating internal scoreboard...");
 		this.board = new Board();
+		getLogger().info("Connecting to database...");
 		this.database = new Database();
+		getLogger().info("Loading disguises...");
 		this.disguiser = new Disguiser();
+		getLogger().info("Loading entity hider...");
 		this.entityHider = new EntityHider(this, EntityHider.Policy.BLACKLIST);
+		getLogger().info("Registering listeners...");
 		this.registerListeners();
 
+		getLogger().info("Registering commands...");
 		this.commandGroup = new CommandGroup("hs",
 				new Help(),
 				new Reload(),
@@ -111,20 +133,37 @@ public class Main extends JavaPlugin implements Listener {
 						new Debug(),
 						new GoTo()
 				),
+				new CommandGroup("world",
+					new Create(),
+					new Delete(),
+					new net.tylermurphy.hideAndSeek.command.world.List(),
+					new Tp()
+				),
 				new SetExitLocation(),
 				new Top(),
-				new Wins()
+				new Wins(),
+				new Confirm()
 		);
 
+		getLogger().info("Loading game...");
 		game = new Game(null, board);
 
+		getLogger().info("Scheduling tick tasks...");
 		getServer().getScheduler().runTaskTimer(this, this::onTick,0,1).getTaskId();
 
+		getLogger().info("Registering outgoing bungeecord plugin channel...");
 		Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
+		getLogger().info("Checking for PlaceholderAPI...");
 		if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			getLogger().info("PlaceholderAPI found...");
+			getLogger().info("Registering PlaceholderAPI expansion...");
 			new PAPIExpansion().register();
 		}
+
+		long end = System.currentTimeMillis();
+		getLogger().info("Finished loading plugin ("+(end-start)+"ms)");
+		loaded = true;
 
 	}
 
@@ -221,6 +260,25 @@ public class Main extends JavaPlugin implements Listener {
 
 	public boolean supports(int v){
 		return version >= v;
+	}
+
+	public java.util.List<String> getWorlds() {
+		java.util.List<String> worlds = new ArrayList<>();
+		File[] containers = getWorldContainer().listFiles();
+		if(containers != null) {
+			Arrays.stream(containers).forEach(file -> {
+				if (!file.isDirectory()) return;
+				String[] files = file.list();
+				if (files == null) return;
+				if (!Arrays.asList(files).contains("session.lock") && !Arrays.asList(files).contains("level.dat")) return;
+				worlds.add(file.getName());
+			});
+		}
+		return worlds;
+	}
+
+	public boolean isLoaded() {
+		return loaded;
 	}
 	
 }
