@@ -38,7 +38,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Objects;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -125,6 +125,7 @@ public class Main extends JavaPlugin implements Listener {
 		if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
 			new PAPIExpansion().register();
 		}
+
 	}
 
 	public void onDisable() {
@@ -135,8 +136,7 @@ public class Main extends JavaPlugin implements Listener {
 			board.getPlayers().forEach(player -> {
 				board.removeBoard(player);
 				PlayerLoader.unloadPlayer(player);
-				if (!Objects.equals(exitWorld, ""))
-					player.teleport(exitPosition);
+				exitPosition.teleport(player);
 			});
 			board.cleanup();
 		}
@@ -181,11 +181,16 @@ public class Main extends JavaPlugin implements Listener {
 			sender.sendMessage(errorPrefix + message("COMMAND_PLAYER_ONLY"));
 			return true;
 		}
-		return commandGroup.handleCommand((Player)sender, "", args);
+		commandGroup.handleCommand((Player)sender, args);
+		return true;
 	}
 	
 	public java.util.List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-		return commandGroup.handleTabComplete(sender, args);
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(errorPrefix + message("COMMAND_PLAYER_ONLY"));
+			return new ArrayList<>();
+		}
+		return commandGroup.handleTabComplete((Player)sender, args);
 	}
 
 	public static Main getInstance() {

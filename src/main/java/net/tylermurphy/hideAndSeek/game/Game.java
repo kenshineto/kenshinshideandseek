@@ -98,8 +98,8 @@ public class Game {
 
 	public void start() {
 		try {
-			Optional<Player> rand = board.getPlayers().stream().skip(new Random().nextInt(board.size())).findFirst();
-			Player seeker = rand.orElse(board.getPlayers().get(0));
+			int rand = (int) (Math.random() * board.getPlayers().size());
+			Player seeker = board.getPlayers().get(rand);
 			start(seeker);
 		} catch (Exception e){
 			Main.getInstance().getLogger().warning("Failed to select random seeker.");
@@ -148,7 +148,7 @@ public class Game {
 				board.remove(player);
 				handleBungeeLeave(player);
 			} else {
-				player.teleport(currentMap.getLobby());
+				currentMap.getLobby().teleport(player);
 				board.createLobbyBoard(player);
 				board.addHider(player);
 				PlayerLoader.joinPlayer(player, currentMap);
@@ -210,7 +210,7 @@ public class Game {
 			out.writeUTF(leaveServer);
 			player.sendPluginMessage(Main.getInstance(), "BungeeCord", out.toByteArray());
 		} else {
-			player.teleport(exitPosition);
+			exitPosition.teleport(player);
 		}
 	}
 
@@ -251,7 +251,7 @@ public class Game {
 					board.getPlayers().forEach(player -> {
 						PlayerLoader.resetPlayer(player, board);
 						if(board.isSeeker(player)){
-							player.teleport(currentMap.getGameSpawn());
+							currentMap.getGameSpawn().teleport(player);
 						}
 					});
 				} else if (startingTimer == 1){
@@ -325,8 +325,8 @@ public class Game {
 		}
 	}
 
-	public Map getCurrentMap() {
-		return currentMap;
+	public boolean isCurrentMapValid() {
+		return currentMap != null && !currentMap.isNotSetup();
 	}
 
 	public boolean checkCurrentMap() {
@@ -339,9 +339,8 @@ public class Game {
 		this.currentMap = map;
 	}
 
-	public String getGameWorld() {
-		if(currentMap == null) return null;
-		else return currentMap.getGameSpawnName();
+	public Map getCurrentMap() {
+		return currentMap;
 	}
 
 	private void checkWinConditions() {

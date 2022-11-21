@@ -21,9 +21,10 @@ package net.tylermurphy.hideAndSeek.command.util;
 
 import net.tylermurphy.hideAndSeek.command.map.Save;
 import net.tylermurphy.hideAndSeek.util.Pair;
+import net.tylermurphy.hideAndSeek.util.Tuple;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,7 +41,9 @@ public class CommandGroup {
 	public CommandGroup(String label, Object... data) {
 		this.label = label;
 		this.commandRegister = new LinkedHashMap<>();
-		for(Object o : data) registerCommand(o);
+		for(Object o : data) {
+			registerCommand(o);
+		}
 	}
 
 	public String getLabel() {
@@ -48,8 +51,8 @@ public class CommandGroup {
 	}
 
 	private void registerCommand(Object object) {
-		if(object instanceof Command) {
-			Command command = (Command) object;
+		if (object instanceof ICommand) {
+			ICommand command = (ICommand) object;
 			if (!commandRegister.containsKey(command.getLabel())) {
 				commandRegister.put(command.getLabel().toLowerCase(), command);
 			}
@@ -61,87 +64,99 @@ public class CommandGroup {
 		}
 	}
 	
-	public boolean handleCommand(Player player, String permission, String[] args) {
-		if (args.length < 1 || !commandRegister.containsKey(args[0].toLowerCase()) ) {
-			if (permissionsRequired && !player.hasPermission("hs.about")) {
-				player.sendMessage(errorPrefix + message("COMMAND_NOT_ALLOWED"));
-			} else {
-				player.sendMessage(
-						String.format("%s%sKenshin's Hide and Seek %s(%s1.7.0 BETA%s)\n", ChatColor.AQUA, ChatColor.BOLD, ChatColor.GRAY,ChatColor.WHITE,ChatColor.GRAY) +
-						String.format("%sAuthor: %s[KenshinEto]\n", ChatColor.GRAY, ChatColor.WHITE) +
-						String.format("%sHelp Command: %s/hs %shelp", ChatColor.GRAY, ChatColor.AQUA, ChatColor.WHITE)
-				);
-			}
-		} else {
-			String invoke = args[0].toLowerCase();
-			if (!invoke.equals("about") && !invoke.equals("help") && Save.runningBackup) {
-				player.sendMessage(errorPrefix + message("MAPSAVE_INPROGRESS"));
-			} else {
-				try {
-					Object object = commandRegister.get(invoke);
+	public void handleCommand(Player player, String[] args) {
 
-					if(object instanceof CommandGroup) {
-						CommandGroup group = (CommandGroup) object;
-						return group.handleCommand(player, permission+"."+group.getLabel(), Arrays.copyOfRange(args, 1, args.length));
-					} else if(object instanceof Command) {
-						Command command = (Command) object;
+		Tuple<ICommand, String, String[]> data = getCommand(args, this.getLabel());
 
-						if (permissionsRequired && !player.hasPermission(permission+"."+command.getLabel())) {
-							player.sendMessage(errorPrefix + message("COMMAND_NOT_ALLOWED"));
-							return true;
-						}
-
-						int parameterCount = (int) Arrays.stream(command.getUsage().split(" ")).filter(p -> p.startsWith("<") && !p.startsWith("<*")).count();
-						if(args.length - 1 < parameterCount) {
-							player.sendMessage(errorPrefix + message("ARGUMENT_COUNT"));
-							return true;
-						}
-
-						command.execute(player,Arrays.copyOfRange(args, 1, args.length));
-					}
-				} catch (Exception e) {
-					player.sendMessage(errorPrefix + "An error has occurred.");
-					e.printStackTrace();
-				}
-			}
+		if (data == null) {
+			player.sendMessage(
+					String.format("%s%sKenshin's Hide and Seek %s(%s1.7.0 BETA%s)\n", ChatColor.AQUA, ChatColor.BOLD, ChatColor.GRAY, ChatColor.WHITE, ChatColor.GRAY) +
+							String.format("%sAuthor: %s[KenshinEto]\n", ChatColor.GRAY, ChatColor.WHITE) +
+							String.format("%sHelp Command: %s/hs %shelp", ChatColor.GRAY, ChatColor.AQUA, ChatColor.WHITE)
+			);
+			return;
 		}
-		return true;
+
+		ICommand command = data.getLeft();
+		String permission = data.getCenter();
+		String[] parameters = data.getRight();
+
+		if (Save.runningBackup) {
+			player.sendMessage(errorPrefix + message("MAPSAVE_INPROGRESS"));
+			return;
+		}
+
+		if (permissionsRequired && !player.hasPermission(permission)) {
+			player.sendMessage(errorPrefix + message("COMMAND_NOT_ALLOWED"));
+			return;
+		}
+
+		int parameterCount = (int) Arrays.stream(command.getUsage().split(" ")).filter(p -> p.startsWith("<") && !p.startsWith("<*")).count();
+		if(parameters.length < parameterCount) {
+			player.sendMessage(errorPrefix + message("ARGUMENT_COUNT"));
+			return;
+		}
+
+		try {
+			command.execute(player, parameters);
+		}	catch (Exception e) {
+			player.sendMessage(errorPrefix + "An error has occurred.");
+			e.printStackTrace();
+		}
 	}
 
-	public List<String> handleTabComplete(CommandSender sender, String[] args) {
+	@Nullable
+	private Tuple<ICommand, String, String[]> getCommand(String[] args, String permission) {
+		if(args.length < 1) {
+			return null;
+		}
+		String invoke = args[0];
+		if(commandRegister.containsKey(invoke)) {
+			Object o = commandRegister.get(invoke);
+			if (o instanceof CommandGroup) {
+				CommandGroup group = (CommandGroup) o;
+				return group.getCommand(
+						Arrays.copyOfRange(args, 1, args.length),
+						permission + "." + group.getLabel()
+				);
+			} else if(o instanceof ICommand) {
+				ICommand command = (ICommand) o;
+				return new Tuple<>(command, permission + "." + command.getLabel(), Arrays.copyOfRange(args, 1, args.length));
+			}
+		}
+		return null;
+	}
+
+	public List<String> handleTabComplete(Player player, String[] args) {
+		return handleTabComplete(player, this.getLabel(), args);
+	}
+
+	private List<String> handleTabComplete(Player player, String permission, String[] args) {
 		String invoke = args[0].toLowerCase();
 		if (args.length == 1) {
-			if(sender instanceof Player) {
-				Player player = (Player) sender;
-				return new ArrayList<>(commandRegister.keySet())
-						.stream()
-						.filter(handle -> handle.toLowerCase().startsWith(invoke))
-						.filter(handle -> {
-							Object object = commandRegister.get(handle);
-							if (object instanceof Command) {
-								Command command = (Command) object;
-								return player.hasPermission(command.getLabel());
-							} else if (object instanceof CommandGroup) {
-								CommandGroup group = (CommandGroup) object;
-								return group.hasPermission(player, group.getLabel());
-							}
-							return false;
-						})
-						.collect(Collectors.toList());
-			} else {
-				return commandRegister.keySet()
-						.stream()
-						.filter(handle -> handle.toLowerCase().startsWith(invoke))
-						.collect(Collectors.toList());
-			}
+			return new ArrayList<>(commandRegister.keySet())
+					.stream()
+					.filter(handle -> handle.toLowerCase().startsWith(invoke))
+					.filter(handle -> {
+						Object object = commandRegister.get(handle);
+						if (object instanceof ICommand) {
+							ICommand command = (ICommand) object;
+							return !permissionsRequired || player.hasPermission(permission + "." + command.getLabel());
+						} else if (object instanceof CommandGroup) {
+							CommandGroup group = (CommandGroup) object;
+							return !permissionsRequired || group.hasPermission(player, permission + "." + group.getLabel());
+						}
+						return false;
+					})
+					.collect(Collectors.toList());
 		} else {
 			if (commandRegister.containsKey(invoke)) {
 				Object object = commandRegister.get(invoke);
 				if (object instanceof CommandGroup) {
 					CommandGroup group = (CommandGroup) object;
-					return group.handleTabComplete(sender, Arrays.copyOfRange(args, 1, args.length));
-				} else if (object instanceof Command) {
-					Command command = (Command) object;
+					return group.handleTabComplete(player, permission + "." + group.getLabel(), Arrays.copyOfRange(args, 1, args.length));
+				} else if (object instanceof ICommand) {
+					ICommand command = (ICommand) object;
 					String[] usage = command.getUsage().split(" ");
 					if (args.length - 2 < usage.length) {
 						String parameter = usage[args.length - 2];
@@ -159,26 +174,26 @@ public class CommandGroup {
 
 	private boolean hasPermission(Player player, String permission) {
 		for(Object object : commandRegister.values()) {
-			if(object instanceof Command) {
-				Command command = (Command) object;
-				if(player.hasPermission(permission+"."+command.getLabel())) return true;
+			if(object instanceof ICommand) {
+				ICommand command = (ICommand) object;
+				if(player.hasPermission(permission + command.getLabel())) return true;
 			} else if(object instanceof CommandGroup) {
 				CommandGroup group = (CommandGroup) object;
-				if (group.hasPermission(player, permission+"."+group.getLabel())) return true;
+				if (group.hasPermission(player, permission + this.label + ".")) return true;
 			}
 		}
 		return false;
 	}
 
-	public List<Pair<String, Command>> getCommands() {
+	public List<Pair<String, ICommand>> getCommands() {
 		return getCommands(this.getLabel());
 	}
 
-	private List<Pair<String, Command>> getCommands(String prefix) {
-		List<Pair<String, Command>> commands = new LinkedList<>();
+	private List<Pair<String, ICommand>> getCommands(String prefix) {
+		List<Pair<String, ICommand>> commands = new LinkedList<>();
 		for(Object object : commandRegister.values()) {
-			if(object instanceof Command) {
-				Command command = (Command) object;
+			if(object instanceof ICommand) {
+				ICommand command = (ICommand) object;
 				commands.add(new Pair<>(prefix+" "+command.getLabel(), command));
 			} else if(object instanceof CommandGroup) {
 				CommandGroup group = (CommandGroup) object;

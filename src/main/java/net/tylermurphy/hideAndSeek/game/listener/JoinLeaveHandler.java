@@ -15,6 +15,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
+
 public class JoinLeaveHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -26,18 +28,25 @@ public class JoinLeaveHandler implements Listener {
         removeItems(event.getPlayer());
         if (Main.getInstance().getGame().checkCurrentMap()) return;
         if (autoJoin) {
+            if (Main.getInstance().getGame().checkCurrentMap()) {
+                event.getPlayer().sendMessage(errorPrefix + message("GAME_SETUP"));
+                return;
+            }
             Main.getInstance().getGame().join(event.getPlayer());
         } else if (teleportToExit) {
-            if (event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getGameWorld()) || event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getCurrentMap().getLobby().getWorld().getName())) {
-                event.getPlayer().teleport(exitPosition);
+            if (
+                    event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getCurrentMap().getLobbyName()) ||
+                    event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getCurrentMap().getGameSpawnName())
+            ) {
+                exitPosition.teleport(event.getPlayer());
                 event.getPlayer().setGameMode(GameMode.ADVENTURE);
             }
         } else {
-            if (mapSaveEnabled && event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getGameWorld())) {
+            if (mapSaveEnabled && event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getCurrentMap().getGameSpawnName())) {
                 if (Main.getInstance().getGame().getStatus() != Status.STANDBY && Main.getInstance().getGame().getStatus() != Status.ENDING) {
                     Main.getInstance().getGame().join(event.getPlayer());
                 } else {
-                    event.getPlayer().teleport(exitPosition);
+                    exitPosition.teleport(event.getPlayer());
                     event.getPlayer().setGameMode(GameMode.ADVENTURE);
                 }
             }

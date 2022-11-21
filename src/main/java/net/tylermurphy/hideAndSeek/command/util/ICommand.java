@@ -24,16 +24,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public abstract class Command {
+public interface ICommand {
 
-	public abstract void execute(Player sender, String[] args);
+	void execute(Player sender, String[] args);
 
-	public abstract String getLabel();
+	String getLabel();
 
-	public abstract String getUsage();
+	String getUsage();
 
-	public abstract String getDescription();
+	String getDescription();
 
-	public abstract List<String> autoComplete(@NotNull String parameter, @NotNull String typed);
+	List<String> autoComplete(@NotNull String parameter, @NotNull String typed);
 
 }

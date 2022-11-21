@@ -20,7 +20,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.command.util.Command;
+import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.database.util.PlayerInfo;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -32,7 +32,7 @@ import java.util.List;
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Top extends Command {
+public class Top implements ICommand {
 
     public void execute(Player sender, String[] args) {
         int page;

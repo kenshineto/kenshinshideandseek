@@ -20,7 +20,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.command.util.Command;
+import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.configuration.*;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
@@ -32,7 +32,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Config.messagePrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Reload extends Command {
+public class Reload implements ICommand {
 
 	public void execute(Player sender, String[] args) {
 		

@@ -26,6 +26,7 @@ Localization:
   GAME_JOIN: "{PLAYER} has joined the HideAndSeek lobby."
   GAME_JOIN_SPECTATOR: "You have joined mid game and are now a spectator."
   GAME_LEAVE: "{PLAYER} has left the HideAndSeek lobby."
+  LOBBY_IN_USE: "Cant modify the lobby while the lobby isn't empty."
   CONFIG_RELOAD: "Reloaded the config."
   MAPSAVE_INPROGRESS: "Map save is currently in progress. Try again later."
   MAPSAVE_START: "Starting map save."

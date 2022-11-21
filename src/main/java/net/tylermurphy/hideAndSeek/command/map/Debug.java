@@ -2,7 +2,7 @@ package net.tylermurphy.hideAndSeek.command.map;
 
 import com.cryptomorin.xseries.XMaterial;
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.command.util.Command;
+import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.PlayerLoader;
 import net.tylermurphy.hideAndSeek.game.util.Status;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Debug extends Command {
+public class Debug implements ICommand {
 
     private static final Map<Player, Map<Integer, Consumer<Player>>> debugMenuFunctions = new HashMap<>();
 
@@ -68,7 +68,7 @@ public class Debug extends Command {
         debugMenu.setItem(3, createOption(functions, 3, XMaterial.BARRIER.parseMaterial(), "&cUnload from Game", 1, player -> {
             Main.getInstance().getBoard().remove(player);
             PlayerLoader.unloadPlayer(player);
-            player.teleport(exitPosition);
+            exitPosition.teleport(player);
         }));
         debugMenu.setItem(4, createOption(functions, 4, XMaterial.BARRIER.parseMaterial(), "&cDie In Game", 2, player -> {
             if((Main.getInstance().getBoard().isSeeker(player) || Main.getInstance().getBoard().isHider(player)) && Main.getInstance().getGame().getStatus() == Status.PLAYING){

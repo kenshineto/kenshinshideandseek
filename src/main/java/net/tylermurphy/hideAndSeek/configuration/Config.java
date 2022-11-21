@@ -24,9 +24,8 @@ import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.util.CountdownDisplay;
-import org.bukkit.Bukkit;
+import net.tylermurphy.hideAndSeek.util.Location;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -34,7 +33,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,8 +57,7 @@ public class Config {
 		databasePort,
 		databaseUser,
 		databasePass,
-		databaseName,
-		exitWorld;
+		databaseName;
 	
 	public static boolean
 		nameTagsVisible,
@@ -150,12 +147,11 @@ public class Config {
 
 		// Locations
 		exitPosition = new Location(
-				Bukkit.getWorld(config.getString("exit.world")),
+				config.getString("exit.world"),
 				config.getInt("exit.x"),
 				config.getInt("exit.y"),
 				config.getInt("exit.z")
 		);
-		exitWorld = config.getString("exit.world");
 		mapSaveEnabled = config.getBoolean("mapSaveEnabled");
 
 		//Taunt

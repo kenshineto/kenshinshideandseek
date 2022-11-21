@@ -1,9 +1,10 @@
 package net.tylermurphy.hideAndSeek.command.map.set;
 
-import net.tylermurphy.hideAndSeek.command.util.Command;
+import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.command.location.LocationUtils;
 import net.tylermurphy.hideAndSeek.command.location.Locations;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
+import net.tylermurphy.hideAndSeek.util.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class SeekerLobby extends Command {
+public class SeekerLobby implements ICommand {
 
     public void execute(Player sender, String[] args) {
         LocationUtils.setLocation(sender, Locations.SEEKER, args[0], map -> {
@@ -22,7 +23,7 @@ public class SeekerLobby extends Command {
             if(!map.getSpawnName().equals(sender.getLocation().getWorld().getName())) {
                 throw new RuntimeException(message("SEEKER_LOBBY_INVALID").toString());
             }
-            map.setSeekerLobby(sender.getLocation());
+            map.setSeekerLobby(Location.from(sender));
         });
     }
 

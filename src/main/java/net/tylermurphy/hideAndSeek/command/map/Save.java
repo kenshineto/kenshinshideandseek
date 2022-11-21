@@ -20,7 +20,7 @@
 package net.tylermurphy.hideAndSeek.command.map;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.command.util.Command;
+import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Save extends Command {
+public class Save implements ICommand {
 
 	public static boolean runningBackup = false;
 	
@@ -63,7 +63,7 @@ public class Save extends Command {
 		}
 		sender.sendMessage(messagePrefix + message("MAPSAVE_START"));
 		sender.sendMessage(warningPrefix + message("MAPSAVE_WARNING"));
-		World world = map.getSpawn().getWorld();
+		World world = map.getSpawn().load();
 		if (world == null) {
 			sender.sendMessage(warningPrefix + message("MAPSAVE_FAIL_WORLD"));
 			return;

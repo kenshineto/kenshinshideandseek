@@ -40,7 +40,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class PlayerLoader {
 
     public static void loadHider(Player player, Map map){
-        player.teleport(map.getGameSpawn());
+        map.getGameSpawn().teleport(player);
         loadPlayer(player);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,1000000,5,false,false));
         Titles.sendTitle(player, 10, 70, 20, ChatColor.WHITE + "" + message("HIDER_TEAM_NAME"), ChatColor.WHITE + message("HIDERS_SUBTITLE").toString());
@@ -50,13 +50,13 @@ public class PlayerLoader {
     }
 
     public static void loadSeeker(Player player, Map map){
-        player.teleport(map.getGameSeekerLobby());
+        map.getGameSeekerLobby().teleport(player);
         loadPlayer(player);
         Titles.sendTitle(player, 10, 70, 20, ChatColor.WHITE + "" + message("SEEKER_TEAM_NAME"), ChatColor.WHITE + message("SEEKERS_SUBTITLE").toString());
     }
 
     public static void loadSpectator(Player player, Map map){
-        player.teleport(map.getGameSpawn());
+        map.getGameSpawn().teleport(player);
         loadPlayer(player);
         player.setAllowFlight(true);
         player.setFlying(true);
@@ -114,7 +114,7 @@ public class PlayerLoader {
     }
 
     public static void joinPlayer(Player player, Map map){
-        player.teleport(map.getLobby());
+        map.getLobby().teleport(player);
         loadPlayer(player);
         if (lobbyStartItem != null && (!lobbyItemStartAdmin || player.hasPermission("hideandseek.start")))
             player.getInventory().setItem(lobbyItemStartPosition, lobbyStartItem);

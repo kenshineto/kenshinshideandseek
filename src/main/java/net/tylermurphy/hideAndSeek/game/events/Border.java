@@ -34,6 +34,7 @@ public class Border {
 
     private void decreaseWorldBorder() {
         if (currentSize == 100) return;
+        if(map.getGameSpawn().load() == null) return;
         int change = (int) map.getWorldBorderData().getZ();
         if (currentSize-change < 100) {
             change = currentSize-100;
@@ -41,14 +42,14 @@ public class Border {
         running = true;
         Main.getInstance().getGame().broadcastMessage(worldBorderPrefix + message("WORLDBORDER_DECREASING").addAmount(change));
         currentSize -= map.getWorldBorderData().getZ();
-        org.bukkit.WorldBorder border = map.getGameSpawn().getWorld().getWorldBorder();
+        org.bukkit.WorldBorder border = map.getGameSpawn().load().getWorldBorder();
         border.setSize(border.getSize()-change,30);
         delay = 30;
     }
 
     public void resetWorldBorder() {
-        if(map.getGameSpawn().getWorld() == null) return;
-        org.bukkit.WorldBorder border = map.getGameSpawn().getWorld().getWorldBorder();
+        if(map.getGameSpawn().load() == null) return;
+        org.bukkit.WorldBorder border = map.getGameSpawn().load().getWorldBorder();
         if (map.isWorldBorderEnabled()) {
             border.setSize(map.getWorldBorderData().getX());
             border.setCenter(map.getWorldBorderPos().getX(), map.getWorldBorderPos().getY());

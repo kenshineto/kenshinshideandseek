@@ -19,11 +19,11 @@
 
 package net.tylermurphy.hideAndSeek.command.map.set;
 
-import net.tylermurphy.hideAndSeek.command.util.Command;
+import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.command.location.LocationUtils;
 import net.tylermurphy.hideAndSeek.command.location.Locations;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
-import org.bukkit.Location;
+import net.tylermurphy.hideAndSeek.util.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Spawn extends Command {
+public class Spawn implements ICommand {
 
 	public void execute(Player sender, String[] args) {
 		LocationUtils.setLocation(sender, Locations.GAME, args[0], map -> {
@@ -45,11 +45,11 @@ public class Spawn extends Command {
 				throw new RuntimeException("World border not enabled or not in valid position!");
 			}
 
-			map.setSpawn(sender.getLocation());
+			map.setSpawn(Location.from(sender));
 
-			if(map.getSeekerLobby().getWorld() != null && !map.getSeekerLobby().getWorld().getName().equals(sender.getLocation().getWorld().getName())) {
+			if(map.getSeekerLobby().getWorld() != null && !map.getSeekerLobby().getWorld().equals(sender.getLocation().getWorld().getName())) {
 				sender.sendMessage(message("SEEKER_LOBBY_SPAWN_RESET").toString());
-				map.setSeekerLobby(new Location(null, 0, 0, 0));
+				map.setSeekerLobby(Location.getDefault());
 			}
 
 			if (!sender.getLocation().getWorld().getName().equals(map.getSpawnName()) && mapSaveEnabled) {

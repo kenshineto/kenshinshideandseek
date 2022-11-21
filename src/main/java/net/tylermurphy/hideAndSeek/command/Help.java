@@ -20,7 +20,7 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.command.util.Command;
+import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.util.Pair;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -33,11 +33,11 @@ import java.util.stream.Collectors;
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Help extends Command {
+public class Help implements ICommand {
 
 	public void execute(Player sender, String[] args) {
 		final int pageSize = 4;
-		List<Pair<String, Command>> commands = Main.getInstance().getCommandGroup().getCommands();
+		List<Pair<String, ICommand>> commands = Main.getInstance().getCommandGroup().getCommands();
 		int pages = (commands.size() - 1) / pageSize + 1;
 		int page;
 		try {
@@ -58,8 +58,8 @@ public class Help extends Command {
 		message.append(String.format("%s================ %sHelp: Page (%s/%s) %s================",
 				ChatColor.AQUA, ChatColor.WHITE, page, pages, ChatColor.AQUA));
 		int lines = 0;
-		for(Pair<String, Command> pair : commands.stream().skip((long) (page - 1) * pageSize).limit(pageSize).collect(Collectors.toList())) {
-			Command command = pair.getRight();
+		for(Pair<String, ICommand> pair : commands.stream().skip((long) (page - 1) * pageSize).limit(pageSize).collect(Collectors.toList())) {
+			ICommand command = pair.getRight();
 			String label = pair.getLeft();
 			String start = label.substring(0, label.indexOf(" "));
 			String invoke = label.substring(label.indexOf(" ")+1);

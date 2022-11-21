@@ -20,22 +20,20 @@
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.command.util.Command;
+import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Config.minPlayers;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Start extends Command {
+public class Start implements ICommand {
 
 	public void execute(Player sender, String[] args) {
 		if (Main.getInstance().getGame().checkCurrentMap()) {
@@ -56,12 +54,8 @@ public class Start extends Command {
 		}
 		String seekerName;
 		if (args.length < 1) {
-			Optional<Player> rand = Main.getInstance().getBoard().getPlayers().stream().skip(new Random().nextInt(Main.getInstance().getBoard().size())).findFirst();
-			if (!rand.isPresent()) {
-				sender.sendMessage(errorPrefix + message("START_FAILED_SEEKER"));
-				return;
-			}
-			seekerName = rand.get().getName();
+			Main.getInstance().getGame().start();
+			return;
 		} else {
 			seekerName = args[0];
 		}

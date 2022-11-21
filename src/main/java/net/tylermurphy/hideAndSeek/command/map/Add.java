@@ -1,7 +1,7 @@
 package net.tylermurphy.hideAndSeek.command.map;
 
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.command.util.Command;
+import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.util.Status;
@@ -15,7 +15,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Config.messagePrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class Add extends Command {
+public class Add implements ICommand {
 
     public void execute(Player sender, String[] args) {
         if (Main.getInstance().getGame().getStatus() != Status.STANDBY) {

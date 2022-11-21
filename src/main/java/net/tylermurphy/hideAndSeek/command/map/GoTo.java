@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.command.map;
 
-import net.tylermurphy.hideAndSeek.command.util.Command;
+import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import org.bukkit.entity.Player;
@@ -10,11 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
-import static net.tylermurphy.hideAndSeek.configuration.Config.exitPosition;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class GoTo extends Command {
+public class GoTo implements ICommand {
 
     public void execute(Player sender, String[] args) {
         Map map = Maps.getMap(args[0]);
@@ -28,13 +27,13 @@ public class GoTo extends Command {
         }
         switch (args[1].toLowerCase()) {
             case "spawn":
-                sender.teleport(map.getSpawn()); break;
+                map.getSpawn().teleport(sender); break;
             case "lobby":
-                sender.teleport(map.getLobby()); break;
+                map.getLobby().teleport(sender); break;
             case "seekerlobby":
-                sender.teleport(map.getSeekerLobby()); break;
+                map.getSeekerLobby().teleport(sender); break;
             case "exit":
-                sender.teleport(exitPosition); break;
+                exitPosition.teleport(sender); break;
             default:
                 sender.sendMessage(errorPrefix + message("COMMAND_INVALID_ARG").addAmount(args[1].toLowerCase()));
         }

@@ -12,98 +12,54 @@ commands:
     usage: /hideandseek [command]
     aliases: hs
 permissions:
-  hideandseek.*:
-    description: Gives access to all hideandseek commands
-    children:
-      hideandseek.about: true
-      hideandseek.help: true
-      hideandseek.reload: true
-      hideandseek.setborder: true
-      hideandseek.setspawn: true
-      hideandseek.setlobby: true
-      hideandseek.setseekerlobby: true
-      hideandseek.setexit: true
-      hideadnseek.setbounds: true
-      hideandseek.setup: true
-      hideandseek.start: true
-      hideandseek.stop: true
-      hideandseek.savemap: true
-      hideandseek.join: true
-      hideandseek.leave: true
-      hideandseek.leavebounds: true
-      hideandseek.wins: true
-      hideandseek.top: true
-      hideandseek.debug: true
-      hideandseek.addmap: true
-      hideandseek.removemap: true
-      hideandseek.listmaps: true
-      hideandseek.setmap: true
-  hideandseek.about:
-    description: Allows you to run the about command
+  hs.help:
     default: true
-  hideandseek.help:
-    description: Allows you to run the help command
+  hs.join:
     default: true
-  hideandseek.reload:
-    description: Allows you to reload the config
-    default: op
-  hideandseek.setborder:
-    description: Allows you to set the game world border
-    default: op
-  hideandseek.setspawn:
-    description: Allows you to set the game spawn point
-    default: op
-  hideandseek.setlobby:
-    description: Allows you to set the game lobby point
-    default: op
-  hideandseek.setseekerlobby:
-    description: Allows you to set the game seeker lobby point
-    default: op
-  hideandseek.setexit:
-    description: Allows you to set the game exit point
-    default: op
-  hideandseek.setbounds:
-    description: Allows you to set bounds for the game map
-    default: op
-  hideandseek.setup:
-    description: Allows you to see what needs to be setup for the plugin to function
-    default: op
-  hideandseek.start:
-    description: Allows you to start the game
-    default: op
-  hideandseek.stop:
-    description: Allows you to stop the game
-    default: op
-  hideandseek.savemap:
-    description: Allows you to set the current game map
-    default: op
-  hideandseek.join:
-    description: Allows you to join the game manual lobby
+  hs.leave:
     default: true
-  hideandseek.leave:
-    description: Allows you to leave the game manual lobby
+  hs.top:
     default: true
-  hideandseek.leavebounds:
-    description: Allows players to leave specified game bounderies
-    default: op
-  hideandseek.wins:
-    description: Allows players to see a players amount of wins
+  hs.wins:
     default: true
-  hideandseek.top:
-    description: Allows players to see the global wins leaderboard
-    default: true
-  hideandseek.debug:
-    description: Opens the debug menu
+  hs.reload:
     default: op
-  hideandseek.addmap:
-    description: Adds a map to the plugin
+  hs.send:
     default: op
-  hideandseek.removemap:
-    description: Removes a map from the plugin
+  hs.setexit:
     default: op
-  hideandseek.listmaps:
-    description: Lists all maps in the plugin
+  hs.start:
     default: op
-  hideandseek.setmap:
-    description: Sets the current lobby to a new map
+  hs.stop:
     default: op
+  hs.map.add:
+    default: op
+  hs.map.remove:
+    default: op
+  hs.map.list:
+    default: op
+  hs.map.status:
+    default: op
+  hs.map.save:
+    default: op
+  hs.map.debug:
+    default: op
+  hs.map.goto:
+    default: op
+  hs.map.set.lobby:
+    default: op
+  hs.map.set.spawn:
+    default: op
+  hs.map.set.seekerlobby:
+    default: op
+  hs.map.set.border:
+    default: op
+  hs.map.set.bounds:
+    default: op
+  hs.map.blockhunt.add:
+    default: op
+  hs.map.blockhunt.remove:
+    default: op
+  hs.map.blockhunt.list:
+    default: op
+

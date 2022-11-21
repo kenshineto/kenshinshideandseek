@@ -1,6 +1,6 @@
 package net.tylermurphy.hideAndSeek.command.map;
 
-import net.tylermurphy.hideAndSeek.command.util.Command;
+import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
 import org.bukkit.ChatColor;
@@ -13,7 +13,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Config.messagePrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
-public class List extends Command {
+public class List implements ICommand {
 
     public void execute(Player sender, String[] args) {
         Collection<Map> maps = Maps.getAllMaps();

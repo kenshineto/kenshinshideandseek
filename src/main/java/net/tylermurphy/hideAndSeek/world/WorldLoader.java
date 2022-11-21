@@ -49,7 +49,7 @@ public class WorldLoader {
 			Main.getInstance().getLogger().warning(map.getGameSpawnName() + " already unloaded.");
 			return;
 		}
-		world.getPlayers().forEach(player -> player.teleport(exitPosition));
+		world.getPlayers().forEach(player -> exitPosition.teleport(player));
         if (Bukkit.getServer().unloadWorld(world, false)) {
             Main.getInstance().getLogger().info("Successfully unloaded " + map.getGameSpawnName());
         }else{

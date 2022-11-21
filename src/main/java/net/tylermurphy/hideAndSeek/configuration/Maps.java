@@ -3,10 +3,8 @@ package net.tylermurphy.hideAndSeek.configuration;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import net.tylermurphy.hideAndSeek.util.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -74,12 +72,9 @@ public class Maps {
         ConfigurationSection data = maps.getConfigurationSection(name);
         if(data == null) return null;
         Map map = new Map(name);
-        map.setSpawn(setSpawn(data, "game"));
-        map.setSpawnName(data.getString("spawns.game.world"));
-        map.setLobby(setSpawn(data, "lobby"));
-        map.setLobbyName(data.getString("spawns.lobby.world"));
-        map.setSeekerLobby(setSpawn(data, "seeker"));
-        map.setSeekerLobbyName(data.getString("spawns.seeker.world"));
+        map.setSpawn(getSpawn(data, "game"));
+        map.setLobby(getSpawn(data, "lobby"));
+        map.setSeekerLobby(getSpawn(data, "seeker"));
         map.setBoundMin(data.getInt("bounds.min.x"), data.getInt("bounds.min.z"));
         map.setBoundMax(data.getInt("bounds.max.x"), data.getInt("bounds.max.z"));
         map.setWorldBorderData(
@@ -104,11 +99,8 @@ public class Maps {
         return map;
     }
 
-    private static Location setSpawn(ConfigurationSection data, String spawn) {
-        String worldName = data.getString("spawns."+spawn+".world");
-        if(worldName == null) return new Location(null, 0, 0, 0);
-        if(Map.worldDoesntExist(worldName)) return new Location(null, 0, 0, 0);
-        World world = Bukkit.getWorld(worldName);
+    private static Location getSpawn(ConfigurationSection data, String spawn) {
+        String world = data.getString("spawns."+spawn+".world");
         double x = data.getDouble("spawns."+spawn+".x");
         double y = data.getDouble("spawns."+spawn+".y");
         double z = data.getDouble("spawns."+spawn+".z");
@@ -146,11 +138,7 @@ public class Maps {
 
     private static void saveSpawn(ConfigurationSection data, Location spawn, String name, Map map) {
         String worldName = getWorldName(name, map);
-        if(worldName == null || Map.worldDoesntExist(worldName)) {
-            data.set("spawns." + name + ".world", "world");
-        } else {
-            data.set("spawns." + name + ".world", worldName);
-        }
+        data.set("spawns." + name + ".world", worldName);
         data.set("spawns." + name + ".x", spawn.getX());
         data.set("spawns." + name + ".y", spawn.getY());
         data.set("spawns." + name + ".z", spawn.getZ());
