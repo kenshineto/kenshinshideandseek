@@ -50,11 +50,13 @@ public class WorldLoader {
 			return;
 		}
 		world.getPlayers().forEach(player -> exitPosition.teleport(player));
-        if (Bukkit.getServer().unloadWorld(world, false)) {
-            Main.getInstance().getLogger().info("Successfully unloaded " + map.getGameSpawnName());
-        }else{
-            Main.getInstance().getLogger().severe("COULD NOT UNLOAD " + map.getGameSpawnName());
-        }
+		Main.getInstance().scheduleTask(() -> {
+			if (Bukkit.getServer().unloadWorld(world, false)) {
+				Main.getInstance().getLogger().info("Successfully unloaded " + map.getGameSpawnName());
+			} else {
+				Main.getInstance().getLogger().severe("COULD NOT UNLOAD " + map.getGameSpawnName());
+			}
+		});
     }
 
     public void loadMap() {

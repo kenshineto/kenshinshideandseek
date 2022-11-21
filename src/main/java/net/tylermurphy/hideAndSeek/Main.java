@@ -280,5 +280,10 @@ public class Main extends JavaPlugin implements Listener {
 	public boolean isLoaded() {
 		return loaded;
 	}
+
+	public void scheduleTask(Runnable task) {
+		if(!isEnabled()) return;
+		Bukkit.getServer().getScheduler().runTask(this, task);
+	}
 	
 }

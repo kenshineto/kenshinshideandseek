@@ -19,7 +19,9 @@
 
 package net.tylermurphy.hideAndSeek.world;
 
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.jetbrains.annotations.NotNull;
@@ -36,41 +38,27 @@ public class VoidGenerator extends ChunkGenerator {
         return Collections.emptyList();
     }
 
-    public boolean shouldGenerateNoise() {
-    	return false;
-    }
-
-    public boolean shouldGenerateSurface() {
-    	return false;
-    }
-
-    public boolean shouldGenerateBedrock() {
-    	return false;
-    }
-
-    public boolean shouldGenerateCaves() {
-    	return false;
-    }
-
-    public boolean shouldGenerateDecorations() {
-    	return false;
-    }
-
-    public boolean shouldGenerateMobs() {
-    	return false;
-    }
-
-    public boolean shouldGenerateStructures() {
-    	return false;
-    }
-
-    public boolean canSpawn(@NotNull World world, int x, int z) {
+    @Override
+    public boolean canSpawn(World world, int x, int z) {
         return true;
     }
 
+    @Override
+    public Location getFixedSpawnLocation(World world, Random random) {
+        return new Location(world, 0, 100, 0);
+    }
+
     // 1.13 And Prev
-    public @NotNull ChunkData generateChunkData(@NotNull World world, @NotNull Random random, int x, int z, @NotNull BiomeGrid biome) {
-        return createChunkData(world);
+    public ChunkData generateChunkData(World world, Random random, int chunkX, int chunkZ, BiomeGrid biome) {
+        ChunkData chunkData = super.createChunkData(world);
+
+        for(int x = 0; x < 16; x++) {
+            for(int z = 0; z < 16; z++) {
+                biome.setBiome(x, z, Biome.PLAINS);
+            }
+        }
+
+        return chunkData;
     }
 
     // 1.8
