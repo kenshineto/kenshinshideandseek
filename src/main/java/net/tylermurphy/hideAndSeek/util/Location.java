@@ -1,6 +1,7 @@
 package net.tylermurphy.hideAndSeek.util;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.world.VoidGenerator;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -51,13 +52,17 @@ public class Location {
     }
 
     public World load(WorldType type) {
+        boolean mapSave = world.startsWith("hs_");
         World bukkitWorld = Bukkit.getWorld(world);
         if(bukkitWorld != null) return bukkitWorld;
-        if (type == null) {
-            Bukkit.getServer().createWorld(new WorldCreator(world));
-        } else {
-            Bukkit.getServer().createWorld(new WorldCreator(world).type(type));
+        WorldCreator creator = new WorldCreator(world);
+        if(type != null) {
+            creator.type(type);
         }
+        if(mapSave) {
+            creator.generator(new VoidGenerator());
+        }
+        Bukkit.getServer().createWorld(creator).setAutoSave(!mapSave);
         return Bukkit.getWorld(world);
     }
 
