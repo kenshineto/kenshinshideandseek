@@ -80,11 +80,11 @@ public class Board {
     }
 
     public List<Player> getHiders() {
-        return Hider.stream().filter(Objects::nonNull).map(playerList::get).collect(Collectors.toList());
+        return Hider.stream().filter(Objects::nonNull).map(playerList::get).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public List<Player> getSeekers() {
-        return Seeker.stream().filter(Objects::nonNull).map(playerList::get).collect(Collectors.toList());
+        return Seeker.stream().filter(Objects::nonNull).map(playerList::get).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public Player getFirstSeeker() {
@@ -92,7 +92,7 @@ public class Board {
     }
 
     public List<Player> getSpectators() {
-        return Spectator.stream().filter(Objects::nonNull).map(playerList::get).collect(Collectors.toList());
+        return Spectator.stream().filter(Objects::nonNull).map(playerList::get).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public List<Player> getPlayers() {
