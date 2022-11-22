@@ -3,10 +3,9 @@ package net.tylermurphy.hideAndSeek.command.world;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.util.Location;
-import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -23,20 +22,35 @@ public class Create implements ICommand {
         List<String> worlds = Main.getInstance().getWorlds();
         if(worlds.contains(args[0])) {
             sender.sendMessage(errorPrefix + message("WORLD_EXISTS").addAmount(args[0]));
+            return;
         }
         WorldType type;
-        if(args[1].equals("normal")) {
-            type = WorldType.NORMAL;
-        } else if(args[1].equals("flat")) {
-            type = WorldType.FLAT;
-        } else {
-            sender.sendMessage(errorPrefix + message("INVALID_WORLD_TYPE").addAmount(args[1]));
-            return;
+        World.Environment environment;
+        switch (args[1]) {
+            case "normal":
+                type = WorldType.NORMAL;
+                environment = World.Environment.NORMAL;
+                break;
+            case "flat":
+                type = WorldType.FLAT;
+                environment = World.Environment.NORMAL;
+                break;
+            case "nether":
+                type = WorldType.NORMAL;
+                environment = World.Environment.NETHER;
+                break;
+            case "end":
+                type = WorldType.NORMAL;
+                environment = World.Environment.THE_END;
+                break;
+            default:
+                sender.sendMessage(errorPrefix + message("INVALID_WORLD_TYPE").addAmount(args[1]));
+                return;
         }
 
         Location temp = new Location(args[0], 0, 0, 0);
 
-        if (temp.load(type) == null) {
+        if (temp.load(type, environment) == null) {
             sender.sendMessage(errorPrefix + message("WORLD_ADDED_FAILED"));
         } else {
             sender.sendMessage(messagePrefix + message("WORLD_ADDED").addAmount(args[0]));
@@ -61,7 +75,7 @@ public class Create implements ICommand {
             return Collections.singletonList("name");
         }
         if(parameter.equals("type")) {
-            return Arrays.asList("normal", "flat");
+            return Arrays.asList("normal", "flat", "nether", "end");
         }
         return null;
     }

@@ -4,6 +4,7 @@ import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,8 +21,18 @@ public class List implements ICommand {
         } else {
             StringBuilder response = new StringBuilder(messagePrefix + message("LIST_WORLDS"));
             for (String world : worlds) {
-                boolean loaded = Bukkit.getWorld(world) != null;
-                response.append("\n    ").append(world).append(": ").append(loaded ? ChatColor.GREEN + "LOADED" : ChatColor.YELLOW + "NOT LOADED").append(ChatColor.WHITE);
+                String status = ChatColor.GRAY + "NOT LOADED";
+                World bukkit_world = Bukkit.getWorld(world);
+                if(bukkit_world != null) {
+                    if(bukkit_world.getEnvironment() == World.Environment.NETHER) {
+                        status = ChatColor.RED + "NETHER";
+                    } else if(bukkit_world.getEnvironment() == World.Environment.THE_END) {
+                        status = ChatColor.YELLOW + "THE END";
+                    } else {
+                        status = ChatColor.GREEN + bukkit_world.getWorldType().toString();
+                    }
+                }
+                response.append("\n    ").append(world).append(": ").append(status).append(ChatColor.WHITE);
             }
             sender.sendMessage(response.toString());
         }

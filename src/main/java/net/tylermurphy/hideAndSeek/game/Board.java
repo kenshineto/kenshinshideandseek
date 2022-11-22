@@ -268,7 +268,7 @@ public class Board {
                     board.setLine(String.valueOf(i), line.replace("{TEAM}", value));
                 } else if (line.contains("{BORDER}")) {
                     if (!Main.getInstance().getGame().getCurrentMap().isWorldBorderEnabled()) continue;
-                    if (worldBorder == null || status == Status.STARTING) {
+                    if (status == Status.STARTING) {
                         board.setLine(String.valueOf(i), line.replace("{BORDER}", BORDER_COUNTING.replace("{AMOUNT}", "0")));
                     } else if (!worldBorder.isRunning()) {
                         board.setLine(String.valueOf(i), line.replace("{BORDER}", BORDER_COUNTING.replaceFirst("\\{AMOUNT}", worldBorder.getDelay()/60+"").replaceFirst("\\{AMOUNT}", worldBorder.getDelay()%60+"")));

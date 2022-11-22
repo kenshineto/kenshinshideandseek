@@ -51,13 +51,16 @@ public class Location {
         this.z = location.getZ();
     }
 
-    public World load(WorldType type) {
+    public World load(WorldType type, World.Environment environment) {
         boolean mapSave = world.startsWith("hs_");
         World bukkitWorld = Bukkit.getWorld(world);
         if(bukkitWorld != null) return bukkitWorld;
         WorldCreator creator = new WorldCreator(world);
         if(type != null) {
             creator.type(type);
+        }
+        if(environment != null) {
+            creator.environment(environment);
         }
         if(mapSave) {
             creator.generator(new VoidGenerator());
@@ -69,7 +72,7 @@ public class Location {
     public World load() {
         if(!exists()) return null;
         if(!Main.getInstance().isLoaded()) return null;
-        return load(null);
+        return load(null, null);
     }
 
     private org.bukkit.Location toBukkit() {

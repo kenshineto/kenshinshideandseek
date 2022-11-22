@@ -4,10 +4,13 @@
     <version>1.7.0</version>
     <name>Hide and Seek Plugin</name>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <build>
         <defaultGoal>clean install</defaultGoal>
         <sourceDirectory>src/main/java</sourceDirectory>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -29,10 +32,6 @@
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
                                     <shadedPattern>net.tylermurphy.dependencies.hikari</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.ibex.nestedvm</pattern>
-                                    <shadedPattern>net.tylermurphy.dependencies.nestedvm</shadedPattern>
                                 </relocation>
                             </relocations>
                             <artifactSet>
@@ -58,7 +57,6 @@
                                     <resource>META-INF/services/java.sql.Driver</resource>
                                 </transformer>
                             </transformers>
-                            <minimizeJar>true</minimizeJar>
                         </configuration>
                     </execution>
                 </executions>
@@ -82,10 +80,10 @@
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/public/</url>
         </repository>
-<!--        <repository>-->
-<!--            <id>dmulloy2-repo</id>-->
-<!--            <url>https://repo.dmulloy2.net/repository/public/</url>-->
-<!--        </repository>-->
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>https://repo.dmulloy2.net/repository/public/</url>
+        </repository>
         <repository>
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
@@ -109,8 +107,8 @@
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
             <version>4.4.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/ProtocolLib.jar</systemPath>
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/lib/ProtocolLib.jar</systemPath>-->
         </dependency>
         <dependency>
             <groupId>org.xerial</groupId>

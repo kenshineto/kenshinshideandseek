@@ -126,6 +126,7 @@ public class ConfigManager {
         return config.contains(path);
     }
 
+    @SuppressWarnings("unused")
     public double getDouble(String path) {
         if (!config.contains(path)) {
             return defaultConfig.getDouble(path);
@@ -188,10 +189,6 @@ public class ConfigManager {
 
     public void reset(String path) {
         config.set(path, defaultConfig.get(path));
-    }
-
-    public void resetAll() {
-        config = new YamlConfiguration();
     }
 
     public void resetFile(String newDefaultFilename) {

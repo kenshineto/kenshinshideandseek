@@ -60,13 +60,15 @@ public class WorldLoader {
     }
 
     public void loadMap() {
-		Bukkit.getServer().createWorld(new WorldCreator(map.getGameSpawnName()).generator(new VoidGenerator()));
-		World world = Bukkit.getServer().getWorld(map.getGameSpawnName());
-		if (world == null) {
-			Main.getInstance().getLogger().severe("COULD NOT LOAD " + map.getGameSpawnName());
-			return;
-		}
-		world.setAutoSave(false);
+		Main.getInstance().scheduleTask(() -> {
+			Bukkit.getServer().createWorld(new WorldCreator(map.getGameSpawnName()).generator(new VoidGenerator()));
+			World world = Bukkit.getServer().getWorld(map.getGameSpawnName());
+			if (world == null) {
+				Main.getInstance().getLogger().severe("COULD NOT LOAD " + map.getGameSpawnName());
+				return;
+			}
+			world.setAutoSave(false);
+		});
     }
  
     public void rollback() {

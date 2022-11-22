@@ -2,7 +2,6 @@ package net.tylermurphy.hideAndSeek.game.listener;
 
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.configuration.Items;
-import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

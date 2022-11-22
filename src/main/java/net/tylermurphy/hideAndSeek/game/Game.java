@@ -97,13 +97,15 @@ public class Game {
 	}
 
 	public void start() {
+		Player seeker;
 		try {
 			int rand = (int) (Math.random() * board.getPlayers().size());
-			Player seeker = board.getPlayers().get(rand);
-			start(seeker);
+			seeker = board.getPlayers().get(rand);
 		} catch (Exception e){
 			Main.getInstance().getLogger().warning("Failed to select random seeker.");
+			return;
 		}
+		start(seeker);
 	}
 
 	public void start(Player seeker) {

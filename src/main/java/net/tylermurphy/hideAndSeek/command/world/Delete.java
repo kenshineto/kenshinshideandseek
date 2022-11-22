@@ -22,12 +22,14 @@ public class Delete implements ICommand {
         java.util.List<String> worlds = Main.getInstance().getWorlds();
         if(!worlds.contains(args[0])) {
             sender.sendMessage(errorPrefix + message("WORLD_DOESNT_EXIST").addAmount(args[0]));
+            return;
         }
 
         Confirm.Confirmation confirmation = new Confirm.Confirmation(args[0], world -> {
             java.util.List<String> worlds_now = Main.getInstance().getWorlds();
             if(!worlds_now.contains(world)) {
                 sender.sendMessage(errorPrefix + message("WORLD_DOESNT_EXIST").addAmount(world));
+                return;
             }
             World bukkit_world = Bukkit.getWorld(world);
             if(bukkit_world != null && bukkit_world.getPlayers().size() > 0) {
