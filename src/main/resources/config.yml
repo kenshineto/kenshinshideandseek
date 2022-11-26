@@ -268,11 +268,8 @@ locale: "en-US"
 # playing the game.
 blockedCommands: [
   "msg",
-  "tp",
-  "gamemode",
-  "kill",
-  "give",
-  "effect"
+  "reply",
+  "me"
 ]
 
 # Stop interactions with any block by any user while playing the game.

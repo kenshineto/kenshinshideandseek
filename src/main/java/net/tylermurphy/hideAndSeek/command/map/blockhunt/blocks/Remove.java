@@ -20,6 +20,10 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class Remove implements ICommand {
 
     public void execute(Player sender, String[] args) {
+        if (!Main.getInstance().supports(9)) {
+            sender.sendMessage(errorPrefix + message("BLOCKHUNT_UNSUPPORTED"));
+            return;
+        }
         if (Main.getInstance().getGame().getStatus() != Status.STANDBY) {
             sender.sendMessage(errorPrefix + message("GAME_INPROGRESS"));
             return;

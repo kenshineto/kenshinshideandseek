@@ -3,6 +3,7 @@ package net.tylermurphy.hideAndSeek.configuration;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.events.Border;
 import net.tylermurphy.hideAndSeek.world.WorldLoader;
 import net.tylermurphy.hideAndSeek.util.Location;
@@ -80,7 +81,11 @@ public class Map {
   }
 
   public void setBlockhunt(boolean enabled, List<Material> blocks) {
-    this.blockhunt = enabled;
+    if (Main.getInstance().supports(9)) {
+      this.blockhunt = enabled;
+    } else {
+      this.blockhunt = false;
+    }
     this.blockhuntBlocks = blocks;
   }
 
@@ -224,10 +229,6 @@ public class Map {
     if(isWorldBorderEnabled() &&
         new Vector(spawnPosition.getX(), 0, spawnPosition.getZ()).distance(new Vector(xWorldBorder, 0, zWorldBorder)) > 100) return true;
     return xBoundMin == 0 || zBoundMin == 0 || xBoundMax == 0 || zBoundMax == 0;
-  }
-
-  public boolean isSpawnNotSetup() {
-    return spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0;
   }
 
   public boolean isBoundsNotSetup() {

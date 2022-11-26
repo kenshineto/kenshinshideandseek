@@ -1,22 +1,3 @@
-/*
- * This file is part of Kenshins Hide and Seek
- *
- * Copyright (c) 2021 Tyler Murphy.
- *
- * Kenshins Hide and Seek free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * he Free Software Foundation version 3.
- *
- * Kenshins Hide and Seek is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
-
 package net.tylermurphy.hideAndSeek.game;
 
 import net.tylermurphy.hideAndSeek.Main;
@@ -38,109 +19,128 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Board {
 
-    private final List<String> Hider = new ArrayList<>(), Seeker = new ArrayList<>(), Spectator = new ArrayList<>();
-    private final Map<String, Player> playerList = new HashMap<>();
-    private final Map<String, CustomBoard> customBoards = new HashMap<>();
-    private final Map<String, Integer> hider_kills = new HashMap<>(), seeker_kills = new HashMap<>(), hider_deaths = new HashMap<>(), seeker_deaths = new HashMap<>();
+    private enum Type {
+        HIDER,
+        SEEKER,
+        SPECTATOR,
+    }
+
+    private UUID initialSeeker = null;
+    private final Map<UUID, Type> Players = new HashMap<>();
+    private final Map<UUID, CustomBoard> customBoards = new HashMap<>();
+    private final Map<UUID, Integer> hider_kills = new HashMap<>(), seeker_kills = new HashMap<>(), hider_deaths = new HashMap<>(), seeker_deaths = new HashMap<>();
 
     public boolean contains(Player player) {
-        return playerList.containsKey(player.getUniqueId().toString());
+        return Players.containsKey(player.getUniqueId());
     }
 
     public boolean isHider(Player player) {
-        return Hider.contains(player.getUniqueId().toString());
+        return isHider(player.getUniqueId());
     }
 
     public boolean isHider(UUID uuid) {
-        return Hider.contains(uuid.toString());
+        if(!Players.containsKey(uuid)) return false;
+        return Players.get(uuid) == Type.HIDER;
     }
 
     public boolean isSeeker(Player player) {
-        return Seeker.contains(player.getUniqueId().toString());
+        return isSeeker(player.getUniqueId());
     }
 
     public boolean isSeeker(UUID uuid) {
-        return Seeker.contains(uuid.toString());
+        if(!Players.containsKey(uuid)) return false;
+        return Players.get(uuid) == Type.SEEKER;
     }
 
     public boolean isSpectator(Player player) {
-        return Spectator.contains(player.getUniqueId().toString());
+        return isSpectator(player.getUniqueId());
+    }
+
+    public boolean isSpectator(UUID uuid) {
+        if(!Players.containsKey(uuid)) return false;
+        return Players.get(uuid) == Type.SPECTATOR;
     }
 
     public int sizeHider() {
-        return Hider.size();
+        return getHiders().size();
     }
 
     public int sizeSeeker() {
-        return Seeker.size();
+        return getSeekers().size();
     }
 
     public int size() {
-        return playerList.values().size();
+        return getPlayers().size();
     }
 
     public List<Player> getHiders() {
-        return Hider.stream().filter(Objects::nonNull).map(playerList::get).filter(Objects::nonNull).collect(Collectors.toList());
+        return Players.keySet().stream()
+                .filter(s -> Players.get(s) == Type.HIDER)
+                .map(Bukkit::getPlayer)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     public List<Player> getSeekers() {
-        return Seeker.stream().filter(Objects::nonNull).map(playerList::get).filter(Objects::nonNull).collect(Collectors.toList());
-    }
-
-    public Player getFirstSeeker() {
-        return playerList.get(Seeker.get(0));
+        return Players.keySet().stream()
+                .filter(s -> Players.get(s) == Type.SEEKER)
+                .map(Bukkit::getPlayer)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     public List<Player> getSpectators() {
-        return Spectator.stream().filter(Objects::nonNull).map(playerList::get).filter(Objects::nonNull).collect(Collectors.toList());
+        return Players.keySet().stream()
+                .filter(s -> Players.get(s) == Type.SPECTATOR)
+                .map(Bukkit::getPlayer)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     public List<Player> getPlayers() {
-        return playerList.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
+        return Players.keySet().stream()
+                .map(Bukkit::getPlayer)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    public Player getFirstSeeker() {
+        if(initialSeeker == null) return null;
+        return Bukkit.getPlayer(initialSeeker);
     }
 
     public Player getPlayer(UUID uuid) {
-        return playerList.get(uuid.toString());
+        if(!Players.containsKey(uuid)) {
+            return null;
+        }
+        return Bukkit.getPlayer(uuid);
     }
 
     public void addHider(Player player) {
-        Hider.add(player.getUniqueId().toString());
-        Seeker.remove(player.getUniqueId().toString());
-        Spectator.remove(player.getUniqueId().toString());
-        playerList.put(player.getUniqueId().toString(), player);
+        Players.put(player.getUniqueId(), Type.HIDER);
     }
 
     public void addSeeker(Player player) {
-        Hider.remove(player.getUniqueId().toString());
-        Seeker.add(player.getUniqueId().toString());
-        Spectator.remove(player.getUniqueId().toString());
-        playerList.put(player.getUniqueId().toString(), player);
+        if(initialSeeker == null) {
+            initialSeeker = player.getUniqueId();
+        }
+        Players.put(player.getUniqueId(), Type.SEEKER);
     }
 
     public void addSpectator(Player player) {
-        Hider.remove(player.getUniqueId().toString());
-        Seeker.remove(player.getUniqueId().toString());
-        Spectator.add(player.getUniqueId().toString());
-        playerList.put(player.getUniqueId().toString(), player);
+        Players.put(player.getUniqueId(), Type.SPECTATOR);
     }
 
     public void remove(Player player) {
-        Hider.remove(player.getUniqueId().toString());
-        Seeker.remove(player.getUniqueId().toString());
-        Spectator.remove(player.getUniqueId().toString());
-        playerList.remove(player.getUniqueId().toString());
+        Players.remove(player.getUniqueId());
     }
 
     public boolean onSameTeam(Player player1, Player player2) {
-        if (Hider.contains(player1.getUniqueId().toString()) && Hider.contains(player2.getUniqueId().toString())) return true;
-        else if (Seeker.contains(player1.getUniqueId().toString()) && Seeker.contains(player2.getUniqueId().toString())) return true;
-        else return Spectator.contains(player1.getUniqueId().toString()) && Spectator.contains(player2.getUniqueId().toString());
+        return Players.get(player1.getUniqueId()) == Players.get(player2.getUniqueId());
     }
 
     public void reload() {
-        Hider.clear();
-        Seeker.clear();
-        Spectator.clear();
+        Players.replaceAll((u, v) -> Type.HIDER);
         hider_kills.clear();
         seeker_kills.clear();
         hider_deaths.clear();
@@ -148,47 +148,38 @@ public class Board {
     }
 
     public void addKill(UUID uuid) {
-        if (Hider.contains(uuid.toString())) {
-            if (hider_kills.containsKey(uuid.toString())) {
-                hider_kills.put(uuid.toString(), hider_kills.get(uuid.toString())+1);
-            } else {
-                hider_kills.put(uuid.toString(), 1);
-            }
-        } else if (Seeker.contains(uuid.toString())) {
-            if (seeker_kills.containsKey(uuid.toString())) {
-                seeker_kills.put(uuid.toString(), seeker_kills.get(uuid.toString())+1);
-            } else {
-                seeker_kills.put(uuid.toString(), 1);
-            }
+        if(Players.get(uuid) == Type.HIDER) {
+            int kills = hider_kills.getOrDefault(uuid, 0);
+            hider_kills.put(uuid, kills + 1);
+        } else if(Players.get(uuid) == Type.SEEKER) {
+            int kills = seeker_kills.getOrDefault(uuid, 0);
+            seeker_kills.put(uuid, kills + 1);
         }
     }
 
     public void addDeath(UUID uuid) {
-        if (Hider.contains(uuid.toString())) {
-            if (hider_deaths.containsKey(uuid.toString())) {
-                hider_deaths.put(uuid.toString(), hider_deaths.get(uuid.toString())+1);
-            } else {
-                hider_deaths.put(uuid.toString(), 1);
-            }
-        } else if (Seeker.contains(uuid.toString())) {
-            if (seeker_deaths.containsKey(uuid.toString())) {
-                seeker_deaths.put(uuid.toString(), seeker_deaths.get(uuid.toString())+1);
-            } else {
-                seeker_deaths.put(uuid.toString(), 1);
-            }
+        if(Players.get(uuid) == Type.HIDER) {
+            int kills = hider_deaths.getOrDefault(uuid, 0);
+            hider_deaths.put(uuid, kills + 1);
+        } else if(Players.get(uuid) == Type.SEEKER) {
+            int kills = seeker_deaths.getOrDefault(uuid, 0);
+            seeker_deaths.put(uuid, kills + 1);
         }
     }
 
-    public Map<String, Integer> getHiderKills() {
+    public Map<UUID, Integer> getHiderKills() {
         return new HashMap<>(hider_kills);
     }
-    public Map<String, Integer> getSeekerKills() {
+
+    public Map<UUID, Integer> getSeekerKills() {
         return new HashMap<>(seeker_kills);
     }
-    public Map<String, Integer> getHiderDeaths() {
+
+    public Map<UUID, Integer> getHiderDeaths() {
         return new HashMap<>(hider_deaths);
     }
-    public Map<String, Integer> getSeekerDeaths() {
+
+    public Map<UUID, Integer> getSeekerDeaths() {
         return new HashMap<>(seeker_deaths);
     }
 
@@ -197,7 +188,7 @@ public class Board {
     }
 
     private void createLobbyBoard(Player player, boolean recreate) {
-        CustomBoard board = customBoards.get(player.getUniqueId().toString());
+        CustomBoard board = customBoards.get(player.getUniqueId());
         if (recreate || board == null) {
             board = new CustomBoard(player, LOBBY_TITLE);
             board.updateTeams();
@@ -228,7 +219,7 @@ public class Board {
             i++;
         }
         board.display();
-        customBoards.put(player.getUniqueId().toString(), board);
+        customBoards.put(player.getUniqueId(), board);
     }
 
     public String getMapName() {
@@ -242,7 +233,7 @@ public class Board {
     }
 
     private void createGameBoard(Player player, boolean recreate) {
-        CustomBoard board = customBoards.get(player.getUniqueId().toString());
+        CustomBoard board = customBoards.get(player.getUniqueId());
         if (recreate || board == null) {
             board = new CustomBoard(player, GAME_TITLE);
             board.updateTeams();
@@ -279,7 +270,7 @@ public class Board {
                     if (!tauntEnabled) continue;
                     if (taunt == null || status == Status.STARTING) {
                         board.setLine(String.valueOf(i), line.replace("{TAUNT}", TAUNT_COUNTING.replace("{AMOUNT}", "0")));
-                    } else if (!tauntLast && Hider.size() == 1) {
+                    } else if (!tauntLast && sizeHider() == 1) {
                         board.setLine(String.valueOf(i), line.replace("{TAUNT}", TAUNT_EXPIRED));
                     } else if (!taunt.isRunning()) {
                         board.setLine(String.valueOf(i), line.replace("{TAUNT}", TAUNT_COUNTING.replaceFirst("\\{AMOUNT}", taunt.getDelay() / 60 + "").replaceFirst("\\{AMOUNT}", taunt.getDelay() % 60 + "")));
@@ -306,23 +297,23 @@ public class Board {
             i++;
         }
         board.display();
-        customBoards.put(player.getUniqueId().toString(), board);
+        customBoards.put(player.getUniqueId(), board);
     }
 
     public void removeBoard(Player player) {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         assert manager != null;
         player.setScoreboard(manager.getMainScoreboard());
-        customBoards.remove(player.getUniqueId().toString());
+        customBoards.remove(player.getUniqueId());
     }
 
     public void reloadLobbyBoards() {
-        for(Player player : playerList.values())
+        for(Player player : getPlayers())
             createLobbyBoard(player, false);
     }
 
     public void reloadGameBoards() {
-        for(Player player : playerList.values())
+        for(Player player : getPlayers())
             createGameBoard(player, false);
     }
 
@@ -332,17 +323,19 @@ public class Board {
     }
 
     private String getSeekerPercent() {
-        if (playerList.values().size() < 2)
+        int size = size();
+        if (size < 2)
             return " --";
         else
-            return " "+(int)(100*(1.0/playerList.size()));
+            return " "+(int)(100*(1.0/size));
     }
 
     private String getHiderPercent() {
-        if (playerList.size() < 2)
+        int size = size();
+        if (size < 2)
             return " --";
         else
-            return " "+(int)(100-100*(1.0/playerList.size()));
+            return " "+(int)(100-100*(1.0/size));
     }
 
     private String getTeam(Player player) {
@@ -353,10 +346,8 @@ public class Board {
     }
 
     public void cleanup() {
-        playerList.clear();
-        Hider.clear();
-        Seeker.clear();
-        Spectator.clear();
+        Players.clear();;
+        initialSeeker = null;
         customBoards.clear();
     }
 

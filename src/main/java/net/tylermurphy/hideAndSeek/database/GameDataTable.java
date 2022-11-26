@@ -175,10 +175,10 @@ public class GameDataTable {
             @NotNull Board board,
             @NotNull List<UUID> uuids,
             @NotNull List<UUID> winners,
-            @NotNull Map<String,Integer> hider_kills,
-            @NotNull Map<String,Integer> hider_deaths,
-            @NotNull Map<String,Integer> seeker_kills,
-            @NotNull Map<String,Integer> seeker_deaths,
+            @NotNull Map<UUID,Integer> hider_kills,
+            @NotNull Map<UUID,Integer> hider_deaths,
+            @NotNull Map<UUID,Integer> seeker_kills,
+            @NotNull Map<UUID,Integer> seeker_deaths,
             @NotNull WinType type
     ) {
         for(UUID uuid : uuids) {
@@ -192,10 +192,10 @@ public class GameDataTable {
                     info.getSeekerWins() + (winners.contains(uuid) && type == WinType.SEEKER_WIN ? 1 : 0),
                     info.getHiderGames() + (board.isHider(uuid) || (board.isSeeker(uuid) && !board.getFirstSeeker().getUniqueId().equals(uuid)) ? 1 : 0),
                     info.getSeekerGames() + (board.getFirstSeeker().getUniqueId().equals(uuid) ? 1 : 0),
-                    info.getHiderKills() + hider_kills.getOrDefault(uuid.toString(), 0),
-                    info.getSeekerKills() + seeker_kills.getOrDefault(uuid.toString(), 0),
-                    info.getHiderDeaths() + hider_deaths.getOrDefault(uuid.toString(), 0),
-                    info.getSeekerDeaths() + seeker_deaths.getOrDefault(uuid.toString(), 0)
+                    info.getHiderKills() + hider_kills.getOrDefault(uuid, 0),
+                    info.getSeekerKills() + seeker_kills.getOrDefault(uuid, 0),
+                    info.getHiderDeaths() + hider_deaths.getOrDefault(uuid, 0),
+                    info.getSeekerDeaths() + seeker_deaths.getOrDefault(uuid, 0)
             );
         }
     }

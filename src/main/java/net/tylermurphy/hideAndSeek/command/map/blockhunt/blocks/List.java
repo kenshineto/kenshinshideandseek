@@ -1,5 +1,6 @@
 package net.tylermurphy.hideAndSeek.command.map.blockhunt.blocks;
 
+import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.configuration.Maps;
@@ -17,6 +18,10 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class List implements ICommand {
 
     public void execute(Player sender, String[] args) {
+        if (!Main.getInstance().supports(9)) {
+            sender.sendMessage(errorPrefix + message("BLOCKHUNT_UNSUPPORTED"));
+            return;
+        }
         Map map = Maps.getMap(args[0]);
         if(map == null) {
             sender.sendMessage(errorPrefix + message("INVALID_MAP"));

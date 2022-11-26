@@ -1,22 +1,3 @@
-/*
- * This file is part of Kenshins Hide and Seek
- *
- * Copyright (c) 2021 Tyler Murphy.
- *
- * Kenshins Hide and Seek free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * he Free Software Foundation version 3.
- *
- * Kenshins Hide and Seek is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
-
 package net.tylermurphy.hideAndSeek.command.map.set;
 
 import net.tylermurphy.hideAndSeek.command.util.ICommand;
@@ -47,8 +28,16 @@ public class Spawn implements ICommand {
 
 			map.setSpawn(Location.from(sender));
 
+			if(!map.isBoundsNotSetup()) {
+				Vector boundsMin = map.getBoundsMin();
+				Vector boundsMax = map.getBoundsMax();
+				if(map.getSpawn().isNotInBounds(boundsMin.getBlockX(), boundsMax.getBlockX(), boundsMin.getBlockZ(), boundsMax.getBlockZ())) {
+					sender.sendMessage(warningPrefix + message("WARN_MAP_BOUNDS"));
+				}
+			}
+
 			if(map.getSeekerLobby().getWorld() != null && !map.getSeekerLobby().getWorld().equals(sender.getLocation().getWorld().getName())) {
-				sender.sendMessage(message("SEEKER_LOBBY_SPAWN_RESET").toString());
+				sender.sendMessage(warningPrefix + message("SEEKER_LOBBY_SPAWN_RESET"));
 				map.setSeekerLobby(Location.getDefault());
 			}
 

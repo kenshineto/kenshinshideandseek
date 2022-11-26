@@ -134,4 +134,12 @@ public class Location {
         return destination.isDirectory();
     }
 
+    public boolean isNotSetup() {
+        return getBlockX() == 0 && getBlockY() == 0 && getBlockZ() == 0;
+    }
+
+    public boolean isNotInBounds(int xmin, int xmax, int zmin, int zmax) {
+        return getBlockX() < xmin || getBlockX() > xmax || getBlockZ() < zmin || getBlockZ() > zmax;
+    }
+
 }
