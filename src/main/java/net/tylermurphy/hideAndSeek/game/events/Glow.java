@@ -6,6 +6,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.util.packet.EntityMetadataPacket;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
@@ -64,22 +65,13 @@ public class Glow {
     }
 
     public void setGlow(Player player, Player target, boolean glowing) {
-        PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
-        packet.getIntegers().write(0, target.getEntityId());
-        WrappedDataWatcher watcher = new WrappedDataWatcher();
-        WrappedDataWatcher.Serializer serializer = WrappedDataWatcher.Registry.get(Byte.class);
-        watcher.setEntity(target);
-        if (glowing) {
-            watcher.setObject(0, serializer, (byte) (0x40));
-        } else {
-            watcher.setObject(0, serializer, (byte) (0x0));
-        }
-        packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
-        try {
-            protocolManager.sendServerPacket(player, packet);
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+
+        EntityMetadataPacket packet = new EntityMetadataPacket();
+        packet.setEntity(target);
+        packet.setGlow(glowing);
+        packet.writeMetadata();
+        packet.send(player);
+
     }
 
 }

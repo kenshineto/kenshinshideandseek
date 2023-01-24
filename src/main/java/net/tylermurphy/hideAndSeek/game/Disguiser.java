@@ -17,6 +17,7 @@ public class Disguiser {
 
     public Disguiser(){
         this.disguises = new HashMap<>();
+
     }
 
     public Disguise getDisguise(Player player){

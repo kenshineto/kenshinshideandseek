@@ -23,9 +23,7 @@ public class AbstractPacket {
     }
 
     public void send(Player player){
-        try {
-            protocolManager.sendServerPacket(player, packet);
-        } catch (InvocationTargetException ignored) {}
+        protocolManager.sendServerPacket(player, packet);
     }
 
 }
