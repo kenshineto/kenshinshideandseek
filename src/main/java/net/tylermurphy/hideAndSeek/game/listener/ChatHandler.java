@@ -11,7 +11,7 @@ public class ChatHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onChat(AsyncPlayerChatEvent event) {
-        if (Main.getInstance().getBoard().isSeeker(event.getPlayer())) {
+        if (Main.getInstance().getBoard().isSpectator(event.getPlayer())) {
             event.setCancelled(true);
             Main.getInstance().getBoard().getSpectators().forEach(spectator -> spectator.sendMessage(ChatColor.GRAY + "[SPECTATOR] " + event.getPlayer().getName() + ": " + event.getMessage()));
         }

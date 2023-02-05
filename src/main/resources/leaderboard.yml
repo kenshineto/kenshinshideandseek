@@ -16,6 +16,7 @@
 #   {COUNT}     - The amount of player currently in the lobby.
 #   {SEEKER%}   - The chance that a player will be selected to be a seeker.
 #   {HIDER%}    - The chance that a player will be selected to be a hider.
+#   {MAP}       - The current map the player is on
 #
 #   GAME BOARD PLACEHOLDERS
 #
@@ -38,6 +39,7 @@
 #                 only Hiders will be able to see its effects though.
 #   {#SEEKER}   - Number of current seekers.
 #   {#HIDER}    - Number of current hiders.
+#   {MAP}       - The current map the player is on
 #
 #   YOU CANNOT USE TWO PLACEHOLDERS ON THE SAME LINE. ONLY THE FIRST ONE WILL
 #   BE CHANGED, AND THE SECOND ONE WILL SAY A PLACEHOLDER MARKER!
@@ -50,12 +52,15 @@ lobby:
     "Players: {COUNT}",
     "",
     "&cSEEKER % &f{SEEKER%}",
-    "&6HIDER % &f{HIDER%}"
+    "&6HIDER % &f{HIDER%}",
+    "",
+    "Map: {MAP}",
   ]
 
 game:
   title: "&eHIDE AND SEEK"
   content: [
+    "Map: {MAP}",
     "Team: {TEAM}",
     "",
     "Time Left: &a{TIME}",

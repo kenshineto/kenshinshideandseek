@@ -1,27 +1,8 @@
-/*
- * This file is part of Kenshins Hide and Seek
- *
- * Copyright (c) 2021 Tyler Murphy.
- *
- * Kenshins Hide and Seek free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * he Free Software Foundation version 3.
- *
- * Kenshins Hide and Seek is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
-
 package net.tylermurphy.hideAndSeek.world;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.configuration.Map;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
@@ -32,46 +13,43 @@ import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class WorldLoader {
-	
-	private String mapName;
-	private String saveName;
-	
-	public WorldLoader(String mapName) {
-		this.mapName = mapName;
-		this.saveName = "hideandseek_"+ mapName;
-	}
 
-	public void setNewMap(String mapName){
-		this.mapName = mapName;
-		this.saveName = "hideandseek_"+ mapName;
+	private final Map map;
+	
+	public WorldLoader(Map map) {
+		this.map = map;
 	}
 
 	public World getWorld() {
-		return Bukkit.getServer().getWorld(saveName);
+		return Bukkit.getServer().getWorld(map.getGameSpawnName());
 	}
 
 	public void unloadMap() {
-		World world = Bukkit.getServer().getWorld(saveName);
+		World world = Bukkit.getServer().getWorld(map.getGameSpawnName());
 		if (world == null) {
-			Main.getInstance().getLogger().warning(saveName + " already unloaded.");
+			Main.getInstance().getLogger().warning(map.getGameSpawnName() + " already unloaded.");
 			return;
 		}
-		world.getPlayers().forEach(player -> player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ())));
-        if (Bukkit.getServer().unloadWorld(world, false)) {
-            Main.getInstance().getLogger().info("Successfully unloaded " + saveName);
-        }else{
-            Main.getInstance().getLogger().severe("COULD NOT UNLOAD " + saveName);
-        }
+		world.getPlayers().forEach(player -> exitPosition.teleport(player));
+		Main.getInstance().scheduleTask(() -> {
+			if (Bukkit.getServer().unloadWorld(world, false)) {
+				Main.getInstance().getLogger().info("Successfully unloaded " + map.getGameSpawnName());
+			} else {
+				Main.getInstance().getLogger().severe("COULD NOT UNLOAD " + map.getGameSpawnName());
+			}
+		});
     }
 
     public void loadMap() {
-		Bukkit.getServer().createWorld(new WorldCreator(saveName).generator(new VoidGenerator()));
-		World world = Bukkit.getServer().getWorld(saveName);
-		if (world == null) {
-			Main.getInstance().getLogger().severe("COULD NOT LOAD " + saveName);
-			return;
-		}
-		world.setAutoSave(false);
+		Main.getInstance().scheduleTask(() -> {
+			Bukkit.getServer().createWorld(new WorldCreator(map.getGameSpawnName()).generator(new VoidGenerator()));
+			World world = Bukkit.getServer().getWorld(map.getGameSpawnName());
+			if (world == null) {
+				Main.getInstance().getLogger().severe("COULD NOT LOAD " + map.getGameSpawnName());
+				return;
+			}
+			world.setAutoSave(false);
+		});
     }
  
     public void rollback() {
@@ -80,15 +58,15 @@ public class WorldLoader {
     }
     
     public String save() {
-		World world = Bukkit.getServer().getWorld(mapName);
+		World world = Bukkit.getServer().getWorld(map.getSpawnName());
 		if(world == null){
-			throw new RuntimeException("Invalid world to save: " + mapName);
+			return errorPrefix + message("MAPSAVE_INVALID").addAmount(map.getSpawnName());
 		}
-    	File current = new File(Main.getInstance().getWorldContainer()+File.separator+ mapName);
+    	File current = new File(Main.getInstance().getWorldContainer()+File.separator+ map.getSpawnName());
     	if (current.exists()) {
 			try {
-				File destination = new File(Main.getInstance().getWorldContainer()+File.separator+ saveName);
-				File temp_destination = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+ saveName);
+				File destination = new File(Main.getInstance().getWorldContainer()+File.separator+ map.getGameSpawnName());
+				File temp_destination = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+ map.getGameSpawnName());
 				copyFileFolder("region",true);
 				copyFileFolder("entities",true);
 				copyFileFolder("datapacks",false);
@@ -101,7 +79,7 @@ public class WorldLoader {
 				}
 
 				if (!temp_destination.renameTo(destination)) {
-					throw new RuntimeException("Failed to rename directory: "+temp_destination.getPath());
+					return errorPrefix + message("MAPSAVE_FAIL_DIR").addAmount(temp_destination.getPath());
 				}
 			} catch(IOException e) {
 				e.printStackTrace();
@@ -114,8 +92,8 @@ public class WorldLoader {
     }
     
     private void copyFileFolder(String name, Boolean isMca) throws IOException {
-    	File region = new File(Main.getInstance().getWorldContainer()+File.separator+ mapName +File.separator+name);
-    	File temp = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+ saveName +File.separator+name);
+    	File region = new File(Main.getInstance().getWorldContainer()+File.separator+ map.getSpawnName() +File.separator+name);
+    	File temp = new File(Main.getInstance().getWorldContainer()+File.separator+"temp_"+ map.getGameSpawnName() +File.separator+name);
     	if (region.exists() && region.isDirectory()) {
     		if (!temp.exists())
     			if (!temp.mkdirs())
@@ -127,10 +105,10 @@ public class WorldLoader {
 			}
     		for (String file : files) {
     			if (isMca) {
-	    			int minX = (int)Math.floor(saveMinX / 512.0);
-	    			int minZ = (int)Math.floor(saveMinZ / 512.0);
-	    			int maxX = (int)Math.floor(saveMaxX / 512.0);
-	    			int maxZ = (int)Math.floor(saveMaxZ / 512.0);
+	    			int minX = (int)Math.floor(map.getBoundsMin().getX() / 512.0);
+	    			int minZ = (int)Math.floor(map.getBoundsMin().getZ() / 512.0);
+	    			int maxX = (int)Math.floor(map.getBoundsMax().getX() / 512.0);
+	    			int maxZ = (int)Math.floor(map.getBoundsMax().getZ() / 512.0);
 	    			
 	    			String[] parts = file.split("\\.");
 	    			if (parts.length > 1) {
@@ -162,7 +140,7 @@ public class WorldLoader {
         out.close();
     }
 	
-	private void deleteDirectory(File directoryToBeDeleted) {
+	public static void deleteDirectory(File directoryToBeDeleted) {
 	    File[] allContents = directoryToBeDeleted.listFiles();
 	    if (allContents != null) {
 	        for (File file : allContents) {

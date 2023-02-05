@@ -1,31 +1,14 @@
-/*
- * This file is part of Kenshins Hide and Seek
- *
- * Copyright (c) 2021 Tyler Murphy.
- *
- * Kenshins Hide and Seek free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * he Free Software Foundation version 3.
- *
- * Kenshins Hide and Seek is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
-
 package net.tylermurphy.hideAndSeek.command;
 
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.command.util.ICommand;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-import java.util.Random;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
 import static net.tylermurphy.hideAndSeek.configuration.Config.minPlayers;
@@ -34,7 +17,7 @@ import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 public class Start implements ICommand {
 
 	public void execute(Player sender, String[] args) {
-		if (Main.getInstance().getGame().isNotSetup()) {
+		if (Main.getInstance().getGame().checkCurrentMap()) {
 			sender.sendMessage(errorPrefix + message("GAME_SETUP"));
 			return;
 		}
@@ -52,22 +35,13 @@ public class Start implements ICommand {
 		}
 		String seekerName;
 		if (args.length < 1) {
-			Optional<Player> rand = Main.getInstance().getBoard().getPlayers().stream().skip(new Random().nextInt(Main.getInstance().getBoard().size())).findFirst();
-			if (!rand.isPresent()) {
-				Main.getInstance().getLogger().warning("Failed to select random seeker.");
-				return;
-			}
-			seekerName = rand.get().getName();
+			Main.getInstance().getGame().start();
+			return;
 		} else {
 			seekerName = args[0];
 		}
-		Player temp = Bukkit.getPlayer(seekerName);
-		if (temp == null) {
-			sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(seekerName));
-			return;
-		}
-		Player seeker = Main.getInstance().getBoard().getPlayer(temp.getUniqueId());
-		if (seeker == null) {
+		Player seeker = Bukkit.getPlayer(seekerName);
+		if (seeker == null || !Main.getInstance().getBoard().contains(seeker)) {
 			sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(seekerName));
 			return;
 		}
@@ -79,11 +53,18 @@ public class Start implements ICommand {
 	}
 	
 	public String getUsage() {
-		return "<player>";
+		return "<*player>";
 	}
 
 	public String getDescription() {
 		return "Starts the game either with a random seeker or chosen one";
+	}
+
+	public List<String> autoComplete(@NotNull String parameter, @NotNull String typed) {
+		if(parameter.equals("player")) {
+			return Main.getInstance().getBoard().getPlayers().stream().map(Player::getName).collect(Collectors.toList());
+		}
+		return null;
 	}
 
 }

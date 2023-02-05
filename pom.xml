@@ -1,13 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"><modelVersion>4.0.0</modelVersion>
     <groupId>net.tylermurphy</groupId>
     <artifactId>KenshinsHideAndSeek</artifactId>
-    <version>1.6.2</version>
+    <version>1.7.0</version>
     <name>Hide and Seek Plugin</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <build>
         <defaultGoal>clean install</defaultGoal>
         <sourceDirectory>src/main/java</sourceDirectory>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -29,10 +32,6 @@
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
                                     <shadedPattern>net.tylermurphy.dependencies.hikari</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.ibex.nestedvm</pattern>
-                                    <shadedPattern>net.tylermurphy.dependencies.nestedvm</shadedPattern>
                                 </relocation>
                             </relocations>
                             <artifactSet>
@@ -58,7 +57,6 @@
                                     <resource>META-INF/services/java.sql.Driver</resource>
                                 </transformer>
                             </transformers>
-                            <minimizeJar>true</minimizeJar>
                         </configuration>
                     </execution>
                 </executions>
@@ -82,10 +80,10 @@
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/public/</url>
         </repository>
-        <repository>
-            <id>dmulloy2-repo</id>
-            <url>https://repo.dmulloy2.net/repository/public/</url>
-        </repository>
+<!--        <repository>-->
+<!--            <id>dmulloy2-repo</id>-->
+<!--            <url>https://repo.dmulloy2.net/repository/public/</url>-->
+<!--        </repository>-->
         <repository>
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
@@ -108,12 +106,14 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>4.7.0</version>
+            <version>4.8.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/ProtocolLib.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.7.2</version>
+            <version>3.39.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
@@ -123,7 +123,7 @@
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>9.0.0</version>
+            <version>9.1.0</version>
         </dependency>
         <dependency>
             <groupId>me.clip</groupId>
@@ -134,12 +134,12 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>4.0.3</version>
+            <version>5.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>2.7.2</version>
+            <version>3.0.6</version>
         </dependency>
     </dependencies>
 </project>

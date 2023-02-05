@@ -24,18 +24,17 @@ import com.cryptomorin.xseries.messages.Titles;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.game.events.Border;
+import net.tylermurphy.hideAndSeek.configuration.Map;
+import net.tylermurphy.hideAndSeek.configuration.Maps;
 import net.tylermurphy.hideAndSeek.game.events.Glow;
 import net.tylermurphy.hideAndSeek.game.events.Taunt;
 import net.tylermurphy.hideAndSeek.game.listener.RespawnHandler;
 import net.tylermurphy.hideAndSeek.game.util.*;
-import net.tylermurphy.hideAndSeek.world.WorldLoader;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,12 +45,12 @@ public class Game {
 
 	private final Taunt taunt;
 	private final Glow glow;
-	private final Border worldBorder;
-	private final WorldLoader worldLoader;
 
 	private final Board board;
 
 	private Status status;
+
+	private Map currentMap;
 
 	private int gameTick;
 	private int lobbyTimer;
@@ -59,11 +58,12 @@ public class Game {
 	private int gameTimer;
 	private boolean hiderLeft;
 
-	public Game(Board board){
+	public Game(Map map, Board board) {
+
+		this.currentMap = map;
+
 		this.taunt = new Taunt();
 		this.glow = new Glow();
-		this.worldBorder = new Border();
-		this.worldLoader = new WorldLoader(spawnWorld);
 
 		this.status = Status.STANDBY;
 
@@ -92,40 +92,34 @@ public class Game {
 		return glow;
 	}
 
-	public Border getBorder(){
-		return worldBorder;
-	}
-
 	public Taunt getTaunt(){
 		return taunt;
 	}
 
-	public WorldLoader getWorldLoader(){
-		return worldLoader;
-	}
-
 	public void start() {
+		Player seeker;
 		try {
-			Optional<Player> rand = board.getPlayers().stream().skip(new Random().nextInt(board.size())).findFirst();
-			Player seeker = rand.orElse(board.getPlayers().get(0));
-			start(seeker);
+			int rand = (int) (Math.random() * board.getPlayers().size());
+			seeker = board.getPlayers().get(rand);
 		} catch (Exception e){
 			Main.getInstance().getLogger().warning("Failed to select random seeker.");
+			return;
 		}
+		start(seeker);
 	}
 
 	public void start(Player seeker) {
-		if (mapSaveEnabled) worldLoader.rollback();
+		if (mapSaveEnabled) currentMap.getWorldLoader().rollback();
 		board.reload();
 		board.addSeeker(seeker);
-		PlayerLoader.loadSeeker(seeker, getGameWorld());
+		PlayerLoader.loadSeeker(seeker, currentMap);
 		board.getPlayers().forEach(player -> {
 			if(board.isSeeker(player)) return;
 			board.addHider(player);
-			PlayerLoader.loadHider(player, getGameWorld());
+			PlayerLoader.loadHider(player, currentMap);
 		});
 		board.getPlayers().forEach(board::createGameBoard);
-		worldBorder.resetWorldBorder(getGameWorld());
+		currentMap.getWorldBorder().resetWorldBorder();
 		if (gameLength > 0) gameTimer = gameLength;
 		status = Status.STARTING;
 		startingTimer = 30;
@@ -147,21 +141,23 @@ public class Game {
 
 	public void end() {
 		board.getPlayers().forEach(PlayerLoader::unloadPlayer);
-		worldBorder.resetWorldBorder(getGameWorld());
+		currentMap.getWorldBorder().resetWorldBorder();
+		Map nextMap = Maps.getRandomMap();
+		if(nextMap != null) this.currentMap = nextMap;
 		board.getPlayers().forEach(player -> {
 			if (leaveOnEnd) {
 				board.removeBoard(player);
 				board.remove(player);
 				handleBungeeLeave(player);
 			} else {
-				player.teleport(new Location(Bukkit.getWorld(lobbyWorld), lobbyPosition.getX(),lobbyPosition.getY(),lobbyPosition.getZ()));
+				currentMap.getLobby().teleport(player);
 				board.createLobbyBoard(player);
 				board.addHider(player);
-				PlayerLoader.joinPlayer(player);
+				PlayerLoader.joinPlayer(player, currentMap);
 			}
 		});
 		RespawnHandler.temp_loc.clear();
-		if (mapSaveEnabled) worldLoader.unloadMap();
+		if (mapSaveEnabled) currentMap.getWorldLoader().unloadMap();
 		board.reloadLobbyBoards();
 		status = Status.ENDED;
 	}
@@ -172,14 +168,14 @@ public class Game {
 				ItemStack[] data = player.getInventory().getContents();
 				Main.getInstance().getDatabase().getInventoryData().saveInventory(player.getUniqueId(), data);
 			}
-			PlayerLoader.joinPlayer(player);
+			PlayerLoader.joinPlayer(player, currentMap);
 			board.addHider(player);
 			board.createLobbyBoard(player);
 			board.reloadLobbyBoards();
 			if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
 			else broadcastMessage(messagePrefix + message("GAME_JOIN").addPlayer(player));
 		} else {
-			PlayerLoader.loadSpectator(player, getGameWorld());
+			PlayerLoader.loadSpectator(player, currentMap);
 			board.addSpectator(player);
 			board.createGameBoard(player);
 			player.sendMessage(messagePrefix + message("GAME_JOIN_SPECTATOR"));
@@ -216,12 +212,12 @@ public class Game {
 			out.writeUTF(leaveServer);
 			player.sendPluginMessage(Main.getInstance(), "BungeeCord", out.toByteArray());
 		} else {
-			player.teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+			exitPosition.teleport(player);
 		}
 	}
 
 	public void onTick() {
-		if (isNotSetup()) return;
+		if (currentMap == null || currentMap.isNotSetup()) return;
 		if (status == Status.STANDBY) whileWaiting();
 		else if (status == Status.STARTING) whileStarting();
 		else if (status == Status.PLAYING) whilePlaying();
@@ -257,7 +253,7 @@ public class Game {
 					board.getPlayers().forEach(player -> {
 						PlayerLoader.resetPlayer(player, board);
 						if(board.isSeeker(player)){
-							player.teleport(new Location(Bukkit.getWorld(getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+							currentMap.getGameSpawn().teleport(player);
 						}
 					});
 				} else if (startingTimer == 1){
@@ -317,7 +313,7 @@ public class Game {
 				board.reloadGameBoards();
 				gameTimer--;
 			}
-			if (worldBorderEnabled) worldBorder.update();
+			if (currentMap.isWorldBorderEnabled()) currentMap.getWorldBorder().update();
 			if (tauntEnabled) taunt.update();
 			if (glowEnabled || alwaysGlow) glow.update();
 		}
@@ -331,21 +327,22 @@ public class Game {
 		}
 	}
 
-	public boolean isNotSetup() {
-		if (spawnPosition.getBlockX() == 0 && spawnPosition.getBlockY() == 0 && spawnPosition.getBlockZ() == 0) return true;
-		if (lobbyPosition.getBlockX() == 0 && lobbyPosition.getBlockY() == 0 && lobbyPosition.getBlockZ() == 0) return true;
-		if (exitPosition.getBlockX() == 0 && exitPosition.getBlockY() == 0 && exitPosition.getBlockZ() == 0) return true;
-		if (seekerLobbyPosition.getBlockX() == 0 && seekerLobbyPosition.getBlockY() == 0 && seekerLobbyPosition.getBlockZ() == 0) return true;
-		if (mapSaveEnabled) {
-			File destination = new File(Main.getInstance().getWorldContainer() + File.separator + getGameWorld());
-			if (!destination.exists()) return true;
-		}
-		return saveMinX == 0 || saveMinZ == 0 || saveMaxX == 0 || saveMaxZ == 0;
+	public boolean isCurrentMapValid() {
+		return currentMap != null && !currentMap.isNotSetup();
 	}
 
-	public String getGameWorld() {
-		if (mapSaveEnabled) return "hideandseek_"+spawnWorld;
-		else return spawnWorld;
+	public boolean checkCurrentMap() {
+		if(currentMap != null && !currentMap.isNotSetup()) return false;
+		this.currentMap = Maps.getRandomMap();
+		return this.currentMap == null;
+	}
+
+	public void setCurrentMap(Map map) {
+		this.currentMap = map;
+	}
+
+	public Map getCurrentMap() {
+		return currentMap;
 	}
 
 	private void checkWinConditions() {

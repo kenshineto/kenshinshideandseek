@@ -7,7 +7,6 @@ import net.tylermurphy.hideAndSeek.game.Game;
 import net.tylermurphy.hideAndSeek.game.PlayerLoader;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -18,7 +17,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-import static net.tylermurphy.hideAndSeek.configuration.Config.spawnPosition;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class DamageHandler implements Listener {
@@ -32,8 +30,8 @@ public class DamageHandler implements Listener {
         // Define variables
         Player player = (Player) event.getEntity();
         Player attacker = null;
-        // If no spawn position, we won't be able to manage their death :o
-        if (spawnPosition == null) { return; }
+        // If map is not setup we won't be able to process on it :o
+        if (!game.isCurrentMapValid()) { return; }
         // If there is an attacker, find them
         if (event instanceof EntityDamageByEntityEvent) {
             if (((EntityDamageByEntityEvent) event).getDamager() instanceof Player)
@@ -44,7 +42,6 @@ public class DamageHandler implements Listener {
         }
         // Makes sure that if there was an attacking player, that the event is allowed for the game
         if (attacker != null) {
-            System.out.println(event.getFinalDamage() + " " + player.getDisplayName() + " " + attacker.getDisplayName());
             // Cancel if one player is in the game but other isn't
             if ((board.contains(player) && !board.contains(attacker)) || (!board.contains(player) && board.contains(attacker))) {
                 event.setCancelled(true);
@@ -73,9 +70,9 @@ public class DamageHandler implements Listener {
         if (board.isSpectator(player)) {
             event.setCancelled(true);
             if (Main.getInstance().supports(18) && player.getLocation().getBlockY() < -64) {
-                player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+                game.getCurrentMap().getGameSpawn().teleport(player);
             } else if (!Main.getInstance().supports(18) && player.getLocation().getY() < 0) {
-                player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+                game.getCurrentMap().getGameSpawn().teleport(player);
             }
             return;
         }
@@ -98,15 +95,15 @@ public class DamageHandler implements Listener {
         Main.getInstance().getDisguiser().reveal(player);
         // Teleport player to seeker spawn
         if(delayedRespawn){
-            player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), seekerLobbyPosition.getX(), seekerLobbyPosition.getY(), seekerLobbyPosition.getZ()));
+            game.getCurrentMap().getGameSeekerLobby().teleport(player);
             player.sendMessage(messagePrefix + message("RESPAWN_NOTICE").addAmount(delayedRespawnDelay));
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
                 if(game.getStatus() == Status.PLAYING){
-                    player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+                    game.getCurrentMap().getGameSpawn().teleport(player);
                 }
             }, delayedRespawnDelay * 20L);
         } else {
-            player.teleport(new Location(Bukkit.getWorld(game.getGameWorld()), spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ()));
+            game.getCurrentMap().getGameSpawn().teleport(player);
         }
         // Add leaderboard stats
         board.addDeath(player.getUniqueId());

@@ -4,9 +4,7 @@ import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.configuration.Items;
 import net.tylermurphy.hideAndSeek.game.PlayerLoader;
 import net.tylermurphy.hideAndSeek.game.util.Status;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,7 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-import static net.tylermurphy.hideAndSeek.configuration.Config.exitPosition;
+import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class JoinLeaveHandler implements Listener {
 
@@ -28,20 +26,27 @@ public class JoinLeaveHandler implements Listener {
         }
         Main.getInstance().getBoard().remove(event.getPlayer());
         removeItems(event.getPlayer());
-        if (Main.getInstance().getGame().isNotSetup()) return;
+        if (Main.getInstance().getGame().checkCurrentMap()) return;
         if (autoJoin) {
+            if (Main.getInstance().getGame().checkCurrentMap()) {
+                event.getPlayer().sendMessage(errorPrefix + message("GAME_SETUP"));
+                return;
+            }
             Main.getInstance().getGame().join(event.getPlayer());
         } else if (teleportToExit) {
-            if (event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getGameWorld()) || event.getPlayer().getWorld().getName().equals(lobbyWorld)) {
-                event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+            if (
+                    event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getCurrentMap().getLobbyName()) ||
+                    event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getCurrentMap().getGameSpawnName())
+            ) {
+                exitPosition.teleport(event.getPlayer());
                 event.getPlayer().setGameMode(GameMode.ADVENTURE);
             }
         } else {
-            if (mapSaveEnabled && event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getGameWorld())) {
+            if (mapSaveEnabled && event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getCurrentMap().getGameSpawnName())) {
                 if (Main.getInstance().getGame().getStatus() != Status.STANDBY && Main.getInstance().getGame().getStatus() != Status.ENDING) {
                     Main.getInstance().getGame().join(event.getPlayer());
                 } else {
-                    event.getPlayer().teleport(new Location(Bukkit.getWorld(exitWorld), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ()));
+                    exitPosition.teleport(event.getPlayer());
                     event.getPlayer().setGameMode(GameMode.ADVENTURE);
                 }
             }

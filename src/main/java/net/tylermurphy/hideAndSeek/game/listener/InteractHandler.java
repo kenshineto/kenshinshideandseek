@@ -50,7 +50,7 @@ public class InteractHandler implements Listener {
 
         if (temp.isSimilar(lobbyStartItem) && event.getPlayer().hasPermission("hideandseek.start")) {
             event.setCancelled(true);
-            if (Main.getInstance().getGame().isNotSetup()) {
+            if (Main.getInstance().getGame().checkCurrentMap()) {
                 event.getPlayer().sendMessage(errorPrefix + message("GAME_SETUP"));
                 return;
             }

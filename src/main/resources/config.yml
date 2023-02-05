@@ -15,23 +15,23 @@ gameLength: 1200
 announceMessagesToNonPlayers: true
 
 # When the game is starting, the plugin will state there is x seconds left to hide.
-# You change where countdown messages to be displayed: in the chat, action bar, or a title.
+# You change where countdown messages are to be displayed: in the chat, action bar, or a title.
 # Below you can set CHAT, ACTIONBAR, or TITLE. Any invalid option will revert to CHAT.
 #
-#   CHAT      - Messages will be displayed in the chat
+#   CHAT      - Staring messages will be displayed in the chat
 #
-#   ACTIONBAR - Messages will be displayed in the action bar (area above the hotbar)
+#   ACTIONBAR - Staring messages will be displayed in the action bar (area above the hotbar)
 #
-#   TITLE     - Messages will be displayed as a title
+#   TITLE     - Staring messages will be displayed as a title
 #
 # default: CHAT
-hideCountdownDisplay: CHAT
+hideCountdownDisplay: "CHAT"
 
 # Allow Hiders to see their own teams nametags as well as seekers. Seekers can never see nametags regardless.
 # default: false
 nametagsVisible: false
 
-# Require bukkit permissions though a plugin to run commands, recommended on large servers
+# Require bukkit permissions though a permissions plugin to run commands, or require op, recommended on most servers
 # default: true
 permissionsRequired: true
 
@@ -80,11 +80,11 @@ leaveOnEnd: false
 #   PROXY - Send the player to a specified server in a bungee-cord / velocity setup.
 #
 # default: EXIT
-leaveType: EXIT
+leaveType: "EXIT"
 
 # Ignore this setting if you aren't using the PROXY leave type method above. If you are, set this to the server you want to send
 # players too.
-leaveServer: hub
+leaveServer: "hub"
 
 # By default, the plugin forces you to use a map save to protect from changes to a map thought a game play though. It copies your
 # hide-and-seek world to a separate world, and loads the game there to contain the game in an isolated and backed up map This allows you to
@@ -117,40 +117,16 @@ delayedRespawn:
 #   MYSQL - Uses a mysql server to store data, good for multi-server setups or large servers.
 #
 # default: SQLITE
-databaseType: SQLITE
+databaseType: "SQLITE"
 
 # The following settings are used for MYSQL databases ONLY. If you are running SQLITE, these
 # will be ignored. If you are running MYSQL, you need to provide the database host url, database
 # host port (usually 3306), database username, and database password.
-databaseHost: localhost
+databaseHost: "localhost"
 databasePort: 3306
-databaseUser: root
-databasePass:
-databaseName: hideandseek
-
-# The world border closes every interval, which is evey [delay] in minutes.
-# Thw world border starts at [size], and decreases 100 blocks every interval.
-# x & z are the center location. [enabled] is whenever the border is enabled.
-# You can choose if Hiders are warned 30 seconds before the border moves.
-
-# You want block hunt? We have block hunt! Just enable it below, and set the
-# available blocks to pick from, and you're all set! It's that easy!
-# Items are displayed in the order that they are listed below.
-# The solidifyTime is the time in server ticks that it takes players to solidify.
-# Every 20 ticks is a second. Minimum solidifyTime is 20 ticks.
-blockhunt:
-  enabled: false
-  solidifyTime: 60
-  blocks: [CRAFTING_TABLE, GRASS_BLOCK, DIRT, BEACON, BOOKSHELF]
-
-worldBorder:
-  x: 0
-  z: 0
-  delay: 10
-  size: 500
-  moveAmount: 100
-  warn: true
-  enabled: false
+databaseUser: "root"
+databasePass: "pass"
+databaseName: "hideandseek"
 
 # The taunt will activate every delay set in seconds. It will spawn a firework
 # on a random Hider to alert a Seeker where someone may be. You can choose
@@ -173,8 +149,12 @@ glow:
   stackable: true
   enabled: true
   name: "Glow Powerup"
-  lore: [ "Throw to make all seekers glow", "Last 30s, all hiders can see it", "Time stacks on multi use" ]
-  material: SNOWBALL
+  lore: [
+    "Throw to make all seekers glow",
+    "Last 30s, all hiders can see it",
+    "Time stacks on multi use"
+  ]
+  material: "SNOWBALL"
   model-data: 0
 
 # This has the same glow effect as the glow powerup in that all seekers positions get
@@ -221,14 +201,16 @@ lobby:
 # If you set adminOnly to false, only the item will become non admin only, not the command.
 lobbyItems:
   leave:
-    material: BED
+    material: "BED"
     name: "&cLeave Lobby"
-    lore: ["Go back to server hub"]
+    lore: [
+      "Go back to server hub"
+    ]
     position: 8
     model-data: 0
     enabled: true
   start:
-    material: CLOCK
+    material: "CLOCK"
     name: "&bStart Game"
     lore: []
     position: 0
@@ -241,15 +223,19 @@ lobbyItems:
 # and position of the item. You can also change the model data if your server is running 1.14 or above.
 spectatorItems:
   flight:
-    material: FEATHER
+    material: "FEATHER"
     name: "&bToggle Flight"
-    lore: [ "Turns flying on and off" ]
+    lore: [
+      "Turns flying on and off"
+    ]
     position: 3
     model-data: 0
   teleport:
-    material: COMPASS
+    material: "COMPASS"
     name: "&bTeleport to Others"
-    lore: [ "Allows you to teleport to all other players in game" ]
+    lore: [
+      "Allows you to teleport to all other players in game"
+    ]
     position: 5
     model-data: 0
 
@@ -265,8 +251,8 @@ seekerPing:
     leadingVolume: 0.5
     volume: 0.3
     pitch: 1
-    heartbeatNoise: BLOCK_NOTE_BLOCK_BASEDRUM
-    ringingNoise: BLOCK_NOTE_BLOCK_PLING
+    heartbeatNoise: "BLOCK_NOTE_BLOCK_BASEDRUM"
+    ringingNoise: "BLOCK_NOTE_BLOCK_PLING"
   enabled: true
 
 # Changes the default plugin language. Currently, Supported localizations are:
@@ -275,58 +261,34 @@ seekerPing:
 locale: "en-US"
 
 # Stop commands being run by any user while playing the game.
-# Can be usefull If you aren't using a permission plugin and want
+# Can be usefull If you aren't using a permission plugin and don't want
 # to op people, but still want to block certain commands.
 # Not really usefully if using permission plugins.
 # You can add /kill for any use, but it's already blocked on those
 # playing the game.
-blockedCommands: [msg, tp, gamemode, kill, give, effect]
+blockedCommands: [
+  "msg",
+  "reply",
+  "me"
+]
 
 # Stop interactions with any block by any user while playing the game.
 # If your map has things such as chests for aesthetic only, you can
 # block the use of clicking them. It shouldn't matter what version of
 # the block ID you enter, as the plugin will automatically switch to the
 # block ID of your current Minecraft server version.
-blockedInteracts: [FURNACE, CRAFTING_TABLE, ANVIL, CHEST, BARREL]
-# ---------------------------------------------------------- #
-# ONLY EDIT BEYOND THIS POINT IF YOU KNOW WHAT YOU ARE DOING #
-# ---------------------------------------------------------- #
+blockedInteracts: [
+  "FURNACE",
+  "CRAFTING_TABLE",
+  "ANVIL",
+  "CHEST",
+  "BARREL"
+]
 
-# The 2 coordinate bounds that will contain your hideAndSeek map. Its recommended
-# that you use /hs setbounds for this, and not edit this directly, as breaking
-# this section will completely break the entire plugin when you run /hs savemap.
-bounds:
-  min:
-    x: 0
-    z: 0
-  max:
-    x: 0
-    z: 0
-
-# Spawn locations where players are teleported
-spawns:
-  # Location where players are teleported into the game (/hs start)
-  game:
-    x: 0
-    y: 0
-    z: 0
-    world: world
-  # Location where players are teleported into the lobby (/hs join)
-  lobby:
-    x: 0
-    y: 0
-    z: 0
-    world: world
-  # Location where seekers wait during the hiding grace period
-  seeker:
-    x: 0
-    y: 0
-    z: 0
-    # Currently is not used, seekers are teleported to spawns.game.world
-    world: world
-  # Location where players are teleported when they exit (/hs leave)
-  exit:
-    x: 0
-    y: 0
-    z: 0
-    world: world
+# Location where players are teleported when they exit (/hs leave)
+# Auto filled by /hs setexit, so you don't need to touch this here
+exit:
+  x: 0
+  y: 0
+  z: 0
+  world: "world"

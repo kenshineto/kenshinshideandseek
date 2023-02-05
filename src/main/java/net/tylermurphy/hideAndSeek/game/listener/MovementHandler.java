@@ -2,6 +2,7 @@ package net.tylermurphy.hideAndSeek.game.listener;
 
 import com.google.common.collect.Sets;
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.configuration.Map;
 import net.tylermurphy.hideAndSeek.game.listener.events.PlayerJumpEvent;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -11,9 +12,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.Set;
 import java.util.UUID;
-
-import static net.tylermurphy.hideAndSeek.configuration.Config.*;
-import static net.tylermurphy.hideAndSeek.configuration.Config.saveMaxZ;
 
 public class MovementHandler implements Listener {
 
@@ -51,10 +49,11 @@ public class MovementHandler implements Listener {
 
     private void checkBounds(PlayerMoveEvent event){
         if (!Main.getInstance().getBoard().contains(event.getPlayer())) return;
-        if (!event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getGameWorld())) return;
-        if (!event.getTo().getWorld().getName().equals(Main.getInstance().getGame().getGameWorld())) return;
+        if (!event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getCurrentMap().getGameSpawnName())) return;
+        if (!event.getTo().getWorld().getName().equals(Main.getInstance().getGame().getCurrentMap().getGameSpawnName())) return;
         if (event.getPlayer().hasPermission("hideandseek.leavebounds")) return;
-        if (event.getTo().getBlockX() < saveMinX || event.getTo().getBlockX() > saveMaxX || event.getTo().getBlockZ() < saveMinZ || event.getTo().getBlockZ() > saveMaxZ) {
+        Map map = Main.getInstance().getGame().getCurrentMap();
+        if (event.getTo().getBlockX() < map.getBoundsMin().getBlockX() || event.getTo().getBlockX() > map.getBoundsMax().getBlockX() || event.getTo().getBlockZ() < map.getBoundsMin().getZ() || event.getTo().getBlockZ() > map.getBoundsMax().getZ()) {
             event.setCancelled(true);
         }
     }
