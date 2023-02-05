@@ -40,6 +40,7 @@ public class Send implements ICommand {
         }
 
         Main.getInstance().getGame().setCurrentMap(map);
+        Main.getInstance().getBoard().reloadLobbyBoards();
         for(Player player : Main.getInstance().getBoard().getPlayers()) {
             map.getLobby().teleport(player);
         }

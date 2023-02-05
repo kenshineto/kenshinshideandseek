@@ -87,7 +87,7 @@ public class Location {
     public void teleport(Player player) {
         if(!exists()) return;
         if(load() == null) return;
-        Main.getInstance().scheduleTask(() -> player.teleport(toBukkit()));
+        player.teleport(toBukkit());
     }
 
     public Location changeWorld(String world) {
