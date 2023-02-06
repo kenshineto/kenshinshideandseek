@@ -6,6 +6,11 @@
 # +--------------------------------------------------------+ #
 #============================================================#
 
+# If you are having weird issues with your server where it's printing to the console
+# "--- DO NOT REPORT THIS TO PAPER - THIS IS NOT A BUG OR A CRASH", try enabling the
+# below spawn patch. WARNING: this will NOT work if you use Multiverse Inventory's.
+spawnPatch: false
+
 # How long in seconds will the game last, set it < 1 to disable
 # default: 1200 aka 20min
 gameLength: 1200
@@ -13,6 +18,10 @@ gameLength: 1200
 # Announce join/leave/game over messages to people not playing the game
 # default: true
 announceMessagesToNonPlayers: true
+
+# Allow players to drop their items in game
+# default: false
+dropItems: false
 
 # When the game is starting, the plugin will state there is x seconds left to hide.
 # You change where countdown messages are to be displayed: in the chat, action bar, or a title.
@@ -45,6 +54,10 @@ minPlayers: 2
 # back against Seekers if disabled.
 # default: true
 pvp: true
+
+# Allow players to regen health
+# default: false
+regenHealth: false
 
 # !! Only effects the game at all if pvp is set to false !!
 # By default, If you disable pvp, Hiders and Seekers can no longer take damage from natural causes such as

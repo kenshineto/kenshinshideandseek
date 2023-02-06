@@ -61,7 +61,10 @@ public class Config {
 		mapSaveEnabled,
 		allowNaturalCauses,
 		saveInventory,
-		delayedRespawn;
+		delayedRespawn,
+		spawnPatch,
+		dropItems,
+		regenHealth;
 	
 	public static int 
 		minPlayers,
@@ -115,7 +118,7 @@ public class Config {
 		announceMessagesToNonPlayers = config.getBoolean("announceMessagesToNonPlayers");
 
 		//Prefix
-		char SYMBOL = '\u00A7';
+		char SYMBOL = '§';
 		String SYMBOL_STRING = String.valueOf(SYMBOL);
 
 		messagePrefix = config.getString("prefix.default").replace("&", SYMBOL_STRING);
@@ -236,6 +239,10 @@ public class Config {
 
 		delayedRespawn = config.getBoolean("delayedRespawn.enabled");
 		delayedRespawnDelay = Math.max(0,config.getInt("delayedRespawn.delay"));
+
+		spawnPatch = config.getBoolean("spawnPatch");
+		dropItems = config.getBoolean("dropItems");
+		regenHealth = config.getBoolean("regenHealth");
 
 	}
 	

@@ -11,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.spawnPatch;
+
 public class Location {
 
     private final String world;
@@ -87,7 +89,11 @@ public class Location {
     public void teleport(Player player) {
         if(!exists()) return;
         if(load() == null) return;
-        player.teleport(toBukkit());
+        if (spawnPatch) {
+            Main.getInstance().scheduleTask(() -> player.teleport(toBukkit()));
+        } else {
+            player.teleport(toBukkit());
+        }
     }
 
     public Location changeWorld(String world) {
@@ -139,7 +145,7 @@ public class Location {
     }
 
     public boolean isNotInBounds(int xmin, int xmax, int zmin, int zmax) {
-        return getBlockX() < xmin || getBlockX() > xmax || getBlockZ() < zmin || getBlockZ() > zmax;
+        return getBlockX() <= xmin || getBlockX() >= xmax || getBlockZ() <= zmin || getBlockZ() >= zmax;
     }
 
 }

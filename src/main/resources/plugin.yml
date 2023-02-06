@@ -72,4 +72,6 @@ permissions:
     default: op
   hs.confirm:
     default: op
+  hs.leavebounds:
+    default: false
 
