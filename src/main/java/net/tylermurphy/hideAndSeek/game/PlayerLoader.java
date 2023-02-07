@@ -128,7 +128,6 @@ public class PlayerLoader {
         player.setGameMode(GameMode.ADVENTURE);
         player.getInventory().clear();
         for(PotionEffect effect : player.getActivePotionEffects()) {
-            Main.getInstance().getLogger().severe(player.getName() + " " + effect.getType());
             if(effect.getType().getName().equals("INVISIBILITY") && Main.getInstance().getDisguiser().disguised(player)) continue;
             player.removePotionEffect(effect.getType());
         }

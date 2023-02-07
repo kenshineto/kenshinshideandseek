@@ -1,5 +1,7 @@
 package net.tylermurphy.hideAndSeek.game.util;
 
+import com.cryptomorin.xseries.XSound;
+import com.cryptomorin.xseries.messages.ActionBar;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.util.packet.BlockChangePacket;
 import net.tylermurphy.hideAndSeek.util.packet.EntityTeleportPacket;
@@ -20,7 +22,7 @@ public class Disguise {
     FallingBlock block;
     Horse hitBox;
     Location blockLocation;
-    boolean solid, solidify;
+    boolean solid, solidify, solidifying;
     static Team hidden;
 
     static {
@@ -169,6 +171,39 @@ public class Disguise {
         hitBox.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1000000, 0,false, false));
         if(Main.getInstance().supports(9)){
             hidden.addEntry(hitBox.getUniqueId().toString());
+        }
+    }
+
+    public void startSolidifying() {
+        if (solidifying) return;
+        if (solid) return;
+        solidifying = true;
+        final Location lastLocation = hider.getLocation();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> solidifyUpdate(lastLocation, 3), 10);
+    }
+
+    private void solidifyUpdate(Location lastLocation, int time) {
+        Location currentLocation = hider.getLocation();
+        if(lastLocation.getWorld() != currentLocation.getWorld()) {
+            solidifying = false;
+            return;
+        }
+        if(lastLocation.distance(currentLocation) > .1) {
+            solidifying = false;
+            return;
+        }
+        if(time == 0) {
+            ActionBar.clearActionBar(hider);
+            setSolidify(true);
+            solidifying = false;
+        } else {
+            StringBuilder s = new StringBuilder();
+            for (int i = 0; i < time; i++) {
+                s.append("▪");
+            }
+            ActionBar.sendActionBar(hider, s.toString());
+            XSound.BLOCK_NOTE_BLOCK_PLING.play(hider, 1, 1);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> solidifyUpdate(lastLocation, time - 1), 20);
         }
     }
 

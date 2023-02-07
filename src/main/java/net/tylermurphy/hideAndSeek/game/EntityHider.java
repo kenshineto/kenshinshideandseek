@@ -2,7 +2,6 @@ package net.tylermurphy.hideAndSeek.game;
 
 import static com.comphenix.protocol.PacketType.Play.Server.*;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -31,7 +30,7 @@ public class EntityHider implements Listener {
 
     private static final PacketType[] ENTITY_PACKETS = {
             ENTITY_EQUIPMENT, ANIMATION, NAMED_ENTITY_SPAWN,
-            COLLECT, SPAWN_ENTITY, SPAWN_ENTITY_LIVING, SPAWN_ENTITY_PAINTING, SPAWN_ENTITY_EXPERIENCE_ORB,
+            COLLECT, SPAWN_ENTITY, SPAWN_ENTITY_EXPERIENCE_ORB,
             ENTITY_VELOCITY, REL_ENTITY_MOVE, ENTITY_LOOK,
             ENTITY_TELEPORT, ENTITY_HEAD_ROTATION, ENTITY_STATUS, ATTACH_ENTITY, ENTITY_METADATA,
             ENTITY_EFFECT, REMOVE_ENTITY_EFFECT, BLOCK_BREAK_ANIMATION
