@@ -7,6 +7,10 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.WrappedEnumEntityUseAction;
+import com.cryptomorin.xseries.XSound;
+import com.cryptomorin.xseries.messages.ActionBar;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.game.util.Disguise;
 import org.bukkit.Bukkit;
@@ -33,17 +37,13 @@ public class DisguiseHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMove(PlayerMoveEvent event) {
-        final Disguise disguise = Main.getInstance().getDisguiser().getDisguise(event.getPlayer());
-        if(disguise == null) return;
-        final Location lastLocation = event.getPlayer().getLocation();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
-            final Location currentLocation = event.getPlayer().getLocation();
-            if(lastLocation.getWorld() != currentLocation.getWorld()) return;
-            double distance = lastLocation.distance(currentLocation);
-            disguise.setSolidify(distance < .1);
-        }, 20 * 3);
-        if(event.getFrom().distance(event.getTo()) > .1)
+        final Player player = event.getPlayer();
+        final Disguise disguise = Main.getInstance().getDisguiser().getDisguise(player);
+        if(disguise == null) return;;
+        if(event.getFrom().distance(event.getTo()) > .1) {
             disguise.setSolidify(false);
+        }
+        disguise.startSolidifying();
     }
 
     private PacketAdapter createProtocol(){
@@ -52,6 +52,12 @@ public class DisguiseHandler implements Listener {
             @Override
             public void onPacketReceiving(PacketEvent event){
                 PacketContainer packet = event.getPacket();
+
+                // only left click attacks
+                WrappedEnumEntityUseAction action = packet.getEnumEntityUseActions().getValues().stream().findFirst().orElse(null);
+                if (action == null) return;
+                if (action.getAction() != EnumWrappers.EntityUseAction.ATTACK) return;
+
                 Player player = event.getPlayer();
                 int id = packet.getIntegers().read(0);
                 Disguise disguise = Main.getInstance().getDisguiser().getByEntityID(id);

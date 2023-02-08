@@ -36,7 +36,7 @@ public class Border implements ICommand {
 			addToConfig("worldBorder.enabled",false);
 			saveConfig();
 			sender.sendMessage(messagePrefix + message("WORLDBORDER_DISABLE"));
-			Main.getInstance().getGame().getCurrentMap().getWorldBorder().resetWorldBorder();
+			map.getWorldBorder().resetWorldBorder();
 			return;
 		}
 		int num,delay,change;

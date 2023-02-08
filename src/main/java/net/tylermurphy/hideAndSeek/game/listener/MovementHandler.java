@@ -51,7 +51,7 @@ public class MovementHandler implements Listener {
         if (!Main.getInstance().getBoard().contains(event.getPlayer())) return;
         if (!event.getPlayer().getWorld().getName().equals(Main.getInstance().getGame().getCurrentMap().getGameSpawnName())) return;
         if (!event.getTo().getWorld().getName().equals(Main.getInstance().getGame().getCurrentMap().getGameSpawnName())) return;
-        if (event.getPlayer().hasPermission("hideandseek.leavebounds")) return;
+        if (event.getPlayer().hasPermission("hs.leavebounds")) return;
         Map map = Main.getInstance().getGame().getCurrentMap();
         if (event.getTo().getBlockX() < map.getBoundsMin().getBlockX() || event.getTo().getBlockX() > map.getBoundsMax().getBlockX() || event.getTo().getBlockZ() < map.getBoundsMin().getZ() || event.getTo().getBlockZ() > map.getBoundsMax().getZ()) {
             event.setCancelled(true);

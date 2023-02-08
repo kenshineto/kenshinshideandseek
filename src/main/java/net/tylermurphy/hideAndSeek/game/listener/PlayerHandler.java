@@ -13,6 +13,9 @@ import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.dropItems;
+import static net.tylermurphy.hideAndSeek.configuration.Config.regenHealth;
+
 public class PlayerHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -25,6 +28,7 @@ public class PlayerHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerRegainHealth(EntityRegainHealthEvent event) {
+        if (regenHealth) return;
         if (event.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED || event.getRegainReason() == EntityRegainHealthEvent.RegainReason.REGEN) {
             if (event.getEntity() instanceof Player) {
                 if (!Main.getInstance().getBoard().contains((Player) event.getEntity())) return;
@@ -35,7 +39,7 @@ public class PlayerHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onItemDrop(PlayerDropItemEvent event) {
-        if (Main.getInstance().getBoard().contains(event.getPlayer())) {
+        if (!dropItems && Main.getInstance().getBoard().contains(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
@@ -44,7 +48,8 @@ public class PlayerHandler implements Listener {
     public void onItemSpawn(ItemSpawnEvent event){
         if(Main.getInstance().getGame().getStatus() == Status.STANDBY) return;
         ItemStack item = event.getEntity().getItemStack();
-        if(!Items.matchItem(item)) return;
+        if (!Items.matchItem(item)) return;
+        if (dropItems) return;
         event.setCancelled(true);
     }
 

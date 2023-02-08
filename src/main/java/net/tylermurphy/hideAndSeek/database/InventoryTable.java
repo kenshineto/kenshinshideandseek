@@ -59,7 +59,7 @@ public class InventoryTable {
     }
 
     public void saveInventory(@NotNull UUID uuid, @NotNull ItemStack[] itemArray) {
-        String sql = "INSERT OR REPLACE INTO hs_inventory (uuid, inventory) VALUES (?,?)";
+        String sql = "REPLACE INTO hs_inventory (uuid, inventory) VALUES (?,?)";
         String data = itemStackArrayToBase64(itemArray);
         try(Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setBytes(1, database.encodeUUID(uuid));

@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
 
+import static net.tylermurphy.hideAndSeek.configuration.Config.databasePort;
 import static net.tylermurphy.hideAndSeek.configuration.Config.databaseType;
 
 public class Database {
@@ -25,12 +26,14 @@ public class Database {
 
     public Database(){
 
-        if(databaseType.equals("SQLITE")) {
+        if(databaseType.equalsIgnoreCase("SQLITE")) {
             Main.getInstance().getLogger().info("SQLITE database chosen");
             connection = new SQLiteConnection();
-        } else {
+        } else if(databaseType.equalsIgnoreCase("MYSQL")) {
             Main.getInstance().getLogger().info("MYSQL database chosen");
             connection = new MySQLConnection();
+        } else {
+            throw new IllegalArgumentException("Invalid database type: " + databaseType);
         }
 
         playerInfo = new GameDataTable(this);

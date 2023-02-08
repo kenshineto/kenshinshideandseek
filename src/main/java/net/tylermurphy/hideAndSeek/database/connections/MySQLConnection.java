@@ -25,6 +25,7 @@ import net.tylermurphy.hideAndSeek.Main;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 
@@ -43,7 +44,8 @@ public class MySQLConnection implements DatabaseConnection {
         Main.getInstance().getLogger().info("Database name: " + databaseName);
 
 
-        config.setJdbcUrl("jdbc:mariadb://"+databaseHost+":"+databasePort+"/"+databaseName);
+        config.setDriverClassName(org.mariadb.jdbc.Driver.class.getName());
+        config.setJdbcUrl("jdbc:mariadb://"+databaseHost+":"+databasePort+"/"+databaseName.trim());
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");

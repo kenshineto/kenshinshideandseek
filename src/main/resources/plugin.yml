@@ -1,6 +1,6 @@
 name: KenshinsHideAndSeek
 main: net.tylermurphy.hideAndSeek.Main
-version: 1.7.0
+version: 1.7.1
 author: KenshinEto
 load: STARTUP
 api-version: 1.13
@@ -72,4 +72,6 @@ permissions:
     default: op
   hs.confirm:
     default: op
+  hs.leavebounds:
+    default: false
 

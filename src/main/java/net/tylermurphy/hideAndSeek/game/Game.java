@@ -186,7 +186,9 @@ public class Game {
 		PlayerLoader.unloadPlayer(player);
 		if(saveInventory) {
 			ItemStack[] data = Main.getInstance().getDatabase().getInventoryData().getInventory(player.getUniqueId());
-			player.getInventory().setContents(data);
+			try {
+				player.getInventory().setContents(data);
+			} catch (NullPointerException ignored){}
 		}
 		if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
 		else broadcastMessage(messagePrefix + message("GAME_LEAVE").addPlayer(player));
@@ -240,6 +242,9 @@ public class Game {
 			}
 		} else {
 			lobbyTimer = -1;
+			if (gameTick % 20 == 0) {
+				board.reloadLobbyBoards();
+			}
 		}
 	}
 
