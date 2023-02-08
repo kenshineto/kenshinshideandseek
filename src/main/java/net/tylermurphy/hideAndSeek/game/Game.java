@@ -242,6 +242,9 @@ public class Game {
 			}
 		} else {
 			lobbyTimer = -1;
+			if (gameTick % 20 == 0) {
+				board.reloadLobbyBoards();
+			}
 		}
 	}
 

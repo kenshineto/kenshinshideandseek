@@ -48,7 +48,8 @@ public class PlayerHandler implements Listener {
     public void onItemSpawn(ItemSpawnEvent event){
         if(Main.getInstance().getGame().getStatus() == Status.STANDBY) return;
         ItemStack item = event.getEntity().getItemStack();
-        if(!Items.matchItem(item)) return;
+        if (!Items.matchItem(item)) return;
+        if (dropItems) return;
         event.setCancelled(true);
     }
 
