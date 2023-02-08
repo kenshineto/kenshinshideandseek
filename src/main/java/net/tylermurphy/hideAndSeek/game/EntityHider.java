@@ -84,26 +84,38 @@ public class EntityHider implements Listener {
     /**
      * Add or remove the given entity and observer entry from the table.
      * @param observer - the player observer.
-     * @param entityID - ID of the entity.
+     * @param newEntityId - ID of the entity.
      * @param member - TRUE if they should be present in the table, FALSE otherwise.
      * @return TRUE if they already were present, FALSE otherwise.
      */
-    protected boolean setMembership(Player observer, int entityID, boolean member) {
+    protected boolean setMembership(Player observer, int newEntityId, boolean member) {
+        int entityID;
+        try {
+            entityID = observer.getEntityId();
+        } catch (Exception e) {
+            return member;
+        }
         if (member) {
-            return observerEntityMap.put(observer.getEntityId(), entityID, true) != null;
+            return observerEntityMap.put(newEntityId, entityID, true) != null;
         } else {
-            return observerEntityMap.remove(observer.getEntityId(), entityID) != null;
+            return observerEntityMap.remove(newEntityId, entityID) != null;
         }
     }
 
     /**
      * Determine if the given entity and observer is present in the table.
      * @param observer - the player observer.
-     * @param entityID - ID of the entity.
+     * @param newEntityID - ID of the entity.
      * @return TRUE if they are present, FALSE otherwise.
      */
-    protected boolean getMembership(Player observer, int entityID) {
-        return observerEntityMap.contains(observer.getEntityId(), entityID);
+    protected boolean getMembership(Player observer, int newEntityID) {
+        int entityID;
+        try {
+            entityID = observer.getEntityId();
+        } catch (Exception e) {
+            return false;
+        }
+        return observerEntityMap.contains(entityID, newEntityID);
     }
 
     /**
@@ -124,7 +136,12 @@ public class EntityHider implements Listener {
      * @param entity - the entity to remove.
      */
     protected void removeEntity(Entity entity) {
-        int entityID = entity.getEntityId();
+        int entityID;
+        try {
+            entityID = entity.getEntityId();
+        } catch (Exception e) {
+            return;
+        }
 
         for (Map<Integer, Boolean> maps : observerEntityMap.rowMap().values()) {
             maps.remove(entityID);
@@ -136,8 +153,13 @@ public class EntityHider implements Listener {
      * @param player - the player that jused logged out.
      */
     protected void removePlayer(Player player) {
-        // Cleanup
-        observerEntityMap.rowMap().remove(player.getEntityId());
+        int entityID;
+        try {
+            entityID = player.getEntityId();
+        } catch (Exception e) {
+            return;
+        }
+        observerEntityMap.rowMap().remove(entityID);
     }
 
     /**
@@ -194,7 +216,13 @@ public class EntityHider implements Listener {
      */
     @SuppressWarnings("unused")
     public final boolean toggleEntity(Player observer, Entity entity) {
-        if (isVisible(observer, entity.getEntityId())) {
+        int entityID;
+        try {
+            entityID = observer.getEntityId();
+        } catch (Exception e) {
+            return true;
+        }
+        if (isVisible(observer, entityID)) {
             return hideEntity(observer, entity);
         } else {
             return !showEntity(observer, entity);
@@ -209,7 +237,13 @@ public class EntityHider implements Listener {
      */
     public final boolean showEntity(Player observer, Entity entity) {
         validate(observer, entity);
-        boolean hiddenBefore = !setVisibility(observer, entity.getEntityId(), true);
+        int entityID;
+        try {
+            entityID = entity.getEntityId();
+        } catch (Exception e) {
+            return false;
+        }
+        boolean hiddenBefore = !setVisibility(observer, entityID, true);
 
         // Resend packets
         if (manager != null && hiddenBefore) {
@@ -226,12 +260,18 @@ public class EntityHider implements Listener {
      */
     public final boolean hideEntity(Player observer, Entity entity) {
         validate(observer, entity);
-        boolean visibleBefore = setVisibility(observer, entity.getEntityId(), false);
+        int entityID;
+        try {
+            entityID = entity.getEntityId();
+        } catch (Exception e) {
+            return true;
+        }
+        boolean visibleBefore = setVisibility(observer, entityID, false);
 
         if (visibleBefore) {
             PacketContainer destroyEntity = new PacketContainer(ENTITY_DESTROY);
             try {
-                destroyEntity.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+                destroyEntity.getIntegerArrays().write(0, new int[]{entityID});
             } catch (Exception e){ return false; }
             // Make the entity disappear
             manager.sendServerPacket(observer, destroyEntity);
@@ -252,8 +292,13 @@ public class EntityHider implements Listener {
     @SuppressWarnings("unused")
     public final boolean canSee(Player observer, Entity entity) {
         validate(observer, entity);
-
-        return isVisible(observer, entity.getEntityId());
+        int entityID;
+        try {
+            entityID = entity.getEntityId();
+        } catch (Exception e) {
+            return true;
+        }
+        return isVisible(observer, entityID);
     }
 
     private void validate(Player observer, Entity entity) {

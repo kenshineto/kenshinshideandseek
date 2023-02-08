@@ -47,8 +47,6 @@
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>META-INF/**</exclude>
-                                        <exclude>sqlite-jdbc.properties</exclude>
-                                        <exclude>mariadb.properties</exclude>
                                     </excludes>
                                 </filter>
                             </filters>

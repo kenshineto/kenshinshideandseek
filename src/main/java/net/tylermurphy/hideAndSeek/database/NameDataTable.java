@@ -96,7 +96,7 @@ public class NameDataTable {
     }
 
     public boolean update(@NotNull UUID uuid, @NotNull String name){
-        String sql = "INSERT OR REPLACE INTO hs_names (uuid, name) VALUES (?,?)";
+        String sql = "REPLACE INTO hs_names (uuid, name) VALUES (?,?)";
         try(Connection connection = database.connect(); PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setBytes(1, database.encodeUUID(uuid));
             statement.setString(2, name);
