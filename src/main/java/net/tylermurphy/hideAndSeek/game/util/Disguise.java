@@ -20,7 +20,7 @@ public class Disguise {
     final Player hider;
     final Material material;
     FallingBlock block;
-    Horse hitBox;
+    AbstractHorse hitBox;
     Location blockLocation;
     boolean solid, solidify, solidifying;
     static Team hidden;
@@ -156,15 +156,24 @@ public class Disguise {
 
     private void respawnFallingBlock(){
         block = hider.getLocation().getWorld().spawnFallingBlock(hider.getLocation().add(0, 1000, 0), material, (byte)0);
-        block.setGravity(false);
+        if (Main.getInstance().supports(10)) {
+            block.setGravity(false);
+        }
         block.setDropItem(false);
         block.setInvulnerable(true);
     }
 
     private void respawnHitbox(){
-        hitBox = (Horse) hider.getLocation().getWorld().spawnEntity(hider.getLocation().add(0, 1000, 0), EntityType.HORSE);
+        if (Main.getInstance().supports(11)) {
+            hitBox = (AbstractHorse) hider.getLocation().getWorld().spawnEntity(hider.getLocation().add(0, 1000, 0), EntityType.SKELETON_HORSE);
+        } else {
+            hitBox = (AbstractHorse) hider.getLocation().getWorld().spawnEntity(hider.getLocation().add(0, 1000, 0), EntityType.HORSE);
+            hitBox.setVariant(Horse.Variant.SKELETON_HORSE);
+        }
+        if (Main.getInstance().supports(10)) {
+            hitBox.setGravity(false);
+        }
         hitBox.setAI(false);
-        hitBox.setGravity(false);
         hitBox.setInvulnerable(true);
         hitBox.setCanPickupItems(false);
         hitBox.setCollidable(false);

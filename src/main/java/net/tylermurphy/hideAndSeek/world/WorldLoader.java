@@ -112,7 +112,6 @@ public class WorldLoader {
 	    			
 	    			String[] parts = file.split("\\.");
 	    			if (parts.length > 1) {
-		    			Main.getInstance().getLogger().info(file);
 		    			if ( Integer.parseInt(parts[1]) < minX || Integer.parseInt(parts[1]) > maxX || Integer.parseInt(parts[2]) < minZ || Integer.parseInt(parts[2]) > maxZ )
 		    				continue;
 	    			}
