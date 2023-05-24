@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedEnumEntityUseAction;
+import com.comphenix.protocol.wrappers.EnumWrappers.EntityUseAction;
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.ActionBar;
 import net.tylermurphy.hideAndSeek.Main;
@@ -54,9 +55,9 @@ public class DisguiseHandler implements Listener {
                 PacketContainer packet = event.getPacket();
 
                 // only left click attacks
-                WrappedEnumEntityUseAction action = packet.getEnumEntityUseActions().getValues().stream().findFirst().orElse(null);
+                EntityUseAction action = packet.getEntityUseActions().getValues().stream().findFirst().orElse(null);
                 if (action == null) return;
-                if (action.getAction() != EnumWrappers.EntityUseAction.ATTACK) return;
+                if (action != EnumWrappers.EntityUseAction.ATTACK) return;
 
                 Player player = event.getPlayer();
                 int id = packet.getIntegers().read(0);

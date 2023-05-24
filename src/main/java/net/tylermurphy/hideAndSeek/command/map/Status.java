@@ -49,6 +49,7 @@ public class Status implements ICommand {
 		}
 		if (map.isBlockHuntEnabled() && map.getBlockHunt().isEmpty()) {
 			msg = msg + "\n" + message("SETUP_BLOCKHUNT");
+            count++;
 		}
 		if (count < 1) {
 			sender.sendMessage(messagePrefix + message("SETUP_COMPLETE"));
