@@ -34,6 +34,7 @@ public class Main extends JavaPlugin implements Listener {
 	
 	private static Main instance;
 	private static int version;
+    private static int sub_version;
 
 	private Database database;
 	private Board board;
@@ -189,12 +190,28 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	private void updateVersion(){
-		Matcher matcher = Pattern.compile("MC: \\d\\.(\\d+)").matcher(Bukkit.getVersion());
+		Matcher matcher = Pattern.compile("MC: \\d\\.(\\d+).(\\d+)").matcher(Bukkit.getVersion());
 		if (matcher.find()) {
 			version = Integer.parseInt(matcher.group(1));
-		} else {
-			throw new IllegalArgumentException("Failed to parse server version from: " + Bukkit.getVersion());
-		}
+			sub_version = Integer.parseInt(matcher.group(2));
+
+            getLogger().info("Identified server version: " + version);
+            getLogger().info("Identified server sub version: " + sub_version);
+
+            return;
+        }
+
+        matcher = Pattern.compile("MC: \\d\\.(\\d+)").matcher(Bukkit.getVersion());
+		if (matcher.find()) {
+			version = Integer.parseInt(matcher.group(1));
+			sub_version = 0;
+            
+            getLogger().info("Identified server version: " + version);
+            
+            return;
+        }
+
+		throw new IllegalArgumentException("Failed to parse server version from: " + Bukkit.getVersion());
 	}
 	
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
@@ -242,6 +259,10 @@ public class Main extends JavaPlugin implements Listener {
 
 	public boolean supports(int v){
 		return version >= v;
+	}
+
+	public boolean supports(int v, int s){
+	    return (version == v) ? sub_version >= s : version >= v;
 	}
 
 	public java.util.List<String> getWorlds() {

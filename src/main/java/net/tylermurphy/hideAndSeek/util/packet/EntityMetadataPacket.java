@@ -4,6 +4,9 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
+
+import net.tylermurphy.hideAndSeek.Main;
+
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,12 +39,7 @@ public class EntityMetadataPacket extends AbstractPacket {
 
     public void writeMetadata() {
 
-        // thank you to
-        // https://www.spigotmc.org/threads/unable-to-modify-entity-metadata-packet-using-protocollib-1-19-3.582442/
-
-        try {
-            // 1.19.3 And Up
-            Class.forName("com.comphenix.protocol.wrappers.WrappedDataValue");
+        if (Main.getInstance().supports(19, 3)) {
 
             final List<WrappedDataValue> wrappedDataValueList = new ArrayList<>();
 
@@ -60,9 +58,10 @@ public class EntityMetadataPacket extends AbstractPacket {
 
             packet.getDataValueCollectionModifier().write(0, wrappedDataValueList);
 
-        } catch (ClassCastException | ClassNotFoundException ignored) {
-            // 1.9 to 1.19.2 And Up
+        } else {
+
             packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
+        
         }
 
     }

@@ -1,21 +1,22 @@
 package net.tylermurphy.hideAndSeek.database;
 
-import com.google.common.io.ByteStreams;
-import net.tylermurphy.hideAndSeek.Main;
-import net.tylermurphy.hideAndSeek.database.connections.DatabaseConnection;
-import net.tylermurphy.hideAndSeek.database.connections.MySQLConnection;
-import net.tylermurphy.hideAndSeek.database.connections.SQLiteConnection;
+import static net.tylermurphy.hideAndSeek.configuration.Config.databaseType;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.databasePort;
-import static net.tylermurphy.hideAndSeek.configuration.Config.databaseType;
+import com.google.common.io.ByteStreams;
+
+import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.database.connections.DatabaseConnection;
+import net.tylermurphy.hideAndSeek.database.connections.MySQLConnection;
+import net.tylermurphy.hideAndSeek.database.connections.SQLiteConnection;
 
 public class Database {
 
@@ -96,7 +97,7 @@ public class Database {
         ByteBuffer buffer = ByteBuffer.allocate(16);
         try {
             buffer.put(ByteStreams.toByteArray(is));
-            buffer.flip();
+            ((Buffer)buffer).flip();
             return new UUID(buffer.getLong(), buffer.getLong());
         } catch (IOException e) {
             Main.getInstance().getLogger().severe("IO Error: " + e.getMessage());
