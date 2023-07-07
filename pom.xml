@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"><modelVersion>4.0.0</modelVersion>
     <groupId>net.tylermurphy</groupId>
     <artifactId>KenshinsHideAndSeek</artifactId>
-    <version>1.7.3</version>
+    <version>1.7.4</version>
     <name>Hide and Seek Plugin</name>
 
     <properties>
@@ -47,6 +47,10 @@
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>META-INF/**</exclude>
+                                        <exclude>org/sqlite/native/Mac/**</exclude>
+                                        <exclude>org/sqlite/native/Linux-Android/**</exclude>
+                                        <exclude>org/sqlite/native/Linux/ppc64/**</exclude>
+                                        <exclude>org/sqlite/native/Linux/armv7/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
@@ -120,7 +124,7 @@
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>9.3.1</version>
+            <version>9.4.0</version>
         </dependency>
         <dependency>
             <groupId>me.clip</groupId>
