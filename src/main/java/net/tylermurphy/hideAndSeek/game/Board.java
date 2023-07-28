@@ -25,7 +25,7 @@ public class Board {
         SPECTATOR,
     }
 
-    private UUID initialSeeker = null;
+    private List<UUID> initialSeekers = null;
     private final Map<UUID, Type> Players = new HashMap<>();
     private final Map<UUID, CustomBoard> customBoards = new HashMap<>();
     private final Map<UUID, Integer> hider_kills = new HashMap<>(), seeker_kills = new HashMap<>(), hider_deaths = new HashMap<>(), seeker_deaths = new HashMap<>();
@@ -104,9 +104,15 @@ public class Board {
                 .collect(Collectors.toList());
     }
 
-    public Player getFirstSeeker() {
-        if(initialSeeker == null) return null;
-        return Bukkit.getPlayer(initialSeeker);
+    public void setInitialSeekers(List<UUID> seekers) {
+        initialSeekers = seekers;
+    }
+
+    public List<Player> getInitialSeekers() {
+        if(initialSeekers == null) return null;
+        return initialSeekers.stream().map(u -> {
+            return Bukkit.getPlayer(u);
+        }).collect(Collectors.toList());
     }
 
     public Player getPlayer(UUID uuid) {
@@ -121,9 +127,6 @@ public class Board {
     }
 
     public void addSeeker(Player player) {
-        if(initialSeeker == null) {
-            initialSeeker = player.getUniqueId();
-        }
         Players.put(player.getUniqueId(), Type.SEEKER);
     }
 
@@ -347,7 +350,7 @@ public class Board {
 
     public void cleanup() {
         Players.clear();;
-        initialSeeker = null;
+        initialSeekers = null;
         customBoards.clear();
     }
 

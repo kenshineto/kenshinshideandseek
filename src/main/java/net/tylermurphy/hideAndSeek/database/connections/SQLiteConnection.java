@@ -52,7 +52,7 @@ public class SQLiteConnection implements DatabaseConnection {
     public Connection connect() {
         Connection conn = null;
         try {
-            String url = "jdbc:sqlite:"+databaseFile;
+            String url = "jdbc:sqlite:"+databaseFile.getPath();
             conn = DriverManager.getConnection(url, config.toProperties());
         } catch (SQLException e) {
             Main.getInstance().getLogger().severe(e.getMessage());

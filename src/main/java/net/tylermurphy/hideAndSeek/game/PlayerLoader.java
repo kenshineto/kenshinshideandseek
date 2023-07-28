@@ -67,6 +67,17 @@ public class PlayerLoader {
         Titles.sendTitle(player, 10, 70, 20, ChatColor.GRAY + "" + ChatColor.BOLD + "SPECTATING", ChatColor.WHITE + message("SPECTATOR_SUBTITLE").toString());
     }
 
+    public static void loadDeadHiderSpectator(Player player, Map map) {
+        map.getGameSpawn().teleport(player);
+        loadPlayer(player);
+        player.setAllowFlight(true);
+        player.setFlying(true);
+        player.setFallDistance(0.0F);
+        player.getInventory().setItem(flightToggleItemPosition, flightToggleItem);
+        player.getInventory().setItem(teleportItemPosition, teleportItem);
+        Main.getInstance().getBoard().getPlayers().forEach(otherPlayer -> otherPlayer.hidePlayer(player));
+    }
+
     public static void resetPlayer(Player player, Board board){
         if(board.isSpectator(player)) return;
         loadPlayer(player);

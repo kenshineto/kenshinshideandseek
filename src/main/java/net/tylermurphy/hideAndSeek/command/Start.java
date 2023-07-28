@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,19 +34,21 @@ public class Start implements ICommand {
 			sender.sendMessage(errorPrefix + message("START_MIN_PLAYERS").addAmount(minPlayers));
 			return;
 		}
-		String seekerName;
+	
 		if (args.length < 1) {
 			Main.getInstance().getGame().start();
 			return;
-		} else {
-			seekerName = args[0];
-		}
-		Player seeker = Bukkit.getPlayer(seekerName);
-		if (seeker == null || !Main.getInstance().getBoard().contains(seeker)) {
-			sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(seekerName));
-			return;
-		}
-		Main.getInstance().getGame().start(seeker);
+		};
+
+        List<Player> initialSeekers = new ArrayList<>(args.length);
+        for (int i = 0; i < args.length; i++) {
+            Player seeker = Bukkit.getPlayer(args[i]);
+		    if (seeker == null || !Main.getInstance().getBoard().contains(seeker) || initialSeekers.contains(seeker)) {
+		    	sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(args[i]));
+		    	return;
+            }
+        }
+		Main.getInstance().getGame().start(initialSeekers);
 	}
 	
 	public String getLabel() {
@@ -53,18 +56,15 @@ public class Start implements ICommand {
 	}
 	
 	public String getUsage() {
-		return "<*player>";
+		return "<*seekers...>";
 	}
 
 	public String getDescription() {
-		return "Starts the game either with a random seeker or chosen one";
+		return "Starts the game either with a random set of seekers or a chosen list";
 	}
 
 	public List<String> autoComplete(@NotNull String parameter, @NotNull String typed) {
-		if(parameter.equals("player")) {
-			return Main.getInstance().getBoard().getPlayers().stream().map(Player::getName).collect(Collectors.toList());
-		}
-		return null;
+		return Main.getInstance().getBoard().getPlayers().stream().map(Player::getName).collect(Collectors.toList());
 	}
 
 }

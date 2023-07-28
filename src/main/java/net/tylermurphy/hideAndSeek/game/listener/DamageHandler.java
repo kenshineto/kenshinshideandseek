@@ -94,7 +94,7 @@ public class DamageHandler implements Listener {
         // Reveal player if they are disguised
         Main.getInstance().getDisguiser().reveal(player);
         // Teleport player to seeker spawn
-        if(delayedRespawn){
+        if(delayedRespawn && !respawnAsSpectator){
             game.getCurrentMap().getGameSeekerLobby().teleport(player);
             player.sendMessage(messagePrefix + message("RESPAWN_NOTICE").addAmount(delayedRespawnDelay));
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
@@ -117,10 +117,14 @@ public class DamageHandler implements Listener {
             } else {
                 game.broadcastMessage(message("GAME_PLAYER_FOUND_BY").addPlayer(player).addPlayer(attacker).toString());
             }
-            board.addSeeker(player);
+            if (respawnAsSpectator) {
+                board.addSpectator(player);
+                PlayerLoader.loadDeadHiderSpectator(player, game.getCurrentMap());
+            } else {
+                board.addSeeker(player);
+                PlayerLoader.resetPlayer(player, board);
+            }
         }
-        //Reload player
-        PlayerLoader.resetPlayer(player, board);
         board.reloadBoardTeams();
     }
 

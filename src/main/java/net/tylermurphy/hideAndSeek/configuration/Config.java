@@ -62,8 +62,11 @@ public class Config {
 		allowNaturalCauses,
 		saveInventory,
 		delayedRespawn,
+        dontRewardQuit,
 		spawnPatch,
 		dropItems,
+        respawnAsSpectator,
+        waitTillNoneLeft,
 		regenHealth;
 	
 	public static int 
@@ -82,6 +85,7 @@ public class Config {
 		lobbyItemStartPosition,
 		flightToggleItemPosition,
 		teleportItemPosition,
+        startingSeekerCount,
 		delayedRespawnDelay;
 
 	public static float
@@ -154,7 +158,9 @@ public class Config {
 		}
 
 		//Lobby
-		minPlayers = Math.max(2, config.getInt("minPlayers"));
+        startingSeekerCount = Math.max(1, config.getInt("startingSeekerCount"));
+        waitTillNoneLeft = config.getBoolean("waitTillNoneLeft");
+		minPlayers = Math.max(1 + startingSeekerCount + (waitTillNoneLeft ? 0 : 1), config.getInt("minPlayers"));
 		countdown = Math.max(10, config.getInt("lobby.countdown"));
 		changeCountdown = Math.max(minPlayers, config.getInt("lobby.changeCountdown"));
 		lobbyMin = Math.max(minPlayers, config.getInt("lobby.min"));
@@ -188,6 +194,9 @@ public class Config {
 		placeholderError = config.getString("placeholder.incorrect");
 		placeholderNoData = config.getString("placeholder.noData");
 		saveInventory = config.getBoolean("saveInventory");
+        respawnAsSpectator = config.getBoolean("respawnAsSpectator");
+        dontRewardQuit = config.getBoolean("dontRewardQuit");
+
 		try {
 			countdownDisplay = CountdownDisplay.valueOf(config.getString("hideCountdownDisplay"));
 		} catch (IllegalArgumentException e) {

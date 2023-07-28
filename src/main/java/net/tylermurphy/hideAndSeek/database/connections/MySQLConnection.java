@@ -25,7 +25,6 @@ import net.tylermurphy.hideAndSeek.Main;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 

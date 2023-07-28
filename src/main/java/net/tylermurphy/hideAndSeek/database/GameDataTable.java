@@ -79,7 +79,6 @@ public class GameDataTable {
                         rs.getInt("seeker_deaths")
                 );
                 rs.close();
-                connection.close();
                 CACHE.put(uuid, info);
                 return info;
             }
@@ -111,7 +110,6 @@ public class GameDataTable {
                         rs.getInt("seeker_deaths")
                 );
                 rs.close();
-                connection.close();
                 CACHE.put(uuid, info);
                 return info;
             }
@@ -145,7 +143,6 @@ public class GameDataTable {
                 infoList.add(info);
             }
             rs.close();
-            connection.close();
             return infoList;
         } catch (SQLException e) {
             Main.getInstance().getLogger().severe("SQL Error: " + e.getMessage());
@@ -190,8 +187,8 @@ public class GameDataTable {
                     database.encodeUUID(info.getUniqueId()),
                     info.getHiderWins() + (winners.contains(uuid) && type == WinType.HIDER_WIN ? 1 : 0),
                     info.getSeekerWins() + (winners.contains(uuid) && type == WinType.SEEKER_WIN ? 1 : 0),
-                    info.getHiderGames() + (board.isHider(uuid) || (board.isSeeker(uuid) && !board.getFirstSeeker().getUniqueId().equals(uuid)) ? 1 : 0),
-                    info.getSeekerGames() + (board.getFirstSeeker().getUniqueId().equals(uuid) ? 1 : 0),
+                    info.getHiderGames() + (board.isHider(uuid) || (board.isSeeker(uuid) && winners.contains(uuid)) ? 1 : 0),
+                    info.getSeekerGames() + (board.isSeeker(uuid) && winners.contains(uuid) ? 1 : 0),
                     info.getHiderKills() + hider_kills.getOrDefault(uuid, 0),
                     info.getSeekerKills() + seeker_kills.getOrDefault(uuid, 0),
                     info.getHiderDeaths() + hider_deaths.getOrDefault(uuid, 0),

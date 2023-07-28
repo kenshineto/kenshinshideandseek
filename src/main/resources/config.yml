@@ -48,6 +48,24 @@ permissionsRequired: true
 # default: 2
 minPlayers: 2
 
+# Amount of initial seekers when game starts
+# default: 1
+startingSeekerCount: 1
+
+# By default, when a HIDER dies they will join the SEEKER team. If enabled they will instead become a spectator
+# default: false
+respawnAsSpectator: false
+
+# If enabled, the game will go until no hiders are left. If the timer runs out all hiders left will be marked as winning.
+# If disabled the game wll go until there is only one hider left. If the timer runs out, all hiders left win, if t here is one
+# hider left, all inital seekers win along with the last hider.
+waitTillNoneLeft: true
+
+# By default, if the last hider or seeker quits the game, a win type of NONE is given, which doesnt mark anyone as winning. This can be
+# used as a way to prevent players form quitting in a loop to get someone else points.
+# default: true
+dontRewardQuit: true
+
 # This plugin by default functions as not tag to catch Hiders, but to pvp. All players are given weapons,
 # and seekers slightly better weapons (this can be changed in items.yml). If you want, you can disable this
 # entire pvp functionality, and make Hiders get found on a single hit. Hiders would also not be able to fight

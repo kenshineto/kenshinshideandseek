@@ -97,22 +97,28 @@ public class Game {
 	}
 
 	public void start() {
-		Player seeker;
-		try {
-			int rand = (int) (Math.random() * board.getPlayers().size());
-			seeker = board.getPlayers().get(rand);
-		} catch (Exception e){
-			Main.getInstance().getLogger().warning("Failed to select random seeker.");
-			return;
-		}
-		start(seeker);
+		List<Player> seekers = new ArrayList<>(startingSeekerCount);
+        List<Player> pool = board.getPlayers();
+        for (int i = 0; i < startingSeekerCount; i++) {
+		    try {
+		    	int rand = new Random().nextInt(0, pool.size()-1);
+		    	seekers.add(pool.remove(rand));
+		    } catch (Exception e){
+		    	Main.getInstance().getLogger().warning("Failed to select random seeker.");
+		    	return;
+		    }
+        }
+		start(seekers);
 	}
 
-	public void start(Player seeker) {
+	public void start(List<Player> seekers) {
 		if (mapSaveEnabled) currentMap.getWorldLoader().rollback();
 		board.reload();
-		board.addSeeker(seeker);
-		PlayerLoader.loadSeeker(seeker, currentMap);
+        board.setInitialSeekers(seekers.stream().map(Player::getUniqueId).collect(Collectors.toList()));
+        seekers.forEach(seeker -> {
+		    board.addSeeker(seeker);
+		    PlayerLoader.loadSeeker(seeker, currentMap);
+        });
 		board.getPlayers().forEach(player -> {
 			if(board.isSeeker(player)) return;
 			board.addHider(player);
@@ -133,7 +139,12 @@ public class Game {
 			Main.getInstance().getDatabase().getGameData().addWins(board, players, winners, board.getHiderKills(), board.getHiderDeaths(), board.getSeekerKills(), board.getSeekerDeaths(), type);
 		} else if (type == WinType.SEEKER_WIN) {
 			List<UUID> winners = new ArrayList<>();
-			winners.add(board.getFirstSeeker().getUniqueId());
+			board.getInitialSeekers().forEach(p -> {
+                winners.add(p.getUniqueId());
+            });
+            if (!waitTillNoneLeft && board.getHiders().size() == 1) {
+                winners.add(board.getHiders().get(0).getUniqueId());
+            }
 			Main.getInstance().getDatabase().getGameData().addWins(board, players, winners, board.getHiderKills(), board.getHiderDeaths(), board.getSeekerKills(), board.getSeekerDeaths(), type);
 		}
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), this::end, 5*20);
@@ -351,8 +362,9 @@ public class Game {
 	}
 
 	private void checkWinConditions() {
-		if (board.sizeHider() < 1) {
-			if (hiderLeft) {
+        int hiderCount = board.sizeHider();
+		if (hiderCount < 1 || (!waitTillNoneLeft && hiderCount < 2)) {
+			if (hiderLeft && dontRewardQuit) {
 				if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_HIDERS_QUIT"));
 				else broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_HIDERS_QUIT"));
 				stop(WinType.NONE);
@@ -364,7 +376,7 @@ public class Game {
 		} else if (board.sizeSeeker() < 1) {
 			if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(abortPrefix + message("GAME_GAMEOVER_SEEKERS_QUIT"));
 			else broadcastMessage(abortPrefix + message("GAME_GAMEOVER_SEEKERS_QUIT"));
-			stop(WinType.NONE);
+			stop(dontRewardQuit ? WinType.NONE : WinType.HIDER_WIN);
 		} else if (gameTimer < 1) {
 			if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_TIME"));
 			else broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_TIME"));
