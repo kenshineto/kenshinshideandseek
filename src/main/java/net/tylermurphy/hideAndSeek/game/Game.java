@@ -151,7 +151,7 @@ public class Game {
             }
 			Main.getInstance().getDatabase().getGameData().addWins(board, players, winners, board.getHiderKills(), board.getHiderDeaths(), board.getSeekerKills(), board.getSeekerDeaths(), type);
 		}
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), this::end, 5*20);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), this::end, endGameDelay*20);
 	}
 
 	public void end() {
@@ -347,6 +347,12 @@ public class Game {
 		}
 	}
 
+    public void broadcastTitle(String title, String subtitle) {
+        for (Player player : board.getPlayers()) {
+            Titles.sendTitle(player, 10, 70, 20, title, subtitle); 
+        }
+    }
+
 	public boolean isCurrentMapValid() {
 		return currentMap != null && !currentMap.isNotSetup();
 	}
@@ -371,19 +377,30 @@ public class Game {
 			if (hiderLeft && dontRewardQuit) {
 				if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_HIDERS_QUIT"));
 				else broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_HIDERS_QUIT"));
+                if (gameOverTitle) broadcastTitle(message("GAME_TITLE_NO_WIN").toString(), message("GAME_GAMEOVER_HIDERS_QUIT").toString());
 				stop(WinType.NONE);
 			} else {
-				if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
-				else broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
+                if (hiderCount < 1 || waitTillNoneLeft) {
+				    if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
+				    else broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_HIDERS_FOUND"));
+                if (gameOverTitle) broadcastTitle(message("GAME_TITLE_SEEKERS_WIN").toString(), message("GAME_GAMEOVER_HIDERS_FOUND").toString());
+                } else {
+                    Player hider = board.getHiders().get(0);
+				    if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_LAST_HIDER").addPlayer(hider));
+				    else broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_LAST_HIDER").addPlayer(hider));
+                    if (gameOverTitle) broadcastTitle(message("GAME_TITLE_SINGLE_HIDER_WIN").addPlayer(hider).toString(), message("GAME_SUBTITLE_SINGLE_HIDER_WIN").addPlayer(hider).toString());
+                }
 				stop(WinType.SEEKER_WIN);
 			}
 		} else if (board.sizeSeeker() < 1) {
 			if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(abortPrefix + message("GAME_GAMEOVER_SEEKERS_QUIT"));
 			else broadcastMessage(abortPrefix + message("GAME_GAMEOVER_SEEKERS_QUIT"));
+            if (gameOverTitle) broadcastTitle(message("GAME_TITLE_NO_WIN").toString(), message("GAME_GAMEOVER_SEEKERS_QUIT").toString());
 			stop(dontRewardQuit ? WinType.NONE : WinType.HIDER_WIN);
 		} else if (gameTimer < 1) {
 			if (announceMessagesToNonPlayers) Bukkit.broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_TIME"));
 			else broadcastMessage(gameOverPrefix + message("GAME_GAMEOVER_TIME"));
+            if (gameOverTitle) broadcastTitle(message("GAME_TITLE_HIDERS_WIN").toString(), message("GAME_GAMEOVER_TIME").toString());
 			stop(WinType.HIDER_WIN);
 		}
 		hiderLeft = false;

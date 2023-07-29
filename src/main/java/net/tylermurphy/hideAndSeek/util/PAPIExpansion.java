@@ -4,6 +4,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.database.util.PlayerInfo;
+import net.tylermurphy.hideAndSeek.game.Board;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 
 import org.bukkit.OfflinePlayer;
@@ -44,19 +45,26 @@ public class PAPIExpansion extends PlaceholderExpansion  {
         Database database = Main.getInstance().getDatabase();
         String[] args = params.split("_");
         Status status = Main.getInstance().getGame().getStatus();
+        Board board = Main.getInstance().getBoard();
+
+        System.out.println(args);
 
         if (args.length < 1) return null;
 
-        if (args.length == 1 && args[0] == "hiders") {
-            if (status == Status.PLAYING || status == Status.STARTING) {
+        if (args.length == 1 && args[0].equals("hiders")) {
+            if (!board.containsUUID(player.getUniqueId())) {
+                return "-";
+            } else if (status == Status.PLAYING || status == Status.STARTING) {
                 return "" + Main.getInstance().getBoard().getHiders().size();
             } else {
                 return "-";
             }
         }
         
-        if (args.length == 1 && args[0] == "seekers") {
-            if (status == Status.PLAYING || status == Status.STARTING) {
+        if (args.length == 1 && args[0].equals("seekers")) {
+            if (!board.containsUUID(player.getUniqueId())) {
+                return "-";
+            } else if (status == Status.PLAYING || status == Status.STARTING) {
                 return "" + Main.getInstance().getBoard().getSeekers().size();
             } else {
                 return "-";

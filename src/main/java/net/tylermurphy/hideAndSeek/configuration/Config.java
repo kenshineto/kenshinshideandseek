@@ -67,6 +67,7 @@ public class Config {
 		dropItems,
         respawnAsSpectator,
         waitTillNoneLeft,
+        gameOverTitle,
 		regenHealth;
 	
 	public static int 
@@ -86,7 +87,8 @@ public class Config {
 		flightToggleItemPosition,
 		teleportItemPosition,
         startingSeekerCount,
-		delayedRespawnDelay;
+		delayedRespawnDelay,
+        endGameDelay;
 
 	public static float
 		seekerPingLeadingVolume,
@@ -196,6 +198,8 @@ public class Config {
 		saveInventory = config.getBoolean("saveInventory");
         respawnAsSpectator = config.getBoolean("respawnAsSpectator");
         dontRewardQuit = config.getBoolean("dontRewardQuit");
+        endGameDelay = Math.max(0,config.getInt("endGameDelay"));
+        gameOverTitle = config.getBoolean("gameOverTitle");
 
 		try {
 			countdownDisplay = CountdownDisplay.valueOf(config.getString("hideCountdownDisplay"));

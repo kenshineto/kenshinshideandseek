@@ -34,6 +34,10 @@ public class Board {
         return Players.containsKey(player.getUniqueId());
     }
 
+    public boolean containsUUID(UUID uuid) {
+        return Players.containsKey(uuid);
+    } 
+
     public boolean isHider(Player player) {
         return isHider(player.getUniqueId());
     }
@@ -418,13 +422,8 @@ class CustomBoard {
                 seekerTeam.setNameTagVisibility(NameTagVisibility.NEVER);
             }
         }
-        if (Main.getInstance().supports(12)) {
-            hiderTeam.setColor(ChatColor.GOLD);
-            seekerTeam.setColor(ChatColor.RED);
-        } else {
-            hiderTeam.setPrefix(ChatColor.translateAlternateColorCodes('&', "&6"));
-            seekerTeam.setPrefix(ChatColor.translateAlternateColorCodes('&', "&c"));
-        }
+        hiderTeam.setPrefix(message("HIDER_TEAM_NAME").toString() + " " + ChatColor.RESET);
+        seekerTeam.setPrefix(message("SEEKER_TEAM_NAME").toString() + " " + ChatColor.RESET);
     }
 
     public void setLine(String key, String message) {

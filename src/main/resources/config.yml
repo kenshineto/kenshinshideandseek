@@ -59,12 +59,21 @@ respawnAsSpectator: false
 # If enabled, the game will go until no hiders are left. If the timer runs out all hiders left will be marked as winning.
 # If disabled the game wll go until there is only one hider left. If the timer runs out, all hiders left win, if t here is one
 # hider left, all inital seekers win along with the last hider.
+# default: true
 waitTillNoneLeft: true
 
 # By default, if the last hider or seeker quits the game, a win type of NONE is given, which doesnt mark anyone as winning. This can be
 # used as a way to prevent players form quitting in a loop to get someone else points.
 # default: true
 dontRewardQuit: true
+
+# The amount of seconds the game will wait until the players are teleported to the lobby after a game over
+# default: 5
+endGameDelay: 5
+
+# Along with a chat message, display a title describing the gameover
+# default: false
+gameOverTitle: false
 
 # This plugin by default functions as not tag to catch Hiders, but to pvp. All players are given weapons,
 # and seekers slightly better weapons (this can be changed in items.yml). If you want, you can disable this
