@@ -58,6 +58,8 @@ public class Game {
 	private int gameTimer;
 	private boolean hiderLeft;
 
+    private Random random;
+
 	public Game(Map map, Board board) {
 
 		this.currentMap = map;
@@ -74,6 +76,8 @@ public class Game {
 		this.startingTimer = -1;
 		this.gameTimer = 0;
 		this.hiderLeft = false;
+
+        this.random = new Random();
 	}
 
 	public Status getStatus(){
@@ -101,7 +105,7 @@ public class Game {
         List<Player> pool = board.getPlayers();
         for (int i = 0; i < startingSeekerCount; i++) {
 		    try {
-		    	int rand = new Random().nextInt(0, pool.size()-1);
+		    	int rand = random.nextInt(0, pool.size());
 		    	seekers.add(pool.remove(rand));
 		    } catch (Exception e){
 		    	Main.getInstance().getLogger().warning("Failed to select random seeker.");

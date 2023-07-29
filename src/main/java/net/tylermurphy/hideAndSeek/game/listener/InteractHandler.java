@@ -3,8 +3,10 @@ package net.tylermurphy.hideAndSeek.game.listener;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.messages.ActionBar;
 import net.tylermurphy.hideAndSeek.Main;
+import net.tylermurphy.hideAndSeek.game.Board;
 import net.tylermurphy.hideAndSeek.game.util.Status;
 import org.bukkit.ChatColor;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,6 +15,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
@@ -94,17 +98,82 @@ public class InteractHandler implements Listener {
             return;
         }
         if(temp.isSimilar(teleportItem)){
-            int amount = Main.getInstance().getBoard().getHiders().size() + Main.getInstance().getBoard().getSeekers().size();
-            Inventory teleportMenu = Main.getInstance().getServer().createInventory(null, 9*(((amount-1)/9)+1), ChatColor.stripColor(teleportItem.getItemMeta().getDisplayName()));
-            List<String> hider_lore = new ArrayList<>(); hider_lore.add(message("HIDER_TEAM_NAME").toString());
-            Main.getInstance().getBoard().getHiders().forEach(hider -> teleportMenu.addItem(getSkull(hider, hider_lore)));
-            List<String> seeker_lore = new ArrayList<>(); seeker_lore.add(message("SEEKER_TEAM_NAME").toString());
-            Main.getInstance().getBoard().getSeekers().forEach(seeker -> teleportMenu.addItem(getSkull(seeker, seeker_lore)));
-            event.getPlayer().openInventory(teleportMenu);
+            // int amount = Main.getInstance().getBoard().getHiders().size() + Main.getInstance().getBoard().getSeekers().size();
+            // Inventory teleportMenu = Main.getInstance().getServer().createInventory(null, 9*(((amount-1)/9)+1), ChatColor.stripColor(teleportItem.getItemMeta().getDisplayName()));
+            // List<String> hider_lore = new ArrayList<>(); hider_lore.add(message("HIDER_TEAM_NAME").toString());
+            // Main.getInstance().getBoard().getHiders().forEach(hider -> teleportMenu.addItem(getSkull(hider, hider_lore)));
+            // List<String> seeker_lore = new ArrayList<>(); seeker_lore.add(message("SEEKER_TEAM_NAME").toString());
+            // Main.getInstance().getBoard().getSeekers().forEach(seeker -> teleportMenu.addItem(getSkull(seeker, seeker_lore)));
+            // event.getPlayer().openInventory(teleportMenu);
+            createSpectatorTeleportPage(event.getPlayer(), 0);
         }
     }
 
-    private ItemStack getSkull(Player player, List<String> lore){
+    public static void createSpectatorTeleportPage(Player player, int page) {
+        
+        if (page < 0) {
+            return;
+        }
+        
+        final Board board = Main.getInstance().getBoard();
+        List<Player> players = new ArrayList<>();
+        players.addAll(board.getHiders());
+        players.addAll(board.getSeekers());
+
+        final int page_size = 9 * 5;
+        final int amount = players.size();
+        final int start = page * page_size;
+        
+        int page_amount = amount - start;
+        
+        if (page_amount < 1) {
+            return;
+        }
+        
+        boolean next = false, prev = true;
+
+        if (page_amount > page_size) {
+            page_amount = page_size;
+            next = true;
+        }
+
+        if (page == 0) {
+            prev = false;
+        }
+
+        final int rows = ((amount - 1) / 9) + 2;
+
+        final Inventory teleportMenu = Main.getInstance().getServer().createInventory(null, 9 * rows, ChatColor.stripColor(teleportItem.getItemMeta().getDisplayName()));
+
+        final List<String> hider_lore = new ArrayList<>(); hider_lore.add(message("HIDER_TEAM_NAME").toString());
+        final List<String> seeker_lore = new ArrayList<>(); seeker_lore.add(message("SEEKER_TEAM_NAME").toString());
+        
+        for (int i = 0; i < page_amount; i++) {
+            Player plr = players.get(i);
+            teleportMenu.addItem(getSkull(plr, board.isHider(plr) ? hider_lore : seeker_lore));
+        }
+        
+        final int lastRow = (rows - 1) * 9;
+        if (prev) {
+            teleportMenu.setItem(lastRow, getPageItem(page - 1));
+        }
+
+        if (next) {
+            teleportMenu.setItem(lastRow + 8, getPageItem(page + 1));
+        }
+
+        player.openInventory(teleportMenu);
+    }
+
+    private static ItemStack getPageItem(int page) {
+        ItemStack prevItem = new ItemStack(XMaterial.ENCHANTED_BOOK.parseMaterial(), page + 1);
+        ItemMeta meta = prevItem.getItemMeta();
+        meta.setDisplayName("Page " + (page+1));
+        prevItem.setItemMeta(meta);
+        return prevItem;
+    }
+
+    private static ItemStack getSkull(Player player, List<String> lore){
         assert XMaterial.PLAYER_HEAD.parseMaterial() != null;
         ItemStack playerHead = new ItemStack(XMaterial.PLAYER_HEAD.parseMaterial(), 1, (byte) 3);
         SkullMeta playerHeadMeta = (SkullMeta) playerHead.getItemMeta();

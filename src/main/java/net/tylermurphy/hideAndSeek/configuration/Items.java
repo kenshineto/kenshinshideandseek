@@ -16,6 +16,12 @@ import java.util.List;
 public class Items {
 
     public static List<ItemStack> HIDER_ITEMS, SEEKER_ITEMS;
+    public static ItemStack 
+        HIDER_HELM, SEEKER_HELM,
+        HIDER_CHEST, SEEKER_CHEST,
+        HIDER_LEGS, SEEKER_LEGS,
+        HIDER_BOOTS, SEEKER_BOOTS;
+
     public static List<PotionEffect> HIDER_EFFECTS, SEEKER_EFFECTS;
 
     public static void loadItems() {
@@ -23,24 +29,60 @@ public class Items {
         ConfigManager manager = ConfigManager.create("items.yml");
 
         SEEKER_ITEMS = new ArrayList<>();
+        SEEKER_HELM = null;
+        SEEKER_CHEST = null;
+        SEEKER_LEGS = null;
+        SEEKER_BOOTS = null;
         ConfigurationSection SeekerItems = manager.getConfigurationSection("items.seeker");
         int i = 1;
         while (true) {
             ConfigurationSection section = SeekerItems.getConfigurationSection(String.valueOf(i));
             if (section == null) break;
             ItemStack item = createItem(section);
-            if (item != null) SEEKER_ITEMS.add(item);
+            if (item == null) continue;
+            String loc = section.getString("location");
+            if (loc == null) {
+                SEEKER_ITEMS.add(item);
+            } else if (loc.equals("helmet")) {
+                SEEKER_HELM = item;
+            } else if (loc.equals("chestplate")) {
+                SEEKER_CHEST = item;
+            } else if (loc.equals("leggings")) {
+                SEEKER_LEGS = item;
+            } else if (loc.equals("boots")) {
+                SEEKER_BOOTS = item;
+            } else {
+                SEEKER_ITEMS.add(item);
+            }
             i++;
         }
 
         HIDER_ITEMS = new ArrayList<>();
+        HIDER_HELM = null;
+        HIDER_CHEST = null;
+        HIDER_LEGS = null;
+        HIDER_BOOTS = null;
         ConfigurationSection HiderItems = manager.getConfigurationSection("items.hider");
         i = 1;
         while (true) {
             ConfigurationSection section = HiderItems.getConfigurationSection(String.valueOf(i));
             if (section == null) break;
             ItemStack item = createItem(section);
-            if (item != null) HIDER_ITEMS.add(item);
+            if (item == null) continue;
+            String loc = section.getString("location");
+            if (loc == null) {
+                HIDER_ITEMS.add(item);
+            } else if (loc.equals("helmet")) {
+                HIDER_HELM = item;
+            } else if (loc.equals("chestplate")) {
+                HIDER_CHEST = item;
+            } else if (loc.equals("leggings")) {
+                HIDER_LEGS = item;
+            } else if (loc.equals("boots")) {
+                HIDER_BOOTS = item;
+            } else {
+                HIDER_ITEMS.add(item);
+            }
             i++;
         }
         SEEKER_EFFECTS = new ArrayList<>();
@@ -64,7 +106,6 @@ public class Items {
             if (effect != null) HIDER_EFFECTS.add(effect);
             i++;
         }
-
     }
 
     private static ItemStack createItem(ConfigurationSection item) {

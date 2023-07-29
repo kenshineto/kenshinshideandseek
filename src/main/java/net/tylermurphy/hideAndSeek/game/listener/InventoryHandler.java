@@ -32,6 +32,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class InventoryHandler implements Listener {
 
@@ -52,13 +54,30 @@ public class InventoryHandler implements Listener {
 
     private void checkForSpectatorTeleportMenu(InventoryClickEvent event){
         Player player = (Player) event.getWhoClicked();
-        if (Main.getInstance().getBoard().isSpectator(player) && event.getCurrentItem().getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
-            event.setCancelled(true);
-            player.closeInventory();
-            String name = event.getCurrentItem().getItemMeta().getDisplayName();
-            Player clicked = Main.getInstance().getServer().getPlayer(name);
-            if(clicked == null) return;
-            player.teleport(clicked);
+            
+        ItemStack item = event.getCurrentItem();
+        ItemMeta meta = item.getItemMeta();
+        String name = meta.getDisplayName();
+        
+        if (Main.getInstance().getBoard().isSpectator(player)) {
+            if (XMaterial.PLAYER_HEAD.isSimilar(item)) {
+                event.setCancelled(true);
+                player.closeInventory();
+                Player clicked = Main.getInstance().getServer().getPlayer(name);
+                if (clicked == null) return;
+                player.teleport(clicked);
+            } else if (XMaterial.ENCHANTED_BOOK.isSimilar(item)) {
+                event.setCancelled(true);
+                player.closeInventory();
+                if (!name.startsWith("Page ")) return;
+                String number_str = name.substring(5);
+                try {
+                    int page = Integer.parseInt(number_str);
+                    InteractHandler.createSpectatorTeleportPage(player, page - 1);
+                } catch(Exception ignored) {
+                    return;
+                }
+            }
         }
     }
 

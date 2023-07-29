@@ -4,6 +4,8 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.tylermurphy.hideAndSeek.Main;
 import net.tylermurphy.hideAndSeek.database.Database;
 import net.tylermurphy.hideAndSeek.database.util.PlayerInfo;
+import net.tylermurphy.hideAndSeek.game.util.Status;
+
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,8 +43,26 @@ public class PAPIExpansion extends PlaceholderExpansion  {
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         Database database = Main.getInstance().getDatabase();
         String[] args = params.split("_");
+        Status status = Main.getInstance().getGame().getStatus();
 
         if (args.length < 1) return null;
+
+        if (args.length == 1 && args[0] == "hiders") {
+            if (status == Status.PLAYING || status == Status.STARTING) {
+                return "" + Main.getInstance().getBoard().getHiders().size();
+            } else {
+                return "-";
+            }
+        }
+        
+        if (args.length == 1 && args[0] == "seekers") {
+            if (status == Status.PLAYING || status == Status.STARTING) {
+                return "" + Main.getInstance().getBoard().getSeekers().size();
+            } else {
+                return "-";
+            }
+        }
+
         if ((args.length == 2 || args.length == 3) && (args[0].equals("stats") || args[0].equals("rank-place"))) {
             Optional<PlayerInfo> info = this.getPlayerInfo(args.length == 2 ? player.getUniqueId() : database.getNameData().getUUID(args[2]));
             if (info.isPresent()) {

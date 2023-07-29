@@ -82,15 +82,33 @@ public class PlayerLoader {
         if(board.isSpectator(player)) return;
         loadPlayer(player);
         if (board.isSeeker(player)) {
-            if (pvpEnabled)
+            if (pvpEnabled) {
                 for(ItemStack item : Items.SEEKER_ITEMS)
                     player.getInventory().addItem(item);
+                if (Items.SEEKER_HELM != null)
+                    player.getInventory().setHelmet(Items.SEEKER_HELM);
+                if (Items.SEEKER_CHEST != null)
+                    player.getInventory().setChestplate(Items.SEEKER_CHEST);
+                if (Items.SEEKER_LEGS != null)
+                    player.getInventory().setLeggings(Items.SEEKER_LEGS);
+                if (Items.SEEKER_BOOTS != null)
+                    player.getInventory().setBoots(Items.SEEKER_BOOTS);
+            }
             for(PotionEffect effect : Items.SEEKER_EFFECTS)
                 player.addPotionEffect(effect);
         } else if (board.isHider(player)) {
-            if (pvpEnabled)
+            if (pvpEnabled) {
                 for(ItemStack item : Items.HIDER_ITEMS)
                     player.getInventory().addItem(item);
+                if (Items.HIDER_HELM != null)
+                    player.getInventory().setHelmet(Items.HIDER_HELM);
+                if (Items.HIDER_CHEST != null)
+                    player.getInventory().setChestplate(Items.HIDER_CHEST);
+                if (Items.HIDER_LEGS != null)
+                    player.getInventory().setLeggings(Items.HIDER_LEGS);
+                if (Items.HIDER_BOOTS != null)
+                    player.getInventory().setBoots(Items.HIDER_BOOTS);
+            }
             for(PotionEffect effect : Items.HIDER_EFFECTS)
                 player.addPotionEffect(effect);
             if (glowEnabled) {

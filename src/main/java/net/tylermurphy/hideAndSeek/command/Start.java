@@ -11,8 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static net.tylermurphy.hideAndSeek.configuration.Config.errorPrefix;
-import static net.tylermurphy.hideAndSeek.configuration.Config.minPlayers;
+import static net.tylermurphy.hideAndSeek.configuration.Config.*;
 import static net.tylermurphy.hideAndSeek.configuration.Localization.message;
 
 public class Start implements ICommand {
@@ -40,14 +39,22 @@ public class Start implements ICommand {
 			return;
 		};
 
-        List<Player> initialSeekers = new ArrayList<>(args.length);
+        List<Player> initialSeekers = new ArrayList<>();
         for (int i = 0; i < args.length; i++) {
             Player seeker = Bukkit.getPlayer(args[i]);
 		    if (seeker == null || !Main.getInstance().getBoard().contains(seeker) || initialSeekers.contains(seeker)) {
 		    	sender.sendMessage(errorPrefix + message("START_INVALID_NAME").addPlayer(args[i]));
 		    	return;
             }
+            initialSeekers.add(seeker);
         }
+        
+        int minHiders = minPlayers - startingSeekerCount;
+        if (Main.getInstance().getBoard().size() - initialSeekers.size() < minHiders) {
+			sender.sendMessage(errorPrefix + message("START_MIN_PLAYERS").addAmount(minPlayers));
+			return;
+        }
+
 		Main.getInstance().getGame().start(initialSeekers);
 	}
 	
