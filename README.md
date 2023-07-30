@@ -24,6 +24,7 @@ You can download the plugin precompiled on the following sites
 - [Spiggot](https://www.spigotmc.org/resources/kenshins-hide-and-seek.95306/)
 - [Hanger](https://hangar.papermc.io/kenshineto/KenshinsHideAndSeek)
 - [Modrinth](https://modrinth.com/plugin/kenshins-hide-and-seek)
+- [Forgejo](https://g.tylerm.dev/tylerm/KenshinsHideAndSeek/releases)
 
 Compilation
 -----------
