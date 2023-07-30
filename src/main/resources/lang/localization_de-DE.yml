@@ -12,12 +12,18 @@ Localization:
   COMMAND_ERROR: "Ein unbekannter Fehler ist aufgetreten."
   COMMAND_INVALID_ARG: "Ungültiges Argument: {AMOUNT}"
   GAME_PLAYER_DEATH: "&c{PLAYER}&f ist gestorben."
-  GAME_PLAYER_FOUND: "&e{PLAYER}&f wurde gefunden und ist nun ein Seeker."
-  GAME_PLAYER_FOUND_BY: "&e{PLAYER}&f wurde von &c{PLAYER}&f gefunden und ist nun ein Seeker."
+  GAME_PLAYER_FOUND: "&e{PLAYER}&f wurde gefunden"
+  GAME_PLAYER_FOUND_BY: "&e{PLAYER}&f wurde von &c{PLAYER}&f gefunden"
   GAME_GAMEOVER_HIDERS_FOUND: "Alle Hider wurden gefunden."
+  GAME_GAMEOVER_LAST_HIDER: "Der letzte Hider, &e{PLAYER}&f, hat gewonnen!"
   GAME_GAMEOVER_SEEKERS_QUIT: "All Seeker haben das Spiel verlassen."
   GAME_GAMEOVER_HIDERS_QUIT: "All Hider haben das Spiel verlassen."
   GAME_GAMEOVER_TIME: "Seekers haben keine Spielzeit mehr. Die Hiders haben gewonnen!"
+  GAME_TITLE_HIDERS_WIN: "&aHiders haben gewonnen!"
+  GAME_TITLE_SINGLE_HIDER_WIN: "&a{PLAYER} haben gewonnen!"
+  GAME_TITLE_SEEKERS_WIN: "&cSeekers haben gewonnen!"
+  GAME_TITLE_NO_WIN: "&bSpiel ist aus"
+  GAME_SUBTITLE_SINGLE_HIDER_WIN: "{PLAYER} ist der letzte lebende Hider!"
   GAME_SETUP: "Es gibt keine Setup-Karten! Führen Sie /hs map status auf einer Karte aus, um zu sehen, was Sie tun müssen."
   GAME_INGAME: "Du bist bereits in der Lobby oder im Spiel."
   GAME_NOT_INGAME: "Du bist weder in einer Lobby noch in einem Spiel."
@@ -128,5 +134,5 @@ Localization:
   CONFIRMATION: "Führen Sie /hs confirm innerhalb von 10s aus, um zu bestätigen."
 
 # DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
-version: 4
+version: 5
 type: "de-DE"

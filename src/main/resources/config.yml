@@ -15,6 +15,10 @@ spawnPatch: false
 # default: 1200 aka 20min
 gameLength: 1200
 
+# How long in seconds will the initial hiding period last, minimum is 10 seconds
+# default: 30
+hidingTimer: 30
+
 # Announce join/leave/game over messages to people not playing the game
 # default: true
 announceMessagesToNonPlayers: true
@@ -47,6 +51,33 @@ permissionsRequired: true
 # Minimum amount of players to start the game. Cannot go lower than 2.
 # default: 2
 minPlayers: 2
+
+# Amount of initial seekers when game starts
+# default: 1
+startingSeekerCount: 1
+
+# By default, when a HIDER dies they will join the SEEKER team. If enabled they will instead become a spectator
+# default: false
+respawnAsSpectator: false
+
+# If enabled, the game will go until no hiders are left. If the timer runs out all hiders left will be marked as winning.
+# If disabled the game wll go until there is only one hider left. If the timer runs out, all hiders left win, if there is one
+# hider left, all inital seekers win along with the last hider.
+# default: true
+waitTillNoneLeft: true
+
+# By default, if the last hider or seeker quits the game, a win type of NONE is given, which doesnt mark anyone as winning. This can be
+# used as a way to prevent players form quitting in a loop to get someone else points.
+# default: true
+dontRewardQuit: false
+
+# The amount of seconds the game will wait until the players are teleported to the lobby after a game over
+# default: 5
+endGameDelay: 5
+
+# Along with a chat message, display a title describing the gameover
+# default: false
+gameOverTitle: true
 
 # This plugin by default functions as not tag to catch Hiders, but to pvp. All players are given weapons,
 # and seekers slightly better weapons (this can be changed in items.yml). If you want, you can disable this

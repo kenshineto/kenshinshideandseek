@@ -12,12 +12,18 @@ Localization:
   COMMAND_ERROR: "An internal error has occurred."
   COMMAND_INVALID_ARG: "Invalid argument: {AMOUNT}"
   GAME_PLAYER_DEATH: "&c{PLAYER}&f was killed."
-  GAME_PLAYER_FOUND: "&e{PLAYER}&f was found and became a seeker."
-  GAME_PLAYER_FOUND_BY: "&e{PLAYER}&f was found by &c{PLAYER}&f and became a seeker."
+  GAME_PLAYER_FOUND: "&e{PLAYER}&f was found"
+  GAME_PLAYER_FOUND_BY: "&e{PLAYER}&f was found by &c{PLAYER}&f"
   GAME_GAMEOVER_HIDERS_FOUND: "All hiders have been found."
+  GAME_GAMEOVER_LAST_HIDER: "The last hider, &e{PLAYER}&f, has won!"
   GAME_GAMEOVER_SEEKERS_QUIT: "All seekers have quit."
   GAME_GAMEOVER_HIDERS_QUIT: "All hiders have quit."
   GAME_GAMEOVER_TIME: "Seekers ran out of time. Hiders win!"
+  GAME_TITLE_HIDERS_WIN: "&aHiders Win!"
+  GAME_TITLE_SINGLE_HIDER_WIN: "&a{PLAYER} Wins!"
+  GAME_TITLE_SEEKERS_WIN: "&cSeekers Win!"
+  GAME_TITLE_NO_WIN: "&bGame Over"
+  GAME_SUBTITLE_SINGLE_HIDER_WIN: "{PLAYER} is the last hider alive!"
   GAME_SETUP: "There are no setup maps! Run /hs map status on a map to see what you need to do."
   GAME_INGAME: "You are already in the lobby/game."
   GAME_NOT_INGAME: "You are not in a lobby/game."
@@ -128,5 +134,5 @@ Localization:
   CONFIRMATION: "Run /hs confirm within 10s to confirm."
 
 # DO NOT EDIT IT OR IT MAY BREAK OR RESET FILE
-version: 4
+version: 5
 type: "en-US"
