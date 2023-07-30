@@ -4,7 +4,7 @@
 # If pvp is disabled in config.yml, only effects will be given to players.
 items:
   seeker:
-    '1':
+    '0':
       material: DIAMOND_SWORD
       amount: 1
       enchantments:
@@ -13,7 +13,7 @@ items:
       unbreakable: true
       lore:
         - 'This is the seeker sword'
-    '2':
+    '1':
       material: STICK
       amount: 1
       enchantments:
@@ -22,8 +22,19 @@ items:
       lore:
         - 'It will launch people very far'
         - 'Use wisely!'
+    'helmet':
+      material: LEATHER_HELMET
+    'chestplate':
+      material: LEATHER_CHESTPLATE
+    'leggings':
+      material: LEATHER_LEGGINGS
+    'boots':
+      material: LEATHER_BOOTS
+      enchantments:
+        feather_falling: 4
+
   hider:
-    '1':
+    '0':
       material: STONE_SWORD
       amount: 1
       enchantments:
@@ -32,11 +43,11 @@ items:
       unbreakable: true
       lore:
         - 'This is the hider sword'
-    '2':
+    '1':
       material: SPLASH_POTION
       amount: 1
       type: REGEN
-    '3':
+    '2':
       material: POTION
       amount: 2
       type: INSTANT_HEAL
@@ -51,12 +62,6 @@ effects:
       particles: false
     '2':
       type: JUMP
-      duration: 1000000
-      amplifier: 1
-      ambient: false
-      particles: false
-    '3':
-      type: SLOW_FALLING
       duration: 1000000
       amplifier: 1
       ambient: false

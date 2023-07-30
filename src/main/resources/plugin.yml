@@ -1,5 +1,5 @@
 name: KenshinsHideAndSeek
-main: net.tylermurphy.hideAndSeek.Main
+main: dev.tylerm.khs.Main
 version: 1.7.5
 author: KenshinEto
 load: STARTUP

@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"><modelVersion>4.0.0</modelVersion>
-    <groupId>net.tylermurphy</groupId>
+    <groupId>dev.tylerm</groupId>
     <artifactId>KenshinsHideAndSeek</artifactId>
     <version>1.7.5</version>
     <name>Hide and Seek Plugin</name>
@@ -27,11 +27,11 @@
                             <relocations>
                                 <relocation>
                                     <pattern>com.cryptomorin.xseries</pattern>
-                                    <shadedPattern>net.tylermurphy.dependencies.xseries</shadedPattern>
+                                    <shadedPattern>dev.tylerm.depend.xseries</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
-                                    <shadedPattern>net.tylermurphy.dependencies.hikari</shadedPattern>
+                                    <shadedPattern>dev.tylerm.depend.hikari</shadedPattern>
                                 </relocation>
                             </relocations>
                             <artifactSet>
