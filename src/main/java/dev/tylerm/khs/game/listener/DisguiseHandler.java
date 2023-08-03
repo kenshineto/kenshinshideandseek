@@ -8,7 +8,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.EnumWrappers.EntityUseAction;
 import dev.tylerm.khs.Main;
 import dev.tylerm.khs.game.util.Disguise;
 import org.bukkit.Bukkit;
@@ -51,15 +50,19 @@ public class DisguiseHandler implements Listener {
                 PacketContainer packet = event.getPacket();
 
                 // only left click attacks
-                EntityUseAction action = packet.getEntityUseActions().getValues().stream().findFirst().orElse(null);
+                EnumWrappers.EntityUseAction action = packet.getEntityUseActions().getValues().stream().findFirst().orElse(null);
                 if (action == null) return;
-                if (action != EnumWrappers.EntityUseAction.ATTACK) return;
+                //noinspection ComparatorResultComparison
+                if (action.compareTo(EnumWrappers.EntityUseAction.INTERACT) == 2) {
+                    return;
+                }
 
                 Player player = event.getPlayer();
                 int id = packet.getIntegers().read(0);
                 Disguise disguise = Main.getInstance().getDisguiser().getByEntityID(id);
                 if(disguise == null) disguise = Main.getInstance().getDisguiser().getByHitBoxID(id);
                 if(disguise == null) return;
+                
                 if(disguise.getPlayer().getGameMode() == GameMode.CREATIVE) return;
                 event.setCancelled(true);
                 handleAttack(disguise, player);
@@ -82,7 +85,9 @@ public class DisguiseHandler implements Listener {
 
         disguise.setSolidify(false);
         if(debounce.contains(disguise.getPlayer())) return;
+
         debounce.add(disguise.getPlayer());
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
             EntityDamageByEntityEvent event =
                     new EntityDamageByEntityEvent(seeker, disguise.getPlayer(), EntityDamageEvent.DamageCause.ENTITY_ATTACK, amount);
