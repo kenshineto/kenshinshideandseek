@@ -39,6 +39,7 @@ public class InventoryHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getCurrentItem() == null) return;
         if (!(event.getWhoClicked() instanceof Player)) return;
         checkForInventoryMove(event);
         checkForSpectatorTeleportMenu(event);
@@ -56,6 +57,7 @@ public class InventoryHandler implements Listener {
         Player player = (Player) event.getWhoClicked();
             
         ItemStack item = event.getCurrentItem();
+
         ItemMeta meta = item.getItemMeta();
         String name = meta.getDisplayName();
         
