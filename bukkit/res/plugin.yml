@@ -1,0 +1,76 @@
+name: KenshinsHideAndSeek
+main: cat.freya.khs.bukkit.KhsPlugin
+version: 2.0.0
+author: KenshinEto
+load: STARTUP
+api-version: 1.13
+depend: [packetevents]
+softdepend: [PlaceholderAPI]
+commands:
+  hideandseek:
+    description: Hide and Seek command
+    usage: /hideandseek [command]
+    aliases: hs
+permissions:
+  hs.help:
+    default: true
+  hs.join:
+    default: true
+  hs.leave:
+    default: true
+  hs.top:
+    default: true
+  hs.wins:
+    default: true
+  hs.reload:
+    default: op
+  hs.send:
+    default: op
+  hs.setexit:
+    default: op
+  hs.start:
+    default: op
+  hs.stop:
+    default: op
+  hs.map.add:
+    default: op
+  hs.map.remove:
+    default: op
+  hs.map.list:
+    default: op
+  hs.map.status:
+    default: op
+  hs.map.save:
+    default: op
+  hs.map.debug:
+    default: op
+  hs.map.goto:
+    default: op
+  hs.map.set.lobby:
+    default: op
+  hs.map.set.spawn:
+    default: op
+  hs.map.set.seekerlobby:
+    default: op
+  hs.map.set.border:
+    default: op
+  hs.map.set.bounds:
+    default: op
+  hs.map.blockhunt.add:
+    default: op
+  hs.map.blockhunt.remove:
+    default: op
+  hs.map.blockhunt.list:
+    default: op
+  hs.world.create:
+    default: op
+  hs.world.delete:
+    default: op
+  hs.world.list:
+    default: op
+  hs.world.tp:
+    default: op
+  hs.confirm:
+    default: op
+  hs.leavebounds:
+    default: false

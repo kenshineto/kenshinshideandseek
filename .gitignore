@@ -1,8 +1,6 @@
-project
-.classpath
-.settings/
-bin/
-target/
-.git/
-.idea
-*.iml
+.gradle
+.settings
+kls_database.db
+build
+bukkit/build
+core/build
