@@ -41,15 +41,7 @@ class Khs(val shim: KhsShim) {
     @Volatile var saving: Boolean = false
 
     fun init() {
-        shim.logger.info(" _  ___   _ ____")
-        shim.logger.info("| |/ / | | / ___|")
-        shim.logger.info("| ' /| |_| \\___ \\")
-        shim.logger.info("| . \\|  _  |___) |")
-        shim.logger.info("|_|\\_\\_| |_|____/")
-
-        val mcVersion = shim.mcVersion.joinToString(".")
-        shim.logger.info("Version ${shim.pluginVersion} running on ${mcVersion}-${shim.platform}")
-
+        printBanner()
         reloadConfig()
             .onFailure {
                 shim.logger.warning("Plugin loaded with errors :(")
@@ -59,6 +51,23 @@ class Khs(val shim: KhsShim) {
                 shim.logger.info("Plugin loaded successfully!")
                 saveConfig()
             }
+    }
+
+    fun printBanner() {
+        val ansiReset = "\u001B[0m"
+        val ansiBlue = "\u001B[94m"
+        val ansiGreen = "\u001B[92m"
+        val ansiGray = "\u001B[90m"
+
+        val mcVersion = shim.mcVersion.joinToString(".")
+        val fullMcVersion = "${ansiGray}Running on $mcVersion-${shim.platform}"
+        val fullPluginVersion = "${ansiGreen}Version ${shim.pluginVersion}"
+
+        shim.logger.info("$ansiBlue _  ___   _ ____$ansiReset")
+        shim.logger.info("$ansiBlue| |/ / | | / ___|    $fullPluginVersion$ansiReset")
+        shim.logger.info("$ansiBlue| ' /| |_| \\___ \\    $fullMcVersion$ansiReset")
+        shim.logger.info("$ansiBlue| . \\|  _  |___) |$ansiReset")
+        shim.logger.info("$ansiBlue|_|\\_\\_| |_|____/$ansiReset")
     }
 
     fun cleanup() {

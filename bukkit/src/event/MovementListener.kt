@@ -9,6 +9,7 @@ import cat.freya.khs.event.onMove
 import cat.freya.khs.world.Position as KhsPosition
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player as BukkitPlayer
 import org.bukkit.event.EventHandler
@@ -19,6 +20,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 class MovementListener(val plugin: KhsPlugin) : Listener {
 
     private val prevPlayersOnGround: MutableSet<UUID> = ConcurrentHashMap.newKeySet<UUID>()
+    private val playerLastPosition: MutableMap<UUID, Location> = ConcurrentHashMap<UUID, Location>()
 
     init {
         plugin.server.pluginManager.registerEvents(this, plugin)
@@ -31,6 +33,21 @@ class MovementListener(val plugin: KhsPlugin) : Listener {
         } else {
             @Suppress("DEPRECATION")
             return player.isOnGround()
+        }
+    }
+
+    private fun updateDisguise(player: BukkitPlayer) {
+        // update disguise (if exists)
+        val disguise = plugin.disguiser.getDisguise(player) ?: return
+        val current = player.location.clone()
+        val last = playerLastPosition.put(player.uniqueId, current) ?: return
+        if (last.world != current.world) return
+
+        val dist = last.distance(current)
+        if (dist > 0.1) {
+            disguise.shouldBeSolid = false
+        } else {
+            disguise.startSolidifying(last)
         }
     }
 
@@ -60,12 +77,11 @@ class MovementListener(val plugin: KhsPlugin) : Listener {
         val khsEvent = MoveEvent(plugin.khs, khsPlayer, to)
         onMove(khsEvent)
 
-        if (khsEvent.cancelled) event.setCancelled(true)
+        if (khsEvent.cancelled) {
+            event.setCancelled(true)
+            return
+        }
 
-        // update disguise (if exists)
-        val disguise = plugin.disguiser.getDisguise(bukkitPlayer) ?: return
-        val dest = event.to ?: return
-        if (!khsEvent.cancelled && event.from.distance(dest) > 0.1) disguise.shouldBeSolid = false
-        disguise.startSolidifying()
+        updateDisguise(bukkitPlayer)
     }
 }

@@ -33,7 +33,7 @@ class BukkitLogger(val plugin: KhsPlugin) : Logger {
 class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
     override val pluginVersion: String
     override val mcVersion: List<UInt>
-    override val platform: String = "bukkit"
+    override val platform: String = "Bukkit"
 
     init {
         // parse mc version

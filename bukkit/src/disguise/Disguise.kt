@@ -79,6 +79,7 @@ class Disguise(val plugin: KhsPlugin, val player: BukkitPlayer, val material: Ma
                 respawnHitbox()
             }
             sendBlockUpdate(blockLocation, material)
+            block?.setTicksLived(1)
         } else if (isSolid) {
             isSolid = false
             removeHitbox()
@@ -114,8 +115,7 @@ class Disguise(val plugin: KhsPlugin, val player: BukkitPlayer, val material: Ma
         val loc = player.location.add(0.0, 1000.0, 0.0)
 
         val block: FallingBlock? =
-            runCatching { world.spawnFallingBlock(loc, material.createBlockData()) }
-                .getOrElse { null }
+            runCatching { world.spawnFallingBlock(loc, material, 0x0) }.getOrElse { null }
         if (block == null) return
 
         if (plugin.shim.supports(10)) block.setGravity(false)
@@ -204,14 +204,10 @@ class Disguise(val plugin: KhsPlugin, val player: BukkitPlayer, val material: Ma
         }
     }
 
-    fun startSolidifying() {
+    fun startSolidifying(lastLocation: Location) {
         if (isSolid || hasSolidifyingTask) return
         hasSolidifyingTask = true
-        plugin.server.scheduler.scheduleSyncDelayedTask(
-            plugin,
-            { solidifyUpdate(player.location.clone(), 3u) },
-            10,
-        )
+        solidifyUpdate(lastLocation, 3u)
     }
 
     fun solidifyUpdate(lastLocation: Location, time: UInt) {

@@ -187,7 +187,7 @@ data class KhsConfig(
         "By default, when a HIDER dies they will join the SEEKER team. If enabled they will instead become a SPECTATOR."
     )
     var respawnAsSpectator: Boolean = false,
-    @Comment("Along with a char message, display a title describing the game over")
+    @Comment("Along with a chat message, display a title describing the game over")
     var gameOverTitle: Boolean = true,
     @Comment("Configure items given to spectators")
     var spectatorItems: SpectatorItemsConfig = SpectatorItemsConfig(),

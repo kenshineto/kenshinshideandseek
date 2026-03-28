@@ -49,7 +49,7 @@ fun ResultRow.toPlayer(): Player {
 }
 
 fun UpdateBuilder<*>.fromPlayer(player: Player) {
-    this[Players.uuid] = player.uuid.toString()
+    // this[Players.uuid] = player.uuid.toString()
     this[Players.name] = player.name
     this[Players.seekerWins] = player.seekerWins.toInt()
     this[Players.hiderWins] = player.hiderWins.toInt()

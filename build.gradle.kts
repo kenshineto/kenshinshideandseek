@@ -4,12 +4,11 @@ plugins {
 
 allprojects {
 	group = "cat.freya.khs"
-	version = "2.0.0"
+	version = "2.0.0-alpha1"
 
 	repositories {
 		mavenCentral()
 	}
-
 }
 
 subprojects {
@@ -25,9 +24,4 @@ subprojects {
 			languageVersion.set(JavaLanguageVersion.of(8))
 		}
 	}
-
-	tasks.jar {
-		archiveBaseName.set("khs")
-	}
 }
-

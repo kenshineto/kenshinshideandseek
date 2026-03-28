@@ -49,14 +49,40 @@ class Database(plugin: Khs) {
                 .filterNotNull()
         }
 
-    fun upsertPlayer(player: Player) = transaction(db) { Players.upsert { it.fromPlayer(player) } }
+    fun upsertPlayer(player: Player) =
+        transaction(db) {
+            val id = player.uuid.toString()
+            val exists = Players.selectAll().where { Players.uuid eq id }.any()
+
+            if (exists) {
+                Players.update({ Players.uuid eq id }) { it.fromPlayer(player) }
+            } else {
+                Players.insert {
+                    it[uuid] = id
+                    it.fromPlayer(player)
+                }
+            }
+        }
 
     fun upsertName(u: UUID, n: String) =
         transaction(db) {
-            Players.upsert {
-                it[uuid] = u.toString()
-                it[name] = n
+            val id = u.toString()
+
+            val current =
+                Players.selectAll()
+                    .where { Players.uuid eq id }
+                    .map { it.toPlayer() }
+                    .singleOrNull()
+
+            if (current == null) {
+                Players.insert {
+                    it[uuid] = id
+                    it[name] = n
+                }
+                return@transaction
             }
+
+            Players.update({ Players.uuid eq id }) { it[name] = n }
         }
 
     fun migrateLegacy() =

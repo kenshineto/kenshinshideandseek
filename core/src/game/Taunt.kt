@@ -10,7 +10,7 @@ class Taunt(val game: Game) {
     @Volatile var last: UUID? = null
 
     val expired: Boolean
-        get() = game.hiderSize <= 1UL
+        get() = (game.hiderSize <= 1UL && game.plugin.config.taunt.disableForLastHider)
 
     fun reset() {
         running = false

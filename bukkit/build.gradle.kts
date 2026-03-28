@@ -1,5 +1,5 @@
 plugins {
-	id("com.gradleup.shadow") version "8.3.1"
+	id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 repositories {
@@ -24,4 +24,11 @@ kotlin {
 tasks.shadowJar {
 	archiveBaseName.set("KenshinsHideAndSeek")
 	archiveClassifier.set("")
+
+	relocate("com.cryptomorin.xseries", "cat.freya.depend.xseries")
+	relocate("com.zaxxer.hikari", "cat.freya.depend.hikari")
+
+	mergeServiceFiles {
+        include("META-INF/services/java.sql.Driver")
+    }
 }

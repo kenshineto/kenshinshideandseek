@@ -52,6 +52,7 @@ class KhsPlugin : JavaPlugin() {
         InventoryListener(this)
         JoinLeaveListener(this)
         MovementListener(this)
+        PlaceListener(this)
         PlayerListener(this)
         PacketListener(this)
         RespawnListener(this)
