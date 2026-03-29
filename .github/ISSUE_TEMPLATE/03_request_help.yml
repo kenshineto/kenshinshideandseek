@@ -1,0 +1,62 @@
+name: "Requesting help"
+description: "You are confused on how to use the plugin"
+title: "help: HELP TITLE"
+labels: ["help"]
+body:
+  - type: "dropdown"
+    id: "version"
+    attributes:
+      label: "Plugin version"
+      description: |
+        What version of the plugin are you using?
+
+        If you are using an older version, please update to the latest version and check if the issue persists before continuing this bug report
+      options:
+        - "Please select a version"
+        - "2.0.0-alpha2"
+        - "main branch (latest commit)"
+      default: 0
+    validations:
+      required: true
+  - type: "input"
+    id: "mcversion"
+    attributes:
+      label: "Minecraft Version"
+      description: |
+        Enter the minecraft version you are running on your server
+
+        The currently supported versions are 1.8.x-1.21.x
+      placeholder: 1.21.11
+    validations:
+      required: true
+  - type: "dropdown"
+    id: "server"
+    attributes:
+      label: "Server software"
+      description: |
+        Please select the type of server software you are using.
+
+        If the software you are using is not listed, it is not supported.
+      options:
+        - "Please select a server software"
+        - "Bukkit"
+        - "Spiggot"
+        - "Paper"
+      default: 0
+    validations:
+      required: true
+  - type: "checkboxes"
+    id: "checklist"
+    attributes:
+      label: "Acknowledgements"
+      description: "Mark all that apply"
+      options:
+        - label: This is not a duplicate help request
+        - label: I am using the correct version of Packet Events for my mc version
+  - type: "textarea"
+    id: "description"
+    attributes:
+      label: "What do you need?"
+      description: "Describe what you need help with?"
+    validations:
+      required: true

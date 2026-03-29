@@ -1,0 +1,77 @@
+name: "Bug report"
+description: "You found an issue with the plugin"
+title: "bug: BUG TITLE"
+labels: ["bug"]
+body:
+  - type: "dropdown"
+    id: "version"
+    attributes:
+      label: "Plugin version"
+      description: |
+        What version of the plugin are you using?
+
+        If you are using an older version, please update to the latest version and check if the issue persists before continuing this bug report
+      options:
+        - "Please select a version"
+        - "2.0.0-alpha2"
+        - "main branch (latest commit)"
+      default: 0
+    validations:
+      required: true
+  - type: "input"
+    id: "mcversion"
+    attributes:
+      label: "Minecraft Version"
+      description: |
+        Enter the minecraft version you are running on your server
+
+        The currently supported versions are 1.8.x-1.21.x
+      placeholder: 1.21.11
+    validations:
+      required: true
+  - type: "dropdown"
+    id: "server"
+    attributes:
+      label: "Server software"
+      description: |
+        Please select the type of server software you are using.
+
+        If the software you are using is not listed, it is not supported.
+      options:
+        - "Please select a server software"
+        - "Bukkit"
+        - "Spiggot"
+        - "Paper"
+      default: 0
+    validations:
+      required: true
+  - type: "checkboxes"
+    id: "checklist"
+    attributes:
+      label: "Acknowledgements"
+      description: "Mark all that apply"
+      options:
+        - label: This is not a duplicate issue
+        - label: I am using the correct version of Packet Events for my mc version
+        - label: I am willing to submit a PR to fix this issue
+  - type: "textarea"
+    id: "description"
+    attributes:
+      label: "Describe the bug"
+      description: "Concisely describe of what the issue is"
+    validations:
+      required: true
+  - type: "textarea"
+    id: "expected"
+    attributes:
+      label: "Expected behaviour"
+      description: "Write a description of what is supposed to happen"
+    validations:
+      required: true
+  - type: "textarea"
+    id: "reproduce"
+    attributes:
+      label: "Steps to reproduce"
+      description: "Includes the steps that you performed to encounter this issue"
+    validations:
+      required: true
