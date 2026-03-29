@@ -12,7 +12,7 @@
 26.1 support coming soon (waiting for dependencies to update)
 
 **Installation**
-1. Make sure to be running a Spiggot/Paper server
+1. Make sure to be running a Spigot/Paper server
 2. Install Packet Events to your server
 3. Download the latest version of this plugin to your server
 4. Restart the server, and it should be up and running!

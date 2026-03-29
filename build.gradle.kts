@@ -30,6 +30,12 @@ subprojects {
 	}
 }
 
+// the following is to fix issues with some kotlin LSPs
+// they are too dumb to look in the build.gradle.kts files
+// for each sub project, i am no sure why
+// this should not matter that this is duplicated here
+// ... i dont like it ... but I dont know a better solution
+
 repositories {
 	maven("https://hub.spigotmc.org/nexus/content/repositories/public/")
 	maven("https://repo.codemc.io/repository/maven-releases/")

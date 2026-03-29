@@ -40,7 +40,7 @@ body:
       options:
         - "Please select a server software"
         - "Bukkit"
-        - "Spiggot"
+        - "Spigot"
         - "Paper"
       default: 0
     validations:
