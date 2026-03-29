@@ -19,6 +19,9 @@ subprojects {
 		implementation(kotlin("stdlib"))
 	}
 
+	// we need to support java 8 so that we can support old
+	// minecraft versions such as 1.8
+
 	kotlin {
 		jvmToolchain(8)
 	}
