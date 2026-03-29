@@ -92,7 +92,7 @@ class Database(plugin: Khs) {
             val legacy =
                 LegacyPlayers.join(
                         LegacyNames,
-                        JoinType.LEFT,
+                        JoinType.FULL,
                         onColumn = LegacyPlayers.uuid,
                         otherColumn = LegacyNames.uuid,
                     )
