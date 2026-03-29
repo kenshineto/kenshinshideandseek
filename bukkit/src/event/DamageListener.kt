@@ -18,37 +18,22 @@ class DamageListener(val plugin: KhsPlugin) : Listener {
         plugin.server.pluginManager.registerEvents(this, plugin)
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
-        val bukkitPlayer = (event.entity as? BukkitPlayer) ?: return
-
-        // get attacker
-        val damager = event.damager
-        val attackerEntity: BukkitPlayer? =
-            when {
-                damager is Projectile -> damager.shooter as? BukkitPlayer
-                else -> damager as? BukkitPlayer
-            }
-
-        if (attackerEntity == null) {
-            onEntityDamage(event)
-            return
+    private fun getAttacker(event: EntityDamageEvent): BukkitPlayer? {
+        val damager = (event as? EntityDamageByEntityEvent)?.damager ?: return null
+        return when {
+            damager is Projectile -> damager.shooter as? BukkitPlayer
+            else -> damager as? BukkitPlayer
         }
-
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
-        val khsAttacker = BukkitKhsPlayer(plugin.shim, attackerEntity)
-        val khsEvent = DamageEvent(plugin.khs, khsPlayer, khsAttacker, event.damage)
-        onDamage(khsEvent)
-
-        if (khsEvent.cancelled) event.setCancelled(true)
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onEntityDamage(event: EntityDamageEvent) {
         val bukkitPlayer = (event.entity as? BukkitPlayer) ?: return
+        val attackerPlayer = getAttacker(event)
 
         val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
-        val khsEvent = DamageEvent(plugin.khs, khsPlayer, null, event.damage)
+        val khsAttacker = attackerPlayer?.let { BukkitKhsPlayer(plugin.shim, it) }
+        val khsEvent = DamageEvent(plugin.khs, khsPlayer, khsAttacker, event.damage)
         onDamage(khsEvent)
 
         if (khsEvent.cancelled) event.setCancelled(true)

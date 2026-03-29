@@ -41,6 +41,9 @@ interface KhsShim {
     /// @returns list of world names
     val worlds: List<String>
 
+    /// @returns list of supported blocks
+    val blocks: List<String>
+
     /// were the khs.db is stored
     val sqliteDatabasePath: String
 

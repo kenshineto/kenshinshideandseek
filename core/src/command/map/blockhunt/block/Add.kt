@@ -49,7 +49,7 @@ class KhsMapBlockHuntBlockAdd : Command {
                     .filter { it.value.config.blockHunt.enabled }
                     .map { it.key }
                     .filter { it.startsWith(typed) }
-            "block" -> listOf(parameter)
+            "block" -> plugin.shim.blocks.filter { it.startsWith(typed) }
             else -> listOf()
         }
 }

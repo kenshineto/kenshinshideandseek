@@ -93,7 +93,9 @@ class BukkitKhsWorldLoader(val plugin: KhsPlugin, val worldName: String) : KhsWo
         get() = File(plugin.server.worldContainer, "temp_hs_$name")
 
     override fun load() {
-        plugin.server.createWorld(WorldCreator(name).generator(VoidGenerator()))
+        var creator = WorldCreator(name)
+        if (worldName.startsWith("hs_")) creator = creator.generator(VoidGenerator())
+        plugin.server.createWorld(creator)
         val world = plugin.server.getWorld(name)
         if (world == null) {
             plugin.shim.logger.error("could not load world: $name")

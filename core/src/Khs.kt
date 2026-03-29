@@ -103,6 +103,7 @@ class Khs(val shim: KhsShim) {
                     this,
                     "blockhunt",
                     KhsMapBlockHuntDebug(),
+                    KhsMapBlockHuntDisguise(),
                     KhsMapBlockHuntEnabled(),
                     CommandGroup(
                         this,

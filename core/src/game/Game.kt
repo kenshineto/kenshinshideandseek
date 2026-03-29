@@ -639,6 +639,7 @@ class Game(val plugin: Khs) {
         player.inventory.clear()
         player.clearEffects()
         player.hunger = 20u
+        player.health = 20.0
         player.heal()
         player.revealDisguise()
         hidePlayer(player, false)

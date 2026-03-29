@@ -12,26 +12,40 @@ import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.primaryConstructor
 import org.yaml.snakeyaml.Yaml
 
 fun <T : Any> deserializeClass(type: KClass<T>, data: Map<String, Any?>): T {
     require(type.isData) { "$type is not a data class" }
 
+    val props = type.memberProperties.associateBy { it.name }
+
     val propValues =
-        type.memberProperties.associateWith { prop ->
-            val value = data[prop.name] ?: return@associateWith null
-            val propType = prop.returnType.classifier as KClass<*>
-            val innerTypes =
-                prop.returnType.arguments.map { it.type?.classifier as? KClass<*> }.filterNotNull()
-            deserializeField(propType, innerTypes, prop.name, value)
-        }
+        type.primaryConstructor!!
+            .parameters
+            .map { props[it.name]!! }
+            .associateWith { prop ->
+                val value = data[prop.name]
+                val propType = prop.returnType.classifier as KClass<*>
+                val innerTypes =
+                    prop.returnType.arguments
+                        .map { it.type?.classifier as? KClass<*> }
+                        .filterNotNull()
+
+                // allow null if type is null
+                if (prop.returnType.isMarkedNullable == true && value == null)
+                    return@associateWith null
+
+                deserializeField(propType, innerTypes, prop.name, value)
+            }
 
     val instance = type.createInstance()
     for ((prop, value) in propValues) {
-        if (value != null) {
-            (prop as? KMutableProperty1<*, *>)?.setter?.call(instance, value)
-                ?: error("${prop.name} is not mutable")
-        }
+        if (value == null && !prop.returnType.isMarkedNullable)
+            error("${prop.name} cannot be null")
+
+        (prop as? KMutableProperty1<*, *>)?.setter?.call(instance, value)
+            ?: error("${prop.name} is not mutable")
     }
 
     val migrateFunction = instance::class.declaredFunctions.singleOrNull { it.name == "migrate" }
@@ -92,14 +106,15 @@ fun <T : Any> deserializeField(
         type.isData ->
             deserializeClass<T>(
                 type,
-                value as? Map<String, Any?> ?: error("$key: expected map for data class $type"),
+                value as? Map<String, Any?>
+                    ?: error("$key: expected map for data class $type, got $value"),
             )
 
         type.java.isEnum ->
             deserializeEnum(
                 type as KClass<Enum<*>>,
                 key,
-                value as? String ?: error("$key: expected string for enum value"),
+                value as? String ?: error("$key: expected string for enum value, got $value"),
             )
                 as T
 
@@ -107,7 +122,7 @@ fun <T : Any> deserializeField(
             deserializeList(
                 innerTypes?.firstOrNull() ?: error("$key: innerType not set"),
                 key,
-                value as? List<*> ?: error("$key: expected list for type $type"),
+                value as? List<*> ?: error("$key: expected list for type $type, got $value"),
             )
                 as T
 
@@ -116,7 +131,7 @@ fun <T : Any> deserializeField(
                 innerTypes?.firstOrNull() ?: error("key type not set"),
                 innerTypes.getOrNull(1) ?: error("value type not set"),
                 key,
-                value as? Map<*, *> ?: error("$key: expected map for type $type"),
+                value as? Map<*, *> ?: error("$key: expected map for type $type, got $value"),
             )
                 as T
 

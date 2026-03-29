@@ -106,6 +106,8 @@ fun onDamage(event: DamageEvent) {
     // broadcast death and update team
     if (game.isSeeker(player)) {
         game.broadcast(plugin.locale.game.player.death.with(player.name))
+        game.resetPlayer(player)
+        game.giveSeekerItems(player)
     } else {
         val msg =
             if (attacker == null) {

@@ -16,6 +16,7 @@ import java.io.InputStream
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 import org.bukkit.ChatColor
+import org.bukkit.Material
 import org.bukkit.World as BukkitWorld
 import org.bukkit.WorldCreator
 import org.bukkit.WorldType
@@ -69,6 +70,9 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
                     session.exists() && level.exists()
                 }
                 .map { it.name }
+
+    override val blocks: List<String>
+        get() = Material.values().map { it.toString().uppercase() }
 
     override val sqliteDatabasePath: String
         get() {
