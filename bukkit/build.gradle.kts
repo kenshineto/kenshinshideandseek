@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:26.1-R0.1-SNAPSHOT")
 	compileOnly("com.github.retrooper:packetevents-spigot:2.11.2")
 	implementation("com.github.cryptomorin:XSeries:13.6.0")
 	implementation(project(":core"))
