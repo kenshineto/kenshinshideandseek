@@ -1,2 +1,2 @@
-rootProject.name = "Kenshins Hide and Seek"
+rootProject.name = "KenshinsHideAndSeek"
 include("core", "bukkit")

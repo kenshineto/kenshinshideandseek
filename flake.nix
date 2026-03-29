@@ -25,15 +25,16 @@
       devShell = pkgs.mkShell {
         packages = with pkgs; [
           (gradle.override {
-            jdk = openjdk8;
+            javaToolchains = [
+              openjdk8
+              openjdk17
+            ];
           })
           kotlin
           kotlin-language-server
         ];
 
         shellHook = ''
-          export JAVA_HOME=${pkgs.openjdk8}/lib/openjdk
-
           ktfmt() {
             find . -name "*.kt" | xargs ${pkgs.ktfmt}/bin/ktfmt --kotlinlang-style "$@"
           }

@@ -21,6 +21,18 @@ kotlin {
     }
 }
 
+tasks.processResources {
+	inputs.property("version", project.version)
+	inputs.property("name", rootProject.name)
+
+	filesMatching("plugin.yml") {
+        expand(
+			"version" to project.version,
+			"name" to rootProject.name
+		)
+    }
+}
+
 tasks.shadowJar {
 	archiveBaseName.set("KenshinsHideAndSeek")
 	archiveClassifier.set("")

@@ -1,6 +1,6 @@
-name: KenshinsHideAndSeek
+name: ${name}
 main: cat.freya.khs.bukkit.KhsPlugin
-version: 2.0.0-alpha2
+version: ${version}
 author: KenshinEto
 website: freya.cat
 load: STARTUP
