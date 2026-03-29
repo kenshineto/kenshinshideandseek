@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    labels: []
+    ignore:
+      # hikari 5.x and later requires java 11
+      - dependency-name: "com.zaxxer:HikariCP"
+        versions: [">=5.0.0"]
