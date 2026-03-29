@@ -92,15 +92,18 @@ class BukkitKhsWorldLoader(val plugin: KhsPlugin, val worldName: String) : KhsWo
     override val tempSaveDir: File
         get() = File(plugin.server.worldContainer, "temp_hs_$name")
 
+    val isMapSave: Boolean = worldName.startsWith("hs_")
+
     override fun load() {
         var creator = WorldCreator(name)
-        if (worldName.startsWith("hs_")) creator = creator.generator(VoidGenerator())
+        if (isMapSave)
+            creator = creator.generator(VoidGenerator())
         plugin.server.createWorld(creator)
         val world = plugin.server.getWorld(name)
-        if (world == null) {
+        if (world == null)
             plugin.shim.logger.error("could not load world: $name")
-        }
-        world?.setAutoSave(false)
+        if (isMapSave)
+            world?.setAutoSave(false)
         if (plugin.shim.supports(21, 6)) world?.setGameRule(GameRule.LOCATOR_BAR, false)
     }
 
