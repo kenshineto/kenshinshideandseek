@@ -161,10 +161,12 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
         return BukkitKhsInventory(this, inv, title)
     }
 
-    override fun getBoard(name: String): KhsBoard? {
-        val board = plugin.server.scoreboardManager?.getNewScoreboard() ?: return null
-        return BukkitKhsBoard(this, board)
-    }
+    override fun getBoard(name: String): KhsBoard? =
+        runCatching {
+                val board = plugin.server.scoreboardManager?.getNewScoreboard() ?: return null
+                return BukkitKhsBoard(this, board)
+            }
+            .getOrElse { null }
 
     override fun broadcast(message: String) {
         plugin.server.broadcastMessage(formatText(message))
