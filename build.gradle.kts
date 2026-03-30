@@ -48,10 +48,9 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:26.1-R0.1-SNAPSHOT")
 	compileOnly("com.github.retrooper:packetevents-spigot:2.11.2")
 	implementation("com.github.cryptomorin:XSeries:13.6.0")
-	implementation(project(":core"))
 
 	// core libs
-	implementation("org.yaml:snakeyaml:2.6")
+	compileOnly("org.yaml:snakeyaml:2.6")
 	implementation(kotlin("reflect"))
 
 	// orm
@@ -59,7 +58,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:1.1.1")
 
 	// database
-	implementation("org.xerial:sqlite-jdbc:3.51.3.0")
+	compileOnly("org.xerial:sqlite-jdbc:3.51.3.0")
 	implementation("com.mysql:mysql-connector-j:9.6.0")
 	implementation("org.postgresql:postgresql:42.7.10")
 	implementation("com.zaxxer:HikariCP:4.0.3")
