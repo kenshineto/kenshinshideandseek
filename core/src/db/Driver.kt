@@ -6,15 +6,21 @@ import cat.freya.khs.config.DatabaseType
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import javax.sql.DataSource
+import org.sqlite.SQLiteConfig
+import org.sqlite.SQLiteDataSource
 
 abstract class Driver {
+    abstract fun connect(): DataSource
+}
+
+abstract class HikariDriver : Driver() {
     abstract val driverClass: String
 
     abstract fun jdbcUrl(): String
 
     abstract fun configure(hikari: HikariConfig)
 
-    fun connect(): DataSource {
+    override fun connect(): DataSource {
         // load driver for some reason
         Class.forName(driverClass)
 
@@ -26,24 +32,30 @@ abstract class Driver {
                 maximumPoolSize = minOf(cores, 8)
                 configure(this)
             }
+
         return HikariDataSource(hikari)
     }
 }
 
 class SqliteDriver(val path: String) : Driver() {
-    override val driverClass = "org.sqlite.JDBC"
+    private val driverClass = "org.sqlite.JDBC"
+    private val jdbcUrl = "jdbc:sqlite:$path"
 
-    override fun jdbcUrl(): String {
-        return "jdbc:sqlite:$path"
-    }
+    override fun connect(): DataSource {
+        Class.forName(driverClass)
 
-    override fun configure(hikari: HikariConfig) {
-        // sqlite is single threaded
-        hikari.maximumPoolSize = 1
+        val config = SQLiteConfig()
+        config.setSynchronous(SQLiteConfig.SynchronousMode.NORMAL)
+        config.setTempStore(SQLiteConfig.TempStore.MEMORY)
+
+        val source = SQLiteDataSource(config)
+        source.setUrl(jdbcUrl)
+
+        return KhsDataSource(source)
     }
 }
 
-class MysqlDriver(val config: DatabaseConfig) : Driver() {
+class MysqlDriver(val config: DatabaseConfig) : HikariDriver() {
     override val driverClass = "com.mysql.cj.jdbc.Driver"
 
     override fun jdbcUrl(): String {
@@ -57,7 +69,7 @@ class MysqlDriver(val config: DatabaseConfig) : Driver() {
     }
 }
 
-class PostgresDriver(val config: DatabaseConfig) : Driver() {
+class PostgresDriver(val config: DatabaseConfig) : HikariDriver() {
     override val driverClass = "org.postgresql.Driver"
 
     override fun jdbcUrl(): String {

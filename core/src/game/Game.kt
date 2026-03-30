@@ -595,7 +595,7 @@ class Game(val plugin: Khs) {
     private fun whileFinished() {
         synchronized(this) {
             var time = timer ?: plugin.config.endGameDelay
-            if (time > 0UL) time--
+            if (isSecond && time > 0UL) time--
 
             timer = time
 

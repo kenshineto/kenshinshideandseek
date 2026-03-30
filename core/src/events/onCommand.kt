@@ -12,8 +12,16 @@ fun onCommand(event: CommandEvent) {
 
     if (!game.hasPlayer(player) || game.status == Game.Status.LOBBY) return
 
-    val invoke = msg.split(" ").firstOrNull()?.lowercase() ?: return
-    if (!plugin.config.blockedCommands.any { it.lowercase() == invoke }) return
+    val namespacedInvoke = msg.split(" ").firstOrNull()?.lowercase() ?: return
+    val invoke = namespacedInvoke.split(":").lastOrNull() ?: return
+    val blocked =
+        plugin.config.blockedCommands.any {
+            val command = it.lowercase()
+            // e.g. block both minecraft:msg and msg
+            command == namespacedInvoke || command == invoke
+        }
+
+    if (!blocked) return
 
     event.cancel()
     player.message(plugin.locale.prefix.error + plugin.locale.command.notAllowedTemp)
