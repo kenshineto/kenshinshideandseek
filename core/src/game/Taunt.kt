@@ -44,7 +44,14 @@ class Taunt(val game: Game) {
         }
 
         // select a hider to taunt
-        val hider = game.hiderPlayers.filter { it.uuid != last }.randomOrNull() ?: return
+        val hider =
+            game.hiderPlayers
+                .filter {
+                    // only block last hider if there is another
+                    // hider to taunt
+                    it.uuid != last || (game.hiderSize <= 1UL)
+                }
+                .randomOrNull() ?: return
 
         game.broadcast(game.plugin.locale.prefix.taunt + game.plugin.locale.taunt.warning)
         hider.message(game.plugin.locale.taunt.chosen)

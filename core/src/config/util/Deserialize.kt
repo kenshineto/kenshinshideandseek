@@ -41,8 +41,7 @@ fun <T : Any> deserializeClass(type: KClass<T>, data: Map<String, Any?>): T {
 
     val instance = type.createInstance()
     for ((prop, value) in propValues) {
-        if (value == null && !prop.returnType.isMarkedNullable)
-            error("${prop.name} cannot be null")
+        if (value == null && !prop.returnType.isMarkedNullable) error("${prop.name} cannot be null")
 
         (prop as? KMutableProperty1<*, *>)?.setter?.call(instance, value)
             ?: error("${prop.name} is not mutable")
