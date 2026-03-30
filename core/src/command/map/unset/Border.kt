@@ -28,7 +28,7 @@ class KhsMapUnsetBorder : Command {
         plugin.saveConfig()
         player.message(plugin.locale.prefix.default + plugin.locale.worldBorder.disable)
 
-        map.world?.border?.move(0.0, 0.0, 30_000_000UL, 0UL)
+        map.world?.border?.reset()
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =

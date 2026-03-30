@@ -65,9 +65,14 @@ class VoidGenerator : ChunkGenerator() {
 
 class BukkitKhsWorldBorder(val world: BukkitKhsWorld, val inner: BukkitWorldBorder) :
     KhsWorldBorder {
-    override val x: Double = inner.center.x
-    override val z: Double = inner.center.z
-    override val size: Double = inner.size
+    override val x: Double
+        get() = inner.center.x
+
+    override val z: Double
+        get() = inner.center.z
+
+    override val size: Double
+        get() = inner.size
 
     override fun move(newX: Double, newZ: Double, newSize: ULong, delay: ULong) {
         inner.setCenter(newX, newZ)
@@ -81,7 +86,9 @@ class BukkitKhsWorldBorder(val world: BukkitKhsWorld, val inner: BukkitWorldBord
 
 class BukkitKhsWorldLoader(val plugin: KhsPlugin, val worldName: String) : KhsWorldLoader {
     override val name: String = worldName
-    override val world: KhsWorld? = plugin.shim.getWorld(worldName)
+
+    override val world: KhsWorld?
+        get() = plugin.shim.getWorld(worldName)
 
     override val dir: File
         get() = File(plugin.server.worldContainer, name)
@@ -96,14 +103,11 @@ class BukkitKhsWorldLoader(val plugin: KhsPlugin, val worldName: String) : KhsWo
 
     override fun load() {
         var creator = WorldCreator(name)
-        if (isMapSave)
-            creator = creator.generator(VoidGenerator())
+        if (isMapSave) creator = creator.generator(VoidGenerator())
         plugin.server.createWorld(creator)
         val world = plugin.server.getWorld(name)
-        if (world == null)
-            plugin.shim.logger.error("could not load world: $name")
-        if (isMapSave)
-            world?.setAutoSave(false)
+        if (world == null) plugin.shim.logger.error("could not load world: $name")
+        if (isMapSave) world?.setAutoSave(false)
         if (plugin.shim.supports(21, 6)) world?.setGameRule(GameRule.LOCATOR_BAR, false)
     }
 

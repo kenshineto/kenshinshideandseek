@@ -3,6 +3,8 @@ package cat.freya.khs.game
 import cat.freya.khs.config.WorldBorderConfig
 import cat.freya.khs.world.World
 
+const val BORDER_MIN_SIZE: ULong = 100UL
+
 class Border(val game: Game) {
 
     enum class State {
@@ -15,7 +17,7 @@ class Border(val game: Game) {
 
     @Volatile var state: State = State.WAITING
 
-    @Volatile private var enabled: Boolean = false
+    @Volatile private var configValid: Boolean = false
 
     private val border: World.Border?
         get() = game.map?.gameWorld?.border
@@ -24,24 +26,34 @@ class Border(val game: Game) {
         get() = game.map?.config?.worldBorder
 
     val expired: Boolean
-        get() = border?.size?.let { it <= 100.0 } != true
+        get() = configValid && border?.size?.let { it > BORDER_MIN_SIZE.toDouble() } != true
 
     fun reset() {
-        enabled = false
+        configValid = false
         state = State.WAITING
 
         val border = border ?: return
-        val borderConfig = borderConfig ?: return
+        border.reset()
 
-        val x = borderConfig.pos?.x ?: return
-        val z = borderConfig.pos?.z ?: return
-        val size = borderConfig.size ?: return
+        if (borderConfig?.enabled != true) return
 
+        val x = borderConfig?.pos?.x ?: return
+        val z = borderConfig?.pos?.z ?: return
+        val size = borderConfig?.size ?: return
+        val delay = borderConfig?.delay ?: return
+
+        configValid = true
         border.move(x, z, size, 0UL)
+        timer = delay
     }
 
     fun update() {
-        if (borderConfig?.enabled != true) return
+        // the map needs to be loaded for the reset()
+        // function to succeed, and the first time it was
+        // called may be before everything is setup
+        if (!configValid) reset()
+
+        if (!configValid || expired) return // nope
 
         if (timer != 0UL) {
             timer--
@@ -54,13 +66,12 @@ class Border(val game: Game) {
             val currentSize = border?.size?.toULong() ?: return
 
             if (amount >= currentSize) return
-
-            if (amount - 100UL <= currentSize) amount = 100UL
+            val newSize = maxOf(currentSize - amount, BORDER_MIN_SIZE)
 
             timer = 30UL
             state = State.SHRINKING
 
-            border?.move(amount, timer)
+            border?.move(newSize, timer)
             game.broadcast(game.plugin.locale.worldBorder.shrinking)
             return
         }

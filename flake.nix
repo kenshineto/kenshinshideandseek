@@ -30,15 +30,17 @@
               openjdk17
             ];
           })
-          kotlin
           kotlin-language-server
         ];
 
         shellHook = ''
+          export JAVA_HOME="${pkgs.openjdk17}/lib/openjdk"
+
           ktfmt() {
             find . -name "*.kt" | xargs ${pkgs.ktfmt}/bin/ktfmt --kotlinlang-style "$@"
           }
         '';
+
       };
 
       formatter = pkgs.alejandra;

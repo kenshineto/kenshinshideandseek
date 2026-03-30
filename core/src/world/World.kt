@@ -30,6 +30,10 @@ interface World {
         fun move(newX: Double, newZ: Double, newSize: ULong, delay: ULong)
 
         fun move(newSize: ULong, delay: ULong)
+
+        fun reset() {
+            move(0.0, 0.0, 30_000_000UL, 0UL)
+        }
     }
 
     // World border
