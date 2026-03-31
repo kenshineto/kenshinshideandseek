@@ -11,6 +11,7 @@ import org.bukkit.entity.Player as BukkitPlayer
 
 data class BlockChangePacket(val location: Location, val material: Material) {
     fun send(player: BukkitPlayer) {
+        // 1.9+ only
         val blockData = Bukkit.createBlockData(material)
         val state = SpigotConversionUtil.fromBukkitBlockData(blockData)
         val vector = Vector3i(location.blockX, location.blockY, location.blockZ)

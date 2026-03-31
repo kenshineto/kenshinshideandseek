@@ -7,6 +7,7 @@ import cat.freya.khs.world.Item as KhsItem
 import com.cryptomorin.xseries.XItemStack
 import com.cryptomorin.xseries.XMaterial
 import kotlin.collections.emptyMap
+import org.bukkit.configuration.MemoryConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
@@ -84,14 +85,20 @@ fun parseBukkitItem(itemConfig: ItemConfig): BukkitKhsItem? {
 fun toKhsItem(inner: ItemStack?): BukkitKhsItem? {
     if (inner == null) return null
 
+    val bukkitConfig = MemoryConfiguration()
+    XItemStack.Serializer().withItem(inner).withConfig(bukkitConfig).write()
+
     val config = ItemConfig()
-    config.name = inner.itemMeta?.displayName
-    config.material = inner.type?.name ?: "NONE"
-    config.lore = inner.itemMeta?.lore ?: listOf()
-    @Suppress("DEPRECATION")
+    config.name = bukkitConfig.getString("name")
+    config.material = bukkitConfig.getString("material") ?: "NONE"
+    config.lore = bukkitConfig.getStringList("lore")
+    config.unbreakable = bukkitConfig.getBoolean("unbreakable", false)
+
+    // read enchants
     config.enchantments =
-        inner.itemMeta?.enchants?.mapKeys { it.key.name }?.mapValues { it.value.toUInt() }
-            ?: emptyMap()
-    config.unbreakable = inner.itemMeta?.isUnbreakable
+        bukkitConfig.getConfigurationSection("enchants")?.let { map ->
+            map.getKeys(false).associateWith { map.getInt(it).toUInt() }
+        } ?: emptyMap()
+
     return BukkitKhsItem(inner, config)
 }
