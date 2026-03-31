@@ -5,7 +5,13 @@ class Glow(val game: Game) {
     @Volatile var timer: ULong = 0UL
     @Volatile var running: Boolean = true
 
+    // glow is only supported on 1.9+
+    val supported: Boolean
+        get() = game.plugin.shim.supports(9)
+
     fun start() {
+        if (!supported) return
+
         running = true
         if (game.plugin.config.glow.stackable) {
             timer += game.plugin.config.glow.time
@@ -15,6 +21,8 @@ class Glow(val game: Game) {
     }
 
     fun reset() {
+        if (!supported) return
+
         running = false
         timer = 0UL
     }
@@ -27,7 +35,7 @@ class Glow(val game: Game) {
     }
 
     fun update() {
-        if (!game.plugin.config.glow.enabled) return
+        if (!game.plugin.config.glow.enabled || !supported) return
 
         if (game.plugin.config.alwaysGlow) {
             sendPackets(true)

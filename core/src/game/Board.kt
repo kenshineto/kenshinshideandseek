@@ -111,7 +111,7 @@ private fun getGlowLocale(plugin: Khs): String {
     val always = plugin.config.alwaysGlow
     val glow = plugin.game.glow
 
-    if (always || !config.enabled) return DISABLED_IDENT
+    if (always || !config.enabled || !glow.supported) return DISABLED_IDENT
 
     if (glow.running) return plugin.boardConfig.glow.active
     else return plugin.boardConfig.glow.disabled
