@@ -68,7 +68,7 @@ class Game(val plugin: Khs) {
 
     @Volatile
     /// the current game round
-    private var round: Int = 0
+    private var round: UInt = 0u
 
     val glow: Glow = Glow(this)
     val taunt: Taunt = Taunt(this)
@@ -141,7 +141,7 @@ class Game(val plugin: Khs) {
     fun sameTeam(a: UUID, b: UUID): Boolean = mappings[a] == mappings[b]
 
     // what round was the uuid last picked to be seeker
-    private val lastPicked: MutableMap<UUID, Int> = ConcurrentHashMap<UUID, Int>()
+    private val lastPicked: MutableMap<UUID, UInt> = ConcurrentHashMap<UUID, UInt>()
 
     @Volatile
     // teams at the start of the game
@@ -186,9 +186,11 @@ class Game(val plugin: Khs) {
     }
 
     fun getSeekerWeight(uuid: UUID): Double {
-        val last = lastPicked[uuid] ?: -1000
-        val weight = (round - last).toDouble()
-        return weight
+        val maxWeight = 4u
+        val lastRoundSeeker = lastPicked[uuid]?.let { minOf(it, round) }
+        val roundsSinceSeeker = lastRoundSeeker?.let { round - lastRoundSeeker }
+        val weight = minOf(roundsSinceSeeker ?: maxWeight, maxWeight)
+        return weight.toDouble()
     }
 
     fun getSeekerChance(uuid: UUID): Double {
@@ -196,7 +198,15 @@ class Game(val plugin: Khs) {
         val totalWeight = weights.sum()
         val weight = getSeekerWeight(uuid)
         if (totalWeight == 0.0) return 0.0
-        return weight / totalWeight
+        val percent = weight / totalWeight
+
+        // calulate probabal team sizes
+        val wantedSeekerCount = maxOf(plugin.config.startingSeekerCount, 1u)
+        val numPlayers = maxOf(size, 1u)
+        val numSeekers = minOf(wantedSeekerCount, numPlayers - 1u)
+
+        // return percent * num seekers
+        return percent * numSeekers.toDouble()
     }
 
     private fun randomSeeker(pool: Set<UUID>): UUID {
