@@ -12,8 +12,12 @@ fun onCommand(event: CommandEvent) {
 
     if (!game.hasPlayer(player) || game.status == Game.Status.LOBBY) return
 
-    val namespacedInvoke = msg.split(" ").firstOrNull()?.lowercase() ?: return
+    // parse command
+    val arg1 = msg.split(Regex("\\s+")).firstOrNull()?.lowercase() ?: return
+    val namespacedInvoke = if (arg1.startsWith('/')) arg1.drop(1) else arg1
     val invoke = namespacedInvoke.split(":").lastOrNull() ?: return
+
+    // check if command blocked
     val blocked =
         plugin.config.blockedCommands.any {
             val command = it.lowercase()
