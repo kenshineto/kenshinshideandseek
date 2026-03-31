@@ -3,8 +3,10 @@ package cat.freya.khs.bukkit.disguise
 import cat.freya.khs.bukkit.KhsPlugin
 import cat.freya.khs.bukkit.packet.BlockChangePacket
 import cat.freya.khs.bukkit.packet.EntityTeleportPacket
+import cat.freya.khs.player.Disguise as KhsDisguise
 import com.cryptomorin.xseries.XSound
 import com.cryptomorin.xseries.messages.ActionBar
+import java.util.UUID
 import kotlin.math.round
 import org.bukkit.Location
 import org.bukkit.Material
@@ -45,19 +47,20 @@ private fun setCollides(plugin: KhsPlugin, player: BukkitPlayer, collides: Boole
     }
 }
 
-class Disguise(val plugin: KhsPlugin, val player: BukkitPlayer, val material: Material) {
+class Disguise(val plugin: KhsPlugin, val uuid: UUID, val material: Material) : KhsDisguise() {
     var block: FallingBlock? = null
     var blockLocation: Location? = null
     var hitBox: AbstractHorse? = null
     var timer: UInt = 0u
 
-    @Volatile var shouldBeSolid: Boolean = false
-    @Volatile var isSolid: Boolean = false
+    val player: BukkitPlayer?
+        get() = plugin.server.getPlayer(uuid)
+
     @Volatile var hasSolidifyingTask: Boolean = false
 
     init {
         // make sure the player does not collide
-        setCollides(plugin, player, false)
+        setCollides(plugin, player ?: error("invalid uuid"), false)
     }
 
     val entityId: Int?
@@ -67,6 +70,8 @@ class Disguise(val plugin: KhsPlugin, val player: BukkitPlayer, val material: Ma
         get() = hitBox?.entityId
 
     fun update() {
+        val player = player ?: return
+
         if (block?.isDead() != false) {
             block?.remove()
             respawnFallingBlock()
@@ -97,7 +102,8 @@ class Disguise(val plugin: KhsPlugin, val player: BukkitPlayer, val material: Ma
         makeInvisible(player)
     }
 
-    fun remove() {
+    override fun remove() {
+        val player = player ?: return
         block?.remove()
         removeHitbox()
         setCollides(plugin, player, true)
@@ -111,6 +117,8 @@ class Disguise(val plugin: KhsPlugin, val player: BukkitPlayer, val material: Ma
     }
 
     fun respawnFallingBlock() {
+        val player = player ?: return
+
         val world = player.location.world ?: return
         val loc = player.location.add(0.0, 1000.0, 0.0)
 
@@ -127,6 +135,8 @@ class Disguise(val plugin: KhsPlugin, val player: BukkitPlayer, val material: Ma
     }
 
     fun respawnHitbox() {
+        val player = player ?: return
+
         val world = player.location.world ?: return
 
         // we only want the hitbox to be at our postion
@@ -167,6 +177,8 @@ class Disguise(val plugin: KhsPlugin, val player: BukkitPlayer, val material: Ma
     }
 
     fun teleportEntity(entity: BukkitEntity?, center: Boolean) {
+        val player = player ?: return
+
         if (entity == null) return
 
         val loc = player.location.clone()
@@ -185,7 +197,7 @@ class Disguise(val plugin: KhsPlugin, val player: BukkitPlayer, val material: Ma
 
         val packet = BlockChangePacket(location, material)
         plugin.server.onlinePlayers.forEach {
-            if (it.uniqueId == player.uniqueId) return@forEach
+            if (it.uniqueId == uuid) return@forEach
             packet.send(it)
         }
     }
@@ -194,7 +206,7 @@ class Disguise(val plugin: KhsPlugin, val player: BukkitPlayer, val material: Ma
         val block = block ?: return
         val show = !isSolid
         plugin.server.onlinePlayers.forEach { target ->
-            if (target.uniqueId == player.uniqueId) return@forEach
+            if (target.uniqueId == uuid) return@forEach
 
             if (show) {
                 plugin.entityHider.showEntity(target, block)
@@ -211,8 +223,13 @@ class Disguise(val plugin: KhsPlugin, val player: BukkitPlayer, val material: Ma
     }
 
     fun solidifyUpdate(lastLocation: Location, time: UInt) {
-        val location = player.location
+        val player = player
+        if (player == null) {
+            hasSolidifyingTask = false
+            return
+        }
 
+        val location = player.location
         if ((lastLocation.world != location.world) || (lastLocation.distance(location) > 0.1)) {
             hasSolidifyingTask = false
             return

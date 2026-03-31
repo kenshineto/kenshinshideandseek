@@ -641,7 +641,7 @@ class Game(val plugin: Khs) {
         player.hunger = 20u
         player.health = 20.0
         player.heal()
-        player.revealDisguise()
+        player.getDisguise()?.remove()
         hidePlayer(player, false)
     }
 

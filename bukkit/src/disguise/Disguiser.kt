@@ -1,43 +1,48 @@
 package cat.freya.khs.bukkit.disguise
 
 import cat.freya.khs.bukkit.KhsPlugin
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.Material
-import org.bukkit.entity.Player as BukkitPlayer
 
 class Disguiser(val plugin: KhsPlugin) {
-    val disguises = ConcurrentHashMap<BukkitPlayer, Disguise>()
+    val disguises = ConcurrentHashMap<UUID, Disguise>()
 
     fun cleanup() {
         disguises.forEach { it.value.remove() }
         disguises.clear()
     }
 
-    fun getDisguise(player: BukkitPlayer): Disguise? = disguises.get(player)
+    fun getDisguise(uuid: UUID): Disguise? = disguises.get(uuid)
 
     fun getByEntityId(id: Int): Disguise? = disguises.values.firstOrNull { it.entityId == id }
 
     fun getByHitboxId(id: Int): Disguise? = disguises.values.firstOrNull { it.hitBoxId == id }
 
     fun update() {
-        for ((player, disguise) in disguises) {
-            if (!player.isOnline) {
+        for ((uuid, disguise) in disguises) {
+            val player = disguise.player
+            if (player?.isOnline != true) {
                 disguise.remove()
-                disguises.remove(player)
+                disguises.remove(uuid)
             } else {
                 disguise.update()
             }
         }
     }
 
-    fun disguise(player: BukkitPlayer, material: Material) {
+    fun disguise(uuid: UUID, material: Material) {
         // remove old disguise (if exists)
-        reveal(player)
+        reveal(uuid)
         // make new one
-        disguises.put(player, Disguise(plugin, player, material))
+        disguises.put(uuid, Disguise(plugin, uuid, material))
     }
 
-    fun reveal(player: BukkitPlayer) {
-        disguises.remove(player)?.remove()
+    fun unSolidify(uuid: UUID) {
+        disguises.remove(uuid)?.shouldBeSolid = false
+    }
+
+    fun reveal(uuid: UUID) {
+        disguises.remove(uuid)?.remove()
     }
 }
