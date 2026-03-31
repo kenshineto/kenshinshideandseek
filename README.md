@@ -26,7 +26,7 @@ Please send PRs [here](https://github.com/kenshineto/kenshinshideandseek2/pulls)
 
 **Migrating from 1.x**
 
-This plugin was recently rewritten for a 2.0.0 release. Note that it is still in alpha.
+This plugin was recently rewritten for a 2.0.0 release.
 
 The database will be migrated automatically, so please don't delete it. As always, backup the database before updating.
 
