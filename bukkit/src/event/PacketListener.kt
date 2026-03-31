@@ -52,7 +52,7 @@ class PacketListener(val plugin: KhsPlugin) : PacketListenerPE {
 
     // check when a player is trying to attack a disguise
     override fun onPacketReceive(event: PacketReceiveEvent) {
-        val player = event.getPlayer() as? BukkitPlayer ?: return
+        val attacker = event.getPlayer() as? BukkitPlayer ?: return
 
         // we want interact event
         if (event.packetType != INTERACT_ENTITY) return
@@ -67,15 +67,16 @@ class PacketListener(val plugin: KhsPlugin) : PacketListenerPE {
             plugin.disguiser.getByEntityId(packet.entityId)
                 ?: plugin.disguiser.getByHitboxId(packet.entityId)
                 ?: return
+        val player = disguise.player ?: return
 
-        if (disguise.player.gameMode == GameMode.CREATIVE) return
+        if (player.gameMode == GameMode.CREATIVE) return
 
         event.setCancelled(true)
-        handleAttack(disguise, player)
+        handleAttack(disguise, player, attacker)
     }
 
-    private fun handleAttack(disguise: Disguise, seeker: BukkitPlayer) {
-        if (disguise.player.uniqueId == seeker.uniqueId) return
+    private fun handleAttack(disguise: Disguise, player: BukkitPlayer, seeker: BukkitPlayer) {
+        if (player.uniqueId == seeker.uniqueId) return
 
         val fallbackAmount = 7.0
         val amount =
@@ -88,16 +89,22 @@ class PacketListener(val plugin: KhsPlugin) : PacketListenerPE {
                 fallbackAmount // uhhh i dunno how to do this for 1.8
             }
 
-        val debounceUUID = disguise.player.uniqueId
+        val debounceUUID = player.uniqueId
 
         disguise.shouldBeSolid = false
         if (debounce.contains(debounceUUID)) return
 
         // trigger an attack event
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, disguise.player)
+        val khsPlayer = BukkitKhsPlayer(plugin.shim, player)
         val khsSeeker = BukkitKhsPlayer(plugin.shim, seeker)
         val khsEvent = DamageEvent(plugin.khs, khsPlayer, khsSeeker, amount)
-        onDamage(khsEvent)
+
+        // make sure this is run synchronously,
+        // otherwise we can get 'EntityRemoveEvent may only be triggered synchronously'
+        plugin.shim.scheduleEvent(1UL) {
+            // make sure the players are still valid
+            if (player.isOnline && seeker.isOnline) onDamage(khsEvent)
+        }
 
         // set and soon turn off debounce
         debounce.add(debounceUUID)
