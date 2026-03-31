@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player as BukkitPlayer
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitTask
 
 class KhsPlugin : JavaPlugin() {
     val shim: BukkitKhsShim = BukkitKhsShim(this)
@@ -18,19 +19,22 @@ class KhsPlugin : JavaPlugin() {
     val disguiser: Disguiser = Disguiser(this)
     val entityHider: EntityHider = EntityHider()
 
+    private var onTickTask: BukkitTask? = null
+
     override fun onEnable() {
         khs.init()
 
-        if (!this.isEnabled()) return
+        // khs.init() may disable us
+        if (!isEnabled) return
 
         // make sure onTick is run
-        object : BukkitRunnable() {
-                override fun run() {
-                    khs.onTick()
-                    disguiser.update()
+        onTickTask =
+            object : BukkitRunnable() {
+                    override fun run() {
+                        onTick()
+                    }
                 }
-            }
-            .runTaskTimer(this, 0, 1)
+                .runTaskTimer(this, 0, 1)
 
         // register bungee cord
         server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
@@ -39,8 +43,16 @@ class KhsPlugin : JavaPlugin() {
     }
 
     override fun onDisable() {
+        onTickTask?.cancel()
         khs.cleanup()
         disguiser.cleanup()
+    }
+
+    private fun onTick() {
+        if (!isEnabled) return
+
+        khs.onTick()
+        disguiser.update()
     }
 
     private fun registerListeners() {
