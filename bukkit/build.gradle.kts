@@ -40,18 +40,10 @@ tasks.shadowJar {
 	relocate("com.cryptomorin.xseries", "cat.freya.depend.xseries")
 	relocate("com.zaxxer.hikari", "cat.freya.depend.hikari")
 
-	minimize {
-		exclude(dependency("org.jetbrains.kotlin:kotlin-reflect"))
-		exclude(dependency("org.jetbrains.exposed:.*"))
-		exclude(dependency("com.mysql:mysql-connector-j"))
-		exclude(dependency("org.postgresql:postgresql"))
-	}
-
 	mergeServiceFiles {
         include("META-INF/services/java.sql.Driver")
 	}
 
-	exclude("org/slf4j/**")
 	exclude {
 		it.path.startsWith("META-INF/") &&
 		!it.path.startsWith("META-INF/services/") &&
