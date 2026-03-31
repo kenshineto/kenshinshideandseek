@@ -13,6 +13,7 @@ import kotlin.math.min
 import kotlin.math.round
 import kotlin.random.Random
 import kotlin.synchronized
+import kotlin.toUInt
 
 class Game(val plugin: Khs) {
     /// represents what state the game is in
@@ -221,9 +222,15 @@ class Game(val plugin: Khs) {
 
     fun start(requestedPool: Collection<UUID>) {
         val seekers = mutableSetOf<UUID>()
-        val pool = if (requestedPool.isEmpty()) mappings.keys else requestedPool.toMutableSet()
+        val pool =
+            if (requestedPool.isEmpty()) mappings.keys.toMutableSet()
+            else requestedPool.toMutableSet()
 
-        while (pool.size >= 2 && seekers.size.toUInt() < plugin.config.startingSeekerCount) {
+        while (
+            pool.isNotEmpty() &&
+                seekers.size.toUInt() < plugin.config.startingSeekerCount &&
+                seekers.size.toUInt() + 1u < size
+        ) {
             val uuid = randomSeeker(pool)
             pool.remove(uuid)
             seekers.add(uuid)
