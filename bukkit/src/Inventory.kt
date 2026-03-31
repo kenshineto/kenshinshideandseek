@@ -56,4 +56,12 @@ class BukkitKhsPlayerInventory(
         set(item: Item?) {
             inner.boots = (item as? BukkitKhsItem)?.inner
         }
+
+    override fun clear() {
+        inner.clear()
+        helmet = null
+        chestplate = null
+        leggings = null
+        boots = null
+    }
 }
