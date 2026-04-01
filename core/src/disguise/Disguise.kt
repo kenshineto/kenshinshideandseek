@@ -19,11 +19,11 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
     val player: Player?
         get() = plugin.shim.getPlayer(uuid)
 
-    // if the disguise is currently solidified
-    var isSolid: Boolean = false
-
     // if the disguise is allowed to solidify
     var shouldBeSolid: Boolean = false
+
+    // if the disguise is currently solidified
+    private var isSolid: Boolean = false
 
     // if this disguise is currently solidifying
     private var hasSolidifyingTask = false
@@ -93,12 +93,12 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
                 solidifiedPosition = player.location.clone()
                 respawnHitBox()
             }
-            sendBlockUpdate(solidifiedPosition, material)
+            sendBlockUpdate(material)
         } else if (isSolid) {
             isSolid = false
             destroyHitBox()
             respawnBlock()
-            sendBlockUpdate(solidifiedPosition, null)
+            sendBlockUpdate(null)
         }
 
         updateVisibility()
@@ -145,7 +145,7 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
         val player = player ?: return
         player.setCollides(true)
         player.setInvisible(false)
-        if (isSolid) sendBlockUpdate(player.location, null)
+        if (isSolid) sendBlockUpdate(null)
     }
 
     private fun teleportEntity(entity: Entity?, center: Boolean) {
@@ -163,9 +163,8 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
         plugin.shim.players.forEach { packet.send(it) }
     }
 
-    private fun sendBlockUpdate(location: Location?, wantedMaterial: Material?) {
-        if (location == null) return
-
+    private fun sendBlockUpdate(wantedMaterial: Material?) {
+        val location = solidifiedPosition ?: return
         val material = wantedMaterial ?: plugin.shim.parseMaterial("AIR") ?: return
         val packet = BlockChangePacket(location, material)
         plugin.shim.players.forEach {

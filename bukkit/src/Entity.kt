@@ -51,10 +51,13 @@ class BukkitKhsEntity(val plugin: KhsPlugin, val inner: BukkitEntity) : KhsEntit
 
     override fun setInvisible(invisible: Boolean) {
         val living = inner as? BukkitLivingEntity ?: return
-        if (living.hasPotionEffect(PotionEffectType.INVISIBILITY)) return
-        living.addPotionEffect(
-            PotionEffect(PotionEffectType.INVISIBILITY, 1_000_000, 0, false, false)
-        )
+        if (living.hasPotionEffect(PotionEffectType.INVISIBILITY) == invisible) return
+
+        if (invisible)
+            living.addPotionEffect(
+                PotionEffect(PotionEffectType.INVISIBILITY, 1_000_000, 0, false, false)
+            )
+        else living.removePotionEffect(PotionEffectType.INVISIBILITY)
     }
 
     override fun destroy() {
