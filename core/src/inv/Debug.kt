@@ -11,7 +11,7 @@ val BECOME_HIDER = ItemConfig("&6Become a &lHider", "LEATHER_CHESTPLATE")
 val BECOME_SEEKER = ItemConfig("&cBecome a &lSEEKER", "GOLDEN_CHESTPLATE")
 val BECOME_SPECTATOR = ItemConfig("&8Become a &lSPECTATOR", "IRON_CHESTPLATE")
 val DIE_IN_GAME = ItemConfig("&cDie in game", "SKELETON_SKULL")
-val REVEAL_DISGUISE = ItemConfig("&cReveal disguise", "BARRIER")
+val REMOVE_DISGUISE = ItemConfig("&cRemove disguise", "BARRIER")
 
 fun becomeHider(plugin: Khs, player: Player) {
     plugin.game.setTeam(player.uuid, Game.Team.HIDER)
@@ -39,7 +39,7 @@ fun dieInGame(plugin: Khs, player: Player) {
 
 fun createDebugMenu(plugin: Khs): Inventory? {
     val inv = plugin.shim.createInventory(DEBUG_TITLE, 9u) ?: return null
-    val items = listOf(BECOME_HIDER, BECOME_SEEKER, BECOME_SPECTATOR, DIE_IN_GAME, REVEAL_DISGUISE)
+    val items = listOf(BECOME_HIDER, BECOME_SEEKER, BECOME_SPECTATOR, DIE_IN_GAME, REMOVE_DISGUISE)
     items
         .map { plugin.shim.parseItem(it) }
         .filterNotNull()

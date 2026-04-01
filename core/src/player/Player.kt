@@ -67,6 +67,8 @@ interface Player {
 
     fun revealDisguise()
 
+    fun removeDisguise()
+
     enum class GameMode {
         CREATIVE,
         SURVIVAL,

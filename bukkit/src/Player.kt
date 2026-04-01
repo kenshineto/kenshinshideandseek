@@ -179,6 +179,10 @@ class BukkitKhsPlayer(val shim: BukkitKhsShim, val inner: BukkitPlayer) : KhsPla
     }
 
     override fun revealDisguise() {
+        shim.plugin.disguiser.getDisguise(inner)?.shouldBeSolid = false
+    }
+
+    override fun removeDisguise() {
         shim.plugin.disguiser.reveal(inner)
     }
 
