@@ -1,3 +1,4 @@
+.idea
 .gradle
 .kotlin
 .settings
@@ -5,3 +6,6 @@ kls_database.db
 build
 bukkit/build
 core/build
+gradle
+gradlew
+gradlew.bat

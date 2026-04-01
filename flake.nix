@@ -20,10 +20,16 @@
     ];
   in
     flake-utils.lib.eachSystem supportedSystems (system: let
-      pkgs = import nixpkgs {inherit system;};
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
     in {
       devShell = pkgs.mkShell {
         packages = with pkgs; [
+          jetbrains.idea
+          openjdk8
+          openjdk17
           (gradle.override {
             javaToolchains = [
               openjdk8
