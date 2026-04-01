@@ -20,7 +20,7 @@ class CommandListener(val plugin: KhsPlugin) : Listener {
         val bukkitPlayer = event.player ?: return
         val message = event.message ?: return
 
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = CommandEvent(plugin.khs, khsPlayer, message)
         onCommand(khsEvent)
 

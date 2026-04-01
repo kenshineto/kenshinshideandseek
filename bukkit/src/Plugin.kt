@@ -1,8 +1,6 @@
 package cat.freya.khs.bukkit
 
 import cat.freya.khs.Khs
-import cat.freya.khs.bukkit.disguise.Disguiser
-import cat.freya.khs.bukkit.disguise.EntityHider
 import cat.freya.khs.bukkit.event.*
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -14,10 +12,6 @@ import org.bukkit.scheduler.BukkitTask
 class KhsPlugin : JavaPlugin() {
     val shim: BukkitKhsShim = BukkitKhsShim(this)
     val khs: Khs = Khs(shim)
-
-    // for blockhunt
-    val disguiser: Disguiser = Disguiser(this)
-    val entityHider: EntityHider = EntityHider()
 
     private var onTickTask: BukkitTask? = null
 
@@ -45,14 +39,11 @@ class KhsPlugin : JavaPlugin() {
     override fun onDisable() {
         onTickTask?.cancel()
         khs.cleanup()
-        disguiser.cleanup()
     }
 
     private fun onTick() {
         if (!isEnabled) return
-
         khs.onTick()
-        disguiser.update()
     }
 
     private fun registerListeners() {
@@ -64,9 +55,7 @@ class KhsPlugin : JavaPlugin() {
         InventoryListener(this)
         JoinLeaveListener(this)
         MovementListener(this)
-        PlaceListener(this)
         PlayerListener(this)
-        PacketListener(this)
         RespawnListener(this)
     }
 
@@ -82,7 +71,7 @@ class KhsPlugin : JavaPlugin() {
         args: Array<String>,
     ): Boolean {
         val player = sender as? BukkitPlayer ?: return false
-        val khsPlayer = BukkitKhsPlayer(shim, player)
+        val khsPlayer = BukkitKhsPlayer(this, player)
         khs.commandGroup.handleCommand(khsPlayer, args.toList())
         return true
     }
@@ -94,7 +83,7 @@ class KhsPlugin : JavaPlugin() {
         args: Array<String>,
     ): List<String> {
         val player = sender as? BukkitPlayer ?: return listOf()
-        val khsPlayer = BukkitKhsPlayer(shim, player)
+        val khsPlayer = BukkitKhsPlayer(this, player)
         return khs.commandGroup.handleTabComplete(khsPlayer, args.toList())
     }
 }

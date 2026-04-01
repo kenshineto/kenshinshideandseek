@@ -20,7 +20,7 @@ class KhsMapBlockHuntDisguise : Command {
             return
         }
 
-        player.disguise(material)
+        plugin.disguiser.disguise(player, material)
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =

@@ -31,10 +31,14 @@ class DamageListener(val plugin: KhsPlugin) : Listener {
         val bukkitPlayer = (event.entity as? BukkitPlayer) ?: return
         val attackerPlayer = getAttacker(event)
 
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
-        val khsAttacker = attackerPlayer?.let { BukkitKhsPlayer(plugin.shim, it) }
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
+        val khsAttacker = attackerPlayer?.let { BukkitKhsPlayer(plugin, it) }
         val khsEvent = DamageEvent(plugin.khs, khsPlayer, khsAttacker, event.damage)
-        onDamage(khsEvent)
+
+        // make sure this is done sync
+        plugin.scheduleTask {
+            if (bukkitPlayer.isOnline && attackerPlayer?.isOnline != false) onDamage(khsEvent)
+        }
 
         if (khsEvent.cancelled) event.setCancelled(true)
     }

@@ -4,6 +4,7 @@ import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.world.Effect as KhsEffect
 import cat.freya.khs.world.Item as KhsItem
+import cat.freya.khs.world.Material as KhsMaterial
 import com.cryptomorin.xseries.XItemStack
 import com.cryptomorin.xseries.XMaterial
 import kotlin.collections.emptyMap
@@ -15,7 +16,8 @@ import org.bukkit.potion.PotionEffect
 
 class BukkitKhsItem(val inner: ItemStack, override val config: ItemConfig) : KhsItem {
     override val name: String? = inner.itemMeta?.displayName
-    override val material: String = inner.type?.name ?: "NONE"
+    override val material: KhsMaterial
+        get() = KhsMaterial(null, inner.type?.name ?: "NONE")
 
     override fun clone(): KhsItem = BukkitKhsItem(inner, config)
 

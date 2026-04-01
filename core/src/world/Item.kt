@@ -5,7 +5,7 @@ import cat.freya.khs.config.ItemConfig
 
 interface Item {
     val name: String?
-    val material: String
+    val material: Material
     val config: ItemConfig
 
     fun clone(): Item

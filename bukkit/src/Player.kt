@@ -1,18 +1,21 @@
 package cat.freya.khs.bukkit
 
-import cat.freya.khs.bukkit.packet.EntityMetadataPacket
+import cat.freya.khs.bukkit.disguise.Disguise
+import cat.freya.khs.disguise.Disguise as KhsDisguise
 import cat.freya.khs.player.Inventory as KhsInventory
 import cat.freya.khs.player.Player as KhsPlayer
 import cat.freya.khs.player.Player.GameMode as KhsGameMode
 import cat.freya.khs.player.PlayerInventory as KhsPlayerInventory
 import cat.freya.khs.world.Effect
 import cat.freya.khs.world.Location
+import cat.freya.khs.world.Material as KhsMaterial
 import cat.freya.khs.world.Position
 import cat.freya.khs.world.World as KhsWorld
-import com.cryptomorin.xseries.XMaterial
 import com.cryptomorin.xseries.XSound
 import com.cryptomorin.xseries.messages.ActionBar
 import com.cryptomorin.xseries.messages.Titles
+import com.github.retrooper.packetevents.PacketEvents
+import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import com.google.common.io.ByteStreams
 import org.bukkit.Color
 import org.bukkit.FireworkEffect
@@ -25,9 +28,12 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.Vector
 
-class BukkitKhsPlayer(val shim: BukkitKhsShim, val inner: BukkitPlayer) : KhsPlayer {
+class BukkitKhsPlayer(val plugin: KhsPlugin, val inner: BukkitPlayer) : KhsPlayer {
     override val uuid = inner.uniqueId
     override val name = inner.name
+
+    private val shim = plugin.shim
+    private val innerEntity = BukkitKhsEntity(plugin, inner)
 
     override val location: Location
         get() {
@@ -131,12 +137,6 @@ class BukkitKhsPlayer(val shim: BukkitKhsShim, val inner: BukkitPlayer) : KhsPla
         inner.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 1000000, 5, false, false))
     }
 
-    override fun setGlow(target: KhsPlayer, glow: Boolean) {
-        val entity = (target as BukkitKhsPlayer).inner
-        val packet = EntityMetadataPacket(entity, glow)
-        packet.send(inner)
-    }
-
     override fun setHidden(target: KhsPlayer, hidden: Boolean) {
         var other = (target as BukkitKhsPlayer).inner
         if (shim.supports(12, 2)) {
@@ -168,38 +168,30 @@ class BukkitKhsPlayer(val shim: BukkitKhsShim, val inner: BukkitPlayer) : KhsPla
         }
     }
 
-    override fun isDisguised(): Boolean = shim.plugin.disguiser.getDisguise(inner) != null
-
-    override fun disguise(material: String) {
-        runCatching {
-            val xmat = XMaterial.matchXMaterial(material).orElse(null) ?: return
-            val mat = xmat.get() ?: return
-            shim.plugin.disguiser.disguise(inner, mat)
-        }
-    }
-
-    override fun revealDisguise() {
-        shim.plugin.disguiser.getDisguise(inner)?.shouldBeSolid = false
-    }
-
-    override fun removeDisguise() {
-        shim.plugin.disguiser.reveal(inner)
-    }
+    override fun createDisguise(material: KhsMaterial): KhsDisguise? =
+        Disguise(shim.plugin, inner.uniqueId, material)
 
     override fun hasPermission(permission: String): Boolean {
         return inner.hasPermission(permission)
     }
 
-    override fun setGameMode(gameMode: KhsGameMode) {
-        inner.setGameMode(
-            when (gameMode) {
-                KhsGameMode.CREATIVE -> BukkitGameMode.CREATIVE
-                KhsGameMode.SURVIVAL -> BukkitGameMode.SURVIVAL
-                KhsGameMode.ADVENTURE -> BukkitGameMode.ADVENTURE
-                KhsGameMode.SPECTATOR -> BukkitGameMode.SPECTATOR
+    override var gameMode: KhsGameMode
+        get() =
+            when (inner.gameMode) {
+                BukkitGameMode.CREATIVE -> KhsGameMode.CREATIVE
+                BukkitGameMode.SURVIVAL -> KhsGameMode.SURVIVAL
+                BukkitGameMode.ADVENTURE -> KhsGameMode.ADVENTURE
+                BukkitGameMode.SPECTATOR -> KhsGameMode.SPECTATOR
             }
-        )
-    }
+        set(gameMode: KhsGameMode) =
+            inner.setGameMode(
+                when (gameMode) {
+                    KhsGameMode.CREATIVE -> BukkitGameMode.CREATIVE
+                    KhsGameMode.SURVIVAL -> BukkitGameMode.SURVIVAL
+                    KhsGameMode.ADVENTURE -> BukkitGameMode.ADVENTURE
+                    KhsGameMode.SPECTATOR -> BukkitGameMode.SPECTATOR
+                }
+            )
 
     override fun hideBoards() {
         val manager = shim.plugin.server.scoreboardManager ?: return
@@ -232,5 +224,23 @@ class BukkitKhsPlayer(val shim: BukkitKhsShim, val inner: BukkitPlayer) : KhsPla
                 .build()
         )
         fw.fireworkMeta = meta
+    }
+
+    // entity wrappers
+
+    override val entityId: Int = innerEntity.entityId
+
+    override val isAlive: Boolean
+        get() = innerEntity.isAlive
+
+    override fun setCollides(collides: Boolean) = innerEntity.setCollides(collides)
+
+    override fun setInvisible(invisible: Boolean) = innerEntity.setInvisible(invisible)
+
+    // uh, how about we do nothin
+    override fun destroy() {}
+
+    override fun sendPacket(packet: PacketWrapper<*>) {
+        PacketEvents.getAPI().playerManager.sendPacket(inner, packet)
     }
 }

@@ -23,7 +23,7 @@ class BreakListener(val plugin: KhsPlugin) : Listener {
         val bukkitPlayer = event.player ?: return
         val block = event.block?.type?.name ?: return
 
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = BreakEvent(plugin.khs, khsPlayer, block)
         onBreak(khsEvent)
 
@@ -35,7 +35,7 @@ class BreakListener(val plugin: KhsPlugin) : Listener {
         val bukkitPlayer = event.entity as? BukkitPlayer ?: return
         val block = event.block?.type?.name ?: return
 
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = BreakEvent(plugin.khs, khsPlayer, block)
         onBreak(khsEvent)
 
@@ -47,7 +47,7 @@ class BreakListener(val plugin: KhsPlugin) : Listener {
         val bukkitPlayer = event.remover as? BukkitPlayer ?: return
         val block = event.entity?.type?.name ?: return
 
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = BreakEvent(plugin.khs, khsPlayer, block)
         onBreak(khsEvent)
 

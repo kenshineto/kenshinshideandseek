@@ -116,7 +116,7 @@ class BukkitKhsWorldLoader(val plugin: KhsPlugin, val worldName: String) : KhsWo
         if (world == null) return // world already unloaded
 
         world.players.forEach { player ->
-            val khsPlayer = BukkitKhsPlayer(plugin.shim, player)
+            val khsPlayer = BukkitKhsPlayer(plugin, player)
             plugin.khs.config.exit?.teleport(khsPlayer)
         }
 

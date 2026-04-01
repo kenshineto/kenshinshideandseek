@@ -16,8 +16,11 @@ import cat.freya.khs.config.KhsMapsConfig
 import cat.freya.khs.config.util.deserialize
 import cat.freya.khs.config.util.serialize
 import cat.freya.khs.db.Database
+import cat.freya.khs.disguise.Disguiser
+import cat.freya.khs.disguise.EntityHider
 import cat.freya.khs.game.Game
 import cat.freya.khs.game.KhsMap
+import cat.freya.khs.packet.KhsPacketListener
 import java.util.concurrent.ConcurrentHashMap
 
 /// Plugin wrapper
@@ -37,6 +40,10 @@ class Khs(val shim: KhsShim) {
 
     val commandGroup: CommandGroup = registerCommands()
 
+    // block hunt
+    val disguiser: Disguiser = Disguiser()
+    val entityHider: EntityHider = EntityHider()
+
     // if we are performing a map save right now
     @Volatile var saving: Boolean = false
 
@@ -51,6 +58,8 @@ class Khs(val shim: KhsShim) {
                 shim.logger.info("Plugin loaded successfully!")
                 saveConfig()
             }
+
+        KhsPacketListener(this)
     }
 
     fun printBanner() {
@@ -72,6 +81,7 @@ class Khs(val shim: KhsShim) {
 
     fun cleanup() {
         for (uuid in game.UUIDs) game.leave(uuid)
+        disguiser.cleanup()
     }
 
     fun registerCommands(): CommandGroup {
@@ -176,5 +186,6 @@ class Khs(val shim: KhsShim) {
 
     fun onTick() {
         game.doTick()
+        disguiser.update()
     }
 }

@@ -1,5 +1,7 @@
 package cat.freya.khs.game
 
+import cat.freya.khs.packet.EntityMetadataPacket
+
 class Glow(val game: Game) {
 
     @Volatile var timer: ULong = 0UL
@@ -28,10 +30,12 @@ class Glow(val game: Game) {
     }
 
     private fun sendPackets(glow: Boolean) {
-        for (hider in game.hiderPlayers) for (seeker in game.seekerPlayers) hider.setGlow(
-            seeker,
-            glow,
-        )
+        game.hiderPlayers.forEach { hider ->
+            game.seekerPlayers.forEach { seeker ->
+                val packet = EntityMetadataPacket(seeker, glow)
+                packet.send(hider)
+            }
+        }
     }
 
     fun update() {

@@ -40,7 +40,7 @@ class InventoryListener(val plugin: KhsPlugin) : Listener {
         val bukkitPlayer = event.whoClicked as? BukkitPlayer ?: return
         val item = toKhsItem(event.currentItem) ?: return
 
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsInventory = BukkitKhsInventory(plugin.shim, inventory, title)
         val khsEvent = ClickEvent(plugin.khs, khsPlayer, khsInventory, item)
         onClick(khsEvent)
@@ -53,7 +53,7 @@ class InventoryListener(val plugin: KhsPlugin) : Listener {
         val (inventory, title) = getInv(event)
         val bukkitPlayer = event.player as? BukkitPlayer ?: return
 
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsInventory = BukkitKhsInventory(plugin.shim, inventory, title)
         val khsEvent = CloseEvent(plugin.khs, khsPlayer, khsInventory)
         onClose(khsEvent)

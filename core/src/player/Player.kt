@@ -1,20 +1,19 @@
 package cat.freya.khs.player
 
+import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.world.Effect
+import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
+import cat.freya.khs.world.Material
 import cat.freya.khs.world.Position
-import cat.freya.khs.world.World
+import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import java.util.UUID
 
 // Player wrapper
-interface Player {
+interface Player : Entity {
     // Metadata
     val uuid: UUID
     val name: String
-
-    // Position
-    val location: Location
-    val world: World?
 
     // Stats
     var health: Double
@@ -47,8 +46,6 @@ interface Player {
 
     fun setSpeed(amplifier: UInt)
 
-    fun setGlow(target: Player, glow: Boolean)
-
     fun setHidden(target: Player, hidden: Boolean)
 
     // Messaging
@@ -61,14 +58,9 @@ interface Player {
     fun playSound(sound: String, volume: Double, pitch: Double)
 
     // Block Hunt
-    fun isDisguised(): Boolean
+    fun createDisguise(material: Material): Disguise?
 
-    fun disguise(material: String)
-
-    fun revealDisguise()
-
-    fun removeDisguise()
-
+    // Other
     enum class GameMode {
         CREATIVE,
         SURVIVAL,
@@ -76,12 +68,13 @@ interface Player {
         SPECTATOR,
     }
 
-    // Other
-    fun hasPermission(permission: String): Boolean
+    var gameMode: GameMode
 
-    fun setGameMode(gameMode: GameMode)
+    fun hasPermission(permission: String): Boolean
 
     fun hideBoards()
 
     fun taunt()
+
+    fun sendPacket(packet: PacketWrapper<*>)
 }

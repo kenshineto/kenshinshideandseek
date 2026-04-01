@@ -9,8 +9,10 @@ import cat.freya.khs.player.Inventory as KhsInventory
 import cat.freya.khs.player.Player as KhsPlayer
 import cat.freya.khs.world.Effect as KhsEffect
 import cat.freya.khs.world.Item as KhsItem
+import cat.freya.khs.world.Material as KhsMaterial
 import cat.freya.khs.world.World as KhsWorld
 import com.cryptomorin.xseries.XMaterial
+import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import java.io.File
 import java.io.InputStream
 import java.util.UUID
@@ -20,6 +22,7 @@ import org.bukkit.Material
 import org.bukkit.World as BukkitWorld
 import org.bukkit.WorldCreator
 import org.bukkit.WorldType
+import org.bukkit.entity.Player as BukkitPlayer
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
@@ -55,7 +58,7 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
     override val logger = BukkitLogger(plugin)
 
     override val players: List<KhsPlayer>
-        get() = plugin.server.onlinePlayers.map { BukkitKhsPlayer(this, it) }
+        get() = plugin.server.onlinePlayers.map { BukkitKhsPlayer(plugin, it) }
 
     override val worlds: List<String>
         get() =
@@ -100,8 +103,17 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
         file.writeText(content)
     }
 
-    override fun parseMaterial(materialName: String): String? {
-        return XMaterial.matchXMaterial(materialName).getOrNull()?.get()?.toString()
+    override fun parseMaterial(materialName: String): KhsMaterial? {
+        val bukkitMaterial =
+            XMaterial.matchXMaterial(materialName).getOrNull()?.get() ?: return null
+        val mcMaterial =
+            if (bukkitMaterial.isBlock) {
+                val blockData = bukkitMaterial.createBlockData()
+                SpigotConversionUtil.fromBukkitBlockData(blockData)?.type?.toString()
+            } else {
+                SpigotConversionUtil.fromBukkitItemMaterial(bukkitMaterial)?.toString()
+            } ?: return null
+        return KhsMaterial(mcMaterial, bukkitMaterial.toString())
     }
 
     override fun parseItem(itemConfig: ItemConfig): KhsItem? {
@@ -124,11 +136,16 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
     }
 
     override fun getPlayer(uuid: UUID): KhsPlayer? {
-        return plugin.server.getPlayer(uuid)?.let { BukkitKhsPlayer(this, it) }
+        return plugin.server.getPlayer(uuid)?.let { BukkitKhsPlayer(plugin, it) }
     }
 
     override fun getPlayer(name: String): KhsPlayer? {
-        return plugin.server.getPlayer(name)?.let { BukkitKhsPlayer(this, it) }
+        return plugin.server.getPlayer(name)?.let { BukkitKhsPlayer(plugin, it) }
+    }
+
+    override fun wrapPlayer(inner: Any?): KhsPlayer? {
+        val player = inner as? BukkitPlayer ?: return null
+        return BukkitKhsPlayer(plugin, player)
     }
 
     override fun getWorld(worldName: String): KhsWorld? {

@@ -652,13 +652,13 @@ class Game(val plugin: Khs) {
     fun resetPlayer(player: Player) {
         player.flying = false
         player.allowFlight = false
-        player.setGameMode(Player.GameMode.ADVENTURE)
+        player.gameMode = Player.GameMode.ADVENTURE
         player.inventory.clear()
         player.clearEffects()
         player.hunger = 20u
         player.health = 20.0
         player.heal()
-        player.removeDisguise()
+        plugin.disguiser.reveal(player.uuid)
         hidePlayer(player, false)
     }
 

@@ -7,6 +7,7 @@ import cat.freya.khs.player.Inventory
 import cat.freya.khs.player.Player
 import cat.freya.khs.world.Effect
 import cat.freya.khs.world.Item
+import cat.freya.khs.world.Material
 import cat.freya.khs.world.World
 import java.io.InputStream
 import java.util.UUID
@@ -54,7 +55,7 @@ interface KhsShim {
     fun writeConfigFile(fileName: String, content: String)
 
     /// @returns a valid material for the current mc version given the name
-    fun parseMaterial(materialName: String): String?
+    fun parseMaterial(materialName: String): Material?
 
     /// @returns a valid item given the config
     fun parseItem(itemConfig: ItemConfig): Item?
@@ -66,6 +67,9 @@ interface KhsShim {
     fun getPlayer(uuid: UUID): Player?
 
     fun getPlayer(name: String): Player?
+
+    /// wrappes a retrieved shim player
+    fun wrapPlayer(inner: Any?): Player?
 
     /// @returns a world on the server that exists with the given world name
     fun getWorld(worldName: String): World?

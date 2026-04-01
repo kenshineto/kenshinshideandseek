@@ -23,7 +23,7 @@ class InteractListener(val plugin: KhsPlugin) : Listener {
     fun onPlayerInteract(event: PlayerInteractEvent) {
         val bukkitPlayer = event.player ?: return
 
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
 
         val block = event.clickedBlock?.type?.name
         if (event.action == Action.RIGHT_CLICK_BLOCK && block != null) {

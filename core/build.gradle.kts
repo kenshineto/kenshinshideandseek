@@ -1,7 +1,13 @@
+repositories {
+	maven("https://repo.codemc.io/repository/maven-releases/")
+}
+
 dependencies {
 	// core libs
-	compileOnly("org.yaml:snakeyaml:2.6")
 	implementation(kotlin("reflect"))
+	compileOnly("org.yaml:snakeyaml:2.6")
+	compileOnly("com.github.retrooper:packetevents-api:2.11.2")
+	compileOnly("com.google.guava:guava:33.5.0-jre")
 
 	// orm
 	implementation("org.jetbrains.exposed:exposed-core:1.1.1")

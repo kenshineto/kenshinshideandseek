@@ -26,7 +26,7 @@ class PlayerListener(val plugin: KhsPlugin) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onFoodLevelChange(event: FoodLevelChangeEvent) {
         val bukkitPlayer = event.entity as? BukkitPlayer ?: return
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = HungerEvent(plugin.khs, khsPlayer)
         onHunger(khsEvent)
 
@@ -36,7 +36,7 @@ class PlayerListener(val plugin: KhsPlugin) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onEntityRegainHealth(event: EntityRegainHealthEvent) {
         val bukkitPlayer = event.entity as? BukkitPlayer ?: return
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val natural =
             event.regainReason == EntityRegainHealthEvent.RegainReason.SATIATED ||
                 event.regainReason == EntityRegainHealthEvent.RegainReason.REGEN
@@ -50,7 +50,7 @@ class PlayerListener(val plugin: KhsPlugin) : Listener {
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
         val bukkitPlayer = event.player ?: return
         val item = toKhsItem(event.itemDrop?.itemStack) ?: return
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = DropEvent(plugin.khs, khsPlayer, item)
         onDrop(khsEvent)
 

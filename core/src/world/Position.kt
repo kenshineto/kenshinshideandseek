@@ -51,4 +51,8 @@ data class Position(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.
     }
 
     fun toLegacy(): LegacyPosition = LegacyPosition(x, y, z, null)
+
+    fun clone(): Position {
+        return Position(x, y, z)
+    }
 }

@@ -32,4 +32,8 @@ data class Location(
     fun teleport(player: Player) {
         player.teleport(this)
     }
+
+    fun clone(): Location {
+        return Location(x, y, z, worldName)
+    }
 }

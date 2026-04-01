@@ -47,7 +47,7 @@ private fun onClickDebug(event: ClickEvent) {
     else if (item.similar(BECOME_HIDER)) becomeHider(plugin, player)
     else if (item.similar(BECOME_SPECTATOR)) becomeSpectator(plugin, player)
     else if (item.similar(DIE_IN_GAME)) dieInGame(plugin, player)
-    else if (item.similar(REMOVE_DISGUISE)) player.removeDisguise() else return
+    else if (item.similar(REMOVE_DISGUISE)) plugin.disguiser.reveal(player.uuid) else return
 
     player.closeInventory()
 }
@@ -56,7 +56,7 @@ private fun onClickBlockHunt(event: ClickEvent) {
     event.cancel()
 
     val material = event.clicked.material
-    event.player.disguise(material)
+    event.plugin.disguiser.disguise(event.player, material)
     event.player.closeInventory()
 }
 

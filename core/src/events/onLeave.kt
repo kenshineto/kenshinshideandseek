@@ -10,4 +10,7 @@ fun onLeave(event: LeaveEvent) {
     val game = plugin.game
 
     if (game.hasPlayer(player)) game.leave(player.uuid)
+
+    // remove player from disguiser
+    plugin.entityHider.removePlayer(player)
 }

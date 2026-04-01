@@ -24,7 +24,7 @@ class JoinLeaveListener(val plugin: KhsPlugin) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val bukkitPlayer = event.player ?: return
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = JoinEvent(plugin.khs, khsPlayer)
         onJoin(khsEvent)
     }
@@ -32,18 +32,15 @@ class JoinLeaveListener(val plugin: KhsPlugin) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerQuit(event: PlayerQuitEvent) {
         val bukkitPlayer = event.player ?: return
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = LeaveEvent(plugin.khs, khsPlayer)
         onLeave(khsEvent)
-
-        // remove player from disguiser
-        plugin.entityHider.removePlayer(bukkitPlayer)
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerKick(event: PlayerKickEvent) {
         val bukkitPlayer = event.player ?: return
-        val khsPlayer = BukkitKhsPlayer(plugin.shim, bukkitPlayer)
+        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = KickEvent(plugin.khs, khsPlayer, event.reason ?: "")
         onKick(khsEvent)
 
