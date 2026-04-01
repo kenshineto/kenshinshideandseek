@@ -10,7 +10,7 @@ fun onDeath(event: DeathEvent) {
     val game = plugin.game
 
     // uh, if u dead, kinda arent disguised anymore lol
-    player.getDisguise()?.remove()
+    player.revealDisguise()
 
     if (!game.hasPlayer(player)) return
 

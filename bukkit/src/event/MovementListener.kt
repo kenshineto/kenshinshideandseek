@@ -38,7 +38,7 @@ class MovementListener(val plugin: KhsPlugin) : Listener {
 
     private fun updateDisguise(player: BukkitPlayer) {
         // update disguise (if exists)
-        val disguise = plugin.disguiser.getDisguise(player.uniqueId) ?: return
+        val disguise = plugin.disguiser.getDisguise(player) ?: return
         val current = player.location.clone()
         val last = playerLastPosition.put(player.uniqueId, current) ?: return
         if (last.world != current.world) return

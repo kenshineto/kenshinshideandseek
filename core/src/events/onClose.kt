@@ -17,5 +17,5 @@ fun onClose(event: CloseEvent) {
 
     val blocks = game.map?.config?.blockHunt?.blocks ?: return
     val defaultBlock = blocks.firstOrNull() ?: return
-    if (player.getDisguise() == null) player.disguise(defaultBlock)
+    if (!player.isDisguised()) player.disguise(defaultBlock)
 }

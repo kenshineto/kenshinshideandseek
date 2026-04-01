@@ -84,8 +84,8 @@ fun onDamage(event: DamageEvent) {
         1.0,
     )
 
-    // un unSolidify a player if their disguised
-    player.getDisguise()?.shouldBeSolid = false
+    // reveal a player if their disguised
+    player.revealDisguise()
 
     // respawn player
     if (plugin.config.delayedRespawn.enabled && !plugin.config.respawnAsSpectator) {

@@ -61,9 +61,11 @@ interface Player {
     fun playSound(sound: String, volume: Double, pitch: Double)
 
     // Block Hunt
+    fun isDisguised(): Boolean
+
     fun disguise(material: String)
 
-    fun getDisguise(): Disguise?
+    fun revealDisguise()
 
     enum class GameMode {
         CREATIVE,

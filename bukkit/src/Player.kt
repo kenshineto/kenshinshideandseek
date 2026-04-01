@@ -1,7 +1,6 @@
 package cat.freya.khs.bukkit
 
 import cat.freya.khs.bukkit.packet.EntityMetadataPacket
-import cat.freya.khs.player.Disguise
 import cat.freya.khs.player.Inventory as KhsInventory
 import cat.freya.khs.player.Player as KhsPlayer
 import cat.freya.khs.player.Player.GameMode as KhsGameMode
@@ -99,9 +98,7 @@ class BukkitKhsPlayer(val shim: BukkitKhsShim, val inner: BukkitPlayer) : KhsPla
             return
         }
 
-        // teleports can fail!
-        // return a result?
-        runCatching { inner.teleport(pos) }
+        inner.teleport(pos)
     }
 
     override fun sendToServer(server: String) {
@@ -171,15 +168,19 @@ class BukkitKhsPlayer(val shim: BukkitKhsShim, val inner: BukkitPlayer) : KhsPla
         }
     }
 
+    override fun isDisguised(): Boolean = shim.plugin.disguiser.getDisguise(inner) != null
+
     override fun disguise(material: String) {
         runCatching {
             val xmat = XMaterial.matchXMaterial(material).orElse(null) ?: return
             val mat = xmat.get() ?: return
-            shim.plugin.disguiser.disguise(inner.uniqueId, mat)
+            shim.plugin.disguiser.disguise(inner, mat)
         }
     }
 
-    override fun getDisguise(): Disguise? = shim.plugin.disguiser.getDisguise(inner.uniqueId)
+    override fun revealDisguise() {
+        shim.plugin.disguiser.reveal(inner)
+    }
 
     override fun hasPermission(permission: String): Boolean {
         return inner.hasPermission(permission)

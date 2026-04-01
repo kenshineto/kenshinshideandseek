@@ -47,7 +47,7 @@ private fun onClickDebug(event: ClickEvent) {
     else if (item.similar(BECOME_HIDER)) becomeHider(plugin, player)
     else if (item.similar(BECOME_SPECTATOR)) becomeSpectator(plugin, player)
     else if (item.similar(DIE_IN_GAME)) dieInGame(plugin, player)
-    else if (item.similar(REVEAL_DISGUISE)) player.getDisguise()?.remove() else return
+    else if (item.similar(REVEAL_DISGUISE)) player.revealDisguise() else return
 
     player.closeInventory()
 }
