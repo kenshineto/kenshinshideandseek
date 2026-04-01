@@ -11,7 +11,7 @@ fun onInteract(event: InteractEvent) {
 
     if (!game.hasPlayer(player)) return
 
-    if (plugin.config.blockedInteracts.any { it.lowercase() == block.lowercase() }) {
+    if (plugin.config.blockedInteracts.any { it.equals(block, ignoreCase = true) }) {
         // this interaction is blocked!
         event.cancel()
         return

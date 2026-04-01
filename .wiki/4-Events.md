@@ -9,16 +9,16 @@ While playing hide and seek, the plugin will play a taunt at a random hider's po
 * Show Countdown - Publicly show the taunt interval countdown, letting players when the next taunt is
 * Enabled - If you want to disable this feature, you can
 
-## Glow Powerup
+## Glow Power-up
 **Enabled by default**
 
-Hiders each game will automatically be given a powerup orb that they can use to activate the glow powerup for all hiders. When used, all hiders will be given the glow effect to all hiders, meaning all hiders can see the positions of all the seekers. Only one hider has to use the powerup at a time for all hiders to see the effect. The effect last for the specified time in the configuration. **Seekers CANNOT see the glow effect when hiders use the powerup**. The effect can be used once, per hider, per game.
+Hiders each game will automatically be given a power-up orb that they can use to activate the glow power-up for all hiders. When used, all hiders will be given the glow effect to all hiders, meaning all hiders can see the positions of all the seekers. Only one hider has to use the power-up at a time for all hiders to see the effect. The effect last for the specified time in the configuration. **Seekers CANNOT see the glow effect when hiders use the power-up**. The effect can be used once, per hider, per game.
 
 **Configuration Options**
-* Time - The time the powerup lasts (seconds)
-* Stackable - Should the powerup timer stack when used at the time time, or just reset the timer
+* Time - The time the power-up lasts (seconds)
+* Stackable - Should the power-up timer stack when used at the time, or just reset the timer
 * Enabled - If you want to disable this feature, you can
-* Name - Name of the glow powerup item
-* Lore - Lore of the glow powerup item
-* Material - Material of the glow powerup item
-* Model-Data - Model-Data of the glow powerup item
+* Name - Name of the glow power-up item
+* Lore - Lore of the glow power-up item
+* Material - Material of the glow power-up item
+* Model-Data - Model-Data of the glow power-up item

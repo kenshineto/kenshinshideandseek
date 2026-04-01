@@ -1,4 +1,4 @@
-package cat.freya.khs.command.map.blockhunt.block
+package cat.freya.khs.command.map.blockhunt
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command

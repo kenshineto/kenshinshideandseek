@@ -39,7 +39,7 @@ fun onDamage(event: DamageEvent) {
             return
         }
 
-        // ignore if pvp is diabled, and a hider is trying to attack a seeker
+        // ignore if pvp is disabled, and a hider is trying to attack a seeker
         if (!plugin.config.pvp && game.isHider(attacker) && game.isSeeker(player)) {
             event.cancel()
             return
@@ -59,7 +59,7 @@ fun onDamage(event: DamageEvent) {
         event.cancel()
         val world = player.world ?: return
         if (player.location.y < world.minY) {
-            // make sure they dont try to kill them self to the void lol
+            // make sure they don't try to kill them self to the void lol
             game.map?.gameSpawn?.teleport(player)
         }
     }
@@ -84,7 +84,7 @@ fun onDamage(event: DamageEvent) {
         1.0,
     )
 
-    // un solidifiy a player if their disguised
+    // un solidify a player if their disguised
     plugin.disguiser.getDisguise(player.uuid)?.shouldBeSolid = false
 
     // respawn player

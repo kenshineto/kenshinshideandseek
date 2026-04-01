@@ -18,7 +18,7 @@ class KhsMapBlockHuntEnabled : Command {
             gameNotInProgress()
         }
 
-        val map = plugin.maps.get(name) ?: return
+        val map = plugin.maps[name] ?: return
         map.config.blockHunt.enabled = (enabled.lowercase() == "true")
         map.reloadConfig()
 

@@ -1,7 +1,7 @@
 ## Config
 **This section is for the config.yml file**
 
-The config.yml file contains all of the general settings for the plugin, ranging from region local, to player count. Each option is listed below along with its default value, type, and description for that setting. Information for all of these settings will also be stated in the config.yml file.
+The config.yml file contains all the general settings for the plugin, ranging from region local, to player count. Each option is listed below along with its default value, type, and description for that setting. Information for all of these settings will also be stated in the config.yml file.
 
 | Name | Default | Type | Description |
 | ------------- | ------------- |------------- | ------------- |
@@ -65,7 +65,7 @@ The config.yml file contains all of the general settings for the plugin, ranging
 ## Localization
 **This section is for the locale.yml file**
 
-This file is simple, it allows you to change the text of messages that the plugin ueses.
+This file is simple, it allows you to change the text of messages that the plugin uses.
 
 ## Leaderboard
 **This section is for the board.yml file**
@@ -95,7 +95,7 @@ This config file allows you to change what is displayed on the scoreboard\leader
 | {#HIDER} | Number of current hiders. |
 | {MAP} | The current map the game is on. |
 
-You can use theese placeholders to specify the content of the leaderboards on the side of the screen in both the lobby and while in game. You can also set the speific types of text different place holders will return as well in the config file.
+You can use these placeholders to specify the content of the leaderboards on the side of the screen in both the lobby and while in game. You can also set the specific types of text different placeholders will return as well in the config file.
 
 ## Items
 **This section is for the items.yml file**

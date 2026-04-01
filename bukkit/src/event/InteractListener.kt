@@ -21,7 +21,7 @@ class InteractListener(val plugin: KhsPlugin) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        val bukkitPlayer = event.player ?: return
+        val bukkitPlayer = event.player
 
         val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
 

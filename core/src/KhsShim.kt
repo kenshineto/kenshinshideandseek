@@ -68,7 +68,7 @@ interface KhsShim {
 
     fun getPlayer(name: String): Player?
 
-    /// wrappes a retrieved shim player
+    /// wraps a retrieved shim player
     fun wrapPlayer(inner: Any?): Player?
 
     /// @returns a world on the server that exists with the given world name
@@ -80,7 +80,7 @@ interface KhsShim {
     /// create a new world
     fun createWorld(worldName: String, type: World.Type): World?
 
-    /// create a inventory to use for a player
+    /// create an inventory to use for a player
     fun createInventory(title: String, size: UInt): Inventory?
 
     /// @returns a new board

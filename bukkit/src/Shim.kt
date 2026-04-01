@@ -35,25 +35,20 @@ class BukkitLogger(val plugin: KhsPlugin) : Logger {
 }
 
 class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
-    override val pluginVersion: String
-    override val mcVersion: List<UInt>
+    override val pluginVersion: String = plugin.description.version
+
+    override val mcVersion: List<UInt> =
+        Regex("""MC:\s*([\d.]+)""")
+            .find(plugin.server.version)
+            ?.groupValues
+            ?.get(1)
+            ?.split('.')
+            ?.asSequence()
+            ?.mapNotNull { it.toUIntOrNull() }
+            ?.let { seq -> if (seq.firstOrNull() == 1u) seq.drop(1) else seq }
+            ?.toList() ?: emptyList()
+
     override val platform: String = "Bukkit"
-
-    init {
-        // parse mc version
-        mcVersion =
-            Regex("""MC:\s*([\d.]+)""")
-                .find(plugin.server.version)
-                ?.groupValues
-                ?.get(1)
-                ?.split('.')
-                ?.asSequence()
-                ?.mapNotNull { it.toUIntOrNull() }
-                ?.let { seq -> if (seq.firstOrNull() == 1u) seq.drop(1) else seq }
-                ?.toList() ?: emptyList()
-
-        pluginVersion = plugin.description.version
-    }
 
     override val logger = BukkitLogger(plugin)
 
@@ -75,7 +70,7 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
                 .map { it.name }
 
     override val blocks: List<String>
-        get() = Material.values().map { it.toString().uppercase() }
+        get() = Material.entries.map { it.toString().uppercase() }
 
     override val sqliteDatabasePath: String
         get() {
@@ -168,19 +163,19 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
         creator.type(worldType)
         creator.environment(env)
         plugin.server.createWorld(creator)
-        var world = plugin.server.getWorld(worldName) ?: return null
+        val world = plugin.server.getWorld(worldName) ?: return null
         world.save()
         return BukkitKhsWorld(plugin.shim, world)
     }
 
-    override fun createInventory(title: String, size: UInt): KhsInventory? {
+    override fun createInventory(title: String, size: UInt): KhsInventory {
         val inv = plugin.server.createInventory(null, size.toInt(), title)
         return BukkitKhsInventory(this, inv, title)
     }
 
     override fun getBoard(name: String): KhsBoard? =
         runCatching {
-                val board = plugin.server.scoreboardManager?.getNewScoreboard() ?: return null
+                val board = plugin.server.scoreboardManager?.newScoreboard ?: return null
                 return BukkitKhsBoard(this, board)
             }
             .getOrElse { null }

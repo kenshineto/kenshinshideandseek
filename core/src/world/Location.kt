@@ -12,7 +12,7 @@ data class Location(
     /// Returns the position from this location
     var position: Position
         get() = Position(this.x, this.y, this.z)
-        set(new: Position) {
+        set(new) {
             this.x = new.x
             this.y = new.y
             this.z = new.z

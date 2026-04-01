@@ -50,7 +50,7 @@ class Border(val game: Game) {
     fun update() {
         // the map needs to be loaded for the reset()
         // function to succeed, and the first time it was
-        // called may be before everything is setup
+        // called may be before everything is set up
         if (!configValid) reset()
 
         if (!configValid || expired) return // nope
@@ -62,7 +62,7 @@ class Border(val game: Game) {
 
         if (state == State.WARNED) {
             // start the world border movement!
-            var amount = borderConfig?.move ?: return
+            val amount = borderConfig?.move ?: return
             val currentSize = border?.size?.toULong() ?: return
 
             if (amount >= currentSize) return

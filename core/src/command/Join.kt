@@ -7,12 +7,12 @@ import cat.freya.khs.runChecks
 
 class KhsJoin : Command {
     override val label = "join"
-    override val usage = listOf<String>("*map")
+    override val usage = listOf("*map")
     override val description = "Joins the game, and can set a map if the lobby is empty"
 
     override fun execute(plugin: Khs, player: Player, args: List<String>) {
         val mapName = args.firstOrNull()
-        val map = mapName?.let { plugin.maps.get(it) }
+        val map = mapName?.let { plugin.maps[it] }
 
         runChecks(plugin, player) {
             gameMapExists()

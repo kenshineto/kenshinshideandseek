@@ -17,7 +17,7 @@ class KhsMapUnsetBorder : Command {
             gameNotInProgress()
         }
 
-        var map = plugin.maps.get(name) ?: return
+        val map = plugin.maps[name] ?: return
         val config = map.config.worldBorder
         config.enabled = false
         config.pos = null

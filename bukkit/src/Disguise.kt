@@ -22,14 +22,15 @@ class Disguise(val bukkitPlugin: KhsPlugin, uuid: UUID, material: KhsMaterial) :
 
         val loc = org.bukkit.Location(world, location.x, location.y, location.z)
         val bukkitMaterial = Material.getMaterial(material.platformName) ?: return null
+        @Suppress("DEPRECATION")
         val block: FallingBlock? =
             runCatching { world.spawnFallingBlock(loc, bukkitMaterial, 0x0) }.getOrElse { null }
         if (block == null) return null
 
         if (plugin.shim.supports(10)) block.setGravity(false)
 
-        block.setDropItem(false)
-        block.setInvulnerable(true)
+        block.dropItem = false
+        block.isInvulnerable = true
         return BukkitKhsEntity(bukkitPlugin, block)
     }
 
@@ -50,8 +51,8 @@ class Disguise(val bukkitPlugin: KhsPlugin, uuid: UUID, material: KhsMaterial) :
         if (plugin.shim.supports(10)) hitBox.setGravity(false)
 
         hitBox.setAI(false)
-        hitBox.setInvulnerable(true)
-        hitBox.setCanPickupItems(false)
+        hitBox.isInvulnerable = true
+        hitBox.canPickupItems = false
         return BukkitKhsEntity(bukkitPlugin, hitBox)
     }
 }

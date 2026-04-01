@@ -37,7 +37,7 @@ abstract class HikariDriver : Driver() {
     }
 }
 
-class SqliteDriver(val path: String) : Driver() {
+class SqliteDriver(path: String) : Driver() {
     private val driverClass = "org.sqlite.JDBC"
     private val jdbcUrl = "jdbc:sqlite:$path"
 
@@ -49,7 +49,7 @@ class SqliteDriver(val path: String) : Driver() {
         config.setTempStore(SQLiteConfig.TempStore.MEMORY)
 
         val source = SQLiteDataSource(config)
-        source.setUrl(jdbcUrl)
+        source.url = jdbcUrl
 
         return KhsDataSource(source)
     }

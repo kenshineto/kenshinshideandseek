@@ -18,7 +18,7 @@ class KhsMapBlockHuntDebug : Command {
             blockHuntEnabled(name)
         }
 
-        val map = plugin.maps.get(name) ?: return
+        val map = plugin.maps[name] ?: return
         val inv = createBlockHuntPicker(plugin, map) ?: return
         player.showInventory(inv)
     }

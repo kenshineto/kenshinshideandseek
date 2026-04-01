@@ -8,12 +8,11 @@ private data class CommandData(val command: Command, val permission: String, val
 class CommandGroup(val plugin: Khs, override val label: String, vararg commands: CommandPart) :
     CommandPart {
     // set of commands to run in this group
-    private final val REGISTRY: Map<String, CommandPart> =
-        commands.associate { it.label.lowercase() to it }
+    private val registry: Map<String, CommandPart> = commands.associateBy { it.label.lowercase() }
 
     private fun getCommand(args: List<String>, permission: String): CommandData? {
         val invoke = args.firstOrNull()?.lowercase() ?: return null
-        val command = REGISTRY.get(invoke) ?: return null
+        val command = registry[invoke] ?: return null
 
         return when (command) {
             is Command -> CommandData(command, "$permission.$invoke", args.drop(1))
@@ -44,7 +43,7 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
             return
         }
 
-        val paramCount = data.command.usage.filter { it.firstOrNull() != '*' }.count()
+        val paramCount = data.command.usage.count { it.firstOrNull() != '*' }
         if (data.args.size < paramCount) {
             player.message(plugin.locale.prefix.error + plugin.locale.command.notEnoughArguments)
             return
@@ -70,7 +69,7 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
         permission: String,
     ): List<String> {
         val invoke = args.firstOrNull()?.lowercase() ?: return listOf()
-        val command = REGISTRY.get(invoke)
+        val command = registry[invoke]
         return when {
             command is Command -> {
                 if (
@@ -95,7 +94,7 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
             }
             command is CommandGroup ->
                 command.handleTabComplete(player, args.drop(1), "$permission.$invoke")
-            args.size == 1 -> REGISTRY.keys.filter { it.startsWith(invoke) }
+            args.size == 1 -> registry.keys.filter { it.startsWith(invoke) }
             else -> listOf()
         }
     }
@@ -110,7 +109,7 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
         permission: String,
         res: MutableList<Pair<String, Command>>,
     ) {
-        for ((invoke, command) in REGISTRY) {
+        for ((invoke, command) in registry) {
             when (command) {
                 is Command -> {
                     if (

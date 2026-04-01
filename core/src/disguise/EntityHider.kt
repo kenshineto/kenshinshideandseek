@@ -18,10 +18,6 @@ class EntityHider {
             }
             .getOrElse { true }
 
-    // is entity visible for the observer
-    fun isVisible(observer: Player, entity: Entity): Boolean =
-        runCatching { isVisible(observer, entity.entityId) }.getOrElse { true }
-
     // set if the entity is hidden for the observer
     fun setVisible(observer: Player, entity: Entity, visible: Boolean) = runCatching {
         val observerId = observer.entityId
@@ -30,11 +26,6 @@ class EntityHider {
             if (visible) map.put(entityId, observerId, true) else map.remove(entityId, observerId)
         ret ?: visible
     }
-
-    // removes a hidden entity from the map
-    fun removeEntity(entity: Entity) =
-        runCatching { entity.entityId }
-            .onSuccess { for (row in map.rowMap().values) row.remove(it) }
 
     // removes a player from the map
     fun removePlayer(player: Player) =

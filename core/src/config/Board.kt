@@ -77,7 +77,7 @@ data class KhsBoardConfig(
     @Comment("  {TEAM}      - The team you are on")
     @Comment("  {BORDER}    - The current status of the world border event")
     @Comment("  {TAUNT}     - The current status of the taunt event")
-    @Comment("  {GLOW}      - The current status of the glow powerup")
+    @Comment("  {GLOW}      - The current status of the glow power-up")
     @Comment("  {#SEEKER}   - The number of seekers in the game right now")
     @Comment("  {#HIDER}    - The number of hiders in the game right now")
     @Comment("  {MAP}       - The name of the current map")

@@ -41,8 +41,7 @@ fun createDebugMenu(plugin: Khs): Inventory? {
     val inv = plugin.shim.createInventory(DEBUG_TITLE, 9u) ?: return null
     val items = listOf(BECOME_HIDER, BECOME_SEEKER, BECOME_SPECTATOR, DIE_IN_GAME, REMOVE_DISGUISE)
     items
-        .map { plugin.shim.parseItem(it) }
-        .filterNotNull()
+        .mapNotNull { plugin.shim.parseItem(it) }
         .withIndex()
         .forEach { (i, item) -> inv.set(i.toUInt(), item) }
     return inv

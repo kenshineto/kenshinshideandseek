@@ -8,7 +8,7 @@ import kotlin.annotation.AnnotationTarget
 
 @Repeatable @Target(AnnotationTarget.PROPERTY) annotation class Comment(val text: String)
 
-@Target(AnnotationTarget.PROPERTY) annotation class Omittable()
+@Target(AnnotationTarget.PROPERTY) annotation class Omittable
 
 @Target(AnnotationTarget.PROPERTY) annotation class KhsDeprecated(val since: String)
 
@@ -81,19 +81,20 @@ data class TauntConfig(
 
 data class GlowConfig(
     var enabled: Boolean = true,
-    @Comment("How long in seconds does the powerup last") var time: ULong = 30u,
-    @Comment("If multiple powerup uses can stack the time left") var stackable: Boolean = true,
-    @Comment("The config for the powerup item")
+    @Comment("How long in seconds does the power up last") var time: ULong = 30u,
+    @Comment("If multiple power-up uses can stack the time left") var stackable: Boolean = true,
+    @Comment("The config for the power-up item")
     var item: ItemConfig =
         ItemConfig(
-            "Glow Powerup", // Name
-            "SNOWBALL", // Material
-            listOf(
-                "Throw to make all seekers glow",
-                "Last 30s, all hiders can see it",
-                "Time stacks on multi use",
-            ),
-        ), // Lore
+            name = "Glow Power-up",
+            material = "SNOWBALL",
+            lore =
+                listOf(
+                    "Throw to make all seekers glow",
+                    "Last 30s, all hiders can see it",
+                    "Time stacks on multi use",
+                ),
+        ),
 )
 
 data class LobbyConfig(
@@ -106,34 +107,30 @@ data class LobbyConfig(
     @Comment("Item for players to use to leave the lobby")
     var leaveItem: ItemConfig =
         ItemConfig(
-            "&c Leave Lobby", // Name
-            "BED", // Material
-            listOf("Go back to server hub"),
-        ), // Lore
+            name = "&c Leave Lobby",
+            material = "BED",
+            lore = listOf("Go back to server hub"),
+        ),
     @Comment("Item for admins to use to force start the game")
-    var startItem: ItemConfig =
-        ItemConfig(
-            "&bStart Game", // Name
-            "CLOCK",
-        ), // Material
+    var startItem: ItemConfig = ItemConfig(name = "&bStart Game", material = "CLOCK"),
 )
 
 data class SpectatorItemsConfig(
     /// Item for spectators to toggle flight
     var flight: ItemConfig =
         ItemConfig(
-            "&bToggle Flight", // Name
-            "FEATHER", // Material
-            listOf("Turns flying on and off"),
-        ), // Lore
+            name = "&bToggle Flight",
+            material = "FEATHER",
+            lore = listOf("Turns flying on and off"),
+        ),
 
     /// Item for spectators to teleport to other players
     var teleport: ItemConfig =
         ItemConfig(
-            "&bTeleport to Others", // Name
-            "COMPASS", // Material
-            listOf("Allows you to teleport to all other players in game"),
-        ), // Lore
+            name = "&bTeleport to Others",
+            material = "COMPASS",
+            lore = listOf("Allows you to teleport to all other players in game"),
+        ),
 )
 
 data class SeekerPingDistancesConfig(
@@ -169,7 +166,7 @@ data class KhsConfig(
     @Comment(
         "You change where countdown messages are to be displayed: in the chat, action bar, or a title."
     )
-    @Comment("Below you can set CHAT, ACTIONBAR, or TITLE. Any invarid option will revert to CHAT.")
+    @Comment("Below you can set CHAT, ACTIONBAR, or TITLE. Any invalid option will revert to CHAT.")
     var countdownDisplay: ConfigCountdownDisplay = ConfigCountdownDisplay.CHAT,
     @Comment(
         "Allow Hiders to see their own teams nametags as well as seekers. Seekers can never see nametags regardless"
@@ -265,7 +262,7 @@ data class KhsConfig(
     @Comment("Players that join the server will automatically be added into a game lobby")
     var autoJoin: Boolean = false,
     @Comment(
-        "When players join the world contaning the lobby, teleport them to the designated exit position so that they don't spawn in the lobby while not in the queue."
+        "When players join the world containing the lobby, teleport them to the designated exit position so that they don't spawn in the lobby while not in the queue."
     )
     @Comment("This setting is ignored when autoJoin is set to true.")
     var teleportStraysToExit: Boolean = false,
@@ -285,11 +282,11 @@ data class KhsConfig(
 
     @Section("Events") @Comment("Taunt event") var taunt: TauntConfig = TauntConfig(),
 
-    /* Powerups */
+    /* Power-ups */
 
-    @Section("Powerups") @Comment("Glow powerup") var glow: GlowConfig = GlowConfig(),
+    @Section("Power-ups") @Comment("Glow power-up") var glow: GlowConfig = GlowConfig(),
     @Comment(
-        "Instead of having a glow powerup, always make seeker position's known the the hider at all times."
+        "Instead of having a glow power-up, always make seeker position's known the the hider at all times."
     )
     var alwaysGlow: Boolean = false,
 

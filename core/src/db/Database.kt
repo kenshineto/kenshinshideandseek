@@ -45,8 +45,7 @@ class Database(plugin: Khs) {
                 .where { Players.name like "$startsWith%" }
                 .orderBy(Players.name to SortOrder.ASC)
                 .limit(limit.toInt())
-                .map { it[Players.name] }
-                .filterNotNull()
+                .mapNotNull { it[Players.name] }
         }
 
     fun upsertPlayer(player: Player) =

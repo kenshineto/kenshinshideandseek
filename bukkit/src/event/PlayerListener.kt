@@ -30,7 +30,7 @@ class PlayerListener(val plugin: KhsPlugin) : Listener {
         val khsEvent = HungerEvent(plugin.khs, khsPlayer)
         onHunger(khsEvent)
 
-        if (khsEvent.cancelled) event.setCancelled(true)
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -43,17 +43,17 @@ class PlayerListener(val plugin: KhsPlugin) : Listener {
         val khsEvent = RegenEvent(plugin.khs, khsPlayer, natural)
         onRegen(khsEvent)
 
-        if (khsEvent.cancelled) event.setCancelled(true)
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
-        val bukkitPlayer = event.player ?: return
-        val item = toKhsItem(event.itemDrop?.itemStack) ?: return
+        val bukkitPlayer = event.player
+        val item = toKhsItem(event.itemDrop.itemStack) ?: return
         val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = DropEvent(plugin.khs, khsPlayer, item)
         onDrop(khsEvent)
 
-        if (khsEvent.cancelled) event.setCancelled(true)
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 }

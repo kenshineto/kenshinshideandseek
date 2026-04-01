@@ -21,14 +21,14 @@ private fun copyWorldFolder(
     val region = File(dir, name)
     val tempRegion = File(temp, name)
 
-    if (!tempRegion.exists() && tempRegion.mkdirs() == false) {
-        plugin.shim.logger.error("could not create directory: ${tempRegion.getPath()}")
+    if (!tempRegion.exists() && !tempRegion.mkdirs()) {
+        plugin.shim.logger.error("could not create directory: ${tempRegion.path}")
         return false
     }
 
     val files = region.list()
     if (files == null) {
-        plugin.shim.logger.error("could not access directory: ${region.getPath()}")
+        plugin.shim.logger.error("could not access directory: ${region.path}")
         return false
     }
 
@@ -74,7 +74,7 @@ fun mapSave(plugin: Khs, map: KhsMap): Result<Unit> =
             plugin.shim.broadcast(plugin.locale.prefix.default + plugin.locale.map.save.start)
             plugin.shim.broadcast(plugin.locale.prefix.warning + plugin.locale.map.save.warning)
 
-            if (plugin.config.mapSaveEnabled == false) error("map saves are disabled!")
+            if (!plugin.config.mapSaveEnabled) error("map saves are disabled!")
 
             val loader = plugin.shim.getWorldLoader(map.worldName)
             val mapSaveLoader = plugin.shim.getWorldLoader(map.gameWorldName)

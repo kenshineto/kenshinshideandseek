@@ -40,6 +40,6 @@ class DamageListener(val plugin: KhsPlugin) : Listener {
             if (bukkitPlayer.isOnline && attackerPlayer?.isOnline != false) onDamage(khsEvent)
         }
 
-        if (khsEvent.cancelled) event.setCancelled(true)
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 }

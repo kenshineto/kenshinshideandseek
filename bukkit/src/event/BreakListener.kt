@@ -20,37 +20,37 @@ class BreakListener(val plugin: KhsPlugin) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onBlockBreak(event: BlockBreakEvent) {
-        val bukkitPlayer = event.player ?: return
-        val block = event.block?.type?.name ?: return
+        val bukkitPlayer = event.player
+        val block = event.block.type.name
 
         val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = BreakEvent(plugin.khs, khsPlayer, block)
         onBreak(khsEvent)
 
-        if (khsEvent.cancelled) event.setCancelled(true)
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onEntityBreakDoor(event: EntityBreakDoorEvent) {
         val bukkitPlayer = event.entity as? BukkitPlayer ?: return
-        val block = event.block?.type?.name ?: return
+        val block = event.block.type.name
 
         val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = BreakEvent(plugin.khs, khsPlayer, block)
         onBreak(khsEvent)
 
-        if (khsEvent.cancelled) event.setCancelled(true)
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onHangingBreakByEntity(event: HangingBreakByEntityEvent) {
         val bukkitPlayer = event.remover as? BukkitPlayer ?: return
-        val block = event.entity?.type?.name ?: return
+        val block = event.entity.type.name
 
         val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = BreakEvent(plugin.khs, khsPlayer, block)
         onBreak(khsEvent)
 
-        if (khsEvent.cancelled) event.setCancelled(true)
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 }

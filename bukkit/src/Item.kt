@@ -17,12 +17,12 @@ import org.bukkit.potion.PotionEffect
 class BukkitKhsItem(val inner: ItemStack, override val config: ItemConfig) : KhsItem {
     override val name: String? = inner.itemMeta?.displayName
     override val material: KhsMaterial
-        get() = KhsMaterial(null, inner.type?.name ?: "NONE")
+        get() = KhsMaterial(null, inner.type.name)
 
     override fun clone(): KhsItem = BukkitKhsItem(inner, config)
 
     override fun similar(config: ItemConfig): Boolean {
-        var item = parseBukkitItem(config) ?: return false
+        val item = parseBukkitItem(config) ?: return false
         return inner.isSimilar(item.inner)
     }
 
@@ -33,15 +33,15 @@ class BukkitKhsItem(val inner: ItemStack, override val config: ItemConfig) : Khs
 }
 
 class BukkitKhsEffect(val inner: PotionEffect, override val config: EffectConfig) : KhsEffect {
-    @Suppress("DEPRECATION") override val name: String? = inner.type.name
+    @Suppress("DEPRECATION") override val name = inner.type.name
 
     override fun clone(): KhsEffect = BukkitKhsEffect(inner, config)
 }
 
 fun parseBukkitItem(itemConfig: ItemConfig): BukkitKhsItem? {
-    var config = YamlConfiguration().createSection("temp")
-    var materialParts = itemConfig.material.uppercase().split(":")
-    var material = materialParts.first()
+    val config = YamlConfiguration().createSection("temp")
+    val materialParts = itemConfig.material.uppercase().split(":")
+    val material = materialParts.first()
 
     // set name and material
     config.set("name", itemConfig.name?.let { formatText(it) })
@@ -50,7 +50,7 @@ fun parseBukkitItem(itemConfig: ItemConfig): BukkitKhsItem? {
     config.set("unbreakable", itemConfig.unbreakable ?: false)
 
     // parse enchantments
-    var enchantments = YamlConfiguration().createSection("enchantments")
+    val enchantments = YamlConfiguration().createSection("enchantments")
     for ((enchantment, value) in itemConfig.enchantments) enchantments.set(
         enchantment,
         value.toInt(),
@@ -64,7 +64,7 @@ fun parseBukkitItem(itemConfig: ItemConfig): BukkitKhsItem? {
 
     // set potion data
     if (material.endsWith("POTION")) {
-        var potionType = materialParts.getOrNull(1) ?: "AKWARD"
+        val potionType = materialParts.getOrNull(1) ?: "AWKWARD"
         config.set("base-type", potionType)
     }
 
@@ -74,7 +74,8 @@ fun parseBukkitItem(itemConfig: ItemConfig): BukkitKhsItem? {
         // set player head owner (if skull)
         if (itemConfig.owner != null && itemConfig.material == "PLAYER_HEAD") {
             val meta = item.itemMeta as SkullMeta
-            meta.setOwner(itemConfig.owner)
+            @Suppress("DEPRECATION")
+            meta.owner = itemConfig.owner
             item.itemMeta = meta
         }
 

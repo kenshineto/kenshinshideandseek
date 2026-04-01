@@ -46,20 +46,20 @@ class BukkitKhsPlayer(val plugin: KhsPlugin, val inner: BukkitPlayer) : KhsPlaye
 
     override var health: Double
         get() = inner.health
-        set(v: Double) {
+        set(v) {
             inner.health = v
         }
 
     override var hunger: UInt
         get() = inner.foodLevel.toUInt()
-        set(v: UInt) {
+        set(v) {
             inner.foodLevel = v.toInt()
         }
 
     override fun heal() {
         if (shim.supports(9)) {
             val attribName = if (shim.supports(21, 6)) "MAX_HEALTH" else "GENERIC_MAX_HEALTH"
-            var attrib = inner.getAttribute(Attribute.valueOf(attribName))
+            @Suppress("DEPRECATION") val attrib = inner.getAttribute(Attribute.valueOf(attribName))
             health = attrib?.value ?: 20.0
         } else {
             @Suppress("DEPRECATION")
@@ -69,15 +69,15 @@ class BukkitKhsPlayer(val plugin: KhsPlugin, val inner: BukkitPlayer) : KhsPlaye
 
     override var allowFlight
         get() = inner.allowFlight
-        set(v: Boolean) {
+        set(v) {
             inner.allowFlight = v
         }
 
     override var flying
         get() = inner.isFlying
-        set(flying: Boolean) {
-            if (this.flying != flying) inner.setFallDistance(0f)
-            runCatching { inner.setFlying(flying) }
+        set(flying) {
+            if (this.flying != flying) inner.fallDistance = 0f
+            runCatching { inner.isFlying = flying }
         }
 
     override fun teleport(position: Position) {
@@ -138,7 +138,7 @@ class BukkitKhsPlayer(val plugin: KhsPlugin, val inner: BukkitPlayer) : KhsPlaye
     }
 
     override fun setHidden(target: KhsPlayer, hidden: Boolean) {
-        var other = (target as BukkitKhsPlayer).inner
+        val other = (target as BukkitKhsPlayer).inner
         if (shim.supports(12, 2)) {
             if (hidden) inner.hidePlayer(shim.plugin, other)
             else inner.showPlayer(shim.plugin, other)
@@ -162,13 +162,14 @@ class BukkitKhsPlayer(val plugin: KhsPlugin, val inner: BukkitPlayer) : KhsPlaye
         Titles.sendTitle(inner, 10, 40, 10, formatText(title), formatText(subTitle))
     }
 
+    @Suppress("UnstableApiUsage")
     override fun playSound(sound: String, volume: Double, pitch: Double) {
         XSound.REGISTRY.getByName(sound).ifPresent {
             it.play(inner, volume.toFloat(), pitch.toFloat())
         }
     }
 
-    override fun createDisguise(material: KhsMaterial): KhsDisguise? =
+    override fun createDisguise(material: KhsMaterial): KhsDisguise =
         Disguise(shim.plugin, inner.uniqueId, material)
 
     override fun hasPermission(permission: String): Boolean {
@@ -183,19 +184,19 @@ class BukkitKhsPlayer(val plugin: KhsPlugin, val inner: BukkitPlayer) : KhsPlaye
                 BukkitGameMode.ADVENTURE -> KhsGameMode.ADVENTURE
                 BukkitGameMode.SPECTATOR -> KhsGameMode.SPECTATOR
             }
-        set(gameMode: KhsGameMode) =
-            inner.setGameMode(
+        set(gameMode) {
+            inner.gameMode =
                 when (gameMode) {
                     KhsGameMode.CREATIVE -> BukkitGameMode.CREATIVE
                     KhsGameMode.SURVIVAL -> BukkitGameMode.SURVIVAL
                     KhsGameMode.ADVENTURE -> BukkitGameMode.ADVENTURE
                     KhsGameMode.SPECTATOR -> BukkitGameMode.SPECTATOR
                 }
-            )
+        }
 
     override fun hideBoards() {
         val manager = shim.plugin.server.scoreboardManager ?: return
-        inner.setScoreboard(manager.mainScoreboard)
+        inner.scoreboard = manager.mainScoreboard
     }
 
     override fun taunt() {
@@ -206,11 +207,11 @@ class BukkitKhsPlayer(val plugin: KhsPlugin, val inner: BukkitPlayer) : KhsPlaye
         val fwMatName = if (shim.supports(13)) "FIREWORK_ROCKET" else "FIREWORK"
         val fwMat = EntityType.valueOf(fwMatName)
         val fw = world.inner.spawnEntity(loc, fwMat) as Firework
-        fw.setVelocity(Vector(0, 1, 0))
+        fw.velocity = Vector(0, 1, 0)
 
         // make it pretty
         val meta = fw.fireworkMeta
-        meta.setPower(4)
+        meta.power = 4
         meta.addEffect(
             FireworkEffect.builder()
                 .withColor(Color.BLUE)

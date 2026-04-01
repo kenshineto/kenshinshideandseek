@@ -17,13 +17,13 @@ class ChatListener(val plugin: KhsPlugin) : Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onChat(event: AsyncPlayerChatEvent) {
-        val bukkitPlayer = event.player ?: return
-        val message = event.message ?: return
+        val bukkitPlayer = event.player
+        val message = event.message
 
         val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = ChatEvent(plugin.khs, khsPlayer, message)
         onChat(khsEvent)
 
-        if (khsEvent.cancelled) event.setCancelled(true)
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 }

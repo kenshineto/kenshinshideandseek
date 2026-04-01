@@ -71,8 +71,7 @@ fun <T : Any> serializeClass(instance: T): String {
     val propValues =
         type.primaryConstructor!!
             .parameters
-            .map { param -> type.memberProperties.find { it.name == param.name } }
-            .filterNotNull()
+            .mapNotNull { param -> type.memberProperties.find { it.name == param.name } }
             .associateWith { prop -> prop.getter.call(instance) }
 
     return buildString {
@@ -107,7 +106,7 @@ fun <T : Any> serializeClass(instance: T): String {
     }
 }
 
-fun <T : Any?> serializeList(list: List<T>): String {
+fun <T> serializeList(list: List<T>): String {
     if (list.isEmpty()) return "[]"
 
     if (list.size == 1 && typeInline(list)) {
@@ -126,7 +125,7 @@ fun <T : Any?> serializeList(list: List<T>): String {
     }
 }
 
-fun <K : Any?, V : Any?> serializeMap(map: Map<K, V>): String {
+fun <K, V> serializeMap(map: Map<K, V>): String {
     if (map.isEmpty()) return "{}"
 
     return buildString {
@@ -160,18 +159,18 @@ fun <T : Any> serializePrimitive(value: T): String {
             }
         )
     val yaml = Yaml()
-    return when {
-        value is String -> stringYaml.dump(value)
-        value is LocaleString1 -> stringYaml.dump(value.inner)
-        value is LocaleString2 -> stringYaml.dump(value.inner)
-        value is LocaleString3 -> stringYaml.dump(value.inner)
-        value is Int -> yaml.dump(value)
-        value is UInt -> yaml.dump(value.toInt())
-        value is Long -> yaml.dump(value)
-        value is ULong -> yaml.dump(value.toLong())
-        value is Boolean -> yaml.dump(value)
-        value is Float -> yaml.dump(value)
-        value is Double -> yaml.dump(value)
+    return when (value) {
+        is String -> stringYaml.dump(value)
+        is LocaleString1 -> stringYaml.dump(value.inner)
+        is LocaleString2 -> stringYaml.dump(value.inner)
+        is LocaleString3 -> stringYaml.dump(value.inner)
+        is Int -> yaml.dump(value)
+        is UInt -> yaml.dump(value.toInt())
+        is Long -> yaml.dump(value)
+        is ULong -> yaml.dump(value.toLong())
+        is Boolean -> yaml.dump(value)
+        is Float -> yaml.dump(value)
+        is Double -> yaml.dump(value)
         else -> error("cannot serialize '$value'")
     }.trim()
 }

@@ -20,10 +20,7 @@ class KhsStart : Command {
         }
 
         val pool =
-            args
-                .map { plugin.shim.getPlayer(it)?.uuid }
-                .filterNotNull()
-                .filter { plugin.game.hasPlayer(it) }
+            args.mapNotNull { plugin.shim.getPlayer(it)?.uuid }.filter { plugin.game.hasPlayer(it) }
 
         plugin.game.start(pool)
     }

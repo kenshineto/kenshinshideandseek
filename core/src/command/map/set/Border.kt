@@ -32,7 +32,7 @@ class KhsMapSetBorder : Command {
             return
         }
 
-        var map = plugin.maps.get(name) ?: return
+        val map = plugin.maps[name] ?: return
         val config = map.config.worldBorder
         config.enabled = true
         config.pos = player.location.position

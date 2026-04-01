@@ -33,13 +33,13 @@ The database will be migrated automatically, so please don't delete it. As alway
 All configs from the 1.x series are incompatible, and will have to be reconfigured.
 
 **Features**
-- This plugin supports both Blockhunt and regular Hide and Seek gamemodes, which can be toggled in the config.yml
-- A Glow powerup for Hiders to view where nearby Seekers are located. Can be disabled and configured.
+- This plugin supports both Blockhunt and regular Hide and Seek game-modes, which can be toggled in the config.yml
+- A Glow power-up for Hiders to view where nearby Seekers are located. Can be disabled and configured.
 - A border that slowly closes in as the game progresses, killing those who are left on the outside. Can be disabled and configured.
 - A taunt system that randomly selects hiders and lets seekers know of their presence. Can be disabled and configured.
 - Player's wins, losses, kills, deaths, and hider and seeker statics are stored in a SQLite or MySQL/MariaDB database.
 - Fully lobby system where players can join, automatic starting, and custom scoreboards.
-- Fully custom in game scoreboard that can display teams, powerup information, event information, and game information.
+- Fully custom in game scoreboard that can display teams, power-up information, event information, and game information.
 - Total message localization that allows players to change any message in the plugin to whatever they want. English and German localizations have been premade, but still can be altered if wished.
 - Custom items and effects can be given out to either the Hiders and Spectators for when they are in the game.
 - A complete spectator mode with player teleporting.

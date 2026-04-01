@@ -14,7 +14,7 @@ class KhsMapStatus : Command {
         val (name) = args
         runChecks(plugin, player) { mapExists(name) }
 
-        val map = plugin.maps.get(name) ?: return
+        val map = plugin.maps[name] ?: return
 
         if (map.setup) {
             player.message(plugin.locale.prefix.default + plugin.locale.map.setup.complete)

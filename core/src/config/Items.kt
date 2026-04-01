@@ -5,25 +5,16 @@ data class KhsItemsConfig(
     @Comment("Items that hiders are given")
     var hiderItems: List<ItemConfig> =
         listOf(
-            // Stone sword
             ItemConfig(
-                "Hider Sword", // Name
-                "STONE_SWORD", // Material
-                listOf("This is the hider sword"), // Lore
-                mapOf("sharpness" to 2u), // Enchantments
-                true,
-            ), // Unbreakable
-            // Regen potion
-            ItemConfig(
-                null, // Name
-                "SPLASH_POTION:REGEN",
-            ), // Material
-            // Heal potion
-            ItemConfig(
-                null, // Name
-                "POTION:INSTANT_HEAL",
+                name = "Hider Sword",
+                material = "STONE_SWORD",
+                lore = listOf("This is the hider sword"),
+                enchantments = mapOf("sharpness" to 2u),
+                unbreakable = true,
             ),
-        ), // Material
+            ItemConfig(name = null, material = "SPLASH_POTION:REGEN"),
+            ItemConfig(name = null, material = "POTION:INSTANT_HEAL"),
+        ),
     var hiderHelmet: ItemConfig? = null,
     var hiderChestplate: ItemConfig? = null,
     var hiderLeggings: ItemConfig? = null,
@@ -32,84 +23,81 @@ data class KhsItemsConfig(
     @Comment("Items that seekers are given")
     var seekerItems: List<ItemConfig> =
         listOf(
-            // Diamond sword
             ItemConfig(
-                "Seeker Sword", // Name
-                "DIAMOND_SWORD", // Material
-                listOf("this is the seeker sword"), // Lore
-                mapOf("sharpness" to 1u), // Enchantments
-                true,
-            ), // Unbreakable
-            // Wacky stick
-            ItemConfig(
-                "Wacky Stick", // Name
-                "STICK", // Material
-                listOf("It will launch people very far", "Use wisely!"), // Lore
-                mapOf("knockback" to 3u),
+                name = "Seeker Sword",
+                material = "DIAMOND_SWORD",
+                lore = listOf("this is the seeker sword"),
+                enchantments = mapOf("sharpness" to 1u),
+                unbreakable = true,
             ),
-        ), // Enchantments
+            ItemConfig(
+                name = "Wacky Stick",
+                material = "STICK",
+                lore = listOf("It will launch people very far", "Use wisely!"),
+                enchantments = mapOf("knockback" to 3u),
+            ),
+        ),
 
     // Armor provided to seekers
-    var seekerHelmet: ItemConfig? = ItemConfig(null, "LEATHER_HELMET"),
-    var seekerChestplate: ItemConfig? = ItemConfig(null, "LEATHER_CHESTPLATE"),
-    var seekerLeggings: ItemConfig? = ItemConfig(null, "LEATHER_LEGGINGS"),
+    var seekerHelmet: ItemConfig? = ItemConfig(material = "LEATHER_HELMET"),
+    var seekerChestplate: ItemConfig? = ItemConfig(material = "LEATHER_CHESTPLATE"),
+    var seekerLeggings: ItemConfig? = ItemConfig(material = "LEATHER_LEGGINGS"),
     var seekerBoots: ItemConfig? =
         ItemConfig(
-            null, // Name
-            "LEATHER_BOOTS", // Material
-            emptyList(), // Lore
-            mapOf("feather_falling" to 4u),
-        ), // Enchantments
+            material = "LEATHER_BOOTS",
+            lore = emptyList(),
+            enchantments = mapOf("feather_falling" to 4u),
+        ),
     @Section("Hider Effects")
     @Comment("Effects hiders are given at the start of the round")
     var hiderEffects: List<EffectConfig> =
         listOf(
             EffectConfig(
-                "WATER_BREATHING", // Type
-                1000000u, // Duration
-                1u, // Amplifier
-                false, // Ambient
-                false,
-            ), // Particles
-            EffectConfig(
-                "DOLPHINS_GRACE", // Type
-                1000000u, // Duration
-                1u, // Amplifier
-                false, // Ambient
-                false,
+                type = "WATER_BREATHING",
+                duration = 1000000u,
+                amplifier = 1u,
+                ambient = false,
+                particles = false,
             ),
-        ), // Particles
+            EffectConfig(
+                type = "DOLPHINS_GRACE",
+                duration = 1000000u,
+                amplifier = 1u,
+                ambient = false,
+                particles = false,
+            ),
+        ),
     @Section("Seeker Effects")
     @Comment("Effects seekers given at the start of the round and when they respawn")
     var seekerEffects: List<EffectConfig> =
         listOf(
             EffectConfig(
-                "SPEED", // Type
-                1000000u, // Duration
-                2u, // Amplifier
-                false, // Ambient
-                false,
-            ), // Particles
-            EffectConfig(
-                "JUMP", // Type
-                1000000u, // Duration
-                1u, // Amplifier
-                false, // Ambient
-                false,
-            ), // Particles
-            EffectConfig(
-                "WATER_BREATHING", // Type
-                1000000u, // Duration
-                10u, // Amplifier
-                false, // Ambient
-                false,
-            ), // Particles
-            EffectConfig(
-                "DOLPHINS_GRACE", // Type
-                1000000u, // Duration
-                1u, // Amplifier
-                false, // Ambient
-                false,
+                type = "SPEED",
+                duration = 1000000u,
+                amplifier = 2u,
+                ambient = false,
+                particles = false,
             ),
-        ), // Particles
+            EffectConfig(
+                type = "JUMP",
+                duration = 1000000u,
+                amplifier = 1u,
+                ambient = false,
+                particles = false,
+            ),
+            EffectConfig(
+                type = "WATER_BREATHING",
+                duration = 1000000u,
+                amplifier = 10u,
+                ambient = false,
+                particles = false,
+            ),
+            EffectConfig(
+                type = "DOLPHINS_GRACE",
+                duration = 1000000u,
+                amplifier = 1u,
+                ambient = false,
+                particles = false,
+            ),
+        ),
 )

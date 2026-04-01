@@ -17,7 +17,7 @@ class KhsMapBlockHuntBlockList : Command {
             blockHuntEnabled(name)
         }
 
-        val map = plugin.maps.get(name) ?: return
+        val map = plugin.maps[name] ?: return
         val blocks = map.config.blockHunt.blocks
         if (blocks.isEmpty()) {
             player.message(plugin.locale.prefix.default + plugin.locale.blockHunt.block.none)

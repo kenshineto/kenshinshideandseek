@@ -23,7 +23,7 @@ interface Board {
     }
 
     // seeker/hider display
-    fun getTeam(name: String): Board.Team
+    fun getTeam(name: String): Team
 }
 
 fun updateTeams(plugin: Khs, board: Board) {
@@ -113,8 +113,7 @@ private fun getGlowLocale(plugin: Khs): String {
 
     if (always || !config.enabled || !glow.supported) return DISABLED_IDENT
 
-    if (glow.running) return plugin.boardConfig.glow.active
-    else return plugin.boardConfig.glow.disabled
+    return if (glow.running) plugin.boardConfig.glow.active else plugin.boardConfig.glow.disabled
 }
 
 fun reloadGameBoard(plugin: Khs, uuid: UUID) {

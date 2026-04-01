@@ -19,7 +19,7 @@ class KhsMapSave : Command {
             lobbyEmpty()
         }
 
-        var map = plugin.maps.get(name) ?: return
+        val map = plugin.maps[name] ?: return
         mapSave(plugin, map)
     }
 

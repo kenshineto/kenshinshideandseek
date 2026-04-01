@@ -1,3 +1,5 @@
+@file:Suppress("SqlSourceToSinkFlow")
+
 package cat.freya.khs.db
 
 import java.sql.Connection
@@ -5,7 +7,7 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 import javax.sql.DataSource
 
-// wrappers for java sql objects to allow compatability
+// wrappers for java SQL objects to allow compatability
 // with older jdbc drivers
 
 // even though we load our own version of the jdbc driver,
@@ -35,6 +37,7 @@ class KhsConnection(val inner: Connection) : Connection by inner {
     ): PreparedStatement = KhsPreparedStatement(inner.prepareStatement(sql, columnNames))
 }
 
+@Suppress("JavaDefaultMethodsNotOverriddenByDelegation")
 class KhsPreparedStatement(val inner: PreparedStatement) : PreparedStatement by inner {
     override fun isClosed(): Boolean = runCatching { inner.isClosed }.getOrElse { false }
 

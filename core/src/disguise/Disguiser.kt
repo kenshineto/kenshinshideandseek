@@ -5,17 +5,15 @@ import cat.freya.khs.world.Material
 import java.util.UUID
 import kotlin.synchronized
 
-class Disguiser() {
+class Disguiser {
     private val disguises = mutableMapOf<UUID, Disguise>()
 
-    fun getDisguise(uuid: UUID): Disguise? = disguises.get(uuid)
+    fun getDisguise(uuid: UUID): Disguise? = disguises[uuid]
 
     fun getByBlockId(id: Int): Disguise? = disguises.values.firstOrNull { it.block?.entityId == id }
 
     fun getByHitBoxId(id: Int): Disguise? =
         disguises.values.firstOrNull { it.hitBox?.entityId == id }
-
-    fun getDisguises(): Collection<Disguise> = disguises.values
 
     fun disguise(player: Player, material: Material) {
         synchronized(disguises) {

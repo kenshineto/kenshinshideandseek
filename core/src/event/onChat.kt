@@ -12,7 +12,7 @@ fun onChat(event: ChatEvent) {
     if (!game.isSpectator(player)) return
 
     // only allow spectators to chat
-    // with eachother
+    // with each other
     event.cancel()
     game.spectatorPlayers.forEach {
         val team = plugin.locale.game.team.spectator

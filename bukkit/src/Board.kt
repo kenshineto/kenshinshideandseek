@@ -13,15 +13,9 @@ import org.bukkit.scoreboard.Team as BukkitTeam
 class BukkitKhsTeam(val shim: BukkitKhsShim, val inner: BukkitTeam) : KhsBoard.Team {
     override var prefix: String
         get() = inner.prefix
-        set(prefix: String) {
+        set(prefix) {
             inner.prefix = formatText(prefix)
         }
-
-    enum class NameTagsVisible {
-        FOR_OWN_TEAM,
-        FOR_OTHER_TEAMS,
-        NEVER,
-    }
 
     // options
     override var canCollide: Boolean
@@ -30,7 +24,7 @@ class BukkitKhsTeam(val shim: BukkitKhsShim, val inner: BukkitTeam) : KhsBoard.T
             return inner.getOption(BukkitTeam.Option.COLLISION_RULE) ==
                 BukkitTeam.OptionStatus.NEVER
         }
-        set(b: Boolean) {
+        set(b) {
             if (shim.supports(9)) {
                 val v = if (b) BukkitTeam.OptionStatus.ALWAYS else BukkitTeam.OptionStatus.NEVER
                 inner.setOption(BukkitTeam.Option.COLLISION_RULE, v)
@@ -39,14 +33,14 @@ class BukkitKhsTeam(val shim: BukkitKhsShim, val inner: BukkitTeam) : KhsBoard.T
 
     override var nameTagsVisible: Boolean
         get() {
-            if (shim.supports(9)) {
-                return inner.getOption(BukkitTeam.Option.NAME_TAG_VISIBILITY) !=
+            return if (shim.supports(9)) {
+                inner.getOption(BukkitTeam.Option.NAME_TAG_VISIBILITY) !=
                     BukkitTeam.OptionStatus.NEVER
             } else {
-                return inner.nameTagVisibility != NameTagVisibility.NEVER
+                inner.nameTagVisibility != NameTagVisibility.NEVER
             }
         }
-        set(b: Boolean) {
+        set(b) {
             if (shim.supports(9)) {
                 val v =
                     if (b) BukkitTeam.OptionStatus.FOR_OWN_TEAM else BukkitTeam.OptionStatus.NEVER
@@ -59,10 +53,10 @@ class BukkitKhsTeam(val shim: BukkitKhsShim, val inner: BukkitTeam) : KhsBoard.T
 
     // players
     override var players: Set<UUID>
-        get() = inner.entries.map { shim.getPlayer(it)?.uuid }.filterNotNull().toSet()
-        set(new: Set<UUID>) {
+        get() = inner.entries.mapNotNull { shim.getPlayer(it)?.uuid }.toSet()
+        set(new) {
             for (entry in inner.entries) {
-                val player = shim.plugin.server.getPlayer(entry) ?: null
+                val player = shim.plugin.server.getPlayer(entry)
                 if (!new.contains(player?.uniqueId)) inner.removeEntry(entry)
             }
             for (uuid in new) {
@@ -77,17 +71,18 @@ class BukkitKhsBoard(val shim: BukkitKhsShim, val inner: BukkitBoard) : KhsBoard
     private var blanks: Int = 0
 
     private fun resetObjective() {
-        if (shim.supports(13)) {
-            objective = inner.registerNewObjective("Scoreboard", "dummy", "")
-        } else {
-            objective = inner.registerNewObjective("Scoreboard", "dummy")
-        }
+        objective =
+            if (shim.supports(13)) {
+                inner.registerNewObjective("Scoreboard", "dummy", "")
+            } else {
+                inner.registerNewObjective("Scoreboard", "dummy")
+            }
         blanks = 0
     }
 
     private fun addLine(i: Int, line: String) {
         val score = objective?.getScore(formatText(line))
-        score?.setScore(i + 1)
+        score?.score = i + 1
     }
 
     private fun addBlank(i: Int) {
@@ -120,7 +115,7 @@ class BukkitKhsBoard(val shim: BukkitKhsShim, val inner: BukkitBoard) : KhsBoard
 
     override fun display(uuid: UUID) {
         val player = shim.getPlayer(uuid) ?: return
-        objective?.setDisplaySlot(DisplaySlot.SIDEBAR)
-        (player as BukkitKhsPlayer).inner.setScoreboard(inner)
+        objective?.displaySlot = DisplaySlot.SIDEBAR
+        (player as BukkitKhsPlayer).inner.scoreboard = inner
     }
 }

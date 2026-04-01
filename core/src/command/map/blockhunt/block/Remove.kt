@@ -25,7 +25,7 @@ class KhsMapBlockHuntBlockRemove : Command {
             return
         }
 
-        val map = plugin.maps.get(name) ?: return
+        val map = plugin.maps[name] ?: return
         if (!map.config.blockHunt.blocks.contains(material.platformName)) {
             player.message(
                 plugin.locale.prefix.error +

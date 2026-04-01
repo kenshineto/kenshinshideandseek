@@ -44,7 +44,7 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
 
         val player = plugin.shim.wrapPlayer(event.getPlayer()) ?: return
         if (!plugin.entityHider.isVisible(player, entityId)) {
-            event.setCancelled(true)
+            event.isCancelled = true
         }
     }
 
@@ -52,7 +52,7 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
     override fun onPacketReceive(event: PacketReceiveEvent) {
         val attacker = plugin.shim.wrapPlayer(event.getPlayer()) ?: return
 
-        // we want interact event
+        // we want to interact event
         if (event.packetType != INTERACT_ENTITY) return
 
         val packet = WrapperPlayClientInteractEntity(event)
@@ -69,7 +69,7 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
 
         if (player.gameMode == Player.GameMode.CREATIVE) return
 
-        event.setCancelled(true)
+        event.isCancelled = true
         handleAttack(disguise, player, attacker)
     }
 
@@ -82,7 +82,7 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
         val debounceUUID = player.uuid
         if (debounce.contains(debounceUUID)) return
 
-        // caculate damage amount
+        // calculate damage amount
         val fallbackAmount = 7.0
         // val amount =
         //    if (plugin.shim.supports(9)) {

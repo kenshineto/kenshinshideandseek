@@ -25,11 +25,11 @@ class InventoryListener(val plugin: KhsPlugin) : Listener {
 
     private fun getInv(event: InventoryEvent): Pair<Inventory, String?> {
         if (plugin.shim.supports(14)) {
-            var inv = event.view.topInventory
+            val inv = event.view.topInventory
             return inv to event.view.title
         } else {
-            var inv = event.inventory
-            var title = inv::class.java.getMethod("getName").invoke(inv) as String
+            val inv = event.inventory
+            val title = inv::class.java.getMethod("getName").invoke(inv) as String
             return inv to title
         }
     }
@@ -45,7 +45,7 @@ class InventoryListener(val plugin: KhsPlugin) : Listener {
         val khsEvent = ClickEvent(plugin.khs, khsPlayer, khsInventory, item)
         onClick(khsEvent)
 
-        if (khsEvent.cancelled) event.setCancelled(true)
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

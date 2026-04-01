@@ -16,7 +16,7 @@ class KhsWorldCreate : Command {
         runChecks(plugin, player) { worldDoesNotExist(name) }
 
         val type =
-            World.Type.values().find { it.name.lowercase() == typeStr.lowercase() }
+            World.Type.entries.find { it.name.equals(typeStr, ignoreCase = true) }
                 ?: World.Type.NORMAL
 
         val world = plugin.shim.createWorld(name, type)
@@ -32,8 +32,7 @@ class KhsWorldCreate : Command {
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> {
         return when (parameter) {
             "name" -> listOf(parameter)
-            "type" ->
-                World.Type.values().map { it.name.lowercase() }.filter { it.startsWith(typed) }
+            "type" -> World.Type.entries.map { it.name.lowercase() }.filter { it.startsWith(typed) }
             else -> listOf()
         }
     }

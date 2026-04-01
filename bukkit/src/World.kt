@@ -47,17 +47,18 @@ class VoidGenerator : ChunkGenerator() {
     }
 
     // 1.8
+    @Suppress("UNUSED")
     fun generate(world: BukkitWorld, random: Random, x: Int, z: Int): ByteArray {
         return ByteArray(world.maxHeight / 16)
     }
 
-    @Suppress("DEPRECATION")
+    @Suppress("DEPRECATION", "UNUSED")
     fun generateBlockSections(
         world: BukkitWorld,
         random: Random,
         x: Int,
         z: Int,
-        biomes: ChunkGenerator.BiomeGrid,
+        biomes: BiomeGrid,
     ): Array<ByteArray> {
         return Array(world.maxHeight / 16) { ByteArray(0) }
     }
@@ -107,20 +108,18 @@ class BukkitKhsWorldLoader(val plugin: KhsPlugin, val worldName: String) : KhsWo
         plugin.server.createWorld(creator)
         val world = plugin.server.getWorld(name)
         if (world == null) plugin.shim.logger.error("could not load world: $name")
-        if (isMapSave) world?.setAutoSave(false)
+        if (isMapSave) world?.isAutoSave = false
         if (plugin.shim.supports(21, 6)) world?.setGameRule(GameRule.LOCATOR_BAR, false)
     }
 
     override fun unload() {
-        val world = plugin.server.getWorld(name)
-        if (world == null) return // world already unloaded
-
+        val world = plugin.server.getWorld(name) ?: return
         world.players.forEach { player ->
             val khsPlayer = BukkitKhsPlayer(plugin, player)
             plugin.khs.config.exit?.teleport(khsPlayer)
         }
 
-        if (plugin.server.unloadWorld(name, false) == false)
+        if (!plugin.server.unloadWorld(name, false))
             plugin.shim.logger.error("could not unload world: $name")
     }
 

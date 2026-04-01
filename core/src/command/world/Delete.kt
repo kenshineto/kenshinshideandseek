@@ -21,7 +21,7 @@ class KhsWorldDelete : Command {
         val loader = plugin.shim.getWorldLoader(name)
 
         // sanity check
-        // for the love of god, make sure were rm -fr'ing a world, not like
+        // for the love of god, make sure were removing a world, not like
         // some ones home dir ;-;
         val lock = File(loader.dir, "session.lock")
         val data = File(loader.dir, "level.dat")

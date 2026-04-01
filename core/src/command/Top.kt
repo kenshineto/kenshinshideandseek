@@ -22,16 +22,16 @@ class KhsTop : Command {
         var page = args.firstOrNull()?.toUIntOrNull() ?: 0u
         page = maxOf(page, 1u) - 1u
 
-        var pageSize = 5u
-        val entires = plugin.database?.getPlayers(page, pageSize)
-        if (entires == null || entires.isEmpty()) {
+        val pageSize = 5u
+        val entries = plugin.database?.getPlayers(page, pageSize)
+        if (entries.isNullOrEmpty()) {
             player.message(plugin.locale.prefix.default + plugin.locale.database.noInfo)
             return
         }
 
         val message = buildString {
             appendLine("&f------- &lLEADERBOARD &7(Page ${page + 1u}) &f-------")
-            for ((i, entry) in entires.withIndex()) {
+            for ((i, entry) in entries.withIndex()) {
                 val wins = entry.hiderWins + entry.seekerWins
                 val idx = (pageSize * page) + i.toUInt()
                 val color = getColor(idx)

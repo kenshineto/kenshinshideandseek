@@ -10,7 +10,6 @@ import cat.freya.khs.world.Item
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.min
-import kotlin.math.round
 import kotlin.random.Random
 import kotlin.synchronized
 import kotlin.toUInt
@@ -81,7 +80,7 @@ class Game(val plugin: Khs) {
     private val mappings: MutableMap<UUID, Team> = ConcurrentHashMap<UUID, Team>()
 
     val players: List<Player>
-        get() = mappings.keys.map { plugin.shim.getPlayer(it) }.filterNotNull()
+        get() = mappings.keys.mapNotNull { plugin.shim.getPlayer(it) }
 
     val UUIDs: Set<UUID>
         get() = mappings.keys.toSet()
@@ -90,19 +89,19 @@ class Game(val plugin: Khs) {
         get() = mappings.filter { it.value == Team.HIDER }.keys
 
     val hiderPlayers: List<Player>
-        get() = hiderUUIDs.map { plugin.shim.getPlayer(it) }.filterNotNull()
+        get() = hiderUUIDs.mapNotNull { plugin.shim.getPlayer(it) }
 
     val seekerUUIDs: Set<UUID>
         get() = mappings.filter { it.value == Team.SEEKER }.keys
 
     val seekerPlayers: List<Player>
-        get() = seekerUUIDs.map { plugin.shim.getPlayer(it) }.filterNotNull()
+        get() = seekerUUIDs.mapNotNull { plugin.shim.getPlayer(it) }
 
     val spectatorUUIDs: Set<UUID>
         get() = mappings.filter { it.value == Team.SPECTATOR }.keys
 
     val spectatorPlayers: List<Player>
-        get() = spectatorUUIDs.map { plugin.shim.getPlayer(it) }.filterNotNull()
+        get() = spectatorUUIDs.mapNotNull { plugin.shim.getPlayer(it) }
 
     val size: UInt
         get() = mappings.size.toUInt()
@@ -132,7 +131,7 @@ class Game(val plugin: Khs) {
 
     fun isSpectator(player: Player): Boolean = isSpectator(player.uuid)
 
-    fun getTeam(uuid: UUID): Team? = mappings.get(uuid)
+    fun getTeam(uuid: UUID): Team? = mappings[uuid]
 
     fun setTeam(uuid: UUID, team: Team) {
         mappings[uuid] = team
@@ -200,7 +199,7 @@ class Game(val plugin: Khs) {
         if (totalWeight == 0.0) return 0.0
         val percent = weight / totalWeight
 
-        // calulate probabal team sizes
+        // calculate probabal team sizes
         val wantedSeekerCount = maxOf(plugin.config.startingSeekerCount, 1u)
         val numPlayers = maxOf(size, 1u)
         val numSeekers = minOf(wantedSeekerCount, numPlayers - 1u)
@@ -286,7 +285,7 @@ class Game(val plugin: Khs) {
     }
 
     private fun updatePlayerInfo(uuid: UUID, reason: WinType) {
-        val team = initialTeams.get(uuid) ?: return
+        val team = initialTeams[uuid] ?: return
         val data = plugin.database?.getPlayer(uuid) ?: return
 
         when (reason) {
@@ -360,7 +359,7 @@ class Game(val plugin: Khs) {
         resetPlayer(player)
 
         if (plugin.config.saveInventory)
-            savedInventories.get(uuid)?.let { player.inventory.contents = it }
+            savedInventories[uuid]?.let { player.inventory.contents = it }
 
         // reload sidebar
         player.hideBoards()
@@ -377,7 +376,7 @@ class Game(val plugin: Khs) {
     }
 
     fun addKill(uuid: UUID) {
-        val team = mappings.get(uuid) ?: return
+        val team = mappings[uuid] ?: return
         when (team) {
             Team.HIDER -> hiderKills[uuid] = hiderKills.getOrDefault(uuid, 0u) + 1u
             Team.SEEKER -> seekerKills[uuid] = seekerKills.getOrDefault(uuid, 0u) + 1u
@@ -386,7 +385,7 @@ class Game(val plugin: Khs) {
     }
 
     fun addDeath(uuid: UUID) {
-        val team = mappings.get(uuid) ?: return
+        val team = mappings[uuid] ?: return
         when (team) {
             Team.HIDER -> hiderDeaths[uuid] = hiderDeaths.getOrDefault(uuid, 0u) + 1u
             Team.SEEKER -> seekerDeaths[uuid] = seekerDeaths.getOrDefault(uuid, 0u) + 1u
@@ -469,9 +468,9 @@ class Game(val plugin: Khs) {
         }
     }
 
-    /// @returns distnace to closest seeker to the player
+    /// @returns distance to the closest seeker to the player
     private fun distanceToSeeker(player: Player): Double {
-        return seekerPlayers.map { seeker -> player.location.distance(seeker.location) }.minOrNull()
+        return seekerPlayers.minOfOrNull { seeker -> player.location.distance(seeker.location) }
             ?: Double.POSITIVE_INFINITY
     }
 
@@ -677,14 +676,13 @@ class Game(val plugin: Khs) {
     }
 
     fun giveHiderItems(hider: Player) {
-        var items = plugin.itemsConfig.hiderItems.map { plugin.shim.parseItem(it) }.filterNotNull()
-        var effects =
-            plugin.itemsConfig.hiderEffects.map { plugin.shim.parseEffect(it) }.filterNotNull()
+        val items = plugin.itemsConfig.hiderItems.mapNotNull { plugin.shim.parseItem(it) }
+        val effects = plugin.itemsConfig.hiderEffects.mapNotNull { plugin.shim.parseEffect(it) }
 
         hider.inventory.clear()
         for ((i, item) in items.withIndex()) hider.inventory.set(i.toUInt(), item)
 
-        // glow powerup
+        // glow power-up
         if (!plugin.config.alwaysGlow && plugin.config.glow.enabled) {
             val item = plugin.shim.parseItem(plugin.config.glow.item)
             item?.let { hider.inventory.set(items.size.toUInt(), it) }
@@ -714,9 +712,8 @@ class Game(val plugin: Khs) {
     }
 
     fun giveSeekerItems(seeker: Player) {
-        var items = plugin.itemsConfig.seekerItems.map { plugin.shim.parseItem(it) }.filterNotNull()
-        var effects =
-            plugin.itemsConfig.seekerEffects.map { plugin.shim.parseEffect(it) }.filterNotNull()
+        val items = plugin.itemsConfig.seekerItems.mapNotNull { plugin.shim.parseItem(it) }
+        val effects = plugin.itemsConfig.seekerEffects.mapNotNull { plugin.shim.parseEffect(it) }
 
         seeker.inventory.clear()
         for ((i, item) in items.withIndex()) seeker.inventory.set(i.toUInt(), item)

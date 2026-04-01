@@ -9,7 +9,7 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scoreboard.Team
 
-const val KHS_COLLISSION_TEAM_NAME = "KHS_Collision"
+const val KHS_COLLISION_TEAM_NAME = "KHS_Collision"
 
 class BukkitKhsEntity(val plugin: KhsPlugin, val inner: BukkitEntity) : KhsEntity {
 
@@ -26,13 +26,13 @@ class BukkitKhsEntity(val plugin: KhsPlugin, val inner: BukkitEntity) : KhsEntit
         get() = inner.entityId
 
     override val isAlive: Boolean
-        get() = !inner.isDead()
+        get() = !inner.isDead
 
     private fun getCollidesTeam(): Team? {
         val scoreboard = plugin.server.scoreboardManager?.mainScoreboard ?: return null
         val team =
-            scoreboard.getTeam(KHS_COLLISSION_TEAM_NAME)
-                ?: scoreboard.registerNewTeam(KHS_COLLISSION_TEAM_NAME)
+            scoreboard.getTeam(KHS_COLLISION_TEAM_NAME)
+                ?: scoreboard.registerNewTeam(KHS_COLLISION_TEAM_NAME)
         team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
         team.setCanSeeFriendlyInvisibles(false)
         return team

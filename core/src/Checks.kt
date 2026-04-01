@@ -6,7 +6,7 @@ import cat.freya.khs.player.Player
 import cat.freya.khs.world.Position
 
 class Checks(val plugin: Khs, val player: Player) {
-    /// checks if there exists a map that is setup
+    /// checks if there exists a map that is set up
     fun gameMapExists() {
         if (plugin.game.selectMap() == null) {
             val msg =
@@ -59,7 +59,7 @@ class Checks(val plugin: Khs, val player: Player) {
 
     /// cheks that the player is in the game world
     fun inMapWorld(mapName: String) {
-        inMapWorld(plugin.maps.get(mapName))
+        inMapWorld(plugin.maps[mapName])
     }
 
     /// cheks that the player is in the game world
@@ -67,26 +67,15 @@ class Checks(val plugin: Khs, val player: Player) {
         if (map?.worldName != player.location.worldName) error(plugin.locale.map.wrongWorld)
     }
 
-    /// Checks that the map exists and is setup
+    /// Checks that the map exists and is set up
     fun mapSetup(map: KhsMap?) {
         if (map == null) error(plugin.locale.map.unknown)
         if (!map.setup) error(plugin.locale.map.setup.not.with(map.name))
     }
 
-    /// Checks if the map has bounds
-    fun mapHasBounds(map: KhsMap?) {
-        if (map == null) error(plugin.locale.map.unknown)
-        if (map.bounds() == null) error(plugin.locale.map.error.bounds)
-    }
-
-    /// Checks if the map has bounds
-    fun mapHasBounds(name: String) {
-        mapHasBounds(plugin.maps.get(name))
-    }
-
     /// Checks if a map exists
     fun mapExists(name: String) {
-        mapExists(plugin.maps.get(name))
+        mapExists(plugin.maps[name])
     }
 
     /// Checks if a map exists
@@ -140,7 +129,7 @@ class Checks(val plugin: Khs, val player: Player) {
     /// Checks if a map has block hunt enabled
     fun blockHuntEnabled(name: String) {
         mapExists(name)
-        val map = plugin.maps.get(name) ?: return
+        val map = plugin.maps[name] ?: return
         if (!map.config.blockHunt.enabled) error(plugin.locale.blockHunt.notEnabled)
     }
 
@@ -149,7 +138,7 @@ class Checks(val plugin: Khs, val player: Player) {
 
         // check world border (with in 100 blocks)
         val border = map.config.worldBorder
-        if (border.enabled && border.pos?.distance(position) ?: 0.0 > 100.0) return false
+        if (border.enabled && (border.pos?.distance(position) ?: 0.0) > 100.0) return false
 
         // check in bounds
         if (map.bounds()?.inBounds(position.x, position.z) == false) return false
@@ -157,7 +146,7 @@ class Checks(val plugin: Khs, val player: Player) {
         return true
     }
 
-    /// Makes sure a spawn is in gane
+    /// Makes sure a spawn is in game
     fun spawnInRange(map: KhsMap, pos: Position) {
         if (!isSpawnInRange(map, pos)) error(plugin.locale.map.error.notInRange)
     }

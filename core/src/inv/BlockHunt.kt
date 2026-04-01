@@ -17,8 +17,7 @@ fun createBlockHuntPicker(plugin: Khs, map: KhsMap): Inventory? {
 
     // add items
     blocks
-        .map { plugin.shim.parseItem(ItemConfig(material = it)) }
-        .filterNotNull()
+        .mapNotNull { plugin.shim.parseItem(ItemConfig(material = it)) }
         .withIndex()
         .forEach { (i, item) -> inv.set(i.toUInt(), item) }
 

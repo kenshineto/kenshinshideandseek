@@ -18,7 +18,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 
 class MovementListener(val plugin: KhsPlugin) : Listener {
 
-    private val prevPlayersOnGround: MutableSet<UUID> = ConcurrentHashMap.newKeySet<UUID>()
+    private val prevPlayersOnGround: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
 
     init {
         plugin.server.pluginManager.registerEvents(this, plugin)
@@ -30,18 +30,18 @@ class MovementListener(val plugin: KhsPlugin) : Listener {
             return below.type.isSolid
         } else {
             @Suppress("DEPRECATION")
-            return player.isOnGround()
+            return player.isOnGround
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerMove(event: PlayerMoveEvent) {
-        val bukkitPlayer = event.player ?: return
+        val bukkitPlayer = event.player
         val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
 
         // check jumping
         if (bukkitPlayer.velocity.y > 0.0) {
-            val block = bukkitPlayer.location?.block?.type
+            val block = bukkitPlayer.location.block.type
             if (
                 block != Material.LADDER &&
                     prevPlayersOnGround.contains(bukkitPlayer.uniqueId) &&
@@ -61,9 +61,6 @@ class MovementListener(val plugin: KhsPlugin) : Listener {
         val khsEvent = MoveEvent(plugin.khs, khsPlayer, from, to)
         onMove(khsEvent)
 
-        if (khsEvent.cancelled) {
-            event.setCancelled(true)
-            return
-        }
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 }

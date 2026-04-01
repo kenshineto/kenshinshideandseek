@@ -25,7 +25,7 @@ class KhsWins : Command {
             appendLine("&bTOTAL WINS: &f$wins")
             appendLine("&6HIDER WINS: &f${data.hiderWins}")
             appendLine("&cSEEKER WINS: &f${data.seekerWins}")
-            appendLine("GAMES PLAYED: ${games}")
+            appendLine("GAMES PLAYED: $games")
             append("&f&l" + "=".repeat(30))
         }
 

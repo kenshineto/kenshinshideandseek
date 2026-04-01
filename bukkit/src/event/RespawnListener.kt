@@ -23,7 +23,7 @@ class RespawnListener(val plugin: KhsPlugin) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerDeath(event: PlayerDeathEvent) {
-        val bukkitPlayer = event.entity ?: return
+        val bukkitPlayer = event.entity
         val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = DeathEvent(plugin.khs, khsPlayer)
         onDeath(khsEvent)
@@ -33,7 +33,7 @@ class RespawnListener(val plugin: KhsPlugin) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerRespawn(event: PlayerRespawnEvent) {
-        val bukkitPlayer = event.player ?: return
+        val bukkitPlayer = event.player
         val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val location = respawnLocation.remove(khsPlayer.uuid) ?: return
         khsPlayer.teleport(location)

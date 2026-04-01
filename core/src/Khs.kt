@@ -161,7 +161,7 @@ class Khs(val shim: KhsShim) {
                 database = Database(this)
 
                 // reload maps
-                // we need a seperate newMaps, in case one of the maps below fails
+                // we need a separate newMaps, in case one of the maps below fails
                 // to load
                 val newMaps =
                     mapsConfig.maps.mapValues { (name, mapConfig) -> KhsMap(name, mapConfig, this) }

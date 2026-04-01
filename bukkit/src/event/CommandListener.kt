@@ -17,13 +17,13 @@ class CommandListener(val plugin: KhsPlugin) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerCommand(event: PlayerCommandPreprocessEvent) {
-        val bukkitPlayer = event.player ?: return
-        val message = event.message ?: return
+        val bukkitPlayer = event.player
+        val message = event.message
 
         val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = CommandEvent(plugin.khs, khsPlayer, message)
         onCommand(khsEvent)
 
-        if (khsEvent.cancelled) event.setCancelled(true)
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 }

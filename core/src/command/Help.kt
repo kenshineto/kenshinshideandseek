@@ -3,7 +3,6 @@ package cat.freya.khs.command
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
 import cat.freya.khs.player.Player
-import kotlin.text.toUInt
 
 class KhsHelp : Command {
     override val label = "help"
@@ -21,7 +20,7 @@ class KhsHelp : Command {
                 appendLine(
                     "&b=================== &fHelp: Page ($page/$pages) &b==================="
                 )
-                for ((label, command) in commands.chunked(pageSize.toInt()).get(page.toInt() - 1)) {
+                for ((label, command) in commands.chunked(pageSize.toInt())[page.toInt() - 1]) {
                     val cmd = label.substring(3)
                     val usage = command.usage.joinToString(" ")
                     val description = command.description

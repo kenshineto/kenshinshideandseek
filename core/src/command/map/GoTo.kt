@@ -14,7 +14,7 @@ class KhsMapGoTo : Command {
         val (name, spawn) = args
         runChecks(plugin, player) { mapExists(name) }
 
-        var map = plugin.maps.get(name) ?: return
+        val map = plugin.maps[name] ?: return
         val loc =
             when (spawn) {
                 "spawn" -> map.gameSpawn

@@ -23,7 +23,7 @@ class JoinLeaveListener(val plugin: KhsPlugin) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerJoin(event: PlayerJoinEvent) {
-        val bukkitPlayer = event.player ?: return
+        val bukkitPlayer = event.player
         val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = JoinEvent(plugin.khs, khsPlayer)
         onJoin(khsEvent)
@@ -31,7 +31,7 @@ class JoinLeaveListener(val plugin: KhsPlugin) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerQuit(event: PlayerQuitEvent) {
-        val bukkitPlayer = event.player ?: return
+        val bukkitPlayer = event.player
         val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
         val khsEvent = LeaveEvent(plugin.khs, khsPlayer)
         onLeave(khsEvent)
@@ -39,11 +39,11 @@ class JoinLeaveListener(val plugin: KhsPlugin) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerKick(event: PlayerKickEvent) {
-        val bukkitPlayer = event.player ?: return
+        val bukkitPlayer = event.player
         val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
-        val khsEvent = KickEvent(plugin.khs, khsPlayer, event.reason ?: "")
+        val khsEvent = KickEvent(plugin.khs, khsPlayer, event.reason)
         onKick(khsEvent)
 
-        if (khsEvent.cancelled) event.setCancelled(true)
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 }

@@ -19,7 +19,7 @@ class KhsMapSetBounds : Command {
             gameNotInProgress()
         }
 
-        var map = plugin.maps.get(name) ?: return
+        val map = plugin.maps[name] ?: return
         val config = map.config.bounds
 
         val pos = player.location.position
@@ -27,7 +27,7 @@ class KhsMapSetBounds : Command {
 
         if (config.min == null || config.max != null) {
             config.min = BoundConfig(pos.x, pos.z)
-            config.max == null
+            config.max = null
             num = 1
         } else {
             val minX = minOf(config.min?.x ?: 0.0, pos.x)

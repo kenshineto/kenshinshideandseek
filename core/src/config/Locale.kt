@@ -51,7 +51,7 @@ data class LocaleCommandConfig(
     var playerOnly: String = "This command can only be run by a player",
     var notAllowed: String = "You are not allowed to run this command",
     var notAllowedTemp: String = "You are not allowed to run this command right now",
-    var unknownError: String = "An unknown error has occoured",
+    var unknownError: String = "An unknown error has occurred",
     @Comment("{1} - position of invalid argument")
     var invalidArgument: LocaleString1 = LocaleString1("Invalid argument: {1}"),
     var notEnoughArguments: String = "This command requires more arguments to run",
@@ -74,7 +74,7 @@ data class LocaleGamePlayerConfig(
     var foundBy: LocaleString2 = LocaleString2("&e{1}&f was found by &c{2}&f"),
 )
 
-data class LocaleGameGameoverConfig(
+data class LocaleGameGameOverConfig(
     var hidersFound: String = "All hiders have been found",
     @Comment("{1} - the name of the last hider")
     var lastHider: LocaleString1 = LocaleString1("The last hider, &e{1}&f, has won!"),
@@ -109,12 +109,12 @@ data class LocaleGameTeamConfig(
 
 data class LocaleGameConfig(
     var player: LocaleGamePlayerConfig = LocaleGamePlayerConfig(),
-    var gameOver: LocaleGameGameoverConfig = LocaleGameGameoverConfig(),
+    var gameOver: LocaleGameGameOverConfig = LocaleGameGameOverConfig(),
     var title: LocaleGameTitleConfig = LocaleGameTitleConfig(),
     var countdown: LocaleGameCountdownConfig = LocaleGameCountdownConfig(),
     var team: LocaleGameTeamConfig = LocaleGameTeamConfig(),
     var setup: String =
-        "There are no maps setup! Run /hs map status on a map to see what you needto do",
+        "There are no maps setup! Run /hs map status on a map to see what you need to do",
     var inGame: String = "You are already in the lobby/game",
     var notInGame: String = "You are not in a lobby/game",
     var inProgress: String = "There is currently a game in progress",

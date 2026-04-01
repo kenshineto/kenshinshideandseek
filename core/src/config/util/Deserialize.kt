@@ -28,13 +28,10 @@ fun <T : Any> deserializeClass(type: KClass<T>, data: Map<String, Any?>): T {
                 val value = data[prop.name]
                 val propType = prop.returnType.classifier as KClass<*>
                 val innerTypes =
-                    prop.returnType.arguments
-                        .map { it.type?.classifier as? KClass<*> }
-                        .filterNotNull()
+                    prop.returnType.arguments.mapNotNull { it.type?.classifier as? KClass<*> }
 
                 // allow null if type is null
-                if (prop.returnType.isMarkedNullable == true && value == null)
-                    return@associateWith null
+                if (prop.returnType.isMarkedNullable && value == null) return@associateWith null
 
                 deserializeField(propType, innerTypes, prop.name, value)
             }
@@ -48,7 +45,7 @@ fun <T : Any> deserializeClass(type: KClass<T>, data: Map<String, Any?>): T {
     }
 
     val migrateFunction = instance::class.declaredFunctions.singleOrNull { it.name == "migrate" }
-    if (migrateFunction != null) migrateFunction.call(instance)
+    migrateFunction?.call(instance)
 
     return instance
 }
@@ -59,7 +56,7 @@ fun <T : Enum<*>> deserializeEnum(type: KClass<T>, key: String, value: String): 
 }
 
 fun <T : Any> deserializeList(innerType: KClass<T>, key: String, value: List<*>): List<T> {
-    return value.map { deserializeField<T>(innerType, null, key, it) }
+    return value.map { deserializeField(innerType, null, key, it) }
 }
 
 fun <K : Any, V : Any> deserializeMap(
@@ -77,19 +74,19 @@ fun <K : Any, V : Any> deserializeMap(
 
 @Suppress("UNCHECKED_CAST")
 fun <T : Any> deserializePrimitive(key: String, expected: KClass<T>, value: Any): T {
-    return when {
-        expected == String::class && value is String -> value as T
-        expected == LocaleString1::class && value is String -> LocaleString1(value) as T
-        expected == LocaleString2::class && value is String -> LocaleString2(value) as T
-        expected == LocaleString3::class && value is String -> LocaleString3(value) as T
-        expected == Int::class && value is Number -> value.toInt() as T
-        expected == UInt::class && value is Number -> maxOf(0, value.toInt()).toUInt() as T
-        expected == Long::class && value is Number -> value.toLong() as T
-        expected == ULong::class && value is Number -> maxOf(0L, value.toLong()).toULong() as T
-        expected == Float::class && value is Number -> value.toFloat() as T
-        expected == Double::class && value is Number -> value.toDouble() as T
-        expected == Boolean::class && value is Boolean -> value as T
-        expected == Boolean::class && value is Number -> (value.toInt() != 0) as T
+    return when (expected) {
+        String::class if value is String -> value as T
+        LocaleString1::class if value is String -> LocaleString1(value) as T
+        LocaleString2::class if value is String -> LocaleString2(value) as T
+        LocaleString3::class if value is String -> LocaleString3(value) as T
+        Int::class if value is Number -> value.toInt() as T
+        UInt::class if value is Number -> maxOf(0, value.toInt()).toUInt() as T
+        Long::class if value is Number -> value.toLong() as T
+        ULong::class if value is Number -> maxOf(0L, value.toLong()).toULong() as T
+        Float::class if value is Number -> value.toFloat() as T
+        Double::class if value is Number -> value.toDouble() as T
+        Boolean::class if value is Boolean -> value as T
+        Boolean::class if value is Number -> (value.toInt() != 0) as T
         else -> error("$key: invalid value '$value' for type $expected")
     }
 }
@@ -103,7 +100,7 @@ fun <T : Any> deserializeField(
 ): T {
     return when {
         type.isData ->
-            deserializeClass<T>(
+            deserializeClass(
                 type,
                 value as? Map<String, Any?>
                     ?: error("$key: expected map for data class $type, got $value"),

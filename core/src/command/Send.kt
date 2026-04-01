@@ -11,7 +11,7 @@ class KhsSend : Command {
     override val description = "Send the current lobby to another map"
 
     override fun execute(plugin: Khs, player: Player, args: List<String>) {
-        val map = plugin.maps.get(args.first())
+        val map = plugin.maps[args.first()]
 
         runChecks(plugin, player) {
             gameNotInProgress()

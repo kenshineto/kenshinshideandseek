@@ -41,6 +41,7 @@ data class MapConfig(
     var worldBorder: WorldBorderConfig = WorldBorderConfig(),
     var blockHunt: BlockHuntConfig = BlockHuntConfig(),
 ) {
+    @Suppress("UNUSED")
     fun migrate() {
         // migrate from v1 world
         if (world != null) return
