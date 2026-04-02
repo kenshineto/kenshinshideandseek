@@ -1,6 +1,4 @@
-repositories {
-	maven("https://repo.codemc.io/repository/maven-releases/")
-}
+repositories { maven("https://repo.codemc.io/repository/maven-releases/") }
 
 val excludeKotlin: ExternalModuleDependency.() -> Unit = {
     exclude(group = "org.jetbrains.kotlin")
@@ -8,25 +6,26 @@ val excludeKotlin: ExternalModuleDependency.() -> Unit = {
 }
 
 dependencies {
-	// kotlin
-	compileOnly(libs.kotlin.stdlib)
-	compileOnly(libs.kotlin.reflect)
+    // kotlin
+    compileOnly(libs.kotlin.stdlib)
+    compileOnly(libs.kotlin.reflect)
 
-	// libs
-	compileOnly(libs.snakeyaml)
+    // libs
+    compileOnly(libs.snakeyaml)
     compileOnly(libs.packetevents.api)
     compileOnly(libs.guava)
 
-	// orm
-	implementation(libs.exposed.core, excludeKotlin)
+    // orm
+    implementation(libs.exposed.core, excludeKotlin)
     implementation(libs.exposed.jdbc, excludeKotlin)
 
-	// database
-	compileOnly(libs.sqlite)
+    // database
+    compileOnly(libs.sqlite)
     implementation(libs.mysql)
     implementation(libs.postgres)
     implementation(libs.hikari)
 }
 
 ext["relocations"] = listOf("org.jetbrains.exposed", "com.zaxxer.hikari")
+
 ext["templates"] = listOf<String>()

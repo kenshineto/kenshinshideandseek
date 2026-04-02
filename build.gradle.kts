@@ -1,4 +1,5 @@
 @file:Suppress("UNCHECKED_CAST")
+
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
@@ -7,6 +8,7 @@ plugins {
 }
 
 group = "cat.freya.khs"
+
 version = "2.0.2"
 
 allprojects { repositories { mavenCentral() } }
@@ -30,18 +32,17 @@ subprojects {
     java { toolchain { languageVersion.set(JavaLanguageVersion.of(8)) } }
 
     tasks.processResources {
-	    val props = mapOf(
-            "version" to providers.provider { rootProject.version.toString() },
-            "name" to providers.provider { rootProject.name }
-        )
+        val props =
+            mapOf(
+                "version" to providers.provider { rootProject.version.toString() },
+                "name" to providers.provider { rootProject.name },
+            )
 
-	    inputs.properties(props.mapValues { it.value.get() })
+        inputs.properties(props.mapValues { it.value.get() })
 
         val projectTemplates = project.ext["templates"] as List<String>
         projectTemplates.forEach { resource ->
-            filesMatching(resource) {
-                expand(props.mapValues { it.value.get() })
-            }
+            filesMatching(resource) { expand(props.mapValues { it.value.get() }) }
         }
     }
 
@@ -64,9 +65,7 @@ subprojects {
         val core = project(":core")
         from(core.sourceSets.main.get().output)
         from(project.sourceSets.main.get().output)
-        from("../img") {
-            into("assets")
-        }
+        from("../img") { into("assets") }
 
         val coreRelocations = core.ext["relocations"] as List<String>
         val projectRelocations = project.ext["relocations"] as List<String>

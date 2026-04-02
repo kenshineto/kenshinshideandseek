@@ -1,24 +1,23 @@
-plugins {
-	alias(libs.plugins.shadow)
-}
+plugins { alias(libs.plugins.shadow) }
 
 repositories {
-	maven("https://hub.spigotmc.org/nexus/content/repositories/public/")
-	maven("https://repo.codemc.io/repository/maven-releases/")
-	maven("https://repo.extendedclip.com/releases/")
+    maven("https://hub.spigotmc.org/nexus/content/repositories/public/")
+    maven("https://repo.codemc.io/repository/maven-releases/")
+    maven("https://repo.extendedclip.com/releases/")
 }
 
 dependencies {
-	// bukkit does not provide kotlin
-	shadow(libs.kotlin.stdlib)
-	shadow(libs.kotlin.reflect)
+    // bukkit does not provide kotlin
+    shadow(libs.kotlin.stdlib)
+    shadow(libs.kotlin.reflect)
 
-	compileOnly(libs.spigot.api)
-	compileOnly(libs.packetevents.spigot)
-	compileOnly(libs.placeholderapi)
-	shadow(libs.xseries)
-	shadow(project(":core"))
+    compileOnly(libs.spigot.api)
+    compileOnly(libs.packetevents.spigot)
+    compileOnly(libs.placeholderapi)
+    shadow(libs.xseries)
+    shadow(project(":core"))
 }
 
 ext["relocations"] = listOf("com.cryptomorin.xseries")
+
 ext["templates"] = listOf("plugin.yml")

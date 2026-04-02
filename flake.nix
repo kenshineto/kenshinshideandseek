@@ -41,7 +41,7 @@
           export JAVA_HOME="${pkgs.openjdk21}/lib/openjdk"
 
           ktfmt() {
-            find . -name "*.(kt|kts)" | xargs ${pkgs.ktfmt}/bin/ktfmt --kotlinlang-style "$@"
+            find . -name "*.kt" -or -name "*.kts" | xargs ${pkgs.ktfmt}/bin/ktfmt --kotlinlang-style "$@"
           }
         '';
 
