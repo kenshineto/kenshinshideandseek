@@ -27,23 +27,21 @@
     in {
       devShell = pkgs.mkShell {
         packages = with pkgs; [
-          jetbrains.idea
-          openjdk8
-          openjdk17
-          (gradle.override {
+          (gradle_9.override {
             javaToolchains = [
               openjdk8
               openjdk17
+              openjdk21
             ];
           })
           kotlin-language-server
         ];
 
         shellHook = ''
-          export JAVA_HOME="${pkgs.openjdk17}/lib/openjdk"
+          export JAVA_HOME="${pkgs.openjdk21}/lib/openjdk"
 
           ktfmt() {
-            find . -name "*.kt" | xargs ${pkgs.ktfmt}/bin/ktfmt --kotlinlang-style "$@"
+            find . -name "*.(kt|kts)" | xargs ${pkgs.ktfmt}/bin/ktfmt --kotlinlang-style "$@"
           }
         '';
 

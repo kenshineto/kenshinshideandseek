@@ -38,15 +38,7 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
     override val pluginVersion: String = plugin.description.version
 
     override val mcVersion: List<UInt> =
-        Regex("""MC:\s*([\d.]+)""")
-            .find(plugin.server.version)
-            ?.groupValues
-            ?.get(1)
-            ?.split('.')
-            ?.asSequence()
-            ?.mapNotNull { it.toUIntOrNull() }
-            ?.let { seq -> if (seq.firstOrNull() == 1u) seq.drop(1) else seq }
-            ?.toList() ?: emptyList()
+        parseMcVersion(Regex("""MC:\s*([\d.]+)""").find(plugin.server.version)?.groupValues?.get(1))
 
     override val platform: String = "Bukkit"
 

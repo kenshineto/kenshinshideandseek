@@ -10,15 +10,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        platform: [bukkit, fabric]
+
     steps:
       - name: SCM
         uses: actions/checkout@v6
-
-      - name: Setup JDK17
-        uses: actions/setup-java@v5
-        with:
-          java-version: '17'
-          distribution: temurin
 
       - name: Setup JDK8
         uses: actions/setup-java@v5
@@ -26,17 +24,24 @@ jobs:
           java-version: '8'
           distribution: temurin
 
+      - name: Setup JDK21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: temurin
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: '8.14'
+          gradle-version: '9.4'
 
       - name: Build
-        run: gradle :bukkit:shadowJar
+        run: gradle :${{ matrix.platform }}:build
 
       - name: Artifacts
         uses: actions/upload-artifact@v6
         with:
-          path: bukkit/build/libs/*.jar
+          name: ${{ matrix.platform }}
+          path: ${{ matrix.platform }}/build/libs/*.jar
 
 

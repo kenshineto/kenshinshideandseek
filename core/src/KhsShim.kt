@@ -103,4 +103,14 @@ interface KhsShim {
         }
         return true
     }
+
+    fun parseMcVersion(version: String?): List<UInt> {
+        if (version == null) return emptyList()
+        return version
+            .split('.')
+            .asSequence()
+            .mapNotNull { it.toUIntOrNull() }
+            .let { seq -> if (seq.firstOrNull() == 1u) seq.drop(1) else seq }
+            .toList()
+    }
 }

@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "${name}",
+	"version": "${version}",
+	"name": "${name}",
+	"description": "todo",
+	"authors": ["KenshinEto"],
+	"contact": {
+		"homepage": "https://freya.cat/",
+		"sources": "https://github.com/kenshineto/kenshinshideandseek2"
+	},
+	"license": "GPL3",
+	"icon": "assets/logo.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			{
+				"value": "cat.freya.khs.fabric.KhsMod",
+				"adapter": "kotlin"
+			}
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.18.6",
+		"minecraft": ">=1.8.0",
+		"java": ">=8",
+		"fabric-api": "*",
+		"fabric-language-kotlin": "*"
+	}
+}

@@ -2,27 +2,31 @@ repositories {
 	maven("https://repo.codemc.io/repository/maven-releases/")
 }
 
+val excludeKotlin: ExternalModuleDependency.() -> Unit = {
+    exclude(group = "org.jetbrains.kotlin")
+    exclude(group = "org.jetbrains.kotlinx")
+}
+
 dependencies {
-	// core libs
-	implementation(kotlin("reflect"))
-	compileOnly("org.yaml:snakeyaml:2.6")
-	compileOnly("com.github.retrooper:packetevents-api:2.11.2")
-	compileOnly("com.google.guava:guava:33.5.0-jre")
+	// kotlin
+	compileOnly(libs.kotlin.stdlib)
+	compileOnly(libs.kotlin.reflect)
+
+	// libs
+	compileOnly(libs.snakeyaml)
+    compileOnly(libs.packetevents.api)
+    compileOnly(libs.guava)
 
 	// orm
-	implementation("org.jetbrains.exposed:exposed-core:1.2.0")
-    implementation("org.jetbrains.exposed:exposed-jdbc:1.2.0")
+	implementation(libs.exposed.core, excludeKotlin)
+    implementation(libs.exposed.jdbc, excludeKotlin)
 
 	// database
-	compileOnly("org.xerial:sqlite-jdbc:3.51.3.0")
-	implementation("com.mysql:mysql-connector-j:9.6.0")
-	implementation("org.postgresql:postgresql:42.7.10")
-	implementation("com.zaxxer:HikariCP:4.0.3")
+	compileOnly(libs.sqlite)
+    implementation(libs.mysql)
+    implementation(libs.postgres)
+    implementation(libs.hikari)
 }
 
-kotlin {
-    sourceSets.main {
-		kotlin.srcDirs("src")
-		resources.srcDirs("res")
-    }
-}
+ext["relocations"] = listOf("org.jetbrains.exposed", "com.zaxxer.hikari")
+ext["templates"] = listOf<String>()
