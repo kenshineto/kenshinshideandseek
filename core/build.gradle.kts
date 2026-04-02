@@ -10,8 +10,8 @@ dependencies {
 	compileOnly("com.google.guava:guava:33.5.0-jre")
 
 	// orm
-	implementation("org.jetbrains.exposed:exposed-core:1.1.1")
-    implementation("org.jetbrains.exposed:exposed-jdbc:1.1.1")
+	implementation("org.jetbrains.exposed:exposed-core:1.2.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:1.2.0")
 
 	// database
 	compileOnly("org.xerial:sqlite-jdbc:3.51.3.0")
