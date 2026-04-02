@@ -34,6 +34,7 @@ class KhsPlugin : JavaPlugin() {
         server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
 
         registerListeners()
+        registerPAPI()
     }
 
     override fun onDisable() {
@@ -57,6 +58,13 @@ class KhsPlugin : JavaPlugin() {
         MovementListener(this)
         PlayerListener(this)
         RespawnListener(this)
+    }
+
+    private fun registerPAPI() {
+        if (server.pluginManager.getPlugin("PlaceholderAPI") == null) return
+
+        shim.logger.info("Registering PlaceholderAPI expansion...")
+        KhsPAPI(this).register()
     }
 
     fun scheduleTask(fn: () -> Unit) {

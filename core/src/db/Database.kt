@@ -84,6 +84,30 @@ class Database(plugin: Khs) {
             Players.update({ Players.uuid eq id }) { it[name] = n }
         }
 
+    fun getByNthStat(n: ULong, stat: PlayerStat): Player? =
+        transaction(db) {
+            Players.selectAll()
+                .orderBy(stat.getExpr(), SortOrder.DESC)
+                .offset(n.toLong())
+                .limit(1)
+                .map { it.toPlayer() }
+                .firstOrNull()
+        }
+
+    fun getPlayerStatRank(uuid: UUID, stat: PlayerStat): ULong {
+        val player = getPlayer(uuid) ?: Player(uuid)
+        val expr = stat.getExpr()
+        val value = stat.getValue(player).toInt()
+        return transaction(db) {
+            Players.selectAll().where { expr greaterEq intLiteral(value) }.count().toULong()
+        }
+    }
+
+    fun getPlayerStatRank(name: String, stat: PlayerStat): ULong? {
+        val uuid = getPlayer(name)?.uuid ?: return null
+        return getPlayerStatRank(uuid, stat)
+    }
+
     fun migrateLegacy() =
         transaction(db) {
             if (!LegacyPlayers.exists() || !LegacyNames.exists()) return@transaction

@@ -112,7 +112,7 @@ class Game(val plugin: Khs) {
     val seekerSize: UInt
         get() = seekerUUIDs.size.toUInt()
 
-    val spectatorsSize: UInt
+    val spectatorSize: UInt
         get() = spectatorUUIDs.size.toUInt()
 
     fun hasPlayer(uuid: UUID): Boolean = mappings.containsKey(uuid)
