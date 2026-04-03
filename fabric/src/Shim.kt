@@ -1,7 +1,7 @@
 package cat.freya.khs.fabric
 
 import cat.freya.khs.KhsShim
-import cat.freya.khs.Logger
+import cat.freya.khs.Logger as KhsLogger
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.game.Board as KhsBoard
@@ -15,16 +15,23 @@ import java.io.File
 import java.io.InputStream
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class FabricLogger(val mod: KhsMod) : Logger {
-    val logger = LoggerFactory.getLogger(mod.id)
+class FabricLogger(mod: KhsMod) : KhsLogger {
+    private val logger: Logger? = LoggerFactory.getLogger(mod.ID)
 
-    override fun info(message: String) = logger.info(message)
+    override fun info(message: String) {
+        logger?.info(message)
+    }
 
-    override fun warning(message: String) = logger.warn(message)
+    override fun warning(message: String) {
+        logger?.warn(message)
+    }
 
-    override fun error(message: String) = logger.error(message)
+    override fun error(message: String) {
+        logger?.error(message)
+    }
 }
 
 class FabricKhsShim(val mod: KhsMod) : KhsShim {
@@ -38,7 +45,7 @@ class FabricKhsShim(val mod: KhsMod) : KhsShim {
 
     override val platform: String = "Fabric"
 
-    override val logger: Logger = FabricLogger(mod)
+    override val logger: KhsLogger = FabricLogger(mod)
 
     override val players: List<KhsPlayer> = TODO("SET VALUE")
 

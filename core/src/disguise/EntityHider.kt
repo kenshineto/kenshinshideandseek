@@ -10,6 +10,15 @@ import com.google.common.collect.Table
 class EntityHider {
     val map: Table<Int, Int, Boolean> = HashBasedTable.create()
 
+    // set if the entity is hidden for the observer
+    private fun setVisible(observer: Player, entity: Entity, visible: Boolean) = runCatching {
+        val observerId = observer.entityId
+        val entityId = entity.entityId
+        val ret =
+            if (visible) map.put(entityId, observerId, true) else map.remove(entityId, observerId)
+        ret ?: visible
+    }
+
     // is entity visible for the observer
     fun isVisible(observer: Player, entityId: Int): Boolean =
         runCatching {
@@ -17,15 +26,6 @@ class EntityHider {
                 !map.contains(observerId, entityId)
             }
             .getOrElse { true }
-
-    // set if the entity is hidden for the observer
-    fun setVisible(observer: Player, entity: Entity, visible: Boolean) = runCatching {
-        val observerId = observer.entityId
-        val entityId = entity.entityId
-        val ret =
-            if (visible) map.put(entityId, observerId, true) else map.remove(entityId, observerId)
-        ret ?: visible
-    }
 
     // removes a player from the map
     fun removePlayer(player: Player) =

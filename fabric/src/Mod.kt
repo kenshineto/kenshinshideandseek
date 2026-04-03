@@ -12,14 +12,14 @@ object KhsMod : ModInitializer {
     val shim: FabricKhsShim = FabricKhsShim(this)
     val khs: Khs = Khs(shim)
 
-    const val id: String = "KenshinsHideAndSeek"
+    const val ID: String = "KenshinsHideAndSeek"
     var loader: FabricLoader? = null
     var container: ModContainer? = null
     @Volatile var enabled: Boolean = true
 
     override fun onInitialize() {
         loader = FabricLoader.getInstance() ?: error("failed to get fabric loader")
-        container = loader?.getModContainer(id)?.getOrNull() ?: error("failed to get mod container")
+        container = loader?.getModContainer(ID)?.getOrNull() ?: error("failed to get mod container")
 
         ServerLifecycleEvents.SERVER_STOPPING.register { _ -> onShutdown() }
     }
@@ -33,5 +33,5 @@ object KhsMod : ModInitializer {
     }
 
     // return the mod config dir
-    fun configDir(): File = loader!!.configDir.resolve(id).toFile()
+    fun configDir(): File = loader!!.configDir.resolve(ID).toFile()
 }

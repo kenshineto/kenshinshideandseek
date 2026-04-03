@@ -1,6 +1,5 @@
 package cat.freya.khs.bukkit
 
-import cat.freya.khs.bukkit.disguise.Disguise
 import cat.freya.khs.disguise.Disguise as KhsDisguise
 import cat.freya.khs.player.Inventory as KhsInventory
 import cat.freya.khs.player.Player as KhsPlayer

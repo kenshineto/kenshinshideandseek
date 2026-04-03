@@ -11,7 +11,7 @@ import org.bukkit.scoreboard.Team
 
 const val KHS_COLLISION_TEAM_NAME = "KHS_Collision"
 
-class BukkitKhsEntity(val plugin: KhsPlugin, val inner: BukkitEntity) : KhsEntity {
+class BukkitKhsEntity(val plugin: KhsPlugin, private val inner: BukkitEntity) : KhsEntity {
 
     override val location: Location
         get() {

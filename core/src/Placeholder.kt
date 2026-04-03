@@ -12,7 +12,7 @@ data class PlaceholderRequest(val plugin: Khs, val uuid: UUID, val placeholder: 
     val noData = plugin.locale.placeholder.noData
 }
 
-private fun handlePlayerRanking(req: PlaceholderRequest): String? {
+private fun handlePlayerRanking(req: PlaceholderRequest): String {
     val stat = req.args.getOrNull(1)?.let(PlayerStat::fromArg) ?: return req.invalid
     val target = req.args.getOrNull(2)
     val db = req.plugin.database ?: return req.invalid
@@ -35,7 +35,7 @@ private fun handlePlayerRanking(req: PlaceholderRequest): String? {
     return rank?.toString() ?: req.noData
 }
 
-private fun handlePlayerStat(req: PlaceholderRequest): String? {
+private fun handlePlayerStat(req: PlaceholderRequest): String {
     val stat = req.args.getOrNull(1)?.let(PlayerStat::fromArg) ?: return req.invalid
     val target = req.args.getOrNull(2)
     val db = req.plugin.database ?: return req.invalid
@@ -56,7 +56,7 @@ private fun handlePlayerStat(req: PlaceholderRequest): String? {
     return stat.getValue(player).toString()
 }
 
-fun handlePlaceholder(req: PlaceholderRequest): String? {
+fun handlePlaceholder(req: PlaceholderRequest): String {
     val arg0 = req.arg0 ?: return req.invalid
     return when (arg0) {
         // game info

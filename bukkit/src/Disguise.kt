@@ -1,7 +1,5 @@
-package cat.freya.khs.bukkit.disguise
+package cat.freya.khs.bukkit
 
-import cat.freya.khs.bukkit.BukkitKhsEntity
-import cat.freya.khs.bukkit.KhsPlugin
 import cat.freya.khs.disguise.Disguise as KhsDisguise
 import cat.freya.khs.world.Entity as KhsEntity
 import cat.freya.khs.world.Location
@@ -12,7 +10,7 @@ import org.bukkit.entity.AbstractHorse
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.FallingBlock
 
-class Disguise(val bukkitPlugin: KhsPlugin, uuid: UUID, material: KhsMaterial) :
+class Disguise(private val bukkitPlugin: KhsPlugin, uuid: UUID, material: KhsMaterial) :
     KhsDisguise(bukkitPlugin.khs, uuid, material) {
 
     override fun createBlock(location: Location): KhsEntity? {

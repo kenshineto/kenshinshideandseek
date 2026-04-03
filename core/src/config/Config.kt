@@ -64,7 +64,7 @@ data class ItemConfig(
 )
 
 data class EffectConfig(
-    var type: String = "SPEED",
+    var type: String = "NONE",
     var duration: UInt = 60u,
     var amplifier: UInt = 1u,
     var ambient: Boolean = true,

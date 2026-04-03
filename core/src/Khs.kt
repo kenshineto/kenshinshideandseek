@@ -62,7 +62,12 @@ class Khs(val shim: KhsShim) {
         KhsPacketListener(this)
     }
 
-    fun printBanner() {
+    fun cleanup() {
+        for (uuid in game.playerUUIDs) game.leave(uuid)
+        disguiser.cleanup()
+    }
+
+    private fun printBanner() {
         val ansiReset = "\u001B[0m"
         val ansiBlue = "\u001B[94m"
         val ansiGreen = "\u001B[92m"
@@ -79,12 +84,7 @@ class Khs(val shim: KhsShim) {
         shim.logger.info("$ansiBlue|_|\\_\\_| |_|____/$ansiReset")
     }
 
-    fun cleanup() {
-        for (uuid in game.UUIDs) game.leave(uuid)
-        disguiser.cleanup()
-    }
-
-    fun registerCommands(): CommandGroup {
+    private fun registerCommands(): CommandGroup {
         return CommandGroup(
             this,
             "hs",

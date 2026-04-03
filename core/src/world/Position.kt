@@ -23,7 +23,7 @@ data class Position(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.
         return Location(this.x, this.y, this.z, worldName)
     }
 
-    fun toLegacy(): LegacyPosition = LegacyPosition(x, y, z, null)
+    fun toLegacy(): LegacyPosition = LegacyPosition(x, y, z)
 
     fun clone(): Position {
         return Position(x, y, z)

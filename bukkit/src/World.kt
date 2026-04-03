@@ -64,7 +64,7 @@ class VoidGenerator : ChunkGenerator() {
     }
 }
 
-class BukkitKhsWorldBorder(val world: BukkitKhsWorld, val inner: BukkitWorldBorder) :
+class BukkitKhsWorldBorder(val world: BukkitKhsWorld, private val inner: BukkitWorldBorder) :
     KhsWorldBorder {
     override val x: Double
         get() = inner.center.x
@@ -85,11 +85,9 @@ class BukkitKhsWorldBorder(val world: BukkitKhsWorld, val inner: BukkitWorldBord
     }
 }
 
-class BukkitKhsWorldLoader(val plugin: KhsPlugin, val worldName: String) : KhsWorldLoader {
-    override val name: String = worldName
-
+class BukkitKhsWorldLoader(val plugin: KhsPlugin, override val name: String) : KhsWorldLoader {
     override val world: KhsWorld?
-        get() = plugin.shim.getWorld(worldName)
+        get() = plugin.shim.getWorld(name)
 
     override val dir: File
         get() = File(plugin.server.worldContainer, name)
@@ -100,7 +98,7 @@ class BukkitKhsWorldLoader(val plugin: KhsPlugin, val worldName: String) : KhsWo
     override val tempSaveDir: File
         get() = File(plugin.server.worldContainer, "temp_hs_$name")
 
-    val isMapSave: Boolean = worldName.startsWith("hs_")
+    private val isMapSave: Boolean = name.startsWith("hs_")
 
     override fun load() {
         var creator = WorldCreator(name)

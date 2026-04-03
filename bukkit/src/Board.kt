@@ -10,7 +10,7 @@ import org.bukkit.scoreboard.Objective
 import org.bukkit.scoreboard.Scoreboard as BukkitBoard
 import org.bukkit.scoreboard.Team as BukkitTeam
 
-class BukkitKhsTeam(val shim: BukkitKhsShim, val inner: BukkitTeam) : KhsBoard.Team {
+class BukkitKhsTeam(val shim: BukkitKhsShim, private val inner: BukkitTeam) : KhsBoard.Team {
     override var prefix: String
         get() = inner.prefix
         set(prefix) {
@@ -66,7 +66,7 @@ class BukkitKhsTeam(val shim: BukkitKhsShim, val inner: BukkitTeam) : KhsBoard.T
         }
 }
 
-class BukkitKhsBoard(val shim: BukkitKhsShim, val inner: BukkitBoard) : KhsBoard {
+class BukkitKhsBoard(val shim: BukkitKhsShim, private val inner: BukkitBoard) : KhsBoard {
     private var objective: Objective? = null
     private var blanks: Int = 0
 

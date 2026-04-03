@@ -4,13 +4,6 @@ kotlin = "2.2.21"
 shadow = "9.4.1"
 fabric-loom = "1.15-SNAPSHOT"
 
-# minecraft
-spigot = "26.1-R0.1-SNAPSHOT"
-fabric-loader = "0.18.6"
-fabric-api = "0.144.4+26.1"
-fabric-language-kotlin = "1.13.10+kotlin.2.3.20"
-minecraft = "26.1"
-
 # libs
 snakeyaml = "2.6"
 packetevents = "2.11.2"
@@ -27,8 +20,15 @@ postgres = "42.7.10"
 hikari = "4.0.3"
 
 # bukkit
+spigot = "26.1-R0.1-SNAPSHOT"
 xseries = "13.6.0"
 placeholderapi = "2.12.2"
+
+# fabric
+fabric-loader = "0.18.6"
+fabric-api = "0.144.4+26.1"
+fabric-language-kotlin = "1.13.10+kotlin.2.3.20"
+minecraft = "26.1"
 
 [libraries]
 # kotlin
@@ -54,16 +54,16 @@ mysql = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 
-# minecraft
+# bukkit
 spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
+xseries = { module = "com.github.cryptomorin:XSeries", version.ref = "xseries" }
+placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
+
+# fabric
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
 fabric-language-kotlin = { module = "net.fabricmc:fabric-language-kotlin", version.ref = "fabric-language-kotlin" }
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-
-# bukit
-xseries = { module = "com.github.cryptomorin:XSeries", version.ref = "xseries" }
-placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

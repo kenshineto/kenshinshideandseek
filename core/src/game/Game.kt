@@ -82,7 +82,7 @@ class Game(val plugin: Khs) {
     val players: List<Player>
         get() = mappings.keys.mapNotNull { plugin.shim.getPlayer(it) }
 
-    val UUIDs: Set<UUID>
+    val playerUUIDs: Set<UUID>
         get() = mappings.keys.toSet()
 
     val hiderUUIDs: Set<UUID>

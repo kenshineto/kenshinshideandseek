@@ -20,9 +20,9 @@ Please make sure there is no trailing whitespace.
 ### Testing
 
 Please make sure your changes build/function. After opening your PR, automated tests will be run to make sure it builds, but it does not
-gurentee correct functionality.
+guarantee correct functionality.
 
-### Rebeasing
+### Rebasing
 
 This project uses rebasing to upstream changes instead of merges or squashed merges. Please make sure to rebase your changes as you continue
 to develop your PR. Thanks!

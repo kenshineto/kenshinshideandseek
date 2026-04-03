@@ -8,9 +8,9 @@ import org.jetbrains.exposed.v1.jdbc.Database as Exposed
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class Database(plugin: Khs) {
-    val driver = getDriver(plugin)
-    val source = driver.connect()
-    val db = Exposed.connect(source)
+    private val driver = getDriver(plugin)
+    private val source = driver.connect()
+    private val db = Exposed.connect(source)
 
     init {
         transaction(db) { SchemaUtils.create(Players) }
@@ -108,7 +108,7 @@ class Database(plugin: Khs) {
         return getPlayerStatRank(uuid, stat)
     }
 
-    fun migrateLegacy() =
+    private fun migrateLegacy() =
         transaction(db) {
             if (!LegacyPlayers.exists() || !LegacyNames.exists()) return@transaction
 

@@ -17,6 +17,12 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "java-library")
 
+    // make projects like cat.freya.khs.bukkit to be in
+    // the .bukkit package
+    if (project.name != "core") {
+        group = "${rootProject.group}.${project.name}"
+    }
+
     // we need to support java 8 so that we can support old
     // minecraft versions such as 1.8
 
