@@ -17,6 +17,8 @@ with "kotlinlang" style before making your PR.
 
 Please make sure there is no trailing whitespace.
 
+If you are on a unix system and have ktfmt installed, you can use the `format` script in the root of the repository.
+
 ### Testing
 
 Please make sure your changes build/function. After opening your PR, automated tests will be run to make sure it builds, but it does not

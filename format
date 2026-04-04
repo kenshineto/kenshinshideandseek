@@ -1,0 +1,3 @@
+#!/bin/sh
+
+find . -name "*.kt" -or -name "*.kts" | xargs ktfmt --kotlinlang-style "$@"
