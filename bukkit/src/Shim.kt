@@ -1,5 +1,6 @@
 package cat.freya.khs.bukkit
 
+import cat.freya.khs.AbstractKhsShim
 import cat.freya.khs.KhsShim
 import cat.freya.khs.Logger
 import cat.freya.khs.config.EffectConfig
@@ -14,7 +15,7 @@ import cat.freya.khs.world.World as KhsWorld
 import com.cryptomorin.xseries.XMaterial
 import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import java.io.File
-import java.io.InputStream
+import java.nio.file.Path
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 import org.bukkit.ChatColor
@@ -26,7 +27,7 @@ import org.bukkit.entity.Player as BukkitPlayer
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
-class BukkitLogger(val plugin: KhsPlugin) : Logger {
+class BukkitLogger(val plugin: KhsPlugin) : KhsShim.Logger {
     override fun info(message: String) = plugin.logger.info(message)
 
     override fun warning(message: String) = plugin.logger.warning(message)
@@ -34,13 +35,12 @@ class BukkitLogger(val plugin: KhsPlugin) : Logger {
     override fun error(message: String) = plugin.logger.severe(message)
 }
 
-class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
+class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
     override val pluginVersion: String = plugin.description.version
 
-    override val mcVersion: List<UInt> =
-        parseMcVersion(Regex("""MC:\s*([\d.]+)""").find(plugin.server.version)?.groupValues?.get(1))
-
-    override val platform: String = "Bukkit"
+    override val mcVersionString: String =
+        Regex("""MC:\s*([\d.]+)""").find(plugin.server.version)?.groupValues?.get(1)
+            ?: error("failed to parse mc version")
 
     override val logger = BukkitLogger(plugin)
 
@@ -64,31 +64,8 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
     override val blocks: List<String>
         get() = Material.entries.map { it.toString().uppercase() }
 
-    override val sqliteDatabasePath: String
-        get() {
-            val legacy = File(plugin.dataFolder.path, "database.db")
-            if (legacy.exists()) return legacy.path
-
-            return File(plugin.dataFolder.path, "khs.db").path
-        }
-
-    override fun readConfigFile(fileName: String): InputStream? {
-        val dir = plugin.dataFolder
-        if (!dir.exists()) {
-            dir.mkdirs() || error("Failed to make plugin config directory")
-        }
-        val file = File(dir, fileName)
-        return if (file.exists()) file.inputStream() else null
-    }
-
-    override fun writeConfigFile(fileName: String, content: String) {
-        val dir = plugin.dataFolder
-        if (!dir.exists()) {
-            dir.mkdirs() || error("Failed to make plugin config directory")
-        }
-        val file = File(dir, fileName)
-        file.writeText(content)
-    }
+    override val dataDirectory: Path
+        get() = plugin.dataFolder.toPath()
 
     override fun parseMaterial(materialName: String): KhsMaterial? {
         val bukkitMaterial =
@@ -185,6 +162,7 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
     }
 }
 
+/// formats &c'esc color codes to bukkits colors
 fun formatText(message: String): String {
     return ChatColor.translateAlternateColorCodes('&', message)
 }

@@ -5,6 +5,7 @@ import cat.freya.khs.config.DatabaseConfig
 import cat.freya.khs.config.DatabaseType
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import java.io.File
 import javax.sql.DataSource
 import org.sqlite.SQLiteConfig
 import org.sqlite.SQLiteDataSource
@@ -83,9 +84,19 @@ class PostgresDriver(val config: DatabaseConfig) : HikariDriver() {
     }
 }
 
+private fun getSqliteDbPath(plugin: Khs): String {
+    val dir = plugin.shim.dataDirectory.toFile()
+    val oldPath = File(dir, "database.db")
+    val newPath = File(dir, "khs.db")
+
+    if (oldPath.exists()) return oldPath.path
+
+    return newPath.path
+}
+
 fun getDriver(plugin: Khs): Driver =
     when (plugin.config.database.type) {
-        DatabaseType.SQLITE -> SqliteDriver(plugin.shim.sqliteDatabasePath)
+        DatabaseType.SQLITE -> SqliteDriver(getSqliteDbPath(plugin))
         DatabaseType.MYSQL -> MysqlDriver(plugin.config.database)
         DatabaseType.POSTGRES -> PostgresDriver(plugin.config.database)
     }

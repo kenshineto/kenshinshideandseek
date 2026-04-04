@@ -26,8 +26,10 @@ subprojects {
     // we need to support java 8 so that we can support old
     // minecraft versions such as 1.8
 
+    val jvmVersion = if (project.name == "fabric") 17 else 8
+
     kotlin {
-        jvmToolchain(8)
+        jvmToolchain(jvmVersion)
 
         sourceSets.main {
             kotlin.srcDirs("src")
@@ -35,7 +37,7 @@ subprojects {
         }
     }
 
-    java { toolchain { languageVersion.set(JavaLanguageVersion.of(8)) } }
+    java { toolchain { languageVersion.set(JavaLanguageVersion.of(jvmVersion)) } }
 
     tasks.processResources {
         val props =

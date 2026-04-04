@@ -9,108 +9,118 @@ import cat.freya.khs.world.Effect
 import cat.freya.khs.world.Item
 import cat.freya.khs.world.Material
 import cat.freya.khs.world.World
-import java.io.InputStream
+import java.nio.file.Path
 import java.util.UUID
-
-// Logger wrapper
-// (different baselines may use different logging systems)
-interface Logger {
-    fun info(message: String)
-
-    fun warning(message: String)
-
-    fun error(message: String)
-}
 
 // Plugin wrapper
 interface KhsShim {
-    /// @returns the string of the plugin version
+    /// String of the plugin version
     val pluginVersion: String
 
-    /// @returns the release minecraft version (ignores the 1.)
-    val mcVersion: List<UInt>
+    /// String of the minecraft server version
+    val mcVersionString: String
 
-    /// the platform this shim is for
+    /// Platform name that this shim is for
     val platform: String
 
-    /// @returns the logger
+    // Logger wrapper
+    // (different baselines may use different logging systems)
+    interface Logger {
+        fun info(message: String)
+
+        fun warning(message: String)
+
+        fun error(message: String)
+    }
+
+    /// The logger
     val logger: Logger
 
-    /// @returns list of online players
+    /// List of online players
     val players: List<Player>
 
-    /// @returns list of world names
+    /// List of world names
     val worlds: List<String>
 
-    /// @returns list of supported blocks
+    /// List of supported block material names
     val blocks: List<String>
 
-    /// were the khs.db is stored
-    val sqliteDatabasePath: String
+    /// Directory where config files and sqlitedb are stored
+    val dataDirectory: Path
 
-    /// @returns a stream from a file in the systems config dir
-    fun readConfigFile(fileName: String): InputStream?
-
-    /// write a config file
-    fun writeConfigFile(fileName: String, content: String)
-
-    /// @returns a valid material for the current mc version given the name
+    /// Returns a valid material description for a given unparsed material name
+    /// such as "CRAFTBENCH" or "white_wool"
     fun parseMaterial(materialName: String): Material?
 
-    /// @returns a valid item given the config
+    /// Returns a platform item implementation provided a item configuration/specification
     fun parseItem(itemConfig: ItemConfig): Item?
 
-    /// @returns a valid item given the config
+    /// Returns a platform potion effect implementation provided a item configuration/specification
     fun parseEffect(effectConfig: EffectConfig): Effect?
 
-    /// @returns a player that is online on the server right now
+    /// Returns an online player based on the players UUID
     fun getPlayer(uuid: UUID): Player?
 
+    /// Returns an online player based on the players display name
     fun getPlayer(name: String): Player?
 
-    /// wraps a retrieved shim player
+    /// Wraps a retrieved platform player type into the wrapped player type.
+    /// Packet events likes to give us a "Object" that is a BukkitPlayer (bukkit) or
+    /// MinecraftServerPlayer (fabric)
     fun wrapPlayer(inner: Any?): Player?
 
-    /// @returns a world on the server that exists with the given world name
+    /// Returns an existing and loaded world on the server
     fun getWorld(worldName: String): World?
 
-    /// @returns a manager to load/unload a world
+    /// Returns a manager to load/unload a world
     fun getWorldLoader(worldName: String): World.Loader
 
-    /// create a new world
+    /// Create a new world
     fun createWorld(worldName: String, type: World.Type): World?
 
-    /// create an inventory to use for a player
+    /// Create an inventory to use for a player
     fun createInventory(title: String, size: UInt): Inventory?
 
-    /// @returns a new board
+    /// Returns a new scoreboard to be displayed on the players
+    /// right hand side of the screen
     fun getBoard(name: String): Board?
 
-    /// broadcast a message to everyone
+    /// Broadcast a message to everyone on the server
     fun broadcast(message: String)
 
-    /// disable everything
+    /// Kill the plugin now
     fun disable()
 
-    /// schedule an event to run at a later date
+    /// Schedule an event to run at a later date
     fun scheduleEvent(ticks: ULong, event: () -> Unit)
 
-    fun supports(vararg versions: Int): Boolean {
+    /// If the platform supports a given mc version features
+    fun supports(vararg versions: Int): Boolean
+}
+
+abstract class AbstractKhsShim(override val platform: String) : KhsShim {
+
+    /// Release minecraft version (ignores the 1.)
+    val mcVersion: List<UInt> = parseMcVersion(mcVersionString)
+
+    /// helper function that turns "26.1" into listOf(26u, 1u)
+    private fun parseMcVersion(version: String?): List<UInt> {
+        if (version == null) return emptyList()
+        return version
+            .split('.')
+            .asSequence()
+            .mapNotNull { it.toUIntOrNull() }
+            // the 1. in old 1.x.x releases is useless
+            .let { seq -> if (seq.firstOrNull() == 1u) seq.drop(1) else seq }
+            .toList()
+    }
+
+    override fun supports(vararg versions: Int): Boolean {
         val seq = versions.asSequence().map { it.toUInt() }.zip(mcVersion.asSequence()).toList()
         for ((want, has) in seq) {
             if (want < has) return true
             if (want > has) return false
         }
         return true
-    }
-
-    fun parseMcVersion(version: String?): List<UInt> {
-        if (version == null) return emptyList()
-        return version
-            .split('.')
-            .asSequence()
-            .mapNotNull { it.toUIntOrNull() }
-            .let { seq -> if (seq.firstOrNull() == 1u) seq.drop(1) else seq }
-            .toList()
     }
 }

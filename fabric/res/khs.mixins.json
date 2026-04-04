@@ -1,8 +1,9 @@
 {
   "required": true,
-  "package": "cat.freya.khs.fabric",
+  "package": "cat.freya.khs.fabric.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "MixinChunkMap"
   ],
   "injectors": {
     "defaultRequire": 1

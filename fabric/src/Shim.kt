@@ -1,7 +1,7 @@
 package cat.freya.khs.fabric
 
+import cat.freya.khs.AbstractKhsShim
 import cat.freya.khs.KhsShim
-import cat.freya.khs.Logger as KhsLogger
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.game.Board as KhsBoard
@@ -11,14 +11,13 @@ import cat.freya.khs.world.Effect as KhsEffect
 import cat.freya.khs.world.Item as KhsItem
 import cat.freya.khs.world.Material as KhsMaterial
 import cat.freya.khs.world.World as KhsWorld
-import java.io.File
-import java.io.InputStream
+import java.nio.file.Path
 import java.util.UUID
-import kotlin.jvm.optionals.getOrNull
+import net.minecraft.server.level.ServerPlayer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class FabricLogger(mod: KhsMod) : KhsLogger {
+class FabricLogger(mod: KhsMod) : KhsShim.Logger {
     private val logger: Logger? = LoggerFactory.getLogger(mod.ID)
 
     override fun info(message: String) {
@@ -34,45 +33,23 @@ class FabricLogger(mod: KhsMod) : KhsLogger {
     }
 }
 
-class FabricKhsShim(val mod: KhsMod) : KhsShim {
+class FabricKhsShim(val mod: KhsMod) : AbstractKhsShim("Fabric") {
 
-    override val pluginVersion: String = mod.container?.metadata?.version?.friendlyString ?: "null"
+    override val pluginVersion: String = mod.container.metadata?.version?.friendlyString ?: "null"
 
-    override val mcVersion: List<UInt> =
-        parseMcVersion(
-            mod.loader?.getModContainer("minecraft")?.getOrNull()?.metadata?.version?.friendlyString
-        )
+    override val mcVersionString: String =
+        mod.loader.getModContainer("minecraft").get().metadata.version.friendlyString
 
-    override val platform: String = "Fabric"
+    override val logger: KhsShim.Logger = FabricLogger(mod)
 
-    override val logger: KhsLogger = FabricLogger(mod)
-
-    override val players: List<KhsPlayer> = TODO("SET VALUE")
+    override val players: List<KhsPlayer>
+        get() = mod.server.getPlayers()
 
     override val worlds: List<String> = TODO("SET VALUE")
 
     override val blocks: List<String> = TODO("SET VALUE")
 
-    override val sqliteDatabasePath: String
-        get() = File(mod.configDir(), "khs.db").path
-
-    override fun readConfigFile(fileName: String): InputStream? {
-        val dir = mod.configDir()
-        if (!dir.exists()) {
-            dir.mkdirs() || error("Failed to make plugin config directory")
-        }
-        val file = File(dir, fileName)
-        return if (file.exists()) file.inputStream() else null
-    }
-
-    override fun writeConfigFile(fileName: String, content: String) {
-        val dir = mod.configDir()
-        if (!dir.exists()) {
-            dir.mkdirs() || error("Failed to make plugin config directory")
-        }
-        val file = File(dir, fileName)
-        file.writeText(content)
-    }
+    override val dataDirectory: Path = mod.loader.configDir.resolve(mod.ID)
 
     override fun parseMaterial(materialName: String): KhsMaterial? = error("todo")
 
@@ -80,27 +57,38 @@ class FabricKhsShim(val mod: KhsMod) : KhsShim {
 
     override fun parseEffect(effectConfig: EffectConfig): KhsEffect? = error("todo")
 
-    override fun getPlayer(uuid: UUID): KhsPlayer? = error("todo")
+    override fun getPlayer(uuid: UUID): KhsPlayer? = mod.server.getPlayer(uuid)
 
-    override fun getPlayer(name: String): KhsPlayer? = error("todo")
+    override fun getPlayer(name: String): KhsPlayer? = mod.server.getPlayer(name)
 
-    override fun wrapPlayer(inner: Any?): KhsPlayer? = error("todo")
+    override fun wrapPlayer(inner: Any?): KhsPlayer? {
+        val player = inner as? ServerPlayer ?: return null
+        return FabricKhsPlayer(mod, player)
+    }
 
-    override fun getWorld(worldName: String): KhsWorld? = error("todo")
+    override fun getWorld(worldName: String): KhsWorld? = mod.server.getWorld(worldName)
 
-    override fun getWorldLoader(worldName: String): KhsWorld.Loader = error("todo")
+    override fun getWorldLoader(worldName: String): KhsWorld.Loader =
+        FabricKhsWorldLoader(mod, worldName)
 
     override fun createWorld(worldName: String, type: KhsWorld.Type): KhsWorld? = error("todo")
 
-    override fun createInventory(title: String, size: UInt): KhsInventory? = error("todo")
+    override fun createInventory(title: String, size: UInt): KhsInventory? {
+        val inv = FabricContainer(size, title)
+        return FabricKhsInventory(mod.shim, inv)
+    }
 
     override fun getBoard(name: String): KhsBoard? = error("todo")
 
-    override fun broadcast(message: String) = error("todo")
+    override fun broadcast(message: String) {
+        mod.server.getPlayers().forEach { it.message(message) }
+    }
 
     override fun disable() {
         mod.onShutdown()
     }
 
-    override fun scheduleEvent(ticks: ULong, event: Function0<Unit>) = error("todo")
+    override fun scheduleEvent(ticks: ULong, event: () -> Unit) {
+        mod.server.scheduleTask(event, ticks)
+    }
 }

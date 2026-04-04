@@ -1,37 +1,48 @@
 package cat.freya.khs.fabric
 
 import cat.freya.khs.Khs
-import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.jvm.optionals.getOrNull
 import net.fabricmc.api.ModInitializer
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.loader.api.ModContainer
 
 object KhsMod : ModInitializer {
+    val server: FabricKhsServer = FabricKhsServer(this)
     val shim: FabricKhsShim = FabricKhsShim(this)
     val khs: Khs = Khs(shim)
 
     const val ID: String = "KenshinsHideAndSeek"
-    var loader: FabricLoader? = null
-    var container: ModContainer? = null
-    @Volatile var enabled: Boolean = true
+    private var enabled: AtomicBoolean = AtomicBoolean(true)
+
+    val loader: FabricLoader
+        get() = FabricLoader.getInstance() ?: error("could not get fabric loader")
+
+    val container: ModContainer
+        get() = loader.getModContainer(ID).getOrNull() ?: error("could not get mod container")
 
     override fun onInitialize() {
-        loader = FabricLoader.getInstance() ?: error("failed to get fabric loader")
-        container = loader?.getModContainer(ID)?.getOrNull() ?: error("failed to get mod container")
+        server.init {
+            // server has been registered
+            // it is now safe to call into :core
+            khs.init()
 
-        ServerLifecycleEvents.SERVER_STOPPING.register { _ -> onShutdown() }
+            // khs.init() can disable us
+            if (!enabled.get()) return@init
+
+            // TODO: register bungeecord
+
+            // TODO: register event listeners
+        }
     }
 
     fun onShutdown() {
-        if (!enabled) return
-        enabled = false
-
-        // cleanup handlers and stuff
-        error("todo")
+        if (!enabled.getAndSet(false)) return
+        khs.cleanup()
     }
 
-    // return the mod config dir
-    fun configDir(): File = loader!!.configDir.resolve(ID).toFile()
+    fun onTick() {
+        if (!enabled.get()) return
+        khs.onTick()
+    }
 }

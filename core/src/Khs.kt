@@ -21,6 +21,8 @@ import cat.freya.khs.disguise.EntityHider
 import cat.freya.khs.game.Game
 import cat.freya.khs.game.KhsMap
 import cat.freya.khs.packet.KhsPacketListener
+import java.io.File
+import java.io.InputStream
 import java.util.concurrent.ConcurrentHashMap
 
 /// Plugin wrapper
@@ -145,18 +147,25 @@ class Khs(val shim: KhsShim) {
         )
     }
 
+    private fun readConfigFile(fileName: String): InputStream? {
+        val dir = shim.dataDirectory.toFile()
+        if (!dir.exists()) dir.mkdirs() || error("Failed to make plugin config directory")
+        val file = File(dir, fileName)
+        return if (file.exists()) file.inputStream() else null
+    }
+
     fun reloadConfig(): Result<Unit> =
         runCatching {
                 shim.logger.info("Loading config...")
-                config = deserialize(KhsConfig::class, shim.readConfigFile("config.yml"))
+                config = deserialize(KhsConfig::class, readConfigFile("config.yml"))
                 shim.logger.info("Loading items...")
-                itemsConfig = deserialize(KhsItemsConfig::class, shim.readConfigFile("items.yml"))
+                itemsConfig = deserialize(KhsItemsConfig::class, readConfigFile("items.yml"))
                 shim.logger.info("Loading maps...")
-                mapsConfig = deserialize(KhsMapsConfig::class, shim.readConfigFile("maps.yml"))
+                mapsConfig = deserialize(KhsMapsConfig::class, readConfigFile("maps.yml"))
                 shim.logger.info("Loading board locale...")
-                boardConfig = deserialize(KhsBoardConfig::class, shim.readConfigFile("board.yml"))
+                boardConfig = deserialize(KhsBoardConfig::class, readConfigFile("board.yml"))
                 shim.logger.info("Loading locale...")
-                locale = deserialize(KhsLocale::class, shim.readConfigFile("locale.yml"))
+                locale = deserialize(KhsLocale::class, readConfigFile("locale.yml"))
                 shim.logger.info("Loading database...")
                 database = Database(this)
 
@@ -172,14 +181,21 @@ class Khs(val shim: KhsShim) {
             }
             .onFailure { shim.logger.error("failed to reload config: ${it.message}") }
 
+    private fun writeConfigFile(fileName: String, content: String) {
+        val dir = shim.dataDirectory.toFile()
+        if (!dir.exists()) dir.mkdirs() || error("Failed to make plugin config directory")
+        val file = File(dir, fileName)
+        file.writeText(content)
+    }
+
     fun saveConfig() {
         runCatching {
                 val newMapsConfig = KhsMapsConfig(maps.mapValues { it.value.config })
-                shim.writeConfigFile("config.yml", serialize(config))
-                shim.writeConfigFile("items.yml", serialize(itemsConfig))
-                shim.writeConfigFile("maps.yml", serialize(newMapsConfig))
-                shim.writeConfigFile("board.yml", serialize(boardConfig))
-                shim.writeConfigFile("locale.yml", serialize(locale))
+                writeConfigFile("config.yml", serialize(config))
+                writeConfigFile("items.yml", serialize(itemsConfig))
+                writeConfigFile("maps.yml", serialize(newMapsConfig))
+                writeConfigFile("board.yml", serialize(boardConfig))
+                writeConfigFile("locale.yml", serialize(locale))
             }
             .onFailure { shim.logger.error("failed to save config: ${it.message}") }
     }
