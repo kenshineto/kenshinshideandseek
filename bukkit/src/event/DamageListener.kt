@@ -33,11 +33,7 @@ class DamageListener(val plugin: KhsPlugin) : Listener {
         val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
         val khsAttacker = attackerPlayer?.let { BukkitPlayer(plugin, it) }
         val khsEvent = DamageEvent(plugin.khs, khsPlayer, khsAttacker, event.damage)
-
-        // make sure this is done sync
-        plugin.scheduleTask {
-            if (bukkitPlayer.isOnline && attackerPlayer?.isOnline != false) onDamage(khsEvent)
-        }
+        onDamage(khsEvent)
 
         if (khsEvent.cancelled) event.isCancelled = true
     }

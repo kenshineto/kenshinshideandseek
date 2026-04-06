@@ -11,84 +11,66 @@ data class DamageEvent(
     val damage: Double,
 ) : Event()
 
-/// handles when a player in the game is damaged
-fun onDamage(event: DamageEvent) {
-    val (plugin, player, attacker, damage) = event
+/** If the player's are not in the game, then we should not care about the event */
+private fun eventHasJurisdiction(event: DamageEvent): Boolean {
+    val (plugin, player, attacker, _) = event
     val game = plugin.game
 
-    // make sure that the attacker (if exists) is allowed to damage us
-    if (attacker != null) {
-        // players must both be in the game
-        if (
-            (game.hasPlayer(player) && !game.hasPlayer(attacker)) ||
-                (game.hasPlayer(attacker) && !game.hasPlayer(player))
-        ) {
-            event.cancel()
-            return
-        }
+    if (game.hasPlayer(player)) return true
 
-        // players cant be on the same team
-        if (game.getTeam(player.uuid) == game.getTeam(attacker.uuid)) {
-            event.cancel()
-            return
-        }
+    if (attacker != null && game.hasPlayer(attacker)) return true
 
-        // cannot attack spectators
-        if (game.isSpectator(player) || game.isSpectator(attacker)) {
-            event.cancel()
-            return
-        }
+    return false
+}
 
-        // ignore if pvp is disabled, and a hider is trying to attack a seeker
-        if (!plugin.config.pvp && game.isHider(attacker) && game.isSeeker(player)) {
-            event.cancel()
-            return
-        }
-        // if there is no attacker, and the player is not in game, we do not care
-    } else if (!game.hasPlayer(player)) {
-        return
-        // if there is no attacker, it most of been by natural causes...
-        // if pvp is disabled, and config doesn't allow natural causes, cancel event
-    } else if (!plugin.config.pvp && !plugin.config.allowNaturalCauses) {
-        event.cancel()
-        return
+/** Checks if the attacker (if exists) is allowed to attack the player */
+private fun isAttackAllowed(event: DamageEvent): Boolean {
+    val (plugin, player, attacker, _) = event
+    val game = plugin.game
+
+    if (!game.hasPlayer(player)) return false
+
+    if (game.status != Game.Status.SEEKING) return false
+
+    if (attacker == null) {
+        // assume natural causes
+        if (!plugin.config.pvp && !plugin.config.allowNaturalCauses) return false
+
+        return true
     }
 
-    // spectators cannot take damage
-    if (game.isSpectator(player)) {
-        event.cancel()
-        val world = player.getWorld() ?: return
-        if (player.getLocation().y < world.minY) {
-            // make sure they don't try to kill them self to the void lol
-            player.teleport(game.map?.gameSpawn)
-        }
-    }
+    // attackers must be in the game to attack the player
+    if (!game.hasPlayer(attacker)) return false
 
-    // cant take damage until seeking
-    if (game.status != Game.Status.SEEKING) {
-        event.cancel()
+    // players cannot attack their team-mates
+    if (game.getTeam(player.uuid) == game.getTeam(attacker.uuid)) return false
+
+    // spectators cannot attack/be attacked
+    if (game.isSpectator(player) || game.isSpectator(attacker)) return false
+
+    // ignore if pvp is disabled, and a hider is trying to attack a seeker
+    if (!plugin.config.pvp && game.isHider(attacker) && game.isSeeker(player)) return false
+
+    return true
+}
+
+private fun respawnPlayer(event: DamageEvent) {
+    val (plugin, player, _, _) = event
+    val game = plugin.game
+
+    if (game.isHider(player) && plugin.config.respawnAsSpectator) {
+        game.setTeam(player.uuid, Game.Team.SPECTATOR)
+        game.loadSpectator(player)
         return
     }
 
-    // check if player dies (pvp mode)
-    // if not then it is fine (if so we need to handle it)
-    if (plugin.config.pvp && player.getHealth() - damage >= 0.5) return
+    // respawn as a seeker
+    game.setTeam(player.uuid, Game.Team.SEEKER)
+    game.resetPlayer(player)
+    game.giveSeekerItems(player)
 
-    /* handle death event (player was tagged or killed in pvp) */
-    event.cancel()
-
-    // play death sound
-    player.playSound(
-        if (plugin.shim.supports(9)) "ENTITY_PLAYER_DEATH" else "ENTITY_PLAYER_HURT",
-        1.0,
-        1.0,
-    )
-
-    // un solidify a player if their disguised
-    plugin.disguiser.getDisguise(player.uuid)?.shouldBeSolid = false
-
-    // respawn player
-    if (plugin.config.delayedRespawn.enabled && !plugin.config.respawnAsSpectator) {
+    // teleport
+    if (plugin.config.delayedRespawn.enabled) {
         val time = plugin.config.delayedRespawn.delay
         player.teleport(game.map?.seekerLobbySpawn)
         player.message(plugin.locale.prefix.default + plugin.locale.game.respawn.with(time))
@@ -100,33 +82,74 @@ fun onDamage(event: DamageEvent) {
     } else {
         player.teleport(game.map?.gameSpawn)
     }
+}
+
+private fun broadcastDeath(event: DamageEvent) {
+    val (plugin, player, attacker, _) = event
+    val game = plugin.game
+
+    val msg =
+        if (game.isSeeker(player)) {
+            plugin.locale.game.player.death.with(player.name)
+        } else if (attacker == null) {
+            plugin.locale.game.player.found.with(player.name)
+        } else {
+            plugin.locale.game.player.foundBy.with(player.name, attacker.name)
+        }
+
+    game.broadcast(msg)
+}
+
+/** the attack is valid, handle it */
+private fun handleAttack(event: DamageEvent) {
+    val (plugin, player, attacker, _) = event
+    val game = plugin.game
+
+    // play death sound
+    player.playSound(
+        if (plugin.shim.supports(9)) "ENTITY_PLAYER_DEATH" else "ENTITY_PLAYER_HURT",
+        1.0,
+        1.0,
+    )
+
+    // un solidify a player if their disguised
+    plugin.disguiser.getDisguise(player.uuid)?.shouldBeSolid = false
 
     // update leaderboard
     game.addDeath(player.uuid)
     if (attacker != null) game.addKill(attacker.uuid)
 
-    // broadcast death and update team
-    if (game.isSeeker(player)) {
-        game.broadcast(plugin.locale.game.player.death.with(player.name))
-        game.resetPlayer(player)
-        game.giveSeekerItems(player)
-    } else {
-        val msg =
-            if (attacker == null) {
-                plugin.locale.game.player.found.with(player.name)
-            } else {
-                plugin.locale.game.player.foundBy.with(player.name, attacker.name)
-            }
-        game.broadcast(msg)
+    broadcastDeath(event)
+    respawnPlayer(event)
+}
 
-        // reset player team and items
-        if (plugin.config.respawnAsSpectator) {
-            game.setTeam(player.uuid, Game.Team.SPECTATOR)
-            game.loadSpectator(player)
-        } else {
-            game.setTeam(player.uuid, Game.Team.SEEKER)
-            game.resetPlayer(player)
-            game.giveSeekerItems(player)
+/// handles when a player in the game is damaged
+fun onDamage(event: DamageEvent) {
+    val (plugin, player, _, damage) = event
+    val game = plugin.game
+
+    if (!eventHasJurisdiction(event)) return
+
+    if (!isAttackAllowed(event)) {
+        event.cancel()
+
+        // handle spectator taking damage
+        if (game.isSpectator(player)) {
+            val minY = player.getWorld()?.minY ?: 0
+            if (player.getLocation().y < minY) {
+                // make sure they don't try to kill them self to the void lol
+                player.teleport(game.map?.gameSpawn)
+            }
         }
+
+        return
     }
+
+    // check if player dies (pvp mode)
+    // if not then it is fine (if so we need to handle it)
+    if (plugin.config.pvp && player.getHealth() - damage >= 0.5) return
+
+    /* handle death event (player was tagged or killed in pvp) */
+    event.cancel()
+    handleAttack(event)
 }

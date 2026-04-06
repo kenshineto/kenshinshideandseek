@@ -93,6 +93,12 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
     }
 
     override fun destroy() {
+        // this cannot be called async
+        if (!plugin.server.isPrimaryThread()) {
+            plugin.scheduleTask { destroy() }
+            return
+        }
+
         runCatching { inner.remove() }
     }
 }
