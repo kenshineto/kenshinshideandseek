@@ -61,6 +61,9 @@ interface Player : Entity {
     /** Disguise the player as a block material */
     fun createDisguise(material: Material): Disguise?
 
+    /** Get how much damage the player's equiped item can do */
+    fun getAttackDamage(): Double
+
     // Other
     enum class GameMode {
         CREATIVE,

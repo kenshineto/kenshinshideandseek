@@ -109,6 +109,17 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
         return BukkitDisguise(plugin, inner.uniqueId, bukkitMaterial)
     }
 
+    @Suppress("DEPRECATION")
+    override fun getAttackDamage(): Double {
+        // attributes are 1.9+ only...
+        if (!plugin.shim.supports(9)) return 0.0
+
+        val attributeName =
+            if (plugin.shim.supports(21)) "ATTACK_DAMAGE" else "GENERIC_ATTACK_DAMAGE"
+        val attribute = inner.getAttribute(Attribute.valueOf(attributeName))
+        return attribute?.value ?: return 0.0
+    }
+
     override fun getGameMode(): Player.GameMode {
         return when (inner.gameMode) {
             org.bukkit.GameMode.SURVIVAL -> Player.GameMode.SURVIVAL

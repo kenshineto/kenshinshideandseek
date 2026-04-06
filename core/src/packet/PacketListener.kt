@@ -82,21 +82,8 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
         val debounceUUID = player.uuid
         if (debounce.contains(debounceUUID)) return
 
-        // calculate damage amount
-        val fallbackAmount = 7.0
-        // val amount =
-        //    if (plugin.shim.supports(9)) {
-        //        val attribName =
-        //            if (plugin.shim.supports(21)) "ATTACK_DAMAGE" else "GENERIC_ATTACK_DAMAGE"
-        //        val attrib = Attribute.valueOf(attribName)
-        //        seeker.getAttribute(attrib)?.value ?: fallbackAmount
-        //    } else {
-        //        fallbackAmount // uhhh i dunno how to do this for 1.8
-        //    }
-        val amount = fallbackAmount // TODO:
-
         // trigger an attack event
-        val khsEvent = DamageEvent(plugin, player, seeker, amount)
+        val khsEvent = DamageEvent(plugin, player, seeker, seeker.getAttackDamage())
 
         // make sure this is run synchronously,
         // otherwise we can get 'EntityRemoveEvent may only be triggered synchronously'
