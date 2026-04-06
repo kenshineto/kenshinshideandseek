@@ -12,7 +12,8 @@ jobs:
 
     strategy:
       matrix:
-        platform: [bukkit, fabric]
+        platform: [bukkit]
+        #platform: [bukkit, fabric]
 
     steps:
       - name: SCM

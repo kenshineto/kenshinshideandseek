@@ -10,4 +10,6 @@ plugins { id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 
 rootProject.name = "KenshinsHideAndSeek"
 
-include("core", "bukkit", "fabric")
+include("core")
+include("bukkit")
+//include("fabric")
