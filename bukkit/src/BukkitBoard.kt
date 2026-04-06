@@ -54,17 +54,14 @@ class BukkitTeam(val shim: BukkitKhsShim, private val inner: org.bukkit.scoreboa
     }
 
     override fun setPlayers(players: Set<UUID>) {
-        // remove outdated entries
-        for (entry in inner.entries) {
-            val uuid = UUID.fromString(entry) ?: continue
-            if (!players.contains(uuid)) {
-                inner.removeEntry(entry)
-            }
+        for (player in inner.players) {
+            val uuid = player.uniqueId
+            if (!players.contains(uuid)) inner.removePlayer(player)
         }
 
-        // add new entires
         for (uuid in players) {
-            inner.addEntry(uuid.toString())
+            val player = shim.plugin.server.getOfflinePlayer(uuid)
+            inner.addPlayer(player)
         }
     }
 }
