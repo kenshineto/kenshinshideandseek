@@ -1,16 +1,17 @@
 package cat.freya.khs.game
 
 import cat.freya.khs.Khs
+import cat.freya.khs.world.Player
 import java.util.UUID
 import kotlin.math.roundToInt
 
 const val DISABLED_IDENT = "KHS_DISABLED_FILTER_ME_OUT"
 
+/**
+ * Wrapper for minecraft's scoreboard system I'ts called a Board since it doesnt really track scores
+ * for us
+ */
 interface Board {
-    fun setText(title: String, text: List<String>)
-
-    fun display(uuid: UUID)
-
     interface Team {
         fun setPrefix(prefix: String)
 
@@ -21,8 +22,9 @@ interface Board {
         fun setPlayers(players: Set<UUID>)
     }
 
-    // seeker/hider display
     fun getTeam(name: String): Team
+
+    fun setText(title: String, text: List<String>)
 }
 
 fun updateTeams(plugin: Khs, board: Board) {
@@ -46,7 +48,7 @@ fun getLobbyBoard(plugin: Khs, uuid: UUID): Board? {
     return plugin.shim.getBoard("lobby-$uuid")
 }
 
-fun reloadLobbyBoard(plugin: Khs, uuid: UUID) {
+fun reloadLobbyBoard(plugin: Khs, player: Player) {
     val timer = plugin.game.timer
     val countdown =
         when {
@@ -54,11 +56,11 @@ fun reloadLobbyBoard(plugin: Khs, uuid: UUID) {
             else -> plugin.boardConfig.countdown.waiting
         }
     val count = plugin.game.size
-    val seekerPercent = (plugin.game.getSeekerChance(uuid) * 100).roundToInt()
+    val seekerPercent = (plugin.game.getSeekerChance(player.uuid) * 100).roundToInt()
     val hiderPercent = 100 - seekerPercent
     val map = plugin.game.map?.name ?: ""
 
-    val board = getLobbyBoard(plugin, uuid) ?: return
+    val board = getLobbyBoard(plugin, player.uuid) ?: return
     updateTeams(plugin, board)
 
     val title = plugin.boardConfig.lobby.title
@@ -72,7 +74,8 @@ fun reloadLobbyBoard(plugin: Khs, uuid: UUID) {
                 .replace("{MAP}", map)
         },
     )
-    board.display(uuid)
+
+    player.setScoreBoard(board)
 }
 
 fun getGameBoard(plugin: Khs, uuid: UUID): Board? {
@@ -115,12 +118,12 @@ private fun getGlowLocale(plugin: Khs): String {
     return if (glow.running) plugin.boardConfig.glow.active else plugin.boardConfig.glow.disabled
 }
 
-fun reloadGameBoard(plugin: Khs, uuid: UUID) {
+fun reloadGameBoard(plugin: Khs, player: Player) {
     val timer = plugin.game.timer
 
     val time = plugin.boardConfig.countdown.timer.with((timer ?: 0UL) / 60UL, (timer ?: 0UL) % 60UL)
     val team =
-        when (plugin.game.getTeam(uuid)) {
+        when (plugin.game.getTeam(player.uuid)) {
             Game.Team.HIDER -> plugin.locale.game.team.hider
             Game.Team.SEEKER -> plugin.locale.game.team.seeker
             else -> plugin.locale.game.team.spectator
@@ -134,7 +137,7 @@ fun reloadGameBoard(plugin: Khs, uuid: UUID) {
     val numHider = plugin.game.hiderSize
     val map = plugin.game.map?.name ?: ""
 
-    val board = getGameBoard(plugin, uuid) ?: return
+    val board = getGameBoard(plugin, player.uuid) ?: return
     updateTeams(plugin, board)
 
     val title = plugin.boardConfig.game.title
@@ -153,5 +156,6 @@ fun reloadGameBoard(plugin: Khs, uuid: UUID) {
             }
             .filter { !it.contains(DISABLED_IDENT) },
     )
-    board.display(uuid)
+
+    player.setScoreBoard(board)
 }

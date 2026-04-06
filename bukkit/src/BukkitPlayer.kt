@@ -1,5 +1,6 @@
 package cat.freya.khs.bukkit
 
+import cat.freya.khs.game.Board
 import cat.freya.khs.world.Inventory
 import cat.freya.khs.world.Material
 import cat.freya.khs.world.Player
@@ -131,9 +132,14 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
         return inner.hasPermission(permission)
     }
 
-    override fun hideScoreBoard() {
-        val manager = plugin.server.scoreboardManager ?: return
-        inner.scoreboard = manager.mainScoreboard
+    override fun getScoreBoard(): BukkitBoard {
+        return BukkitBoard(plugin.shim, inner.scoreboard)
+    }
+
+    override fun setScoreBoard(board: Board?) {
+        val default = plugin.server.scoreboardManager?.mainScoreboard
+        val bukkitBoard = (board as? BukkitBoard)?.inner ?: default ?: return
+        inner.scoreboard = bukkitBoard
     }
 
     override fun taunt() {

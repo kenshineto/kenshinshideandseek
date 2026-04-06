@@ -277,6 +277,8 @@ data class KhsConfig(
     var lobby: LobbyConfig = LobbyConfig(),
     @Comment("Restore the players previously cleared inventory after leaving the game lobby")
     var saveInventory: Boolean = false,
+    @Comment("Restore the players previously active score board after leaving the game lobby")
+    var saveScoreBoard: Boolean = true,
 
     /* Events */
 

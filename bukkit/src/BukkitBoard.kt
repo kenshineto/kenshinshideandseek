@@ -9,8 +9,7 @@ import org.bukkit.scoreboard.NameTagVisibility
 import org.bukkit.scoreboard.Objective
 import org.bukkit.scoreboard.Scoreboard
 
-class BukkitTeam(val shim: BukkitKhsShim, private val inner: org.bukkit.scoreboard.Team) :
-    Board.Team {
+class BukkitTeam(val shim: BukkitKhsShim, val inner: org.bukkit.scoreboard.Team) : Board.Team {
 
     override fun setPrefix(prefix: String) {
         inner.prefix = formatText(prefix)
@@ -66,7 +65,7 @@ class BukkitTeam(val shim: BukkitKhsShim, private val inner: org.bukkit.scoreboa
     }
 }
 
-class BukkitBoard(val shim: BukkitKhsShim, private val inner: Scoreboard) : Board {
+class BukkitBoard(val shim: BukkitKhsShim, val inner: Scoreboard) : Board {
     private var objective: Objective? = null
     private var blanks: Int = 0
 
@@ -108,10 +107,5 @@ class BukkitBoard(val shim: BukkitKhsShim, private val inner: Scoreboard) : Boar
         runCatching { inner.registerNewTeam(name) }
         val team = inner.getTeam(name) ?: error("failed to make team ?!?")
         return BukkitTeam(shim, team)
-    }
-
-    override fun display(uuid: UUID) {
-        val player = shim.getPlayer(uuid) ?: return
-        player.inner.scoreboard = inner
     }
 }

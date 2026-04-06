@@ -1,6 +1,7 @@
 package cat.freya.khs.world
 
 import cat.freya.khs.disguise.Disguise
+import cat.freya.khs.game.Board
 import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import java.util.UUID
 
@@ -77,8 +78,11 @@ interface Player : Entity {
     /** Check if the player has a given permission string */
     fun hasPermission(permission: String): Boolean
 
-    /** Reset the scoreboard back to the default one for the player, and make no object visible */
-    fun hideScoreBoard()
+    /** @return the players currently active scoreboard */
+    fun getScoreBoard(): Board
+
+    /** Change the players active score board When given null, it should set the main score board */
+    fun setScoreBoard(board: Board?)
 
     /**
      * Spawn a taunt (usually a firework), at the location of the player to give away their location

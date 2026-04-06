@@ -56,19 +56,34 @@ class Game(val plugin: Khs) {
     var timer: ULong? = null
         private set
 
-    @Volatile
     /// keep track till next second
     private var gameTick: UInt = 0u
     private val isSecond: Boolean
         get() = gameTick % 20u == 0u
 
-    @Volatile
     /// if the last event was a hider leaving the game
     private var hiderLeft: Boolean = false
 
-    @Volatile
     /// the current game round
     private var round: UInt = 0u
+
+    // what round was the uuid last picked to be seeker
+    private val lastPicked: MutableMap<UUID, UInt> = ConcurrentHashMap()
+
+    /** teams at the start of the game */
+    private var initialTeams: Map<UUID, Team> = emptyMap()
+
+    /** stores saved inventories */
+    private var savedInventories: MutableMap<UUID, List<Item?>> = ConcurrentHashMap()
+
+    /** stores saved scoreboards */
+    private var savedScoreBoards: MutableMap<UUID, Board> = ConcurrentHashMap()
+
+    // status for this round
+    private var hiderKills: MutableMap<UUID, UInt> = ConcurrentHashMap()
+    private var seekerKills: MutableMap<UUID, UInt> = ConcurrentHashMap()
+    private var hiderDeaths: MutableMap<UUID, UInt> = ConcurrentHashMap()
+    private var seekerDeaths: MutableMap<UUID, UInt> = ConcurrentHashMap()
 
     val glow: Glow = Glow(this)
     val taunt: Taunt = Taunt(this)
@@ -155,24 +170,6 @@ class Game(val plugin: Khs) {
     fun setTeam(uuid: UUID, team: Team) {
         mappings[uuid] = team
     }
-
-    // what round was the uuid last picked to be seeker
-    private val lastPicked: MutableMap<UUID, UInt> = ConcurrentHashMap<UUID, UInt>()
-
-    @Volatile
-    // teams at the start of the game
-    private var initialTeams: Map<UUID, Team> = emptyMap()
-
-    @Volatile
-    // stores saved inventories
-    private var savedInventories: MutableMap<UUID, List<Item?>> =
-        ConcurrentHashMap<UUID, List<Item?>>()
-
-    // status for this round
-    private var hiderKills: MutableMap<UUID, UInt> = ConcurrentHashMap<UUID, UInt>()
-    private var seekerKills: MutableMap<UUID, UInt> = ConcurrentHashMap<UUID, UInt>()
-    private var hiderDeaths: MutableMap<UUID, UInt> = ConcurrentHashMap<UUID, UInt>()
-    private var seekerDeaths: MutableMap<UUID, UInt> = ConcurrentHashMap<UUID, UInt>()
 
     fun doTick() {
         if (map?.isSetup() != true) return
@@ -366,6 +363,10 @@ class Game(val plugin: Khs) {
             savedInventories[uuid] = player.getInventory().getContents()
         }
 
+        if (plugin.config.saveScoreBoard) {
+            savedScoreBoards[uuid] = player.getScoreBoard()
+        }
+
         setTeam(uuid, Team.HIDER)
         loadPlayerIntoLobby(player)
         reloadLobbyBoards()
@@ -381,17 +382,32 @@ class Game(val plugin: Khs) {
         mappings.remove(uuid)
         resetPlayer(player)
 
+        // restore inventory
+
         if (plugin.config.saveInventory) {
             savedInventories[uuid]?.let { player.getInventory().setContents(it) }
         }
 
+        // reset score board
+
+        val board =
+            if (plugin.config.saveScoreBoard) {
+                savedScoreBoards.get(uuid)
+            } else {
+                null
+            }
+
+        player.setScoreBoard(board)
+
         // reload sidebar
-        player.hideScoreBoard()
+
         if (status.inProgress()) {
             reloadGameBoards()
         } else {
             reloadLobbyBoards()
         }
+
+        // teleport away player
 
         if (plugin.config.leaveType == ConfigLeaveType.PROXY) {
             val server = plugin.config.leaveServer
@@ -427,11 +443,11 @@ class Game(val plugin: Khs) {
     }
 
     private fun reloadLobbyBoards() {
-        playerUUIDs.forEach { reloadLobbyBoard(plugin, it) }
+        players.forEach { reloadLobbyBoard(plugin, it) }
     }
 
     private fun reloadGameBoards() {
-        playerUUIDs.forEach { reloadGameBoard(plugin, it) }
+        players.forEach { reloadGameBoard(plugin, it) }
     }
 
     /// during Status.LOBBY
