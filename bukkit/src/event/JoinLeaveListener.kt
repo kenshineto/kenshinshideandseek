@@ -1,6 +1,6 @@
 package cat.freya.khs.bukkit.event
 
-import cat.freya.khs.bukkit.BukkitKhsPlayer
+import cat.freya.khs.bukkit.BukkitPlayer
 import cat.freya.khs.bukkit.KhsPlugin
 import cat.freya.khs.event.JoinEvent
 import cat.freya.khs.event.KickEvent
@@ -24,7 +24,7 @@ class JoinLeaveListener(val plugin: KhsPlugin) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val bukkitPlayer = event.player
-        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
         val khsEvent = JoinEvent(plugin.khs, khsPlayer)
         onJoin(khsEvent)
     }
@@ -32,7 +32,7 @@ class JoinLeaveListener(val plugin: KhsPlugin) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerQuit(event: PlayerQuitEvent) {
         val bukkitPlayer = event.player
-        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
         val khsEvent = LeaveEvent(plugin.khs, khsPlayer)
         onLeave(khsEvent)
     }
@@ -40,7 +40,7 @@ class JoinLeaveListener(val plugin: KhsPlugin) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerKick(event: PlayerKickEvent) {
         val bukkitPlayer = event.player
-        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
         val khsEvent = KickEvent(plugin.khs, khsPlayer, event.reason)
         onKick(khsEvent)
 

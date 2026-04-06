@@ -2,8 +2,8 @@ package cat.freya.khs.command
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsSetExit : Command {
     override val label = "setexit"
@@ -13,7 +13,7 @@ class KhsSetExit : Command {
     override fun execute(plugin: Khs, player: Player, args: List<String>) {
         runChecks(plugin, player) { gameNotInProgress() }
 
-        plugin.config.exit = player.location
+        plugin.config.exit = player.getLocation()
         plugin.saveConfig()
 
         player.message(plugin.locale.prefix.default + plugin.locale.map.set.exit)

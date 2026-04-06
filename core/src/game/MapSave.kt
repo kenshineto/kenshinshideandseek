@@ -16,10 +16,10 @@ private fun copyWorldFolder(
     val dir = loader.dir
     val temp = loader.tempSaveDir
 
-    val bounds = map.bounds() ?: return false
+    val bounds = map.getBounds() ?: return false
 
-    val region = File(dir, name)
-    val tempRegion = File(temp, name)
+    val region = dir.resolve(name).toFile()
+    val tempRegion = temp.resolve(name).toFile()
 
     if (!tempRegion.exists() && !tempRegion.mkdirs()) {
         plugin.shim.logger.error("could not create directory: ${tempRegion.path}")
@@ -60,25 +60,30 @@ private fun copyWorldFile(loader: World.Loader, name: String) {
     val dir = loader.dir
     val temp = loader.tempSaveDir
 
-    val srcFile = File(dir, name)
-    val destFile = File(temp, name)
+    val srcFile = dir.resolve(name).toFile()
+    val destFile = temp.resolve(name).toFile()
 
     srcFile.copyTo(destFile, overwrite = true)
 }
 
 fun mapSave(plugin: Khs, map: KhsMap): Result<Unit> =
     runCatching {
-            plugin.shim.logger.info("starting map save for: ${map.worldName}")
-            plugin.saving = true
+            val saving = plugin.saving.getAndSet(true)
+            if (saving) {
+                // map save is already in progress, abort
+                plugin.shim.logger.warning("mapSave called while map save is in progress")
+                return@runCatching
+            }
 
+            plugin.shim.logger.info("starting map save for: ${map.worldName}")
             plugin.shim.broadcast(plugin.locale.prefix.default + plugin.locale.map.save.start)
             plugin.shim.broadcast(plugin.locale.prefix.warning + plugin.locale.map.save.warning)
 
             if (!plugin.config.mapSaveEnabled) error("map saves are disabled!")
 
-            val loader = plugin.shim.getWorldLoader(map.worldName)
-            val mapSaveLoader = plugin.shim.getWorldLoader(map.gameWorldName)
-            val dir = loader.dir
+            val loader = map.getWorldLoader()
+            val mapSaveLoader = map.getGameWorldLoader()
+            val dir = loader.dir.toFile()
 
             if (!dir.exists()) {
                 plugin.shim.broadcast(
@@ -95,7 +100,7 @@ fun mapSave(plugin: Khs, map: KhsMap): Result<Unit> =
             copyWorldFolder(plugin, map, loader, "data", false)
             copyWorldFile(loader, "level.dat")
 
-            val dest = mapSaveLoader.dir
+            val dest = mapSaveLoader.dir.toFile()
             if (dest.exists() && !dest.deleteRecursively()) {
                 plugin.shim.broadcast(
                     plugin.locale.prefix.error +
@@ -104,7 +109,7 @@ fun mapSave(plugin: Khs, map: KhsMap): Result<Unit> =
                 error("could not delete destination directory")
             }
 
-            val tempDest = loader.tempSaveDir
+            val tempDest = loader.tempSaveDir.toFile()
             if (!tempDest.renameTo(dest)) {
                 plugin.shim.broadcast(
                     plugin.locale.prefix.error +
@@ -114,11 +119,11 @@ fun mapSave(plugin: Khs, map: KhsMap): Result<Unit> =
             }
         }
         .onSuccess {
-            plugin.saving = false
+            plugin.saving.set(false)
             plugin.shim.broadcast(plugin.locale.prefix.default + plugin.locale.map.save.finished)
         }
         .onFailure {
-            plugin.saving = false
+            plugin.saving.set(false)
             plugin.shim.broadcast(
                 plugin.locale.prefix.error +
                     plugin.locale.map.save.failed.with(it.message ?: "unknown error")

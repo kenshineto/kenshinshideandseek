@@ -2,7 +2,7 @@ package cat.freya.khs.command
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.player.Player
+import cat.freya.khs.world.Player
 
 class KhsTop : Command {
     override val label = "top"

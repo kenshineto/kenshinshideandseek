@@ -18,25 +18,39 @@ import org.yaml.snakeyaml.Yaml
 fun <T : Any> deserializeClass(type: KClass<T>, data: Map<String, Any?>): T {
     require(type.isData) { "$type is not a data class" }
 
+    val instance = type.createInstance()
     val props = type.memberProperties.associateBy { it.name }
 
+    val parameters = type.primaryConstructor!!.parameters
+    val defaultPropValues =
+        parameters.associate { parameter ->
+            val name = parameter.name!!
+            val prop = props[name]!!
+            name to prop.get(instance)
+        }
+
     val propValues =
-        type.primaryConstructor!!
-            .parameters
-            .map { props[it.name]!! }
-            .associateWith { prop ->
-                val value = data[prop.name]
-                val propType = prop.returnType.classifier as KClass<*>
-                val innerTypes =
-                    prop.returnType.arguments.mapNotNull { it.type?.classifier as? KClass<*> }
+        parameters.associate { parameter ->
+            val name = parameter.name!!
+            val prop = props[name]!!
 
-                // allow null if type is null
-                if (prop.returnType.isMarkedNullable && value == null) return@associateWith null
-
-                deserializeField(propType, innerTypes, prop.name, value)
+            if (!data.containsKey(name)) {
+                return@associate prop to defaultPropValues[name]
             }
 
-    val instance = type.createInstance()
+            val value = data[name]
+
+            // allow null if type is null
+            if (prop.returnType.isMarkedNullable && value == null) {
+                return@associate prop to null
+            }
+
+            val propType = prop.returnType.classifier as KClass<*>
+            val innerTypes =
+                prop.returnType.arguments.mapNotNull { it.type?.classifier as? KClass<*> }
+            prop to deserializeField(propType, innerTypes, prop.name, data[prop.name])
+        }
+
     for ((prop, value) in propValues) {
         if (value == null && !prop.returnType.isMarkedNullable) error("${prop.name} cannot be null")
 

@@ -1,7 +1,7 @@
 package cat.freya.khs.event
 
 import cat.freya.khs.Khs
-import cat.freya.khs.player.Player
+import cat.freya.khs.world.Player
 
 data class JoinEvent(val plugin: Khs, val player: Player) : Event()
 
@@ -20,7 +20,7 @@ fun onJoin(event: JoinEvent) {
         return
     }
 
-    val worldName = player.world?.name ?: return
+    val worldName = player.getWorld()?.name ?: return
     if (
         (plugin.config.teleportStraysToExit && worldName == game.map?.worldName) ||
             ((plugin.config.teleportStraysToExit || plugin.config.mapSaveEnabled) &&
@@ -29,7 +29,7 @@ fun onJoin(event: JoinEvent) {
         // teleport to exit if inside game world(s)
         plugin.config.exit?.let {
             player.teleport(it)
-            player.gameMode = Player.GameMode.ADVENTURE
+            player.setGameMode(Player.GameMode.ADVENTURE)
         }
     }
 }

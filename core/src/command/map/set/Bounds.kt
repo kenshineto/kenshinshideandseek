@@ -3,8 +3,8 @@ package cat.freya.khs.command.map.set
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
 import cat.freya.khs.config.BoundConfig
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsMapSetBounds : Command {
     override val label = "bounds"
@@ -22,7 +22,7 @@ class KhsMapSetBounds : Command {
         val map = plugin.maps[name] ?: return
         val config = map.config.bounds
 
-        val pos = player.location.position
+        val pos = player.getLocation().toPosition()
         val num: Int
 
         if (config.min == null || config.max != null) {

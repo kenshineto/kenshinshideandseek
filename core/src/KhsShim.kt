@@ -3,28 +3,26 @@ package cat.freya.khs
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.game.Board
-import cat.freya.khs.player.Inventory
-import cat.freya.khs.player.Player
 import cat.freya.khs.world.Effect
+import cat.freya.khs.world.Inventory
 import cat.freya.khs.world.Item
 import cat.freya.khs.world.Material
+import cat.freya.khs.world.Player
 import cat.freya.khs.world.World
 import java.nio.file.Path
 import java.util.UUID
 
-// Plugin wrapper
+/** Root interface that allows the core mod/plugin interface with the underlying platform */
 interface KhsShim {
-    /// String of the plugin version
+    /** Friendly string of the mod/plugin version */
     val pluginVersion: String
 
-    /// String of the minecraft server version
-    val mcVersionString: String
+    /** Friendly string of the minecraft server version */
+    val serverVersion: String
 
-    /// Platform name that this shim is for
+    /** Name of the platform we are running on (e.g. Bukkit) */
     val platform: String
 
-    // Logger wrapper
-    // (different baselines may use different logging systems)
     interface Logger {
         fun info(message: String)
 
@@ -33,78 +31,102 @@ interface KhsShim {
         fun error(message: String)
     }
 
-    /// The logger
+    /** Platforms implementation of a logger */
     val logger: Logger
-
-    /// List of online players
-    val players: List<Player>
-
-    /// List of world names
-    val worlds: List<String>
-
-    /// List of supported block material names
-    val blocks: List<String>
 
     /// Directory where config files and sqlitedb are stored
     val dataDirectory: Path
 
-    /// Returns a valid material description for a given unparsed material name
-    /// such as "CRAFTBENCH" or "white_wool"
-    fun parseMaterial(materialName: String): Material?
+    /** @return a list of valid known materials */
+    fun getMaterials(): List<Material>
 
-    /// Returns a platform item implementation provided a item configuration/specification
-    fun parseItem(itemConfig: ItemConfig): Item?
+    /** @return a list of valid block materials */
+    fun getBlocks(): List<Material>
 
-    /// Returns a platform potion effect implementation provided a item configuration/specification
-    fun parseEffect(effectConfig: EffectConfig): Effect?
+    /** @return list of currently online players */
+    fun getPlayers(): List<Player>
 
-    /// Returns an online player based on the players UUID
+    /**
+     * Get a [Material] by its platform name
+     *
+     * @return the material name for both the platform and current minecraft version
+     */
+    fun parseMaterial(platformKey: String): Material?
+
+    /**
+     * Parse an [Item] given its specification
+     *
+     * @return the parsed item or null
+     */
+    fun parseItem(itemConfig: ItemConfig?): Item?
+
+    /**
+     * Parse an [Effect] given its specification
+     *
+     * @return the parsed effect or null
+     */
+    fun parseEffect(effectConfig: EffectConfig?): Effect?
+
+    /** @return an online player by its uuid */
     fun getPlayer(uuid: UUID): Player?
 
-    /// Returns an online player based on the players display name
+    /** @return an online player by its username */
     fun getPlayer(name: String): Player?
 
-    /// Wraps a retrieved platform player type into the wrapped player type.
-    /// Packet events likes to give us a "Object" that is a BukkitPlayer (bukkit) or
-    /// MinecraftServerPlayer (fabric)
+    /**
+     * Wraps a retrieved platform player type into the wrapped player type. Packet events likes to
+     * give us a "Object" that is a BukkitPlayer (bukkit) or MinecraftServerPlayer (fabric)
+     */
     fun wrapPlayer(inner: Any?): Player?
 
-    /// Returns an existing and loaded world on the server
+    /**
+     * Send a player to a different server (requires bungeecord)
+     *
+     * @return if successfull
+     */
+    fun sendPlayerToServer(uuid: UUID, server: String): Boolean
+
+    /** @return a list of known world names */
+    fun getWorldNames(): List<String>
+
+    /** @return a loaded world on the server */
     fun getWorld(worldName: String): World?
 
-    /// Returns a manager to load/unload a world
+    /** @return a manager to load/unload a world */
     fun getWorldLoader(worldName: String): World.Loader
 
-    /// Create a new world
+    /**
+     * Create a new world if doesnt exist, or load a world if it does.
+     *
+     * @return a newly created world or null on failure
+     */
     fun createWorld(worldName: String, type: World.Type): World?
 
-    /// Create an inventory to use for a player
+    /** @return an empty custom inventory */
     fun createInventory(title: String, size: UInt): Inventory?
 
-    /// Returns a new scoreboard to be displayed on the players
-    /// right hand side of the screen
+    /** @return a manager to a custom scoreboard */
     fun getBoard(name: String): Board?
 
-    /// Broadcast a message to everyone on the server
+    /** Broadcast a message to everyone on the server */
     fun broadcast(message: String)
 
-    /// Kill the plugin now
+    /** Kills the mod/plugin now! */
     fun disable()
 
-    /// Schedule an event to run at a later date
+    /** Schedules an eveent to take place in the future */
     fun scheduleEvent(ticks: ULong, event: () -> Unit)
 
-    /// If the platform supports a given mc version features
+    /** Checks if the minecraft server is greater or equal to the given version */
     fun supports(vararg versions: Int): Boolean
 }
 
 abstract class AbstractKhsShim(override val platform: String) : KhsShim {
+    /** Parsed minecraft server version string */
+    private var parsedServerVersion: List<UInt>? = null
 
-    /// Release minecraft version (ignores the 1.)
-    val mcVersion: List<UInt> = parseMcVersion(mcVersionString)
-
-    /// helper function that turns "26.1" into listOf(26u, 1u)
-    private fun parseMcVersion(version: String?): List<UInt> {
+    /** Helper function that turns "26.1" into listOf(26u, 1u) */
+    private fun parseServerVersion(version: String?): List<UInt> {
         if (version == null) return emptyList()
         return version
             .split('.')
@@ -115,12 +137,28 @@ abstract class AbstractKhsShim(override val platform: String) : KhsShim {
             .toList()
     }
 
+    override fun getBlocks(): List<Material> {
+        return getMaterials().filter { it.isBlock }
+    }
+
+    // dont make this vararg over UInt, otherwise kotlin complains
+    // about "unstable features"
     override fun supports(vararg versions: Int): Boolean {
-        val seq = versions.asSequence().map { it.toUInt() }.zip(mcVersion.asSequence()).toList()
-        for ((want, has) in seq) {
+        if (parsedServerVersion == null) {
+            parsedServerVersion = parseServerVersion(serverVersion)
+        }
+
+        val parsed = parsedServerVersion ?: return false
+        val count = minOf(versions.size, parsed.size)
+
+        for (i in 0 until count) {
+            val want = versions[i].toUInt()
+            val has = parsed[i]
+
             if (want < has) return true
             if (want > has) return false
         }
+
         return true
     }
 }

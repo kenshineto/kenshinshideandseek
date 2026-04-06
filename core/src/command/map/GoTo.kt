@@ -2,8 +2,8 @@ package cat.freya.khs.command.map
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsMapGoTo : Command {
     override val label = "goto"
@@ -28,7 +28,7 @@ class KhsMapGoTo : Command {
             return
         }
 
-        loc.teleport(player)
+        player.teleport(loc)
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =

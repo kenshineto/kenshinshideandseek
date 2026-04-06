@@ -2,8 +2,8 @@ package cat.freya.khs.command.map.blockhunt
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsMapBlockHuntDisguise : Command {
     override val label = "disguise"
@@ -25,7 +25,8 @@ class KhsMapBlockHuntDisguise : Command {
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =
         when (parameter) {
-            "block" -> plugin.shim.blocks.filter { it.startsWith(typed) }
+            "block" ->
+                plugin.shim.getBlocks().map { it.key.platformKey }.filter { it.startsWith(typed) }
             else -> listOf()
         }
 }

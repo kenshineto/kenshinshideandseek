@@ -2,7 +2,7 @@ package cat.freya.khs.event
 
 import cat.freya.khs.Khs
 import cat.freya.khs.game.Game
-import cat.freya.khs.player.Player
+import cat.freya.khs.world.Player
 
 data class DamageEvent(
     val plugin: Khs,
@@ -28,7 +28,7 @@ fun onDamage(event: DamageEvent) {
         }
 
         // players cant be on the same team
-        if (game.sameTeam(player.uuid, attacker.uuid)) {
+        if (game.getTeam(player.uuid) == game.getTeam(attacker.uuid)) {
             event.cancel()
             return
         }
@@ -57,10 +57,10 @@ fun onDamage(event: DamageEvent) {
     // spectators cannot take damage
     if (game.isSpectator(player)) {
         event.cancel()
-        val world = player.world ?: return
-        if (player.location.y < world.minY) {
+        val world = player.getWorld() ?: return
+        if (player.getLocation().y < world.minY) {
             // make sure they don't try to kill them self to the void lol
-            game.map?.gameSpawn?.teleport(player)
+            player.teleport(game.map?.gameSpawn)
         }
     }
 
@@ -72,7 +72,7 @@ fun onDamage(event: DamageEvent) {
 
     // check if player dies (pvp mode)
     // if not then it is fine (if so we need to handle it)
-    if (plugin.config.pvp && player.health - damage >= 0.5) return
+    if (plugin.config.pvp && player.getHealth() - damage >= 0.5) return
 
     /* handle death event (player was tagged or killed in pvp) */
     event.cancel()
@@ -90,13 +90,15 @@ fun onDamage(event: DamageEvent) {
     // respawn player
     if (plugin.config.delayedRespawn.enabled && !plugin.config.respawnAsSpectator) {
         val time = plugin.config.delayedRespawn.delay
-        game.map?.seekerLobbySpawn?.teleport(player)
+        player.teleport(game.map?.seekerLobbySpawn)
         player.message(plugin.locale.prefix.default + plugin.locale.game.respawn.with(time))
         plugin.shim.scheduleEvent(time * 20UL) {
-            if (game.status == Game.Status.SEEKING) game.map?.gameSpawn?.teleport(player)
+            if (game.status == Game.Status.SEEKING) {
+                player.teleport(game.map?.gameSpawn)
+            }
         }
     } else {
-        game.map?.gameSpawn?.teleport(player)
+        player.teleport(game.map?.gameSpawn)
     }
 
     // update leaderboard

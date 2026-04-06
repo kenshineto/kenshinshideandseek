@@ -2,8 +2,8 @@ package cat.freya.khs.command.map.blockhunt.block
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsMapBlockHuntBlockAdd : Command {
     override val label = "add"
@@ -26,14 +26,14 @@ class KhsMapBlockHuntBlockAdd : Command {
         }
 
         val map = plugin.maps[name] ?: return
-        if (map.config.blockHunt.blocks.contains(material.platformName)) {
+        if (map.config.blockHunt.blocks.contains(material.key.platformKey)) {
             player.message(
                 plugin.locale.prefix.error + plugin.locale.blockHunt.block.exists.with(material)
             )
             return
         }
 
-        map.config.blockHunt.blocks += material.platformName
+        map.config.blockHunt.blocks += material.key.platformKey
         map.reloadConfig()
 
         plugin.saveConfig()
@@ -49,7 +49,8 @@ class KhsMapBlockHuntBlockAdd : Command {
                     .filter { it.value.config.blockHunt.enabled }
                     .map { it.key }
                     .filter { it.startsWith(typed) }
-            "block" -> plugin.shim.blocks.filter { it.startsWith(typed) }
+            "block" ->
+                plugin.shim.getBlocks().map { it.key.platformKey }.filter { it.startsWith(typed) }
             else -> listOf()
         }
 }

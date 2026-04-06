@@ -1,10 +1,13 @@
 package cat.freya.khs.bukkit
 
 import cat.freya.khs.Khs
+import cat.freya.khs.PlaceholderRequest
 import cat.freya.khs.bukkit.event.*
+import cat.freya.khs.handlePlaceholder
+import me.clip.placeholderapi.expansion.PlaceholderExpansion
+import org.bukkit.OfflinePlayer
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player as BukkitPlayer
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
@@ -64,7 +67,24 @@ class KhsPlugin : JavaPlugin() {
         if (server.pluginManager.getPlugin("PlaceholderAPI") == null) return
 
         shim.logger.info("Registering PlaceholderAPI expansion...")
-        KhsPAPI(this).register()
+
+        val me = this
+        object : PlaceholderExpansion() {
+                override fun getIdentifier() = "hs"
+
+                override fun getAuthor() = "KenshinEto"
+
+                override fun getVersion() = me.description.version
+
+                override fun persist() = true
+
+                override fun onRequest(player: OfflinePlayer?, params: String): String? {
+                    val uuid = player?.uniqueId ?: return null
+                    val req = PlaceholderRequest(me.khs, uuid, params)
+                    return handlePlaceholder(req)
+                }
+            }
+            .register()
     }
 
     fun scheduleTask(fn: () -> Unit) {
@@ -78,8 +98,8 @@ class KhsPlugin : JavaPlugin() {
         label: String,
         args: Array<String>,
     ): Boolean {
-        val player = sender as? BukkitPlayer ?: return false
-        val khsPlayer = BukkitKhsPlayer(this, player)
+        val player = sender as? org.bukkit.entity.Player ?: return false
+        val khsPlayer = BukkitPlayer(this, player)
         khs.commandGroup.handleCommand(khsPlayer, args.toList())
         return true
     }
@@ -90,8 +110,8 @@ class KhsPlugin : JavaPlugin() {
         label: String,
         args: Array<String>,
     ): List<String> {
-        val player = sender as? BukkitPlayer ?: return listOf()
-        val khsPlayer = BukkitKhsPlayer(this, player)
+        val player = sender as? org.bukkit.entity.Player ?: return listOf()
+        val khsPlayer = BukkitPlayer(this, player)
         return khs.commandGroup.handleTabComplete(khsPlayer, args.toList())
     }
 }

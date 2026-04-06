@@ -2,10 +2,12 @@ package cat.freya.khs.event
 
 import cat.freya.khs.Khs
 import cat.freya.khs.game.Game
-import cat.freya.khs.inv.*
-import cat.freya.khs.player.Inventory
-import cat.freya.khs.player.Player
+import cat.freya.khs.menu.BlockHuntMenu
+import cat.freya.khs.menu.DebugMenu
+import cat.freya.khs.menu.TeleportMenu
+import cat.freya.khs.world.Inventory
 import cat.freya.khs.world.Item
+import cat.freya.khs.world.Player
 import kotlin.text.startsWith
 
 data class ClickEvent(
@@ -24,8 +26,8 @@ private fun onClickSpectator(event: ClickEvent) {
     if (item.similar("PLAYER_HEAD")) {
         player.closeInventory()
 
-        val clicked = plugin.shim.getPlayer(name) ?: return
-        player.teleport(clicked.location)
+        val target = plugin.shim.getPlayer(name) ?: return
+        player.teleport(target.getLocation())
         return
     }
 
@@ -34,7 +36,7 @@ private fun onClickSpectator(event: ClickEvent) {
         player.closeInventory()
 
         val page = name.substring(5).toUIntOrNull() ?: return
-        val inv = createTeleportMenu(plugin, page - 1u) ?: return
+        val inv = TeleportMenu.create(plugin, page - 1u) ?: return
         player.showInventory(inv)
     }
 }
@@ -43,11 +45,19 @@ private fun onClickDebug(event: ClickEvent) {
     val (plugin, player, _, item) = event
     event.cancel()
 
-    if (item.similar(BECOME_SEEKER)) becomeSeeker(plugin, player)
-    else if (item.similar(BECOME_HIDER)) becomeHider(plugin, player)
-    else if (item.similar(BECOME_SPECTATOR)) becomeSpectator(plugin, player)
-    else if (item.similar(DIE_IN_GAME)) dieInGame(plugin, player)
-    else if (item.similar(REMOVE_DISGUISE)) plugin.disguiser.reveal(player.uuid) else return
+    if (item.similar(DebugMenu.BECOME_SEEKER)) {
+        DebugMenu.handleBecomeSeeker(plugin, player)
+    } else if (item.similar(DebugMenu.BECOME_HIDER)) {
+        DebugMenu.handleBecomeHider(plugin, player)
+    } else if (item.similar(DebugMenu.BECOME_SPECTATOR)) {
+        DebugMenu.handleBecomeSpectator(plugin, player)
+    } else if (item.similar(DebugMenu.DIE_IN_GAME)) {
+        DebugMenu.handleDieInGame(plugin, player)
+    } else if (item.similar(DebugMenu.REMOVE_DISGUISE)) {
+        plugin.disguiser.reveal(player.uuid)
+    } else {
+        return
+    }
 
     player.closeInventory()
 }
@@ -65,11 +75,15 @@ fun onClick(event: ClickEvent) {
     val game = plugin.game
 
     // dont allow interactions in the lobby
-    if (game.hasPlayer(player) && game.status == Game.Status.LOBBY) event.cancel()
+    if (game.hasPlayer(player) && game.status == Game.Status.LOBBY) {
+        event.cancel()
+    }
 
-    if (game.isSpectator(player)) onClickSpectator(event)
-
-    if (inv.title == DEBUG_TITLE) onClickDebug(event)
-
-    if (inv.title?.startsWith("Select a Block: ") == true) onClickBlockHunt(event)
+    if (game.isSpectator(player)) {
+        onClickSpectator(event)
+    } else if (inv.title == DebugMenu.TITLE) {
+        onClickDebug(event)
+    } else if (inv.title?.startsWith(BlockHuntMenu.PREFIX) == true) {
+        onClickBlockHunt(event)
+    }
 }

@@ -1,10 +1,9 @@
 package cat.freya.khs.bukkit.event
 
-import cat.freya.khs.bukkit.BukkitKhsPlayer
+import cat.freya.khs.bukkit.BukkitPlayer
 import cat.freya.khs.bukkit.KhsPlugin
 import cat.freya.khs.event.BreakEvent
 import cat.freya.khs.event.onBreak
-import org.bukkit.entity.Player as BukkitPlayer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -23,7 +22,7 @@ class BreakListener(val plugin: KhsPlugin) : Listener {
         val bukkitPlayer = event.player
         val block = event.block.type.name
 
-        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
         val khsEvent = BreakEvent(plugin.khs, khsPlayer, block)
         onBreak(khsEvent)
 
@@ -32,10 +31,10 @@ class BreakListener(val plugin: KhsPlugin) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onEntityBreakDoor(event: EntityBreakDoorEvent) {
-        val bukkitPlayer = event.entity as? BukkitPlayer ?: return
+        val bukkitPlayer = event.entity as? org.bukkit.entity.Player ?: return
         val block = event.block.type.name
 
-        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
         val khsEvent = BreakEvent(plugin.khs, khsPlayer, block)
         onBreak(khsEvent)
 
@@ -44,10 +43,10 @@ class BreakListener(val plugin: KhsPlugin) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onHangingBreakByEntity(event: HangingBreakByEntityEvent) {
-        val bukkitPlayer = event.remover as? BukkitPlayer ?: return
+        val bukkitPlayer = event.remover as? org.bukkit.entity.Player ?: return
         val block = event.entity.type.name
 
-        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
         val khsEvent = BreakEvent(plugin.khs, khsPlayer, block)
         onBreak(khsEvent)
 

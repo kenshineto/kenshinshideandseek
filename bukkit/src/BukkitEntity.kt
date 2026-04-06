@@ -1,0 +1,98 @@
+package cat.freya.khs.bukkit
+
+import cat.freya.khs.world.Effect
+import cat.freya.khs.world.Entity
+import cat.freya.khs.world.Location
+import org.bukkit.entity.LivingEntity
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
+import org.bukkit.scoreboard.Team
+
+const val KHS_COLLISION_TEAM_NAME = "KHS_Collision"
+
+open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.entity.Entity) :
+    Entity {
+    override val entityId = inner.entityId
+
+    override fun isAlive(): Boolean {
+        return !inner.isDead()
+    }
+
+    override fun getLocation(): Location {
+        val loc = inner.location
+        return Location(loc.x, loc.y, loc.z, inner.world.name)
+    }
+
+    override fun getWorld(): BukkitWorld? {
+        return plugin.shim.getWorld(inner.world.name)
+    }
+
+    override fun teleport(location: Location?) {
+        if (location == null) return
+
+        val loader = plugin.shim.getWorldLoader(location.worldName)
+        val world = loader.load() ?: return
+        val bukkitWorld = (world as? BukkitWorld)?.inner ?: return
+
+        inner.teleport(org.bukkit.Location(bukkitWorld, location.x, location.y, location.z))
+    }
+
+    private fun getCollidesTeam(): Team? {
+        val scoreboard = plugin.server.scoreboardManager?.mainScoreboard ?: return null
+        val team =
+            scoreboard.getTeam(KHS_COLLISION_TEAM_NAME)
+                ?: scoreboard.registerNewTeam(KHS_COLLISION_TEAM_NAME)
+        team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
+        team.setCanSeeFriendlyInvisibles(false)
+        return team
+    }
+
+    override fun setCollides(collides: Boolean) {
+        if (plugin.shim.supports(9)) {
+            val team = getCollidesTeam() ?: return
+            val id = inner.uniqueId.toString()
+            if (collides) team.removeEntry(id) else team.addEntry(id)
+        } else {
+            val method = inner.spigot().javaClass.getMethod("setCollidesWithEntities")
+            method.invoke(inner, collides)
+        }
+    }
+
+    private fun getBukkitLiving(): LivingEntity? {
+        return inner as? LivingEntity
+    }
+
+    override fun giveEffect(effect: Effect) {
+        val living = getBukkitLiving() ?: return
+        val bukkitEffect = (effect as? BukkitEffect)?.inner ?: return
+        living.addPotionEffect(bukkitEffect)
+    }
+
+    override fun clearEffects() {
+        val living = getBukkitLiving() ?: return
+        living.activePotionEffects.forEach { living.removePotionEffect(it.type) }
+    }
+
+    override fun setSpeed(amplifier: UInt) {
+        val living = getBukkitLiving() ?: return
+        living.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 1000000, 5, false, false))
+    }
+
+    override fun setInvisible(invisible: Boolean) {
+        val living = getBukkitLiving() ?: return
+
+        if (living.hasPotionEffect(PotionEffectType.INVISIBILITY) == invisible) return
+
+        if (invisible) {
+            living.addPotionEffect(
+                PotionEffect(PotionEffectType.INVISIBILITY, 1_000_000, 0, false, false)
+            )
+        } else {
+            living.removePotionEffect(PotionEffectType.INVISIBILITY)
+        }
+    }
+
+    override fun destroy() {
+        runCatching { inner.remove() }
+    }
+}

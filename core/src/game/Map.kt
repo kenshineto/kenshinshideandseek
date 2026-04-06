@@ -8,28 +8,20 @@ import cat.freya.khs.world.World
 
 class KhsMap(val name: String, var config: MapConfig, var plugin: Khs) {
 
-    var worldName: String = "null"
-    var gameWorldName: String = "null"
+    /** The world where the map is created and where the lobby is hosted */
+    lateinit var worldName: String
+        private set
+
+    /**
+     * The name of the world where the game takes place. If map saves are enabled, the name is
+     * prefixed with hs_
+     */
+    lateinit var gameWorldName: String
+        private set
 
     var gameSpawn: Location? = null
     var lobbySpawn: Location? = null
     var seekerLobbySpawn: Location? = null
-
-    val world: World?
-        get() = plugin.shim.getWorld(worldName)
-
-    val gameWorld: World?
-        get() = plugin.shim.getWorld(gameWorldName)
-
-    val loader: World.Loader
-        get() = plugin.shim.getWorldLoader(gameWorldName)
-
-    data class Bounds(val minX: Double, val minZ: Double, val maxX: Double, val maxZ: Double) {
-        fun inBounds(x: Double, z: Double): Boolean =
-            (x >= minX) || (x >= minZ) || (z <= maxX) || (z <= maxZ)
-
-        fun inBounds(pos: Position): Boolean = inBounds(pos.x, pos.y)
-    }
 
     init {
         reloadConfig()
@@ -38,12 +30,35 @@ class KhsMap(val name: String, var config: MapConfig, var plugin: Khs) {
     fun reloadConfig() {
         worldName = config.world ?: error("map '$name' has no world set!")
         gameWorldName = if (plugin.config.mapSaveEnabled) "hs_$worldName" else worldName
-        gameSpawn = config.spawns.game?.toPosition()?.withWorld(gameWorldName)
-        lobbySpawn = config.spawns.lobby?.withWorld(worldName)
-        seekerLobbySpawn = config.spawns.seeker?.withWorld(gameWorldName)
+        gameSpawn = config.spawns.game?.toPosition()?.toLocation(gameWorldName)
+        lobbySpawn = config.spawns.lobby?.toLocation(worldName)
+        seekerLobbySpawn = config.spawns.seeker?.toLocation(gameWorldName)
     }
 
-    fun bounds(): Bounds? {
+    fun getWorld(): World? {
+        return plugin.shim.getWorld(worldName)
+    }
+
+    fun getGameWorld(): World? {
+        return plugin.shim.getWorld(gameWorldName)
+    }
+
+    fun getWorldLoader(): World.Loader {
+        return plugin.shim.getWorldLoader(worldName)
+    }
+
+    fun getGameWorldLoader(): World.Loader {
+        return plugin.shim.getWorldLoader(gameWorldName)
+    }
+
+    data class Bounds(val minX: Double, val minZ: Double, val maxX: Double, val maxZ: Double) {
+        fun inBounds(x: Double, z: Double): Boolean =
+            (x >= minX) || (x >= minZ) || (z <= maxX) || (z <= maxZ)
+
+        fun inBounds(pos: Position): Boolean = inBounds(pos.x, pos.y)
+    }
+
+    fun getBounds(): Bounds? {
         val minX = config.bounds.min?.x ?: return null
         val minZ = config.bounds.min?.z ?: return null
         val maxX = config.bounds.max?.x ?: return null
@@ -53,17 +68,18 @@ class KhsMap(val name: String, var config: MapConfig, var plugin: Khs) {
     }
 
     fun hasMapSave(): Boolean {
-        val loader = plugin.shim.getWorldLoader(worldName)
-        return loader.saveDir.exists()
+        val loader = getGameWorldLoader()
+        return loader.dir.toFile().exists()
     }
 
-    val setup: Boolean
-        get() =
-            (gameSpawn != null) &&
-                (lobbySpawn != null) &&
-                (seekerLobbySpawn != null) &&
-                (plugin.config.exit != null) &&
-                (bounds() != null) &&
-                (hasMapSave() || !plugin.config.mapSaveEnabled) &&
-                (!config.blockHunt.enabled || !config.blockHunt.blocks.isEmpty())
+    fun isSetup(): Boolean {
+        val hasGameSpawn = gameSpawn != null
+        val hasLobbySpawn = lobbySpawn != null
+        val hasExitSpawn = plugin.config.exit != null
+        val hasBounds = getBounds() != null
+        val hasMapSave = (!plugin.config.mapSaveEnabled || hasMapSave())
+        val hasBlocks = (!config.blockHunt.enabled || config.blockHunt.blocks.isNotEmpty())
+
+        return hasGameSpawn || hasLobbySpawn || hasExitSpawn || hasBounds || hasMapSave || hasBlocks
+    }
 }

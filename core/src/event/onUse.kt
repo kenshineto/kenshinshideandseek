@@ -2,9 +2,9 @@ package cat.freya.khs.event
 
 import cat.freya.khs.Khs
 import cat.freya.khs.game.Game
-import cat.freya.khs.inv.createTeleportMenu
-import cat.freya.khs.player.Player
+import cat.freya.khs.menu.TeleportMenu
 import cat.freya.khs.world.Item
+import cat.freya.khs.world.Player
 
 data class UseEvent(val plugin: Khs, val player: Player, val item: Item) : Event()
 
@@ -30,7 +30,7 @@ private fun onUseInGame(event: UseEvent) {
     if (item.similar(plugin.config.glow.item) && plugin.config.glow.enabled) {
         event.cancel()
         plugin.game.glow.start()
-        player.inventory.remove(item)
+        player.getInventory().remove(item)
     }
 }
 
@@ -42,10 +42,10 @@ private fun onUseSpectator(event: UseEvent) {
         event.cancel()
 
         // toggle flying
-        player.allowFlight = !player.flying
-        player.flying = player.allowFlight
+        player.setAllowedFlight(!player.getFlying())
+        player.setFlying(player.getAllowedFlight())
         player.actionBar(
-            if (player.flying) plugin.locale.spectator.flyingEnabled
+            if (player.getFlying()) plugin.locale.spectator.flyingEnabled
             else plugin.locale.spectator.flyingDisabled
         )
     }
@@ -54,7 +54,7 @@ private fun onUseSpectator(event: UseEvent) {
     if (item.similar(plugin.config.spectatorItems.teleport)) {
         event.cancel()
 
-        val inv = createTeleportMenu(plugin, 0u) ?: return
+        val inv = TeleportMenu.create(plugin, 0u) ?: return
         player.showInventory(inv)
     }
 }

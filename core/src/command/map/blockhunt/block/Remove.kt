@@ -2,8 +2,8 @@ package cat.freya.khs.command.map.blockhunt.block
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsMapBlockHuntBlockRemove : Command {
     override val label = "remove"
@@ -26,7 +26,7 @@ class KhsMapBlockHuntBlockRemove : Command {
         }
 
         val map = plugin.maps[name] ?: return
-        if (!map.config.blockHunt.blocks.contains(material.platformName)) {
+        if (!map.config.blockHunt.blocks.contains(material.key.platformKey)) {
             player.message(
                 plugin.locale.prefix.error +
                     plugin.locale.blockHunt.block.doesntExist.with(material)
@@ -34,7 +34,7 @@ class KhsMapBlockHuntBlockRemove : Command {
             return
         }
 
-        map.config.blockHunt.blocks -= material.platformName
+        map.config.blockHunt.blocks -= material.key.platformKey
         map.reloadConfig()
 
         plugin.saveConfig()

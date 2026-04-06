@@ -2,8 +2,8 @@ package cat.freya.khs.command.map.set
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsMapSetBorder : Command {
     override val label = "border"
@@ -35,7 +35,7 @@ class KhsMapSetBorder : Command {
         val map = plugin.maps[name] ?: return
         val config = map.config.worldBorder
         config.enabled = true
-        config.pos = player.location.position
+        config.pos = player.getLocation().toPosition()
         config.size = size
         config.delay = delay
         config.move = move
@@ -52,8 +52,8 @@ class KhsMapSetBorder : Command {
             plugin.locale.prefix.default + plugin.locale.worldBorder.enable.with(size, delay, move)
         )
 
-        val loc = player.location.position
-        map.world?.border?.move(loc.x, loc.z, size, 0UL)
+        val loc = player.getLocation().toPosition()
+        map.getWorld()?.border?.move(loc.x, loc.z, size, 0UL)
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =

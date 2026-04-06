@@ -84,6 +84,10 @@ class FabricKhsServer(val mod: KhsMod) {
         return inner.getLevel(key)?.let { FabricKhsWorld(mod, it) }
     }
 
+    fun getWorlds(): List<FabricKhsWorld> {
+        return inner.getAllLevels().map { FabricKhsWorld(mod, it) }
+    }
+
     fun getWorldContainer(): Path {
         return inner.getWorldPath(LevelResource.ROOT)
     }

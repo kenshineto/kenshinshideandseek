@@ -3,10 +3,10 @@ package cat.freya.khs.disguise
 import cat.freya.khs.Khs
 import cat.freya.khs.packet.BlockChangePacket
 import cat.freya.khs.packet.EntityTeleportPacket
-import cat.freya.khs.player.Player
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Material
+import cat.freya.khs.world.Player
 import cat.freya.khs.world.Position
 import java.util.UUID
 import kotlin.math.round
@@ -48,7 +48,7 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
     }
 
     private fun respawnBlock() {
-        val loc = player?.location?.clone() ?: return
+        val loc = player?.getLocation()?.clone() ?: return
 
         // keep it out of the way till we
         // teleport it
@@ -69,7 +69,7 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
     }
 
     private fun respawnHitBox() {
-        val loc = player?.location?.clone() ?: return
+        val loc = player?.getLocation()?.clone() ?: return
 
         // keep it out of the way till we
         // teleport it
@@ -85,12 +85,12 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
         val player = player ?: return
 
         // make sure the block exists
-        if (block?.isAlive != true) respawnBlock()
+        if (block?.isAlive() != true) respawnBlock()
 
         if (shouldBeSolid) {
             if (!isSolid) {
                 isSolid = true
-                solidifiedPosition = player.location.clone()
+                solidifiedPosition = player.getLocation().clone()
                 respawnHitBox()
             }
             sendBlockUpdate(material)
@@ -118,7 +118,7 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
 
     private fun solidifyUpdate(last: Position, time: UInt): Boolean {
         val player = player ?: return false
-        val current = player.location.position
+        val current = player.getLocation().toPosition()
 
         if (last.distance(current) > 0.1) return false
 
@@ -152,7 +152,7 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
         if (entity == null) return
 
         val player = player ?: return
-        val loc = player.location.clone()
+        val loc = player.getLocation().clone()
         if (center) {
             loc.x = round(loc.x + 0.5) - 0.5
             loc.y = round(loc.y)
@@ -160,14 +160,14 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
         }
 
         val packet = EntityTeleportPacket(entity, loc)
-        plugin.shim.players.forEach { packet.send(it) }
+        plugin.shim.getPlayers().forEach { packet.send(it) }
     }
 
     private fun sendBlockUpdate(wantedMaterial: Material?) {
         val location = solidifiedPosition ?: return
         val material = wantedMaterial ?: plugin.shim.parseMaterial("AIR") ?: return
         val packet = BlockChangePacket(location, material)
-        plugin.shim.players.forEach {
+        plugin.shim.getPlayers().forEach {
             if (it.uuid == uuid) return@forEach
             packet.send(it)
         }
@@ -176,7 +176,7 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
     private fun updateVisibility() {
         val block = block ?: return
         val show = !isSolid
-        plugin.shim.players.forEach { target ->
+        plugin.shim.getPlayers().forEach { target ->
             if (target.uuid == uuid) return@forEach
 
             if (show) {

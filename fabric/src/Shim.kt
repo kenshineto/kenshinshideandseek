@@ -13,6 +13,7 @@ import cat.freya.khs.world.Material as KhsMaterial
 import cat.freya.khs.world.World as KhsWorld
 import java.nio.file.Path
 import java.util.UUID
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.server.level.ServerPlayer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -45,9 +46,11 @@ class FabricKhsShim(val mod: KhsMod) : AbstractKhsShim("Fabric") {
     override val players: List<KhsPlayer>
         get() = mod.server.getPlayers()
 
-    override val worlds: List<String> = TODO("SET VALUE")
+    override val worlds: List<String>
+        get() = mod.server.getWorlds().map { it.name }
 
-    override val blocks: List<String> = TODO("SET VALUE")
+    override val blocks: List<String>
+        get() = BuiltInRegistries.BLOCK.map { it.name.string }
 
     override val dataDirectory: Path = mod.loader.configDir.resolve(mod.ID)
 

@@ -1,8 +1,8 @@
 package cat.freya.khs.bukkit.event
 
-import cat.freya.khs.bukkit.BukkitKhsPlayer
+import cat.freya.khs.bukkit.BukkitItem
+import cat.freya.khs.bukkit.BukkitPlayer
 import cat.freya.khs.bukkit.KhsPlugin
-import cat.freya.khs.bukkit.toKhsItem
 import cat.freya.khs.event.InteractEvent
 import cat.freya.khs.event.UseEvent
 import cat.freya.khs.event.onInteract
@@ -23,7 +23,7 @@ class InteractListener(val plugin: KhsPlugin) : Listener {
     fun onPlayerInteract(event: PlayerInteractEvent) {
         val bukkitPlayer = event.player
 
-        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
 
         val block = event.clickedBlock?.type?.name
         if (event.action == Action.RIGHT_CLICK_BLOCK && block != null) {
@@ -36,15 +36,13 @@ class InteractListener(val plugin: KhsPlugin) : Listener {
             }
         }
 
-        val item = toKhsItem(event.item)
-        if (item != null) {
-            val khsEvent = UseEvent(plugin.khs, khsPlayer, item)
-            onUse(khsEvent)
+        val item = BukkitItem.wrap(event.item) ?: return
+        val khsEvent = UseEvent(plugin.khs, khsPlayer, item)
+        onUse(khsEvent)
 
-            if (khsEvent.cancelled) {
-                event.setCancelled(true)
-                return
-            }
+        if (khsEvent.cancelled) {
+            event.setCancelled(true)
+            return
         }
     }
 }

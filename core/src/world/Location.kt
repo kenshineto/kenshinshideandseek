@@ -1,36 +1,23 @@
 package cat.freya.khs.world
 
-import cat.freya.khs.Khs
-import cat.freya.khs.player.Player
-
 data class Location(
     var x: Double = 0.0,
     var y: Double = 0.0,
     var z: Double = 0.0,
     var worldName: String = "world",
 ) {
-    /// Returns the position from this location
-    var position: Position
-        get() = Position(this.x, this.y, this.z)
-        set(new) {
-            this.x = new.x
-            this.y = new.y
-            this.z = new.z
-        }
-
-    /// Returns the world associated with this location
-    fun getWorld(khs: Khs): World? {
-        return khs.shim.getWorld(this.worldName)
+    /**
+     * @return the distance between the two locations, returning null of they are in difference
+     *   worlds
+     */
+    fun distance(other: Location): Double? {
+        if (worldName != other.worldName) return null
+        return toPosition().distance(other.toPosition())
     }
 
-    fun distance(other: Location): Double {
-        if (this.worldName != other.worldName) return Double.POSITIVE_INFINITY
-
-        return position.distance(other.position)
-    }
-
-    fun teleport(player: Player) {
-        player.teleport(this)
+    /** Convert to a [Position] */
+    fun toPosition(): Position {
+        return Position(x, y, z)
     }
 
     fun clone(): Location {

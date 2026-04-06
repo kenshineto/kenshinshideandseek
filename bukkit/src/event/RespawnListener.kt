@@ -1,6 +1,6 @@
 package cat.freya.khs.bukkit.event
 
-import cat.freya.khs.bukkit.BukkitKhsPlayer
+import cat.freya.khs.bukkit.BukkitPlayer
 import cat.freya.khs.bukkit.KhsPlugin
 import cat.freya.khs.event.DeathEvent
 import cat.freya.khs.event.onDeath
@@ -24,17 +24,19 @@ class RespawnListener(val plugin: KhsPlugin) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerDeath(event: PlayerDeathEvent) {
         val bukkitPlayer = event.entity
-        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
         val khsEvent = DeathEvent(plugin.khs, khsPlayer)
         onDeath(khsEvent)
 
-        if (khsEvent.cancelled) respawnLocation[khsPlayer.uuid] = khsPlayer.location
+        if (khsEvent.cancelled) {
+            respawnLocation[khsPlayer.uuid] = khsPlayer.getLocation()
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerRespawn(event: PlayerRespawnEvent) {
         val bukkitPlayer = event.player
-        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
         val location = respawnLocation.remove(khsPlayer.uuid) ?: return
         khsPlayer.teleport(location)
     }

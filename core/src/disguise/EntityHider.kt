@@ -2,8 +2,8 @@ package cat.freya.khs.disguise
 
 import cat.freya.khs.packet.EntityDestroyPacket
 import cat.freya.khs.packet.EntityMetadataPacket
-import cat.freya.khs.player.Player
 import cat.freya.khs.world.Entity
+import cat.freya.khs.world.Player
 import com.google.common.collect.HashBasedTable
 import com.google.common.collect.Table
 

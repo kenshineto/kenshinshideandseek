@@ -2,9 +2,8 @@ package cat.freya.khs.command.world
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
-import java.io.File
+import cat.freya.khs.world.Player
 
 class KhsWorldDelete : Command {
     override val label = "delete"
@@ -23,15 +22,15 @@ class KhsWorldDelete : Command {
         // sanity check
         // for the love of god, make sure were removing a world, not like
         // some ones home dir ;-;
-        val lock = File(loader.dir, "session.lock")
-        val data = File(loader.dir, "level.dat")
+        val lock = loader.dir.resolve("session.lock").toFile()
+        val data = loader.dir.resolve("level.dat").toFile()
         if (!lock.exists() || !data.exists()) {
             player.message(plugin.locale.prefix.error + plugin.locale.world.doesntExist.with(name))
             return
         }
 
         loader.unload()
-        if (!loader.dir.deleteRecursively()) {
+        if (!loader.dir.toFile().deleteRecursively()) {
             player.message(
                 plugin.locale.prefix.error + plugin.locale.world.removedFailed.with(name)
             )
@@ -43,7 +42,7 @@ class KhsWorldDelete : Command {
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> {
         return when (parameter) {
-            "name" -> plugin.shim.worlds.filter { it.startsWith(typed) }
+            "name" -> plugin.shim.getWorldNames().filter { it.startsWith(typed) }
             else -> listOf()
         }
     }

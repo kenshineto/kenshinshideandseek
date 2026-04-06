@@ -2,9 +2,9 @@ package cat.freya.khs.command.map.blockhunt
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.inv.createBlockHuntPicker
-import cat.freya.khs.player.Player
+import cat.freya.khs.menu.BlockHuntMenu
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsMapBlockHuntDebug : Command {
     override val label = "debug"
@@ -19,7 +19,7 @@ class KhsMapBlockHuntDebug : Command {
         }
 
         val map = plugin.maps[name] ?: return
-        val inv = createBlockHuntPicker(plugin, map) ?: return
+        val inv = BlockHuntMenu.create(plugin, map) ?: return
         player.showInventory(inv)
     }
 

@@ -2,8 +2,8 @@ package cat.freya.khs.command.world
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsWorldTp : Command {
     override val label = "tp"
@@ -15,21 +15,19 @@ class KhsWorldTp : Command {
         runChecks(plugin, player) { worldExists(name) }
 
         val loader = plugin.shim.getWorldLoader(name)
-        loader.load()
-
-        val world = plugin.shim.getWorld(name)
+        val world = loader.load()
         if (world == null) {
             player.message(plugin.locale.prefix.error + plugin.locale.world.loadFailed.with(name))
             return
         }
 
-        val spawn = world.spawn.withWorld(name)
+        val spawn = world.getSpawn()
         player.teleport(spawn)
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> {
         return when (parameter) {
-            "name" -> plugin.shim.worlds.filter { it.startsWith(typed) }
+            "name" -> plugin.shim.getWorldNames().filter { it.startsWith(typed) }
             else -> listOf()
         }
     }

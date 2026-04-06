@@ -1,7 +1,7 @@
 package cat.freya.khs.command.util
 
 import cat.freya.khs.Khs
-import cat.freya.khs.player.Player
+import cat.freya.khs.world.Player
 
 interface CommandPart {
     val label: String

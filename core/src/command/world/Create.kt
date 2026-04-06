@@ -2,8 +2,8 @@ package cat.freya.khs.command.world
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 import cat.freya.khs.world.World
 
 class KhsWorldCreate : Command {
@@ -25,7 +25,7 @@ class KhsWorldCreate : Command {
             return
         }
 
-        player.teleport(world.spawn.withWorld(name))
+        player.teleport(world.getSpawn())
         player.message(plugin.locale.prefix.default + plugin.locale.world.added.with(name))
     }
 

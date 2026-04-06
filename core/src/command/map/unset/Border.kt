@@ -2,8 +2,8 @@ package cat.freya.khs.command.map.unset
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsMapUnsetBorder : Command {
     override val label = "border"
@@ -28,7 +28,7 @@ class KhsMapUnsetBorder : Command {
         plugin.saveConfig()
         player.message(plugin.locale.prefix.default + plugin.locale.worldBorder.disable)
 
-        map.world?.border?.reset()
+        map.getWorld()?.border?.reset()
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =

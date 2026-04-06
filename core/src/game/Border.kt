@@ -20,7 +20,7 @@ class Border(val game: Game) {
     @Volatile private var configValid: Boolean = false
 
     private val border: World.Border?
-        get() = game.map?.gameWorld?.border
+        get() = game.map?.getGameWorld()?.border
 
     private val borderConfig: WorldBorderConfig?
         get() = game.map?.config?.worldBorder

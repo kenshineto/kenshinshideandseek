@@ -2,8 +2,8 @@ package cat.freya.khs.command.map.set
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsMapSetSpawn : Command {
     override val label = "spawn"
@@ -19,7 +19,7 @@ class KhsMapSetSpawn : Command {
         }
 
         val map = plugin.maps[name] ?: return
-        val pos = player.location.position
+        val pos = player.getLocation().toPosition()
 
         runChecks(plugin, player) { spawnInRange(map, pos) }
 

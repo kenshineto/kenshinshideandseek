@@ -4,7 +4,7 @@ import cat.freya.khs.Khs
 import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.event.DamageEvent
 import cat.freya.khs.event.onDamage
-import cat.freya.khs.player.Player
+import cat.freya.khs.world.Player
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.event.PacketListener
 import com.github.retrooper.packetevents.event.PacketListenerPriority
@@ -67,7 +67,7 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
                 ?: return
         val player = disguise.player ?: return
 
-        if (player.gameMode == Player.GameMode.CREATIVE) return
+        if (player.getGameMode() == Player.GameMode.CREATIVE) return
 
         event.isCancelled = true
         handleAttack(disguise, player, attacker)

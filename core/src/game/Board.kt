@@ -12,14 +12,13 @@ interface Board {
     fun display(uuid: UUID)
 
     interface Team {
-        var prefix: String
+        fun setPrefix(prefix: String)
 
-        // options
-        var canCollide: Boolean
-        var nameTagsVisible: Boolean
+        fun setCanCollide(canCollide: Boolean)
 
-        // players
-        var players: Set<UUID>
+        fun setNameTagsVisible(nameTagsVisible: Boolean)
+
+        fun setPlayers(players: Set<UUID>)
     }
 
     // seeker/hider display
@@ -30,17 +29,17 @@ fun updateTeams(plugin: Khs, board: Board) {
     val hider = board.getTeam("Hider")
     val seeker = board.getTeam("Seeker")
 
-    hider.players = plugin.game.hiderUUIDs
-    seeker.players = plugin.game.seekerUUIDs
+    hider.setPlayers(plugin.game.hiderUUIDs)
+    seeker.setPlayers(plugin.game.seekerUUIDs)
 
-    hider.nameTagsVisible = plugin.config.nametagsVisible
-    seeker.nameTagsVisible = plugin.config.nametagsVisible
+    hider.setNameTagsVisible(plugin.config.nametagsVisible)
+    seeker.setNameTagsVisible(plugin.config.nametagsVisible)
 
-    hider.canCollide = false
-    seeker.canCollide = false
+    hider.setCanCollide(false)
+    seeker.setCanCollide(false)
 
-    hider.prefix = plugin.locale.game.team.hider
-    seeker.prefix = plugin.locale.game.team.seeker
+    hider.setPrefix(plugin.locale.game.team.hider)
+    seeker.setPrefix(plugin.locale.game.team.seeker)
 }
 
 fun getLobbyBoard(plugin: Khs, uuid: UUID): Board? {

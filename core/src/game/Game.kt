@@ -4,9 +4,9 @@ import cat.freya.khs.Khs
 import cat.freya.khs.config.ConfigCountdownDisplay
 import cat.freya.khs.config.ConfigLeaveType
 import cat.freya.khs.config.ConfigScoringMode
-import cat.freya.khs.inv.createBlockHuntPicker
-import cat.freya.khs.player.Player
+import cat.freya.khs.menu.BlockHuntMenu
 import cat.freya.khs.world.Item
+import cat.freya.khs.world.Player
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.min
@@ -22,13 +22,14 @@ class Game(val plugin: Khs) {
         SEEKING,
         FINISHED;
 
-        fun inProgress(): Boolean =
-            when (this) {
+        fun inProgress(): Boolean {
+            return when (this) {
                 LOBBY -> false
                 HIDING -> true
                 SEEKING -> true
                 FINISHED -> false
             }
+        }
     }
 
     /// what team a player is on
@@ -80,7 +81,7 @@ class Game(val plugin: Khs) {
     private val mappings: MutableMap<UUID, Team> = ConcurrentHashMap<UUID, Team>()
 
     val players: List<Player>
-        get() = mappings.keys.mapNotNull { plugin.shim.getPlayer(it) }
+        get() = playerUUIDs.mapNotNull { plugin.shim.getPlayer(it) }
 
     val playerUUIDs: Set<UUID>
         get() = mappings.keys.toSet()
@@ -115,29 +116,45 @@ class Game(val plugin: Khs) {
     val spectatorSize: UInt
         get() = spectatorUUIDs.size.toUInt()
 
-    fun hasPlayer(uuid: UUID): Boolean = mappings.containsKey(uuid)
+    fun hasPlayer(uuid: UUID): Boolean {
+        return mappings.containsKey(uuid)
+    }
 
-    fun hasPlayer(player: Player): Boolean = hasPlayer(player.uuid)
+    fun hasPlayer(player: Player): Boolean {
+        return hasPlayer(player.uuid)
+    }
 
-    fun isHider(uuid: UUID): Boolean = mappings[uuid] == Team.HIDER
+    fun isHider(uuid: UUID): Boolean {
+        return getTeam(uuid) == Team.HIDER
+    }
 
-    fun isHider(player: Player): Boolean = isHider(player.uuid)
+    fun isHider(player: Player): Boolean {
+        return isHider(player.uuid)
+    }
 
-    fun isSeeker(uuid: UUID): Boolean = mappings[uuid] == Team.SEEKER
+    fun isSeeker(uuid: UUID): Boolean {
+        return getTeam(uuid) == Team.SEEKER
+    }
 
-    fun isSeeker(player: Player): Boolean = isSeeker(player.uuid)
+    fun isSeeker(player: Player): Boolean {
+        return isSeeker(player.uuid)
+    }
 
-    fun isSpectator(uuid: UUID): Boolean = mappings[uuid] == Team.SPECTATOR
+    fun isSpectator(uuid: UUID): Boolean {
+        return getTeam(uuid) == Team.SPECTATOR
+    }
 
-    fun isSpectator(player: Player): Boolean = isSpectator(player.uuid)
+    fun isSpectator(player: Player): Boolean {
+        return isSpectator(player.uuid)
+    }
 
-    fun getTeam(uuid: UUID): Team? = mappings[uuid]
+    fun getTeam(uuid: UUID): Team? {
+        return mappings[uuid]
+    }
 
     fun setTeam(uuid: UUID, team: Team) {
         mappings[uuid] = team
     }
-
-    fun sameTeam(a: UUID, b: UUID): Boolean = mappings[a] == mappings[b]
 
     // what round was the uuid last picked to be seeker
     private val lastPicked: MutableMap<UUID, UInt> = ConcurrentHashMap<UUID, UInt>()
@@ -158,7 +175,7 @@ class Game(val plugin: Khs) {
     private var seekerDeaths: MutableMap<UUID, UInt> = ConcurrentHashMap<UUID, UInt>()
 
     fun doTick() {
-        if (map?.setup != true) return
+        if (map?.isSetup() != true) return
 
         when (status) {
             Status.LOBBY -> whileWaiting()
@@ -170,8 +187,9 @@ class Game(val plugin: Khs) {
         gameTick++
     }
 
+    /** If a map is not set, select a new map */
     fun selectMap(): KhsMap? {
-        map = map ?: plugin.maps.values.filter { it.setup }.randomOrNull()
+        map = map ?: plugin.maps.values.filter { it.isSetup() }.randomOrNull()
         return map
     }
 
@@ -181,7 +199,7 @@ class Game(val plugin: Khs) {
         if (map == null && size > 0u) return
 
         this.map = map
-        players.forEach { player -> joinPlayer(player) }
+        players.forEach { player -> loadPlayerIntoLobby(player) }
     }
 
     fun getSeekerWeight(uuid: UUID): Double {
@@ -193,7 +211,7 @@ class Game(val plugin: Khs) {
     }
 
     fun getSeekerChance(uuid: UUID): Double {
-        val weights = mappings.keys.map { getSeekerWeight(it) }
+        val weights = playerUUIDs.map { getSeekerWeight(it) }
         val totalWeight = weights.sum()
         val weight = getSeekerWeight(uuid)
         if (totalWeight == 0.0) return 0.0
@@ -232,7 +250,7 @@ class Game(val plugin: Khs) {
     fun start(requestedPool: Collection<UUID>) {
         val seekers = mutableSetOf<UUID>()
         val pool =
-            if (requestedPool.isEmpty()) mappings.keys.toMutableSet()
+            if (requestedPool.isEmpty()) playerUUIDs.toMutableSet()
             else requestedPool.toMutableSet()
 
         while (
@@ -254,12 +272,15 @@ class Game(val plugin: Khs) {
     private fun startWithSeekers(seekers: Set<UUID>) {
         if (status != Status.LOBBY) return
 
-        if (plugin.config.mapSaveEnabled) map?.loader?.rollback()
+        if (plugin.config.mapSaveEnabled) {
+            // roll back the mapsave
+            map?.getGameWorld()?.loader?.rollback()
+        }
 
         synchronized(this) {
             // set teams
-            mappings.forEach { mappings[it.key] = Team.HIDER }
-            seekers.forEach { mappings[it] = Team.SEEKER }
+            playerUUIDs.forEach { setTeam(it, Team.HIDER) }
+            seekers.forEach { setTeam(it, Team.SEEKER) }
 
             // reset game state
             initialTeams = mappings.toMap()
@@ -312,14 +333,14 @@ class Game(val plugin: Khs) {
         if (!status.inProgress()) return
 
         // update database
-        mappings.keys.forEach { updatePlayerInfo(it, reason) }
+        playerUUIDs.forEach { updatePlayerInfo(it, reason) }
 
         round++
         status = Status.FINISHED
         timer = null
 
         if (plugin.config.leaveOnEnd) {
-            mappings.keys.forEach { leave(it) }
+            playerUUIDs.forEach { leave(it) }
         }
     }
 
@@ -334,17 +355,19 @@ class Game(val plugin: Khs) {
         }
 
         if (status != Status.LOBBY) {
-            mappings[uuid] = Team.SPECTATOR
+            setTeam(uuid, Team.SPECTATOR)
             loadSpectator(player)
             reloadGameBoards()
             player.message(plugin.locale.prefix.default + plugin.locale.game.join)
             return
         }
 
-        if (plugin.config.saveInventory) savedInventories[uuid] = player.inventory.contents
+        if (plugin.config.saveInventory) {
+            savedInventories[uuid] = player.getInventory().getContents()
+        }
 
-        mappings[uuid] = Team.HIDER
-        joinPlayer(player)
+        setTeam(uuid, Team.HIDER)
+        loadPlayerIntoLobby(player)
         reloadLobbyBoards()
 
         broadcast(plugin.locale.prefix.default + plugin.locale.lobby.join.with(player.name))
@@ -358,25 +381,35 @@ class Game(val plugin: Khs) {
         mappings.remove(uuid)
         resetPlayer(player)
 
-        if (plugin.config.saveInventory)
-            savedInventories[uuid]?.let { player.inventory.contents = it }
+        if (plugin.config.saveInventory) {
+            savedInventories[uuid]?.let { player.getInventory().setContents(it) }
+        }
 
         // reload sidebar
-        player.hideBoards()
+        player.hideScoreBoard()
         if (status.inProgress()) {
             reloadGameBoards()
         } else {
             reloadLobbyBoards()
         }
 
-        when (plugin.config.leaveType) {
-            ConfigLeaveType.EXIT -> plugin.config.exit?.let { player.teleport(it) }
-            ConfigLeaveType.PROXY -> player.sendToServer(plugin.config.leaveServer)
+        if (plugin.config.leaveType == ConfigLeaveType.PROXY) {
+            val server = plugin.config.leaveServer
+            val successfull = plugin.shim.sendPlayerToServer(uuid, server)
+            if (!successfull) {
+                player.message(
+                    plugin.locale.prefix.error +
+                        plugin.locale.command.sendToServerFailed.with(server)
+                )
+                player.teleport(plugin.config.exit)
+            }
+        } else {
+            plugin.config.exit?.let { player.teleport(it) }
         }
     }
 
     fun addKill(uuid: UUID) {
-        val team = mappings[uuid] ?: return
+        val team = getTeam(uuid) ?: return
         when (team) {
             Team.HIDER -> hiderKills[uuid] = hiderKills.getOrDefault(uuid, 0u) + 1u
             Team.SEEKER -> seekerKills[uuid] = seekerKills.getOrDefault(uuid, 0u) + 1u
@@ -385,7 +418,7 @@ class Game(val plugin: Khs) {
     }
 
     fun addDeath(uuid: UUID) {
-        val team = mappings[uuid] ?: return
+        val team = getTeam(uuid) ?: return
         when (team) {
             Team.HIDER -> hiderDeaths[uuid] = hiderDeaths.getOrDefault(uuid, 0u) + 1u
             Team.SEEKER -> seekerDeaths[uuid] = seekerDeaths.getOrDefault(uuid, 0u) + 1u
@@ -394,11 +427,11 @@ class Game(val plugin: Khs) {
     }
 
     private fun reloadLobbyBoards() {
-        mappings.keys.forEach { reloadLobbyBoard(plugin, it) }
+        playerUUIDs.forEach { reloadLobbyBoard(plugin, it) }
     }
 
     private fun reloadGameBoards() {
-        mappings.keys.forEach { reloadGameBoard(plugin, it) }
+        playerUUIDs.forEach { reloadGameBoard(plugin, it) }
     }
 
     /// during Status.LOBBY
@@ -443,7 +476,7 @@ class Game(val plugin: Khs) {
                     timer = null
                     seekerPlayers.forEach {
                         giveSeekerItems(it)
-                        map?.gameSpawn?.teleport(it)
+                        it.teleport(map?.gameSpawn)
                     }
                     hiderPlayers.forEach { giveHiderItems(it) }
                 }
@@ -470,8 +503,11 @@ class Game(val plugin: Khs) {
 
     /// @returns distance to the closest seeker to the player
     private fun distanceToSeeker(player: Player): Double {
-        return seekerPlayers.minOfOrNull { seeker -> player.location.distance(seeker.location) }
-            ?: Double.POSITIVE_INFINITY
+        val distances =
+            seekerPlayers.mapNotNull { seeker ->
+                player.getLocation().distance(seeker.getLocation())
+            }
+        return distances.minOrNull() ?: Double.POSITIVE_INFINITY
     }
 
     /// plays the seeker ping for a hider
@@ -602,7 +638,7 @@ class Game(val plugin: Khs) {
 
         // update spectator flight
         // (the toggle they have only changed allowed flight)
-        spectatorPlayers.forEach { it.flying = it.allowFlight }
+        spectatorPlayers.forEach { it.setFlying(it.getAllowedFlight()) }
 
         checkWinConditions()
     }
@@ -627,7 +663,7 @@ class Game(val plugin: Khs) {
 
                 status = Status.LOBBY
 
-                players.forEach { joinPlayer(it) }
+                players.forEach { loadPlayerIntoLobby(it) }
             }
         }
     }
@@ -644,25 +680,39 @@ class Game(val plugin: Khs) {
 
     private fun loadSeekers() = seekerPlayers.forEach { loadSeeker(it) }
 
-    private fun hidePlayer(player: Player, hidden: Boolean) {
-        players.forEach { other -> if (other.uuid != player.uuid) other.setHidden(player, hidden) }
+    private fun setPlayerHiddenFor(player: Player, hidden: Boolean, targets: List<Player>) {
+        targets.forEach { target ->
+            // cannot hide oneself
+            if (target.uuid == player.uuid) {
+                return@forEach
+            }
+
+            if (hidden) {
+                plugin.entityHider.hideEntity(target, player)
+            } else {
+                plugin.entityHider.showEntity(target, player)
+            }
+        }
+    }
+
+    private fun setPlayerHidden(player: Player, hidden: Boolean) {
+        setPlayerHiddenFor(player, hidden, players)
     }
 
     fun resetPlayer(player: Player) {
-        player.flying = false
-        player.allowFlight = false
-        player.gameMode = Player.GameMode.ADVENTURE
-        player.inventory.clear()
+        player.setFlying(false)
+        player.setAllowedFlight(false)
+        player.setGameMode(Player.GameMode.ADVENTURE)
+        player.getInventory().clearAll()
         player.clearEffects()
-        player.hunger = 20u
-        player.health = 20.0
+        player.satiate()
         player.heal()
         plugin.disguiser.reveal(player.uuid)
-        hidePlayer(player, false)
+        setPlayerHidden(player, false)
     }
 
     fun loadHider(hider: Player) {
-        map?.gameSpawn?.teleport(hider)
+        hider.teleport(map?.gameSpawn)
         resetPlayer(hider)
         hider.setSpeed(5u)
         hider.title(plugin.locale.game.team.hider, plugin.locale.game.team.hiderSubtitle)
@@ -670,103 +720,94 @@ class Game(val plugin: Khs) {
         // open block hunt picker
         if (map?.config?.blockHunt?.enabled == true) {
             val map = map ?: return
-            val inv = createBlockHuntPicker(plugin, map) ?: return
+            val inv = BlockHuntMenu.create(plugin, map) ?: return
             hider.showInventory(inv)
         }
     }
 
     fun giveHiderItems(hider: Player) {
+        val inventory = hider.getInventory()
         val items = plugin.itemsConfig.hiderItems.mapNotNull { plugin.shim.parseItem(it) }
         val effects = plugin.itemsConfig.hiderEffects.mapNotNull { plugin.shim.parseEffect(it) }
 
-        hider.inventory.clear()
-        for ((i, item) in items.withIndex()) hider.inventory.set(i.toUInt(), item)
+        inventory.clearAll()
+        items.withIndex().forEach { (i, item) -> inventory.set(i.toUInt(), item) }
 
         // glow power-up
         if (!plugin.config.alwaysGlow && plugin.config.glow.enabled) {
             val item = plugin.shim.parseItem(plugin.config.glow.item)
-            item?.let { hider.inventory.set(items.size.toUInt(), it) }
+            item?.let { hider.getInventory().set(items.size.toUInt(), it) }
         }
 
-        plugin.itemsConfig.hiderHelmet
-            ?.let { plugin.shim.parseItem(it) }
-            ?.let { hider.inventory.helmet = it }
-        plugin.itemsConfig.hiderChestplate
-            ?.let { plugin.shim.parseItem(it) }
-            ?.let { hider.inventory.chestplate = it }
-        plugin.itemsConfig.hiderLeggings
-            ?.let { plugin.shim.parseItem(it) }
-            ?.let { hider.inventory.leggings = it }
-        plugin.itemsConfig.hiderBoots
-            ?.let { plugin.shim.parseItem(it) }
-            ?.let { hider.inventory.boots = it }
+        val helmet = plugin.shim.parseItem(plugin.itemsConfig.hiderHelmet)
+        val chestplate = plugin.shim.parseItem(plugin.itemsConfig.hiderChestplate)
+        val leggings = plugin.shim.parseItem(plugin.itemsConfig.hiderLeggings)
+        val boots = plugin.shim.parseItem(plugin.itemsConfig.hiderBoots)
+
+        inventory.setHelmet(helmet)
+        inventory.setChestplate(chestplate)
+        inventory.setLeggings(leggings)
+        inventory.setBoots(boots)
 
         hider.clearEffects()
         for (effect in effects) hider.giveEffect(effect)
     }
 
     fun loadSeeker(seeker: Player) {
-        map?.seekerLobbySpawn?.teleport(seeker)
+        seeker.teleport(map?.seekerLobbySpawn)
         resetPlayer(seeker)
         seeker.title(plugin.locale.game.team.seeker, plugin.locale.game.team.seekerSubtitle)
     }
 
     fun giveSeekerItems(seeker: Player) {
+        val inventory = seeker.getInventory()
         val items = plugin.itemsConfig.seekerItems.mapNotNull { plugin.shim.parseItem(it) }
         val effects = plugin.itemsConfig.seekerEffects.mapNotNull { plugin.shim.parseEffect(it) }
 
-        seeker.inventory.clear()
-        for ((i, item) in items.withIndex()) seeker.inventory.set(i.toUInt(), item)
+        inventory.clearAll()
+        items.withIndex().forEach { (i, item) -> inventory.set(i.toUInt(), item) }
 
-        plugin.itemsConfig.seekerHelmet
-            ?.let { plugin.shim.parseItem(it) }
-            ?.let { seeker.inventory.helmet = it }
-        plugin.itemsConfig.seekerChestplate
-            ?.let { plugin.shim.parseItem(it) }
-            ?.let { seeker.inventory.chestplate = it }
-        plugin.itemsConfig.seekerLeggings
-            ?.let { plugin.shim.parseItem(it) }
-            ?.let { seeker.inventory.leggings = it }
-        plugin.itemsConfig.seekerBoots
-            ?.let { plugin.shim.parseItem(it) }
-            ?.let { seeker.inventory.boots = it }
+        val helmet = plugin.shim.parseItem(plugin.itemsConfig.seekerHelmet)
+        val chestplate = plugin.shim.parseItem(plugin.itemsConfig.seekerChestplate)
+        val leggings = plugin.shim.parseItem(plugin.itemsConfig.seekerLeggings)
+        val boots = plugin.shim.parseItem(plugin.itemsConfig.seekerBoots)
+
+        inventory.setHelmet(helmet)
+        inventory.setChestplate(chestplate)
+        inventory.setLeggings(leggings)
+        inventory.setBoots(boots)
 
         seeker.clearEffects()
         for (effect in effects) seeker.giveEffect(effect)
     }
 
     fun loadSpectator(spectator: Player) {
-        map?.gameSpawn?.teleport(spectator)
+        spectator.teleport(map?.gameSpawn)
         resetPlayer(spectator)
-        spectator.allowFlight = true
-        spectator.flying = true
+        spectator.setAllowedFlight(true)
+        spectator.setFlying(true)
 
-        plugin.config.spectatorItems.teleport
-            .let { plugin.shim.parseItem(it) }
-            ?.let { spectator.inventory.set(3u, it) }
+        val inventory = spectator.getInventory()
+        val teleportItem = plugin.shim.parseItem(plugin.config.spectatorItems.teleport)
+        val flightItem = plugin.shim.parseItem(plugin.config.spectatorItems.flight)
 
-        plugin.config.spectatorItems.flight
-            .let { plugin.shim.parseItem(it) }
-            ?.let { spectator.inventory.set(6u, it) }
+        inventory.set(3u, teleportItem)
+        inventory.set(6u, flightItem)
 
-        hidePlayer(spectator, true)
+        setPlayerHidden(spectator, false)
     }
 
-    private fun joinPlayer(player: Player) {
-        map?.lobbySpawn?.teleport(player)
+    private fun loadPlayerIntoLobby(player: Player) {
+        player.teleport(map?.lobbySpawn)
         resetPlayer(player)
 
-        plugin.config.lobby.leaveItem
-            .let { plugin.shim.parseItem(it) }
-            ?.let { player.inventory.set(0u, it) }
+        val inventory = player.getInventory()
+        val leaveItem = plugin.shim.parseItem(plugin.config.lobby.leaveItem)
+        val startItem = plugin.shim.parseItem(plugin.config.lobby.startItem)
 
+        inventory.set(0u, leaveItem)
         if (player.hasPermission("hs.start")) {
-            plugin.config.lobby.startItem
-                .let { plugin.shim.parseItem(it) }
-                ?.let { player.inventory.set(8u, it) }
+            inventory.set(8u, startItem)
         }
-
-        if (getTeam(player.uuid) != Team.SPECTATOR)
-            spectatorPlayers.forEach { player.setHidden(it, true) }
     }
 }

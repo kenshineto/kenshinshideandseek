@@ -3,8 +3,8 @@ package cat.freya.khs.command.map
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
 import cat.freya.khs.game.mapSave
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsMapSave : Command {
     override val label = "save"

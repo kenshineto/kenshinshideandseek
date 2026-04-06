@@ -2,7 +2,7 @@ package cat.freya.khs.event
 
 import cat.freya.khs.Khs
 import cat.freya.khs.game.Game
-import cat.freya.khs.player.Player
+import cat.freya.khs.world.Player
 
 data class CommandEvent(val plugin: Khs, val player: Player, val msg: String) : Event()
 

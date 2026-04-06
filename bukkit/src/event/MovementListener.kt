@@ -1,16 +1,15 @@
 package cat.freya.khs.bukkit.event
 
-import cat.freya.khs.bukkit.BukkitKhsPlayer
+import cat.freya.khs.bukkit.BukkitPlayer
 import cat.freya.khs.bukkit.KhsPlugin
 import cat.freya.khs.event.JumpEvent
 import cat.freya.khs.event.MoveEvent
 import cat.freya.khs.event.onJump
 import cat.freya.khs.event.onMove
-import cat.freya.khs.world.Position as KhsPosition
+import cat.freya.khs.world.Position
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.Material
-import org.bukkit.entity.Player as BukkitPlayer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -24,7 +23,7 @@ class MovementListener(val plugin: KhsPlugin) : Listener {
         plugin.server.pluginManager.registerEvents(this, plugin)
     }
 
-    private fun isOnGround(player: BukkitPlayer): Boolean {
+    private fun isOnGround(player: org.bukkit.entity.Player): Boolean {
         if (plugin.shim.supports(16, 1)) {
             val below = player.location.clone().subtract(0.0, 0.1, 0.0).block
             return below.type.isSolid
@@ -37,7 +36,7 @@ class MovementListener(val plugin: KhsPlugin) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerMove(event: PlayerMoveEvent) {
         val bukkitPlayer = event.player
-        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
 
         // check jumping
         if (bukkitPlayer.velocity.y > 0.0) {
@@ -56,8 +55,8 @@ class MovementListener(val plugin: KhsPlugin) : Listener {
             else prevPlayersOnGround.remove(bukkitPlayer.uniqueId)
         }
 
-        val from = event.from.let { KhsPosition(it.x, it.y, it.z) }
-        val to = event.to?.let { KhsPosition(it.x, it.y, it.z) } ?: return
+        val from = event.from.let { Position(it.x, it.y, it.z) }
+        val to = event.to?.let { Position(it.x, it.y, it.z) } ?: return
         val khsEvent = MoveEvent(plugin.khs, khsPlayer, from, to)
         onMove(khsEvent)
 

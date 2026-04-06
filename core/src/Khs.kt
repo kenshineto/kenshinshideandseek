@@ -23,31 +23,72 @@ import cat.freya.khs.game.KhsMap
 import cat.freya.khs.packet.KhsPacketListener
 import java.io.File
 import java.io.InputStream
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
+
+data class Request(val fn: () -> Unit, val lengthSeconds: Long) {
+    val start = System.currentTimeMillis()
+    val expired: Boolean
+        get() = (System.currentTimeMillis() - start) < lengthSeconds * 1000
+}
 
 /// Plugin wrapper
 class Khs(val shim: KhsShim) {
 
-    @Volatile var config: KhsConfig = KhsConfig()
-    @Volatile var itemsConfig: KhsItemsConfig = KhsItemsConfig()
-    @Volatile var boardConfig: KhsBoardConfig = KhsBoardConfig()
-    @Volatile var locale: KhsLocale = KhsLocale()
+    /** The main plugin config */
+    var config: KhsConfig = KhsConfig()
+        private set
 
-    // code should access maps.<name>.config instead
+    /** Stores seeker/hider items and effects */
+    var itemsConfig: KhsItemsConfig = KhsItemsConfig()
+        private set
+
+    /** Stores format and strings for the game board */
+    var boardConfig: KhsBoardConfig = KhsBoardConfig()
+        private set
+
+    /** Stores localized plugin messages */
+    var locale: KhsLocale = KhsLocale()
+        private set
+
+    /**
+     * Stores all maps known to the plugin. Map configurations should be accessed though
+     * maps.<name>.config
+     *
+     * This config is auto generated and should not be touched directly. It is generated based on
+     * the state of `maps`
+     */
     private var mapsConfig: KhsMapsConfig = KhsMapsConfig()
 
+    /**
+     * The current single game for the plugin
+     *
+     * Should we store multiple games?
+     */
     val game: Game = Game(this)
-    val maps: MutableMap<String, KhsMap> = ConcurrentHashMap<String, KhsMap>()
-    @Volatile var database: Database? = null
 
+    /** Deserialize maps known to the plugin from `mapsConfig` */
+    val maps: MutableMap<String, KhsMap> = ConcurrentHashMap<String, KhsMap>()
+
+    /** Stores players name and win/loss/kill/death information */
+    var database: Database? = null
+        private set
+
+    /** Commands known to this plugin */
     val commandGroup: CommandGroup = registerCommands()
 
-    // block hunt
+    /** Holds current disguises for disgusied players */
     val disguiser: Disguiser = Disguiser()
+
+    /** Allows hiding entities for only some player observers */
     val entityHider: EntityHider = EntityHider()
 
-    // if we are performing a map save right now
-    @Volatile var saving: Boolean = false
+    /** Knowns requests that need to be completed with `/hs confirm` */
+    val requests: MutableMap<UUID, Request> = ConcurrentHashMap<UUID, Request>()
+
+    /** If a map save is currently in progress */
+    val saving: AtomicBoolean = AtomicBoolean(false)
 
     fun init() {
         printBanner()
@@ -75,8 +116,7 @@ class Khs(val shim: KhsShim) {
         val ansiGreen = "\u001B[92m"
         val ansiGray = "\u001B[90m"
 
-        val mcVersion = shim.mcVersion.joinToString(".")
-        val fullMcVersion = "${ansiGray}Running on $mcVersion-${shim.platform}"
+        val fullMcVersion = "${ansiGray}Running on ${shim.serverVersion}-${shim.platform}"
         val fullPluginVersion = "${ansiGreen}Version ${shim.pluginVersion}"
 
         shim.logger.info("$ansiBlue _  ___   _ ____$ansiReset")
@@ -154,8 +194,8 @@ class Khs(val shim: KhsShim) {
         return if (file.exists()) file.inputStream() else null
     }
 
-    fun reloadConfig(): Result<Unit> =
-        runCatching {
+    fun reloadConfig(): Result<Unit> {
+        return runCatching {
                 shim.logger.info("Loading config...")
                 config = deserialize(KhsConfig::class, readConfigFile("config.yml"))
                 shim.logger.info("Loading items...")
@@ -167,6 +207,9 @@ class Khs(val shim: KhsShim) {
                 shim.logger.info("Loading locale...")
                 locale = deserialize(KhsLocale::class, readConfigFile("locale.yml"))
                 shim.logger.info("Loading database...")
+
+                // database config could of changed so we need to
+                // reconnect to the database
                 database = Database(this)
 
                 // reload maps
@@ -179,7 +222,11 @@ class Khs(val shim: KhsShim) {
                 maps.clear()
                 newMaps.forEach { maps[it.key] = it.value }
             }
-            .onFailure { shim.logger.error("failed to reload config: ${it.message}") }
+            .onFailure {
+                shim.logger.error("failed to reload config: ${it.message}")
+                for (line in it.stackTraceToString().lines()) shim.logger.error(line)
+            }
+    }
 
     private fun writeConfigFile(fileName: String, content: String) {
         val dir = shim.dataDirectory.toFile()

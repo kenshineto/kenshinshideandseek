@@ -4,8 +4,8 @@ import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
 import cat.freya.khs.config.MapConfig
 import cat.freya.khs.game.KhsMap
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsMapAdd : Command {
     override val label = "add"
@@ -29,7 +29,7 @@ class KhsMapAdd : Command {
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =
         when (parameter) {
             "name" -> listOf("name")
-            "world" -> plugin.shim.worlds.filter { it.startsWith(typed) }
+            "world" -> plugin.shim.getWorldNames().filter { it.startsWith(typed) }
             else -> listOf()
         }
 }

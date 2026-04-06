@@ -1,6 +1,6 @@
 package cat.freya.khs.bukkit.event
 
-import cat.freya.khs.bukkit.BukkitKhsPlayer
+import cat.freya.khs.bukkit.BukkitPlayer
 import cat.freya.khs.bukkit.KhsPlugin
 import cat.freya.khs.event.ChatEvent
 import cat.freya.khs.event.onChat
@@ -20,7 +20,7 @@ class ChatListener(val plugin: KhsPlugin) : Listener {
         val bukkitPlayer = event.player
         val message = event.message
 
-        val khsPlayer = BukkitKhsPlayer(plugin, bukkitPlayer)
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
         val khsEvent = ChatEvent(plugin.khs, khsPlayer, message)
         onChat(khsEvent)
 

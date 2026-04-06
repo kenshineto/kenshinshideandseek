@@ -1,7 +1,7 @@
 package cat.freya.khs.command.util
 
 import cat.freya.khs.Khs
-import cat.freya.khs.player.Player
+import cat.freya.khs.world.Player
 
 private data class CommandData(val command: Command, val permission: String, val args: List<String>)
 
@@ -33,7 +33,7 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
     fun handleCommand(player: Player, args: List<String>) {
         val data = getCommand(args, label) ?: return messageAbout(player)
 
-        if (plugin.saving) {
+        if (plugin.saving.get()) {
             player.message(plugin.locale.prefix.error + plugin.locale.command.notAllowedTemp)
             return
         }

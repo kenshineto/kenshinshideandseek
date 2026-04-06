@@ -1,7 +1,7 @@
 package cat.freya.khs.event
 
 import cat.freya.khs.Khs
-import cat.freya.khs.player.Player
+import cat.freya.khs.world.Player
 
 data class KickEvent(val plugin: Khs, val player: Player, val reason: String) : Event()
 

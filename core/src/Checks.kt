@@ -2,7 +2,8 @@ package cat.freya.khs
 
 import cat.freya.khs.game.Game
 import cat.freya.khs.game.KhsMap
-import cat.freya.khs.player.Player
+import cat.freya.khs.world.MAP_SAVE_PREFIX
+import cat.freya.khs.world.Player
 import cat.freya.khs.world.Position
 
 class Checks(val plugin: Khs, val player: Player) {
@@ -64,13 +65,13 @@ class Checks(val plugin: Khs, val player: Player) {
 
     /// cheks that the player is in the game world
     fun inMapWorld(map: KhsMap?) {
-        if (map?.worldName != player.location.worldName) error(plugin.locale.map.wrongWorld)
+        if (map?.worldName != player.getLocation().worldName) error(plugin.locale.map.wrongWorld)
     }
 
     /// Checks that the map exists and is set up
     fun mapSetup(map: KhsMap?) {
         if (map == null) error(plugin.locale.map.unknown)
-        if (!map.setup) error(plugin.locale.map.setup.not.with(map.name))
+        if (!map.isSetup()) error(plugin.locale.map.setup.not.with(map.name))
     }
 
     /// Checks if a map exists
@@ -96,20 +97,21 @@ class Checks(val plugin: Khs, val player: Player) {
 
     /// Checks if a world exists
     fun worldExists(worldName: String) {
-        if (!plugin.shim.worlds.contains(worldName))
+        if (!plugin.shim.getWorldNames().contains(worldName))
             error(plugin.locale.world.doesntExist.with(worldName))
     }
 
     /// Checks if a world doesnt exists
     fun worldDoesNotExist(worldName: String) {
-        if (plugin.shim.worlds.contains(worldName))
+        if (plugin.shim.getWorldNames().contains(worldName))
             error(plugin.locale.world.exists.with(worldName))
     }
 
     /// Checks if a world is valid for a map
     fun worldValid(worldName: String) {
         worldExists(worldName)
-        if (worldName.startsWith("hs_")) error(plugin.locale.world.doesntExist.with(worldName))
+        if (worldName.startsWith(MAP_SAVE_PREFIX))
+            error(plugin.locale.world.doesntExist.with(worldName))
     }
 
     /// Checks that a world is not in use
@@ -141,7 +143,7 @@ class Checks(val plugin: Khs, val player: Player) {
         if (border.enabled && (border.pos?.distance(position) ?: 0.0) > 100.0) return false
 
         // check in bounds
-        if (map.bounds()?.inBounds(position.x, position.z) == false) return false
+        if (map.getBounds()?.inBounds(position.x, position.z) == false) return false
 
         return true
     }
@@ -154,17 +156,17 @@ class Checks(val plugin: Khs, val player: Player) {
     /// Makes sure spawns are in range
     fun spawnsInRange(map: KhsMap) {
         // check game spawn
-        if (!isSpawnInRange(map, map.gameSpawn?.position)) {
+        if (!isSpawnInRange(map, map.gameSpawn?.toPosition())) {
             player.message(plugin.locale.prefix.warning + plugin.locale.map.warn.gameSpawnReset)
             map.gameSpawn = null
         }
         // check seeker spawn
-        if (!isSpawnInRange(map, map.seekerLobbySpawn?.position)) {
+        if (!isSpawnInRange(map, map.seekerLobbySpawn?.toPosition())) {
             player.message(plugin.locale.prefix.warning + plugin.locale.map.warn.seekerSpawnReset)
             map.seekerLobbySpawn = null
         }
         // check lobby spawn
-        if (!isSpawnInRange(map, map.lobbySpawn?.position)) {
+        if (!isSpawnInRange(map, map.lobbySpawn?.toPosition())) {
             player.message(plugin.locale.prefix.warning + plugin.locale.map.warn.lobbySpawnReset)
             map.lobbySpawn = null
         }

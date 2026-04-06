@@ -61,6 +61,8 @@ data class LocaleCommandConfig(
     var reloading: String = "Reloading the config...",
     var reloaded: String = "Reloaded the config",
     var errorReloading: String = "Error reloading config, please check the server logs!",
+    @Comment("{1} - the bungeecord server name")
+    var sendToServerFailed: LocaleString1 = LocaleString1("Cannot teleport you to server: {1}"),
 )
 
 data class LocaleGamePlayerConfig(

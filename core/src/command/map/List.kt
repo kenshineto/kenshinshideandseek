@@ -2,7 +2,7 @@ package cat.freya.khs.command.map
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.player.Player
+import cat.freya.khs.world.Player
 
 class KhsMapList : Command {
     override val label = "list"
@@ -20,7 +20,7 @@ class KhsMapList : Command {
                 appendLine(plugin.locale.prefix.default + plugin.locale.map.list)
                 for ((name, map) in plugin.maps) {
                     append("&e- &f$name: ")
-                    appendLine(if (map.setup) "&aSETUP" else "&cNOT SETUP")
+                    appendLine(if (map.isSetup()) "&aSETUP" else "&cNOT SETUP")
                 }
             }
         )

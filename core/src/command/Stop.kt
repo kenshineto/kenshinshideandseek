@@ -3,8 +3,8 @@ package cat.freya.khs.command
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
 import cat.freya.khs.game.Game
-import cat.freya.khs.player.Player
 import cat.freya.khs.runChecks
+import cat.freya.khs.world.Player
 
 class KhsStop : Command {
     override val label = "stop"

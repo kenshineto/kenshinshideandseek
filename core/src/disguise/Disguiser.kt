@@ -1,7 +1,7 @@
 package cat.freya.khs.disguise
 
-import cat.freya.khs.player.Player
 import cat.freya.khs.world.Material
+import cat.freya.khs.world.Player
 import java.util.UUID
 import kotlin.synchronized
 

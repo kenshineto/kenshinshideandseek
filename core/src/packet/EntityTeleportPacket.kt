@@ -1,8 +1,8 @@
 package cat.freya.khs.packet
 
-import cat.freya.khs.player.Player
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
+import cat.freya.khs.world.Player
 import com.github.retrooper.packetevents.util.Vector3d
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityTeleport
 
