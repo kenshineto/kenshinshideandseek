@@ -18,10 +18,10 @@ fun typeInline(value: Any?): Boolean {
     if (value == null) return true
 
     return when (value) {
-        value::class.isData -> false
         is List<*> -> value.all { typeInline(it) }
         is Map<*, *> -> value.isEmpty()
         is Boolean -> true
+        value::class.isData -> false
         else -> true
     }
 }
