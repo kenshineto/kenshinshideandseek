@@ -13,7 +13,6 @@ dependencies {
     // libs
     compileOnly(libs.snakeyaml)
     compileOnly(libs.packetevents.api)
-    compileOnly(libs.guava)
 
     // orm
     implementation(libs.exposed.core, excludeKotlin)

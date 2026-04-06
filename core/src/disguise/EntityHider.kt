@@ -4,46 +4,58 @@ import cat.freya.khs.packet.EntityDestroyPacket
 import cat.freya.khs.packet.EntityMetadataPacket
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Player
-import com.google.common.collect.HashBasedTable
-import com.google.common.collect.Table
+import java.util.UUID
 
 class EntityHider {
-    val map: Table<Int, Int, Boolean> = HashBasedTable.create()
+    /** Entities in this map are NOT visible */
+    private val map: MutableMap<UUID, MutableSet<Int>> = HashMap()
 
-    // set if the entity is hidden for the observer
-    private fun setVisible(observer: Player, entity: Entity, visible: Boolean) = runCatching {
-        val observerId = observer.entityId
-        val entityId = entity.entityId
-        val ret =
-            if (visible) map.put(entityId, observerId, true) else map.remove(entityId, observerId)
-        ret ?: visible
+    /**
+     * Sets if the entity is visible or not
+     *
+     * @return if the entity was last hidden
+     */
+    private fun setHidden(observer: UUID, entityId: Int, hidden: Boolean): Boolean {
+        synchronized(map) {
+            val entires = map.getOrPut(observer) { mutableSetOf() }
+            return if (hidden) {
+                !entires.add(entityId)
+            } else {
+                entires.remove(entityId)
+            }
+        }
     }
 
     // is entity visible for the observer
-    fun isVisible(observer: Player, entityId: Int): Boolean =
-        runCatching {
-                val observerId = observer.entityId
-                !map.contains(observerId, entityId)
-            }
-            .getOrElse { true }
+    fun isHidden(observer: UUID, entityId: Int): Boolean {
+        synchronized(map) {
+            val entires = map[observer] ?: return false
+            return entires.contains(entityId)
+        }
+    }
 
     // removes a player from the map
-    fun removePlayer(player: Player) =
-        runCatching { player.entityId }.onSuccess { map.rowMap().remove(it) }
+    fun removePlayer(uuid: UUID) {
+        synchronized(map) { map.remove(uuid) }
+    }
 
     // hides and entity
     fun hideEntity(observer: Player, entity: Entity) {
-        setVisible(observer, entity, false)
+        val wasLastHidden = setHidden(observer.uuid, entity.entityId, true)
 
-        val packet = EntityDestroyPacket(entity)
-        packet.send(observer)
+        if (!wasLastHidden) {
+            val packet = EntityDestroyPacket(entity)
+            packet.send(observer)
+        }
     }
 
     // unhides the entity
     fun showEntity(observer: Player, entity: Entity) {
-        setVisible(observer, entity, true)
+        val wasLastHidden = setHidden(observer.uuid, entity.entityId, false)
 
-        val packet = EntityMetadataPacket(entity, false)
-        packet.send(observer)
+        if (wasLastHidden) {
+            val packet = EntityMetadataPacket(entity, false)
+            packet.send(observer)
+        }
     }
 }

@@ -43,7 +43,7 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
             }
 
         val player = plugin.shim.wrapPlayer(event.getPlayer()) ?: return
-        if (!plugin.entityHider.isVisible(player, entityId)) {
+        if (plugin.entityHider.isHidden(player.uuid, entityId)) {
             event.isCancelled = true
         }
     }

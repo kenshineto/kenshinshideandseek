@@ -680,23 +680,19 @@ class Game(val plugin: Khs) {
 
     private fun loadSeekers() = seekerPlayers.forEach { loadSeeker(it) }
 
-    private fun setPlayerHiddenFor(player: Player, hidden: Boolean, targets: List<Player>) {
-        targets.forEach { target ->
+    private fun setPlayerHidden(player: Player, hidden: Boolean) {
+        players.forEach { observer ->
             // cannot hide oneself
-            if (target.uuid == player.uuid) {
+            if (observer.uuid == player.uuid) {
                 return@forEach
             }
 
             if (hidden) {
-                plugin.entityHider.hideEntity(target, player)
+                plugin.entityHider.hideEntity(observer, player)
             } else {
-                plugin.entityHider.showEntity(target, player)
+                plugin.entityHider.showEntity(observer, player)
             }
         }
-    }
-
-    private fun setPlayerHidden(player: Player, hidden: Boolean) {
-        setPlayerHiddenFor(player, hidden, players)
     }
 
     fun resetPlayer(player: Player) {
@@ -794,7 +790,7 @@ class Game(val plugin: Khs) {
         inventory.set(3u, teleportItem)
         inventory.set(6u, flightItem)
 
-        setPlayerHidden(spectator, false)
+        setPlayerHidden(spectator, true)
     }
 
     private fun loadPlayerIntoLobby(player: Player) {
