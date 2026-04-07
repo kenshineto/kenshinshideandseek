@@ -57,9 +57,7 @@ class BukkitItem(val inner: ItemStack, override val config: ItemConfig) : Item {
             }
 
             val item = runCatching {
-                val item = XItemStack.deserializer()
-                    .fromConfig(config)
-                    .deserialize() ?: return null
+                val item = XItemStack.deserializer().fromConfig(config).deserialize() ?: return null
 
                 // set player head owner (if skull)
                 if (itemConfig.owner != null && itemConfig.material == "PLAYER_HEAD") {
