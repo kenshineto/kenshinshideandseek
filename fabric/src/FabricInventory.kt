@@ -1,12 +1,11 @@
 package cat.freya.khs.fabric
 
-import cat.freya.khs.player.Inventory as KhsInventory
-import cat.freya.khs.player.PlayerInventory as KhsPlayerInventory
-import cat.freya.khs.world.Item as KhsItem
+import cat.freya.khs.world.Inventory
+import cat.freya.khs.world.Item
+import cat.freya.khs.world.PlayerInventory
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.Container
 import net.minecraft.world.entity.EquipmentSlot
-import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.ChestMenu
 import net.minecraft.world.inventory.MenuType
@@ -62,13 +61,12 @@ class FabricContainer(val size: UInt, val title: String) : Container {
     }
 }
 
-open class FabricKhsInventory(open val shim: FabricKhsShim, val container: Container) :
-    KhsInventory {
+open class FabricInventory(open val shim: FabricKhsShim, val container: Container) : Inventory {
     override val title: String?
         get() =
             when (container) {
                 is FabricContainer -> container.title
-                is Inventory -> container.displayName.string
+                is net.minecraft.world.entity.player.Inventory -> container.displayName.string
                 else -> null
             }
 
@@ -98,81 +96,77 @@ open class FabricKhsInventory(open val shim: FabricKhsShim, val container: Conta
         )
     }
 
-    override fun get(index: UInt): KhsItem? {
+    override fun get(index: UInt): Item? {
         val item = runCatching { container.getItem(index.toInt()) }.getOrElse { null }
-        return toKhsItem(item)
+        return FabricItem.wrap(item)
     }
 
-    override fun set(index: UInt, item: KhsItem) {
-        val stack = (item as? FabricKhsItem)?.inner ?: return
+    override fun set(index: UInt, item: Item?) {
+        val stack = (item as? FabricItem)?.inner ?: return
         runCatching { container.setItem(index.toInt(), stack) }
     }
 
-    override fun remove(item: KhsItem) {
-        val stack = (item as? FabricKhsItem)?.inner ?: return
+    override fun remove(item: Item) {
+        val stack = (item as? FabricItem)?.inner ?: return
         for (i in range()) {
             val value = container.getItem(i)
             if (value.equals(stack)) container.setItem(i, ItemStack.EMPTY)
         }
     }
 
-    override var contents: List<KhsItem?>
-        get() = range().map { toKhsItem(container.getItem(it)) }
-        set(contents) {
-            for ((i, item) in contents.withIndex()) {
-                if (i >= container.containerSize) break
-                val stack = (item as? FabricKhsItem)?.inner ?: ItemStack.EMPTY
-                container.setItem(i, stack)
-            }
-        }
+    override fun getContents(): List<Item?> {
+        return range().map { container.getItem(it) }.map(FabricItem::wrap)
+    }
 
-    override fun clear() {
+    override fun setContents(contents: List<Item?>) {
+        for ((i, item) in contents.withIndex()) {
+            if (i >= container.containerSize) break
+            val stack = (item as? FabricItem)?.inner ?: ItemStack.EMPTY
+            container.setItem(i, stack)
+        }
+    }
+
+    override fun clearContents() {
         container.clearContent()
     }
 }
 
-class FabricKhsPlayerInventory(
-    override val shim: FabricKhsShim,
-    val inner: Inventory,
-    val player: ServerPlayer,
-) : FabricKhsInventory(shim, inner), KhsPlayerInventory {
-    override var helmet: KhsItem?
-        get() = toKhsItem(player.getItemBySlot(EquipmentSlot.HEAD))
-        set(item) {
-            val stack = (item as? FabricKhsItem)?.inner ?: return
-            player.setItemSlot(EquipmentSlot.HEAD, stack)
-        }
+class FabricPlayerInventory(override val shim: FabricKhsShim, val player: ServerPlayer) :
+    FabricInventory(shim, player.inventory), PlayerInventory {
 
-    override var chestplate: KhsItem?
-        get() = toKhsItem(player.getItemBySlot(EquipmentSlot.CHEST))
-        set(item) {
-            val stack = (item as? FabricKhsItem)?.inner ?: return
-            player.setItemSlot(EquipmentSlot.CHEST, stack)
-        }
-
-    override var leggings: KhsItem?
-        get() = toKhsItem(player.getItemBySlot(EquipmentSlot.LEGS))
-        set(item) {
-            val stack = (item as? FabricKhsItem)?.inner ?: return
-            player.setItemSlot(EquipmentSlot.LEGS, stack)
-        }
-
-    override var boots: KhsItem?
-        get() = toKhsItem(player.getItemBySlot(EquipmentSlot.FEET))
-        set(item) {
-            val stack = (item as? FabricKhsItem)?.inner ?: return
-            player.setItemSlot(EquipmentSlot.FEET, stack)
-        }
-
-    override fun clear() {
-        inner.clearContent()
-        helmet = null
-        chestplate = null
-        leggings = null
-        boots = null
+    override fun getHelmet(): Item? {
+        return FabricItem.wrap(player.getItemBySlot(EquipmentSlot.HEAD))
     }
-}
 
-fun toKhsItem(inner: ItemStack?): FabricKhsItem? {
-    if (inner == null) return null
+    override fun setHelmet(helmet: Item?) {
+        val stack = (helmet as? FabricItem)?.inner ?: ItemStack.EMPTY
+        player.setItemSlot(EquipmentSlot.HEAD, stack)
+    }
+
+    override fun getChestplate(): Item? {
+        return FabricItem.wrap(player.getItemBySlot(EquipmentSlot.CHEST))
+    }
+
+    override fun setChestplate(chestplate: Item?) {
+        val stack = (chestplate as? FabricItem)?.inner ?: ItemStack.EMPTY
+        player.setItemSlot(EquipmentSlot.CHEST, stack)
+    }
+
+    override fun getLeggings(): Item? {
+        return FabricItem.wrap(player.getItemBySlot(EquipmentSlot.LEGS))
+    }
+
+    override fun setLeggings(leggings: Item?) {
+        val stack = (leggings as? FabricItem)?.inner ?: ItemStack.EMPTY
+        player.setItemSlot(EquipmentSlot.LEGS, stack)
+    }
+
+    override fun getBoots(): Item? {
+        return FabricItem.wrap(player.getItemBySlot(EquipmentSlot.FEET))
+    }
+
+    override fun setBoots(boots: Item?) {
+        val stack = (boots as? FabricItem)?.inner ?: ItemStack.EMPTY
+        player.setItemSlot(EquipmentSlot.FEET, stack)
+    }
 }

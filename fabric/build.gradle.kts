@@ -15,8 +15,13 @@ dependencies {
     compileOnly(libs.fabric.language.kotlin)
     compileOnly(libs.slf4j.api)
     compileOnly(libs.luckperms.api)
-    compileOnly(libs.packetevents.fabric)
+    compileOnly(libs.packetevents.api)
     shadow(project(":core"))
+
+    // fabric does not shade sqlite
+    // or snakeyml
+    shadow(libs.sqlite)
+    shadow(libs.snakeyaml)
 }
 
 ext["relocations"] = listOf<String>()

@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "${name}",
+	"id": "khs",
 	"version": "${version}",
 	"name": "${name}",
 	"description": "todo",
@@ -20,9 +20,7 @@
 			}
 		]
 	},
-	"mixins": [
-		"khs.mixins.json"
-	],
+	"mixins": [],
 	"depends": {
 		"fabricloader": ">=0.18.6",
 		"minecraft": "~26.1",

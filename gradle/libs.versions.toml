@@ -44,7 +44,6 @@ slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 # plugins/mods
 packetevents-api = { module = "com.github.retrooper:packetevents-api", version.ref = "packetevents" }
 packetevents-spigot = { module = "com.github.retrooper:packetevents-spigot", version.ref = "packetevents" }
-packetevents-fabric = { module = "com.github.retrooper:packetevents-fabric", version.ref = "packetevents" }
 luckperms-api = { module = "net.luckperms:api", version.ref = "luckperms" }
 
 # orm
