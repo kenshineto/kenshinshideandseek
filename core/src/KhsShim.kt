@@ -43,9 +43,6 @@ interface KhsShim {
     /** @return a list of valid block materials */
     fun getBlocks(): List<Material>
 
-    /** @return list of currently online players */
-    fun getPlayers(): List<Player>
-
     /**
      * Get a [Material] by its platform name
      *
@@ -66,6 +63,9 @@ interface KhsShim {
      * @return the parsed effect or null
      */
     fun parseEffect(effectConfig: EffectConfig?): Effect?
+
+    /** @return list of currently online players */
+    fun getPlayers(): List<Player>
 
     /** @return an online player by its uuid */
     fun getPlayer(uuid: UUID): Player?

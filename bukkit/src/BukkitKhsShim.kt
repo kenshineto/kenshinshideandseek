@@ -36,10 +36,6 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
         return org.bukkit.Material.entries.map { BukkitMaterial(it) }
     }
 
-    override fun getPlayers(): List<BukkitPlayer> {
-        return plugin.server.onlinePlayers.map { BukkitPlayer(plugin, it) }
-    }
-
     override fun parseMaterial(platformKey: String): BukkitMaterial? {
         return BukkitMaterial.parse(platformKey)
     }
@@ -52,6 +48,10 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
     override fun parseEffect(effectConfig: EffectConfig?): BukkitEffect? {
         if (effectConfig == null) return null
         return BukkitEffect.parse(effectConfig)
+    }
+
+    override fun getPlayers(): List<BukkitPlayer> {
+        return plugin.server.onlinePlayers.map { BukkitPlayer(plugin, it) }
     }
 
     override fun getPlayer(uuid: UUID): BukkitPlayer? {
