@@ -16,7 +16,7 @@ class BukkitEffect(val inner: PotionEffect, override val config: EffectConfig) :
         val platformKey = name
         val type = SpigotConversionUtil.fromBukkitPotionEffectType(inner.type)
         val (minecraftKey, minecraftId) =
-            if (XMaterial.supports(13)) {
+            if (XMaterial.supports(1, 13)) {
                 type.name.toString() to null
             } else {
                 null to type.getId(null)

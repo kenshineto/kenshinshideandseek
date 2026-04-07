@@ -15,14 +15,14 @@ class BukkitMaterial(val inner: org.bukkit.Material) : Material {
     override val isItem: Boolean = inner.isItem
 
     private fun parseMinecraftId(): Int? {
-        if (XMaterial.supports(13)) return null
+        if (XMaterial.supports(1, 13)) return null
 
         @Suppress("DEPRECATION")
         return inner.getId()
     }
 
     private fun parseMinecraftKey(): String? {
-        if (!XMaterial.supports(13)) return null
+        if (!XMaterial.supports(1, 13)) return null
 
         if (isBlock) {
             val blockData = inner.createBlockData()

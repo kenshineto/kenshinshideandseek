@@ -22,7 +22,7 @@ hikari = "4.0.3"
 
 # bukkit
 spigot = "26.1-R0.1-SNAPSHOT"
-xseries = "13.6.0"
+xseries = "13.6.0+26.1"
 placeholderapi = "2.12.2"
 
 # fabric
@@ -58,7 +58,7 @@ hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 
 # bukkit
 spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
-xseries = { module = "com.github.cryptomorin:XSeries", version.ref = "xseries" }
+xseries = { module = "io.github.almighty-satan:XSeries", version.ref = "xseries" }
 placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
 
 # fabric
