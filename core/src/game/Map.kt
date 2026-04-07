@@ -80,6 +80,6 @@ class KhsMap(val name: String, var config: MapConfig, var plugin: Khs) {
         val hasMapSave = (!plugin.config.mapSaveEnabled || hasMapSave())
         val hasBlocks = (!config.blockHunt.enabled || config.blockHunt.blocks.isNotEmpty())
 
-        return hasGameSpawn || hasLobbySpawn || hasExitSpawn || hasBounds || hasMapSave || hasBlocks
+        return hasGameSpawn && hasLobbySpawn && hasExitSpawn && hasBounds && hasMapSave && hasBlocks
     }
 }
