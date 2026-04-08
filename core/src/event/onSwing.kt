@@ -5,42 +5,43 @@ import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.Vector
 import cat.freya.khs.world.VectorAABB
+import java.util.UUID
+
+private const val BLOCKHUNT_MAX_REACH: Double = 5.0
+
+/**
+ * Dont let people spam attack disguised players. Since we are emulating the attacks ourselves, we
+ * have to emulate this too
+ */
+private val debounce: MutableSet<UUID> = mutableSetOf()
 
 data class SwingEvent(val plugin: Khs, val player: Player) : Event()
-
-const val BLOCKHUNT_MAX_REACH: Double = 5.0
-
-private fun fakeHit(player: Player, damage: Double, direction: Vector) {
-    // damage player
-    player.damage(damage)
-
-    // make noise
-    player.playSound("ENTITY_PLAYER_HURT", 1.0, 1.0)
-
-    // add some knockback
-    player.knockBack(direction)
-}
 
 private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
     val player = disguise.player ?: return
     if (player.uuid == attacker.uuid) return
 
-    // val debounceUUID = player.uuid
-    // if (debounce.contains(debounceUUID)) return
+    val debounceUUID = player.uuid
+    if (debounce.contains(debounceUUID)) return
 
     // trigger an attack event
     val damage = attacker.getAttackDamage()
     val khsEvent = DamageEvent(plugin, player, attacker, damage)
     onDamage(khsEvent)
 
+    // emulate the attacker attacking the
+    // player
     if (!khsEvent.cancelled) {
+        val direction = attacker.getEyeDirection().normalize()
         disguise.shouldBeSolid = false
-        fakeHit(player, damage, attacker.getEyeDirection().normalize())
+        player.damage(damage)
+        player.playSound("ENTITY_PLAYER_HURT", 1.0, 1.0)
+        player.knockBack(direction)
     }
 
-    //// set and soon turn off debounce
-    // debounce.add(debounceUUID)
-    // plugin.shim.scheduleEvent(10UL) { debounce.remove(debounceUUID) }
+    // set and soon turn off debounce
+    debounce.add(debounceUUID)
+    plugin.shim.scheduleEvent(10UL) { debounce.remove(debounceUUID) }
 }
 
 fun onSwing(event: SwingEvent) {
