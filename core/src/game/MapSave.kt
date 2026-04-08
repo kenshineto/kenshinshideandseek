@@ -42,7 +42,7 @@ class MapSaver(val plugin: Khs, val map: KhsMap) {
         val fileName = path.fileName.toString()
 
         if (parentFileName == "data") {
-            // handle paper/spiggot custom level data
+            // handle paper/spigot custom level data
             return when (fileName) {
                 "paper" -> true
                 "spigot" -> true
@@ -149,7 +149,7 @@ class MapSaver(val plugin: Khs, val map: KhsMap) {
                         plugin.locale.prefix.error +
                             plugin.locale.map.save.failedDir.with(rootTempDir)
                     )
-                    error("could not rename: ${rootTempDir}")
+                    error("could not rename: $rootTempDir")
                 }
             }
             .onSuccess {

@@ -31,7 +31,7 @@ class InteractListener(val plugin: KhsPlugin) : Listener {
             onInteract(khsEvent)
 
             if (khsEvent.cancelled) {
-                event.setCancelled(true)
+                event.isCancelled = true
                 return
             }
         }
@@ -41,7 +41,7 @@ class InteractListener(val plugin: KhsPlugin) : Listener {
         onUse(khsEvent)
 
         if (khsEvent.cancelled) {
-            event.setCancelled(true)
+            event.isCancelled = true
             return
         }
     }

@@ -74,7 +74,7 @@ fun onClick(event: ClickEvent) {
     val (plugin, player, inv, _) = event
     val game = plugin.game
 
-    // dont allow interactions in the lobby
+    // don't allow interactions in the lobby
     if (game.hasPlayer(player) && game.status == Game.Status.LOBBY) {
         event.cancel()
     }

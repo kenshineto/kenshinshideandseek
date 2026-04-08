@@ -26,7 +26,7 @@ The valid player statistics are:
 
 - When target is not set, it returns the subject players integer rank
 - When target is a player name/uuid, it returns the targets integer rank
-- When target is a integer rank, it returns the player name at that rank
+- When target is an integer rank, it returns the player name at that rank
 
 **Examples:**
 - %hs_rank_wins%
@@ -41,7 +41,7 @@ The valid player statistics are:
 
 - When target is not set, it returns the subject players stat value
 - When target is a player name/uuid, it returns the stat value for that player
-- When target is a integer rank, it returns the stat value at that ranking place (1st/2nd/3rd/...)
+- When target is an integer rank, it returns the stat value at that ranking place (1st/2nd/3rd/...)
 
 **Examples:**
 - %hs_stat_wins%

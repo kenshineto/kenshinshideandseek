@@ -4,7 +4,7 @@ import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 
 /**
- * Represents a key name for a block/item/potiton effect Stores both the native minecraft and
+ * Represents a key name for a block/item/potion effect Stores both the native minecraft and
  * platform names
  */
 data class ResourceKey(
@@ -15,7 +15,7 @@ data class ResourceKey(
     val minecraftId: Int?,
 
     /**
-     * A cutstom identifier used within the platform. On some platforms, this will be the same as
+     * A custom identifier used within the platform. On some platforms, this will be the same as
      * [minecraftKey]
      */
     val platformKey: String,

@@ -22,18 +22,18 @@ class FabricServer(val mod: KhsMod) {
 
     private val activeScoreBoards: MutableMap<UUID, String> = mutableMapOf()
 
-    // allow non null access to MinecraftServer, but also add sanity
+    // allow non-null access to MinecraftServer, but also add sanity
     // checks
     val inner: MinecraftServer
-        get() = server ?: error("inner called before initalization")
+        get() = server ?: error("inner called before initialization")
 
-    // called when our mod is being initalized
+    // called when our mod is being initialized
     fun init() {
         // register core event listeners
-        // we cannot initalize yet since we dont
+        // we cannot initialize yet since we don't
         // have access to a MinecraftServer instance yet
         ServerTickEvents.END_SERVER_TICK.register { server ->
-            // see if we need to initalize
+            // see if we need to initialize
             if (this.server == null) {
                 this.server = server
             }
@@ -90,7 +90,7 @@ class FabricServer(val mod: KhsMod) {
     }
 
     fun getWorlds(): List<FabricWorld> {
-        return inner.getAllLevels().map { FabricWorld(mod, it) }
+        return inner.allLevels.map { FabricWorld(mod, it) }
     }
 
     fun getWorldContainer(): Path {
@@ -134,7 +134,7 @@ class FabricServer(val mod: KhsMod) {
         if (objective == null) {
             activeScoreBoards.remove(player.uuid)
         } else {
-            activeScoreBoards.put(player.uuid, objective.name)
+            activeScoreBoards[player.uuid] = objective.name
         }
 
         return objective

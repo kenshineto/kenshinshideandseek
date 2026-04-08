@@ -11,7 +11,7 @@ data class DamageEvent(
     val damage: Double,
 ) : Event()
 
-/** If the player's are not in the game, then we should not care about the event */
+/** If the players are not in the game, then we should not care about the event */
 private fun eventHasJurisdiction(event: DamageEvent): Boolean {
     val (plugin, player, attacker, _) = event
     val game = plugin.game

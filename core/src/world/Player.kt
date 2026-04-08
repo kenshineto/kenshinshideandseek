@@ -69,7 +69,7 @@ interface Player : Entity {
     /** Disguise the player as a block material */
     fun createDisguise(material: Material): Disguise?
 
-    /** Get how much damage the player's equiped item can do */
+    /** Get how much damage the player's equipped item can do */
     fun getAttackDamage(): Double
 
     /** @return the position of where the player is looking from */
@@ -79,7 +79,7 @@ interface Player : Entity {
     fun getEyeDirection(): Vector
 
     /**
-     * Raycast to see how far the player can reach (attack)
+     * Ray cast to see how far the player can reach (attack)
      *
      * @return double on hit, null if no hit
      */

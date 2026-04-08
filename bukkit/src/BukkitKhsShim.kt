@@ -84,7 +84,7 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
 
     private fun locateWorldContainer(): File {
         val root = plugin.server.worldContainer
-        val rootWorld = plugin.server.worlds.get(0) ?: return root
+        val rootWorld = plugin.server.worlds[0] ?: return root
         val rootWorldFolder = rootWorld.worldFolder
         val levelName = rootWorld.name
 
@@ -203,7 +203,7 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
     }
 }
 
-/// formats &c'esc color codes to bukkits colors
+/// formats &c like color codes to bukkit's colors
 fun formatText(message: String): String {
     return ChatColor.translateAlternateColorCodes('&', message)
 }

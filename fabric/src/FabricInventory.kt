@@ -23,11 +23,11 @@ class FabricContainer(val size: UInt, val title: String) : Container {
     }
 
     override fun isEmpty(): Boolean {
-        return items.any { !it.isEmpty() }
+        return items.any { !it.isEmpty }
     }
 
     override fun getItem(slot: Int): ItemStack {
-        return items.get(slot)
+        return items[slot]
     }
 
     override fun removeItem(slot: Int, count: Int): ItemStack {
@@ -49,7 +49,7 @@ class FabricContainer(val size: UInt, val title: String) : Container {
     }
 
     override fun setItem(slot: Int, itemStack: ItemStack) {
-        items.set(slot, itemStack)
+        items[slot] = itemStack
     }
 
     override fun setChanged() {
@@ -110,7 +110,7 @@ open class FabricInventory(open val shim: FabricKhsShim, val container: Containe
         val stack = (item as? FabricItem)?.inner ?: return
         for (i in range()) {
             val value = container.getItem(i)
-            if (value.equals(stack)) container.setItem(i, ItemStack.EMPTY)
+            if (value == stack) container.setItem(i, ItemStack.EMPTY)
         }
     }
 

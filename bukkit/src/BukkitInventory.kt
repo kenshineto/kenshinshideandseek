@@ -17,7 +17,7 @@ open class BukkitInventory(
     override fun set(index: UInt, item: Item?) {
         val bukkitItem = (item as? BukkitItem)?.inner
 
-        // make sure we dont go out of bounds
+        // make sure we don't go out of bounds
         if (index.toInt() >= inner.size) return
 
         inner.setItem(index.toInt(), bukkitItem)

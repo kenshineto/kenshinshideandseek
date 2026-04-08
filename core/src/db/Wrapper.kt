@@ -7,7 +7,7 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 import javax.sql.DataSource
 
-// wrappers for java SQL objects to allow compatability
+// wrappers for java SQL objects to allow compatibility
 // with older jdbc drivers
 
 // even though we load our own version of the jdbc driver,

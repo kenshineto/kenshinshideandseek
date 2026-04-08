@@ -34,10 +34,6 @@ data class Vector(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0)
         return Vector(x - b.x, y - b.y, z - b.z)
     }
 
-    fun multiply(scale: Double): Vector {
-        return Vector(x * scale, y * scale, z * scale)
-    }
-
     fun normalize(): Vector {
         val lengthSquared = x.pow(2) + y.pow(2) + z.pow(2)
         val length = sqrt(lengthSquared)

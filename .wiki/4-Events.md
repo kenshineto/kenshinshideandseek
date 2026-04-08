@@ -1,7 +1,7 @@
 ## Taunt
 **Enabled by default**
 
-While playing hide and seek, the plugin will play a taunt at a random hider's position every set interval according to the config file. The taunt is a firework launched, with a low power that does small, but not zero damage to the hider. Once the game its the taunt interval, it will pick a random hider and warn them that they are about to be taunted. This is to let them know that they may want to move their spot. The game then tells that in 30 seconds, a random hider is about to be taunted, though only the player being taunted knows its going to be them.
+While playing hide and seek, the plugin will play a taunt at a random hider's position every set interval according to the config file. The taunt is a firework launched, with a low power that does small, but not zero damage to the hider. Once the game it's the taunt interval, it will pick a random hider and warn them that they are about to be taunted. This is to let them know that they may want to move their spot. The game then tells that in 30 seconds, a random hider is about to be taunted, though only the player being taunted knows it's going to be them.
 
 **Configuration Options**
 * Delay - How often a taunt will trigger (seconds)

@@ -313,7 +313,7 @@ data class KhsConfig(
     var mapSaveEnabled: Boolean = true,
     @Comment("Block these commands for players in a game. Good for blocking communication")
     var blockedCommands: List<String> = listOf("msg", "reply", "me", "kill"),
-    @Comment("Dont allow players to interact with these blocks")
+    @Comment("Don't allow players to interact with these blocks")
     var blockedInteracts: List<String> =
         listOf("FURNACE", "CRAFTING_TABLE", "ANVIL", "CHEST", "BARREL"),
 

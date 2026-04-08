@@ -8,8 +8,8 @@ import kotlin.math.roundToInt
 const val DISABLED_IDENT = "KHS_DISABLED_FILTER_ME_OUT"
 
 /**
- * Wrapper for minecraft's scoreboard system I'ts called a Board since it doesnt really track scores
- * for us
+ * Wrapper for minecraft's scoreboard system it's called a Board since it doesn't really track
+ * scores for us
  */
 interface Board {
     interface Team {

@@ -15,7 +15,7 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
     override val entityId = inner.entityId
 
     override fun isAlive(): Boolean {
-        return !inner.isDead()
+        return !inner.isDead
     }
 
     override fun getLocation(): Location {
@@ -80,7 +80,7 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
 
     override fun destroy() {
         // this cannot be called async
-        if (!plugin.server.isPrimaryThread()) {
+        if (!plugin.server.isPrimaryThread) {
             plugin.scheduleTask { destroy() }
             return
         }

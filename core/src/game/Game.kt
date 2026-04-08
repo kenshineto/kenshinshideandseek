@@ -214,7 +214,7 @@ class Game(val plugin: Khs) {
         if (totalWeight == 0.0) return 0.0
         val percent = weight / totalWeight
 
-        // calculate probabal team sizes
+        // calculate probable team sizes
         val wantedSeekerCount = maxOf(plugin.config.startingSeekerCount, 1u)
         val numPlayers = maxOf(size, 1u)
         val numSeekers = minOf(wantedSeekerCount, numPlayers - 1u)
@@ -392,7 +392,7 @@ class Game(val plugin: Khs) {
 
         val board =
             if (plugin.config.saveScoreBoard) {
-                savedScoreBoards.get(uuid)
+                savedScoreBoards[uuid]
             } else {
                 null
             }
@@ -411,8 +411,8 @@ class Game(val plugin: Khs) {
 
         if (plugin.config.leaveType == ConfigLeaveType.PROXY) {
             val server = plugin.config.leaveServer
-            val successfull = plugin.shim.sendPlayerToServer(uuid, server)
-            if (!successfull) {
+            val successful = plugin.shim.sendPlayerToServer(uuid, server)
+            if (!successful) {
                 player.message(
                     plugin.locale.prefix.error +
                         plugin.locale.command.sendToServerFailed.with(server)

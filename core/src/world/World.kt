@@ -50,7 +50,7 @@ interface World {
         /** Resize the world border */
         fun move(newSize: ULong, delay: ULong)
 
-        /** Reset the world border do its origional size */
+        /** Reset the world border do its original size */
         fun reset() {
             move(0.0, 0.0, 30_000_000UL, 0UL)
         }
@@ -81,7 +81,7 @@ interface World {
     abstract class AbstractLoader(
         /** the name of the world */
         override val name: String,
-        /** the name of the folder (may be different) */
+        /** the name of the folder (maybe different) */
         val folderName: String,
         /** directory where all worlds/dimensions are stored */
         val worldContainer: Path,

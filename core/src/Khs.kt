@@ -78,13 +78,13 @@ class Khs(val shim: KhsShim) {
     /** Commands known to this plugin */
     val commandGroup: CommandGroup = registerCommands()
 
-    /** Holds current disguises for disgusied players */
+    /** Holds current disguises for disguised players */
     val disguiser: Disguiser = Disguiser()
 
     /** Allows hiding entities for only some player observers */
     val entityHider: EntityHider = EntityHider(shim)
 
-    /** Knowns requests that need to be completed with `/hs confirm` */
+    /** Known requests that need to be completed with `/hs confirm` */
     val requests: MutableMap<UUID, Request> = ConcurrentHashMap<UUID, Request>()
 
     /** If a map save is currently in progress */
@@ -208,7 +208,7 @@ class Khs(val shim: KhsShim) {
                 locale = deserialize(KhsLocale::class, readConfigFile("locale.yml"))
                 shim.logger.info("Loading database...")
 
-                // database config could of changed so we need to
+                // database config could have changed so we need to
                 // reconnect to the database
                 database = Database(this)
 

@@ -5,13 +5,13 @@ interface Inventory {
     /** The name of the container */
     val title: String?
 
-    /** Get a item from the inventory, returning null if empty or out of bounds */
+    /** Get an item from the inventory, returning null if empty or out of bounds */
     fun get(index: UInt): Item?
 
     /** Set an item in the inventory, doing nothing if out of bounds */
     fun set(index: UInt, item: Item?)
 
-    /** Remove all occourances of the given item from the inventory */
+    /** Remove all occurrences of the given item from the inventory */
     fun remove(item: Item)
 
     /** @return all contents in order, including empty, of the inventory */

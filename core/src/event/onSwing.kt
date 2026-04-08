@@ -10,7 +10,7 @@ import java.util.UUID
 private const val BLOCKHUNT_MAX_REACH: Double = 5.0
 
 /**
- * Dont let people spam attack disguised players. Since we are emulating the attacks ourselves, we
+ * Don't let people spam attack disguised players. Since we are emulating the attacks ourselves, we
  * have to emulate this too
  */
 private val debounce: MutableSet<UUID> = mutableSetOf()
@@ -47,7 +47,7 @@ private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
 fun onSwing(event: SwingEvent) {
     val (plugin, player) = event
 
-    // raycast to detect for
+    // ray cast to detect for
     // disguises
 
     val reach = player.getReach(BLOCKHUNT_MAX_REACH) ?: BLOCKHUNT_MAX_REACH
@@ -65,7 +65,7 @@ fun onSwing(event: SwingEvent) {
                 val max = vector.add(Vector(0.5, 1.0, 0.5))
                 val aabb = VectorAABB(min, max)
 
-                // raycast to aabb
+                // ray cast to aabb
                 val distance = aabb.rayIntersects(eye, direction) ?: return@mapDisguises null
                 disguise to distance
             }

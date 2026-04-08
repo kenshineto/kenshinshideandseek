@@ -13,7 +13,7 @@ import kotlin.math.round
 /** How long it takes to solidify */
 const val DISGUISE_SOLIDIFY_TIME = 3u
 
-/** How much a player can move and wone become unsolid from moving */
+/** How much a player can move and won't become unsolid from moving */
 const val DISGUISE_MOVE_THRESHOLD = 0.1
 
 abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material) {
@@ -94,7 +94,7 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
         player.setCollides(true)
         plugin.entityHider.showEntity(player)
 
-        // make sure the client side block's
+        // make sure the client side blocks
         // are removed
         if (isSolid) {
             sendBlockUpdate(null)
@@ -121,7 +121,7 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
 
         val difference = current.distance(last)
         if (difference == null || difference >= DISGUISE_MOVE_THRESHOLD) {
-            // player moved in a substational way
+            // player moved in a substantial way
             solidifyTimer = 0u
             shouldBeSolid = false
             lastPlayerPosition = current

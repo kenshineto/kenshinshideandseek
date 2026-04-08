@@ -12,8 +12,8 @@ For general plugin information and resources, view the [description](https://git
 
 ## Building
 
-- This project uses gradle 9 to build
-- Java 21 is required to run gradle, but java 8 is used for the code
+- This project uses Gradle 9 to build
+- Java 21 is required to run Gradle, but java 8 is used for the code
 
 To build the project run `gradle build`. Jar files can be found in `{bukkit,fabric}/build/libs`
 
@@ -21,9 +21,9 @@ To build for only one platform run `gradle :{platform}:build`
 
 ## Contributing
 
-Contributions are always welcome. Github is used to make contributing as easy as possible.
+Contributions are always welcome. GitHub is used to make contributing as easy as possible.
 
-For instructons please view [CONTRIBUTING.md](https://github.com/kenshineto/kenshinshideandseek2/blob/main/CONTRIBUTING.md)
+For instructions please view [CONTRIBUTING.md](https://github.com/kenshineto/kenshinshideandseek2/blob/main/CONTRIBUTING.md)
 
 ## License
 

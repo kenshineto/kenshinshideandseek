@@ -78,10 +78,8 @@ class FabricItem(
             config.unbreakable = stack.get(DataComponents.UNBREAKABLE) != null
 
             config.lore = stack.get(DataComponents.LORE)?.lines()?.map { it.string } ?: emptyList()
-
             config.enchantments =
-                stack.get(DataComponents.ENCHANTMENTS)?.entrySet()?.asSequence()?.associate {
-                    (enchant, level) ->
+                stack.get(DataComponents.ENCHANTMENTS)?.entrySet()?.associate { (enchant, level) ->
                     enchant.registeredName to level.toUInt()
                 } ?: emptyMap()
 

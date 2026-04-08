@@ -75,14 +75,14 @@ interface KhsShim {
 
     /**
      * Wraps a retrieved platform player type into the wrapped player type. Packet events likes to
-     * give us a "Object" that is a BukkitPlayer (bukkit) or MinecraftServerPlayer (fabric)
+     * give us an "Object" that is a BukkitPlayer (bukkit) or MinecraftServerPlayer (fabric)
      */
     fun wrapPlayer(inner: Any?): Player?
 
     /**
      * Send a player to a different server (requires bungeecord)
      *
-     * @return if successfull
+     * @return if successful
      */
     fun sendPlayerToServer(uuid: UUID, server: String): Boolean
 
@@ -96,7 +96,7 @@ interface KhsShim {
     fun getWorldLoader(worldName: String): World.Loader
 
     /**
-     * Create a new world if doesnt exist, or load a world if it does.
+     * Create a new world if it doesn't exist, or load a world if it does.
      *
      * @return a newly created world or null on failure
      */
@@ -114,7 +114,7 @@ interface KhsShim {
     /** Kills the mod/plugin now! */
     fun disable()
 
-    /** Schedules an eveent to take place in the future */
+    /** Schedules an event to take place in the future */
     fun scheduleEvent(ticks: ULong, event: () -> Unit)
 
     /** Checks if the minecraft server is greater or equal to the given version */
@@ -141,7 +141,7 @@ abstract class AbstractKhsShim(override val platform: String) : KhsShim {
         return getMaterials().filter { it.isBlock }
     }
 
-    // dont make this vararg over UInt, otherwise kotlin complains
+    // don't make this vararg over UInt, otherwise kotlin complains
     // about "unstable features"
     override fun supports(vararg versions: Int): Boolean {
         if (parsedServerVersion == null) {

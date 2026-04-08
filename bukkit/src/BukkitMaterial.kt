@@ -18,7 +18,7 @@ class BukkitMaterial(val inner: org.bukkit.Material) : Material {
         if (XMaterial.supports(1, 13)) return null
 
         @Suppress("DEPRECATION")
-        return inner.getId()
+        return inner.id
     }
 
     private fun parseMinecraftKey(): String? {
