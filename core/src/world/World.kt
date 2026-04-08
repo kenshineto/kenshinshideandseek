@@ -3,7 +3,15 @@ package cat.freya.khs.world
 import cat.freya.khs.KhsShim
 import java.nio.file.Path
 
-const val MAP_SAVE_PREFIX = "hs_"
+/**
+ * The prefix of all world names that are to be treated as map saves
+ *
+ * hs_ (map save v1) was named after the world name, not the map name, not allowing multiple names
+ * per map
+ *
+ * hs2_ (map save v2) is named after the map name
+ */
+const val MAP_SAVE_PREFIX = "hs2_"
 
 /** Represents a minecraft world */
 interface World {
@@ -60,12 +68,6 @@ interface World {
         /** The directory this world is stayed in */
         val dir: Path
 
-        /** The directory the map save (if created) of this world would be stored in */
-        val saveDir: Path
-
-        /** The directory the temp map save (if created) of this world would be stored in */
-        val tempSaveDir: Path
-
         /** @return the loaded world. If the world is already loaded, nothing happens. */
         fun load(): World?
 
@@ -79,13 +81,14 @@ interface World {
     abstract class AbstractLoader(
         /** the name of the world */
         override val name: String,
+        /** the name of the folder (may be different) */
+        val folderName: String,
         /** directory where all worlds/dimensions are stored */
         val worldContainer: Path,
     ) : Loader {
-        override val isMapSave = name.startsWith(MAP_SAVE_PREFIX)
-        override val dir: Path = worldContainer.resolve(name)
-        override val saveDir: Path = worldContainer.resolve("$MAP_SAVE_PREFIX$name")
-        override val tempSaveDir: Path = worldContainer.resolve("temp_$MAP_SAVE_PREFIX$name")
+
+        override val isMapSave = folderName.startsWith(MAP_SAVE_PREFIX)
+        override val dir: Path = worldContainer.resolve(folderName)
 
         override fun rollback() {
             load()

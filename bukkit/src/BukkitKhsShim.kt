@@ -80,18 +80,72 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
         return true
     }
 
+    private var cachedWorldContainer: File? = null
+
+    private fun locateWorldContainer(): File {
+        val root = plugin.server.worldContainer
+        val rootWorld = plugin.server.worlds.get(0) ?: return root
+        val rootWorldFolder = rootWorld.worldFolder
+        val levelName = rootWorld.name
+
+        // Check if the world folders are still stored in the
+        // server root
+        if (rootWorldFolder.parent == root.path) return root
+
+        // Pre 26.1 does not support modern dimensions format
+        // Spigot also does not
+        if (!supports(26, 1)) return root
+
+        // Make sure the new dimensions folder
+        // exists before using it
+        val modernWorldContainer =
+            root.toPath().resolve(levelName).resolve("dimensions").resolve("minecraft").toFile()
+        if (modernWorldContainer.exists()) return modernWorldContainer
+
+        // server is using legacy bukkit world
+        // structure
+        return root
+    }
+
+    fun getWorldContainer(): File {
+        var container = cachedWorldContainer
+
+        if (container != null) return container
+
+        container = locateWorldContainer()
+        logger.info("Using world container: ${container.path}")
+
+        cachedWorldContainer = container
+        return container
+    }
+
+    fun usingModernDimensionFormat(): Boolean {
+        val worldContainer = getWorldContainer()
+        return worldContainer.path != plugin.server.worldContainer.path
+    }
+
+    private fun isWorldFolderValid(folder: File): Boolean {
+        if (!folder.isDirectory) {
+            return false
+        }
+
+        // assume all folders in
+        // dimensions/minecraft are worlds
+        if (usingModernDimensionFormat()) {
+            return true
+        }
+
+        val session = File(folder, "session.lock")
+        val level = File(folder, "level.dat")
+
+        return session.exists() && level.exists()
+    }
+
     override fun getWorldNames(): List<String> {
-        return plugin.server.worldContainer
+        return getWorldContainer()
             .listFiles()
-            .filter {
-                if (!it.isDirectory) return@filter false
-
-                val session = File(it, "session.lock")
-                val level = File(it, "level.dat")
-
-                session.exists() && level.exists()
-            }
-            .map { it.name }
+            .filter { isWorldFolderValid(it) }
+            .map { BukkitWorld.folderNameToWorldName(this, it.name) }
     }
 
     override fun getWorld(worldName: String): BukkitWorld? {

@@ -29,7 +29,7 @@ class FabricWorldBorder(val level: ServerLevel) : World.Border {
 }
 
 class FabricWorldLoader(val mod: KhsMod, override val name: String) :
-    World.AbstractLoader(name, mod.server.getWorldContainer()) {
+    World.AbstractLoader(name, name, mod.server.getWorldContainer()) {
 
     override fun load(): FabricWorld? {
         // TODO:

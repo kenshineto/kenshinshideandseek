@@ -83,7 +83,11 @@ class BukkitWorldBorder(val inner: org.bukkit.WorldBorder) : World.Border {
 }
 
 class BukkitWorldLoader(val plugin: KhsPlugin, name: String) :
-    World.AbstractLoader(name, plugin.server.worldContainer.toPath()) {
+    World.AbstractLoader(
+        name,
+        BukkitWorld.worldNameToFolderName(plugin.shim, name),
+        plugin.shim.getWorldContainer().toPath(),
+    ) {
 
     override fun load(): World? {
         // create/load the world
@@ -148,5 +152,29 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : Abstra
     override fun getSpawn(): Location {
         val loc = inner.spawnLocation
         return Location(loc.x, loc.y, loc.z, name)
+    }
+
+    companion object {
+        fun folderNameToWorldName(shim: BukkitKhsShim, folderName: String): String {
+            if (!shim.usingModernDimensionFormat()) return folderName
+
+            return when (folderName) {
+                "overworld" -> "world"
+                "the_nether" -> "world_nether"
+                "the_end" -> "world_the_end"
+                else -> folderName
+            }
+        }
+
+        fun worldNameToFolderName(shim: BukkitKhsShim, worldName: String): String {
+            if (!shim.usingModernDimensionFormat()) return worldName
+
+            return when (worldName) {
+                "world" -> "overworld"
+                "world_nether" -> "the_nether"
+                "world_the_end" -> "the_end"
+                else -> worldName
+            }
+        }
     }
 }

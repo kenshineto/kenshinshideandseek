@@ -1,6 +1,7 @@
 package cat.freya.khs.game
 
 import cat.freya.khs.Khs
+import cat.freya.khs.world.MAP_SAVE_PREFIX
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.error
@@ -12,8 +13,10 @@ class MapSaver(val plugin: Khs, val map: KhsMap) {
     private val bounds = map.getBounds()
 
     private val rootSrcDir = loader.dir
-    private val rootTempDir = loader.tempSaveDir
-    private val rootDestDir = loader.saveDir
+    private val worldContainer = rootSrcDir.parent
+
+    private val rootTempDir = worldContainer.resolve("temp_$MAP_SAVE_PREFIX${map.name}")
+    private val rootDestDir = worldContainer.resolve("$MAP_SAVE_PREFIX${map.name}")
 
     private var failed = false
 
@@ -33,6 +36,24 @@ class MapSaver(val plugin: Khs, val map: KhsMap) {
         return inBounds
     }
 
+    private fun isFileIgnored(path: Path): Boolean {
+        val parent = path.parent
+        val parentFileName = parent.fileName.toString()
+        val fileName = path.fileName.toString()
+
+        if (parentFileName == "data") {
+            // handle paper/spiggot custom level data
+            return when (fileName) {
+                "paper" -> true
+                "spigot" -> true
+                "bukkit" -> true
+                else -> false
+            }
+        }
+
+        return false
+    }
+
     private fun saveFolder(path: Path) {
         val src = rootSrcDir.resolve(path).toFile()
         val dest = rootTempDir.resolve(path).toFile()
@@ -47,6 +68,10 @@ class MapSaver(val plugin: Khs, val map: KhsMap) {
 
         src.listFiles().forEach { file ->
             val filePath = path.resolve(file.name)
+
+            if (isFileIgnored(filePath)) {
+                return@forEach
+            }
 
             if (file.isDirectory) {
                 saveFolder(filePath)
