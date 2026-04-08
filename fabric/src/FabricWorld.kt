@@ -2,6 +2,7 @@ package cat.freya.khs.fabric
 
 import cat.freya.khs.world.AbstractWorld
 import cat.freya.khs.world.Location
+import cat.freya.khs.world.Position
 import cat.freya.khs.world.World
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
@@ -66,5 +67,9 @@ class FabricWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.s
     override fun getSpawn(): Location {
         val pos = inner.respawnData.pos()
         return Location(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), name)
+    }
+
+    override fun playSound(position: Position, sound: String, volume: Double, pitch: Double) {
+        // TODO:
     }
 }

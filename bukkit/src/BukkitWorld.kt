@@ -2,7 +2,9 @@ package cat.freya.khs.bukkit
 
 import cat.freya.khs.world.AbstractWorld
 import cat.freya.khs.world.Location
+import cat.freya.khs.world.Position
 import cat.freya.khs.world.World
+import com.cryptomorin.xseries.XSound
 import java.util.Random
 import org.bukkit.GameRule
 import org.bukkit.WorldCreator
@@ -152,6 +154,14 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : Abstra
     override fun getSpawn(): Location {
         val loc = inner.spawnLocation
         return Location(loc.x, loc.y, loc.z, name)
+    }
+
+    @Suppress("UnstableApiUsage")
+    override fun playSound(position: Position, sound: String, volume: Double, pitch: Double) {
+        val location = org.bukkit.Location(inner, position.x, position.y, position.z)
+        XSound.REGISTRY.getByName(sound).ifPresent {
+            it.play(location, volume.toFloat(), pitch.toFloat())
+        }
     }
 
     companion object {

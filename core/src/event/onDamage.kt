@@ -106,11 +106,8 @@ private fun handleAttack(event: DamageEvent) {
     val game = plugin.game
 
     // play death sound
-    player.playSound(
-        if (plugin.shim.supports(9)) "ENTITY_PLAYER_DEATH" else "ENTITY_PLAYER_HURT",
-        1.0,
-        1.0,
-    )
+    val soundName = if (plugin.shim.supports(9)) "ENTITY_PLAYER_DEATH" else "ENTITY_PLAYER_HURT"
+    player.getWorld()?.playSound(player.getLocation().toPosition(), soundName, 1.0, 1.0)
 
     // un solidify a player if their disguised
     plugin.disguiser.getDisguise(player.uuid)?.shouldBeSolid = false

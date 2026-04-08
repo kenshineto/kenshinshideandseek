@@ -35,8 +35,10 @@ private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
         val direction = attacker.getEyeDirection().normalize()
         disguise.shouldBeSolid = false
         player.damage(damage)
-        player.playSound("ENTITY_PLAYER_HURT", 1.0, 1.0)
         player.knockBack(direction)
+        player
+            .getWorld()
+            ?.playSound(player.getLocation().toPosition(), "ENTITY_PLAYER_HURT", 1.0, 1.0)
     }
 
     // set and soon turn off debounce

@@ -101,6 +101,9 @@ interface World {
 
     /** Where in this world is the default spawn location */
     fun getSpawn(): Location
+
+    /** Play a sound at the given location */
+    fun playSound(position: Position, sound: String, volume: Double, pitch: Double)
 }
 
 abstract class AbstractWorld(shim: KhsShim) : World {
