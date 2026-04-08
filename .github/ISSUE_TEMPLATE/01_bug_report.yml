@@ -25,8 +25,8 @@ body:
       description: |
         Enter the Minecraft version you are running on your server
 
-        The currently supported versions are 1.8.x-1.21.x
-      placeholder: 1.21.11
+        The currently supported versions are 1.8.x-26.1.x
+      placeholder: 26.1.1
     validations:
       required: true
   - type: "dropdown"
