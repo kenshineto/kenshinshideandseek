@@ -7,19 +7,7 @@ import cat.freya.khs.world.Position
 data class MoveEvent(val plugin: Khs, val player: Player, val from: Position, val to: Position) :
     Event()
 
-private fun updateDisguise(event: MoveEvent) {
-    val (plugin, player, from, to) = event
-    val disguise = plugin.disguiser.getDisguise(player.uuid) ?: return
-
-    // check if disguise should be (un)solidified (since player moved)
-    if (from.distance(to) <= 0.1) {
-        disguise.startSolidifying(player.getLocation().toPosition().clone())
-    } else {
-        disguise.shouldBeSolid = false
-    }
-}
-
-private fun checkMapBounds(event: MoveEvent) {
+fun onMove(event: MoveEvent) {
     val (plugin, player, _, to) = event
     val game = plugin.game
 
@@ -33,9 +21,4 @@ private fun checkMapBounds(event: MoveEvent) {
     if (!canLeaveBounds && map.getBounds()?.inBounds(to) == false) {
         event.cancel()
     }
-}
-
-fun onMove(event: MoveEvent) {
-    updateDisguise(event)
-    checkMapBounds(event)
 }

@@ -7,12 +7,14 @@ import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Material
 import cat.freya.khs.world.Player
-import cat.freya.khs.world.Position
 import java.util.UUID
 import kotlin.math.round
 
-// in seconds
+/** How long it takes to solidify */
 const val DISGUISE_SOLIDIFY_TIME = 3u
+
+/** How much a player can move and wone become unsolid from moving */
+const val DISGUISE_MOVE_THRESHOLD = 0.1
 
 abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material) {
     // returns the player associated with this disguise
@@ -25,8 +27,11 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
     // if the disguise is currently solidified
     private var isSolid: Boolean = false
 
-    // if this disguise is currently solidifying
-    private var hasSolidifyingTask = false
+    // last known player position
+    private var lastPlayerPosition: Location? = null
+
+    // how many ticks has this disguise been solidifying
+    private var solidifyTimer: UInt = 0u
 
     // where we are currently solidified
     private var solidifiedPosition: Location? = null
@@ -71,40 +76,14 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
             sendBlockUpdate(material)
         } else if (isSolid) {
             isSolid = false
+            solidifyTimer = 0u
             respawnBlock()
             sendBlockUpdate(null)
         }
 
+        solidifyUpdate()
         updateVisibility()
         teleportBlock()
-    }
-
-    // handle solidifying
-    fun startSolidifying(last: Position) {
-        if (isSolid || hasSolidifyingTask) return
-        hasSolidifyingTask = solidifyUpdate(last, DISGUISE_SOLIDIFY_TIME)
-    }
-
-    private fun solidifyUpdate(last: Position, time: UInt): Boolean {
-        val player = player ?: return false
-        val current = player.getLocation().toPosition()
-
-        if (last.distance(current) > 0.1) return false
-
-        // we have solidified!
-        if (time == 0u) {
-            player.actionBar("")
-            shouldBeSolid = true
-            return false
-        }
-
-        // still waiting
-        player.actionBar("▪".repeat(time.toInt()))
-        player.playSound("BLOCK_NOTE_BLOCK_PLING", 0.5, 1.0)
-
-        // schedule next update
-        plugin.shim.scheduleEvent(20UL) { hasSolidifyingTask = solidifyUpdate(last, time - 1u) }
-        return true
     }
 
     fun destroy() {
@@ -133,6 +112,42 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
         }
 
         return loc
+    }
+
+    private fun solidifyUpdate() {
+        val player = player ?: return
+        val current = player.getLocation()
+        val last = lastPlayerPosition ?: current
+
+        val difference = current.distance(last)
+        if (difference == null || difference >= DISGUISE_MOVE_THRESHOLD) {
+            // player moved in a substational way
+            solidifyTimer = 0u
+            shouldBeSolid = false
+            lastPlayerPosition = current
+            return
+        }
+
+        if (isSolid) return
+
+        // we have been staying still for [solidifyTimer] ticks!
+        val isSecond = (solidifyTimer % 20u) == 0u
+        val seconds = solidifyTimer / 20u
+        solidifyTimer++
+        lastPlayerPosition = last
+
+        if (seconds > DISGUISE_SOLIDIFY_TIME) {
+            // we have solidified
+            player.actionBar("")
+            shouldBeSolid = true
+            return
+        }
+
+        if (isSecond && seconds >= 1u) {
+            val secondsLeft = DISGUISE_SOLIDIFY_TIME - (seconds - 1u)
+            player.actionBar("▪".repeat(secondsLeft.toInt()))
+            player.playSound("BLOCK_NOTE_BLOCK_PLING", 0.5, 1.0)
+        }
     }
 
     private fun teleportBlock() {
