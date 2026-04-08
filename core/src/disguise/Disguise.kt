@@ -31,14 +31,13 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
     // where we are currently solidified
     private var solidifiedPosition: Location? = null
 
+    // the floating falling sand/display entity
+    private var block: Entity? = null
+
     init {
         val player = player ?: error("invalid uuid")
         player.setCollides(false)
     }
-
-    // the floating falling sand/display entity
-    var block: Entity? = null
-        private set
 
     abstract fun createBlock(location: Location): Entity?
 
@@ -58,29 +57,6 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
         block = createBlock(loc)
     }
 
-    var hitBox: Entity? = null
-        private set
-
-    abstract fun createHitBox(location: Location): Entity?
-
-    private fun destroyHitBox() {
-        hitBox?.destroy()
-        hitBox = null
-    }
-
-    private fun respawnHitBox() {
-        val loc = player?.getLocation()?.clone() ?: return
-
-        // keep it out of the way till we
-        // teleport it
-        loc.y += 1000.0
-
-        destroyHitBox()
-        hitBox = createHitBox(loc)
-        hitBox?.setInvisible(true)
-        hitBox?.setCollides(false)
-    }
-
     fun update() {
         val player = player ?: return
 
@@ -91,23 +67,16 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
             if (!isSolid) {
                 isSolid = true
                 solidifiedPosition = player.getLocation().clone()
-                respawnHitBox()
             }
             sendBlockUpdate(material)
         } else if (isSolid) {
             isSolid = false
-            destroyHitBox()
             respawnBlock()
             sendBlockUpdate(null)
         }
 
         updateVisibility()
-        teleportEntity(hitBox, true)
-        teleportEntity(block, isSolid)
-
-        // do this here is it can be
-        // cleared by the core game logic
-        player.setInvisible(true)
+        teleportBlock()
     }
 
     // handle solidifying
@@ -140,26 +109,36 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
 
     fun destroy() {
         destroyBlock()
-        destroyHitBox()
 
+        // reset player physics
         val player = player ?: return
         player.setCollides(true)
-        player.setInvisible(false)
-        if (isSolid) sendBlockUpdate(null)
+        plugin.entityHider.showEntity(player)
+
+        // make sure the client side block's
+        // are removed
+        if (isSolid) {
+            sendBlockUpdate(null)
+        }
     }
 
-    private fun teleportEntity(entity: Entity?, center: Boolean) {
-        if (entity == null) return
-
-        val player = player ?: return
+    fun getCurrentBlockLocation(): Location? {
+        val player = player ?: return null
         val loc = player.getLocation().clone()
-        if (center) {
+        if (isSolid) {
+            // center the block
             loc.x = round(loc.x + 0.5) - 0.5
             loc.y = round(loc.y)
             loc.z = round(loc.z + 0.5) - 0.5
         }
 
-        val packet = EntityTeleportPacket(entity, loc)
+        return loc
+    }
+
+    private fun teleportBlock() {
+        val block = block ?: return
+        val loc = getCurrentBlockLocation() ?: return
+        val packet = EntityTeleportPacket(block, loc)
         plugin.shim.getPlayers().forEach { packet.send(it) }
     }
 
@@ -175,15 +154,13 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
 
     private fun updateVisibility() {
         val block = block ?: return
-        val show = !isSolid
-        plugin.shim.getPlayers().forEach { target ->
-            if (target.uuid == uuid) return@forEach
-
-            if (show) {
-                plugin.entityHider.showEntity(target, block)
-            } else {
-                plugin.entityHider.hideEntity(target, block)
-            }
+        if (isSolid) {
+            plugin.entityHider.hideEntity(block, uuid)
+        } else {
+            plugin.entityHider.showEntity(block)
         }
+
+        val player = player ?: return
+        plugin.entityHider.hideEntity(player, uuid)
     }
 }

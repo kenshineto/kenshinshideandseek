@@ -82,7 +82,7 @@ class Khs(val shim: KhsShim) {
     val disguiser: Disguiser = Disguiser()
 
     /** Allows hiding entities for only some player observers */
-    val entityHider: EntityHider = EntityHider()
+    val entityHider: EntityHider = EntityHider(shim)
 
     /** Knowns requests that need to be completed with `/hs confirm` */
     val requests: MutableMap<UUID, Request> = ConcurrentHashMap<UUID, Request>()

@@ -2,8 +2,10 @@ package cat.freya.khs.bukkit
 
 import cat.freya.khs.game.Board
 import cat.freya.khs.world.Inventory
+import cat.freya.khs.world.Location
 import cat.freya.khs.world.Material
 import cat.freya.khs.world.Player
+import cat.freya.khs.world.Vector
 import com.cryptomorin.xseries.XSound
 import com.cryptomorin.xseries.messages.ActionBar
 import com.cryptomorin.xseries.messages.Titles
@@ -14,7 +16,7 @@ import org.bukkit.FireworkEffect
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Firework
-import org.bukkit.util.Vector
+import org.bukkit.util.BlockIterator
 
 class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
     BukkitEntity(plugin, inner), Player {
@@ -48,6 +50,14 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
 
     override fun satiate() {
         inner.foodLevel = 20
+    }
+
+    override fun knockBack(direction: Vector) {
+        val velocity = inner.velocity
+        velocity.x = direction.x * 0.4
+        velocity.y = 0.4
+        velocity.z = direction.z * 0.4
+        inner.velocity = velocity
     }
 
     override fun getAllowedFlight(): Boolean {
@@ -120,6 +130,57 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
         return attribute?.value ?: return 0.0
     }
 
+    override fun getEyePosition(): Location {
+        val loc = inner.eyeLocation
+        return Location(loc.x, loc.y, loc.z, inner.world.name)
+    }
+
+    override fun getEyeDirection(): Vector {
+        val vec = inner.eyeLocation.direction
+        return Vector(vec.x, vec.y, vec.z)
+    }
+
+    private fun modernRayTrace(maxReach: Double): Double? {
+        val result =
+            inner.world.rayTraceBlocks(inner.eyeLocation, inner.eyeLocation.direction, maxReach)
+                ?: return null
+        return result.hitPosition.distance(inner.eyeLocation.toVector())
+    }
+
+    private fun legacyRayTrace(maxReach: Double): Double? {
+        val eye = inner.eyeLocation
+        val direction = eye.direction
+
+        val iterator =
+            BlockIterator(inner.world, inner.location.toVector(), direction, 0.0, maxReach.toInt())
+
+        var distance = 0.0
+
+        while (iterator.hasNext()) {
+            val block = iterator.next()
+            distance += 1.0
+
+            if (block.type == org.bukkit.Material.AIR) continue
+
+            for (i in 0 until 10) {
+                val d = 0.1 * i
+                val point = eye.clone().add(direction.clone().multiply(d))
+
+                if (point.block == block) return distance + d
+            }
+        }
+
+        return null
+    }
+
+    override fun getReach(maxReach: Double): Double? {
+        return if (plugin.shim.supports(13, 2)) {
+            modernRayTrace(maxReach)
+        } else {
+            legacyRayTrace(maxReach)
+        }
+    }
+
     override fun getGameMode(): Player.GameMode {
         return when (inner.gameMode) {
             org.bukkit.GameMode.SURVIVAL -> Player.GameMode.SURVIVAL
@@ -162,7 +223,7 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
         val fireworkTypeName = if (plugin.shim.supports(13)) "FIREWORK_ROCKET" else "FIREWORK"
         val fireworkType = EntityType.valueOf(fireworkTypeName)
         val firework = world.inner.spawnEntity(bukkitLocation, fireworkType) as Firework
-        firework.velocity = Vector(0, 1, 0)
+        firework.velocity = org.bukkit.util.Vector(0, 1, 0)
 
         // make it pretty
         val meta = firework.fireworkMeta

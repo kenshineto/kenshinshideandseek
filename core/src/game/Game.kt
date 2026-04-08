@@ -697,17 +697,10 @@ class Game(val plugin: Khs) {
     private fun loadSeekers() = seekerPlayers.forEach { loadSeeker(it) }
 
     private fun setPlayerHidden(player: Player, hidden: Boolean) {
-        players.forEach { observer ->
-            // cannot hide oneself
-            if (observer.uuid == player.uuid) {
-                return@forEach
-            }
-
-            if (hidden) {
-                plugin.entityHider.hideEntity(observer, player)
-            } else {
-                plugin.entityHider.showEntity(observer, player)
-            }
+        if (hidden) {
+            plugin.entityHider.hideEntity(player, player.uuid)
+        } else {
+            plugin.entityHider.showEntity(player)
         }
     }
 

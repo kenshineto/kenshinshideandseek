@@ -1,23 +1,14 @@
 package cat.freya.khs.packet
 
 import cat.freya.khs.Khs
-import cat.freya.khs.disguise.Disguise
-import cat.freya.khs.event.DamageEvent
-import cat.freya.khs.event.onDamage
-import cat.freya.khs.world.Player
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.event.PacketListener
 import com.github.retrooper.packetevents.event.PacketListenerPriority
-import com.github.retrooper.packetevents.event.PacketReceiveEvent
 import com.github.retrooper.packetevents.event.PacketSendEvent
-import com.github.retrooper.packetevents.protocol.packettype.PacketType.Play.Client.INTERACT_ENTITY
 import com.github.retrooper.packetevents.protocol.packettype.PacketType.Play.Server.*
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
 import com.github.retrooper.packetevents.wrapper.play.server.*
-import java.util.UUID
 
 class KhsPacketListener(val plugin: Khs) : PacketListener {
-    private val debounce = mutableSetOf<UUID>()
     private val api = PacketEvents.getAPI()
 
     init {
@@ -46,51 +37,5 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
         if (plugin.entityHider.isHidden(player.uuid, entityId)) {
             event.isCancelled = true
         }
-    }
-
-    // check when a player is trying to attack a disguise
-    override fun onPacketReceive(event: PacketReceiveEvent) {
-        val attacker = plugin.shim.wrapPlayer(event.getPlayer()) ?: return
-
-        // we want to interact event
-        if (event.packetType != INTERACT_ENTITY) return
-
-        val packet = WrapperPlayClientInteractEntity(event)
-
-        // attacking only
-        val action = packet.action ?: return
-        if (action != WrapperPlayClientInteractEntity.InteractAction.ATTACK) return
-
-        val disguise =
-            plugin.disguiser.getByBlockId(packet.entityId)
-                ?: plugin.disguiser.getByHitBoxId(packet.entityId)
-                ?: return
-        val player = disguise.player ?: return
-
-        if (player.getGameMode() == Player.GameMode.CREATIVE) return
-
-        event.isCancelled = true
-        handleAttack(disguise, player, attacker)
-    }
-
-    private fun handleAttack(disguise: Disguise, player: Player, seeker: Player) {
-        if (player.uuid == seeker.uuid) return
-
-        // player has been hit/found
-        disguise.shouldBeSolid = false
-
-        val debounceUUID = player.uuid
-        if (debounce.contains(debounceUUID)) return
-
-        // trigger an attack event
-        val khsEvent = DamageEvent(plugin, player, seeker, seeker.getAttackDamage())
-
-        // make sure this is run synchronously,
-        // otherwise we can get 'EntityRemoveEvent may only be triggered synchronously'
-        plugin.shim.scheduleEvent(1UL) { onDamage(khsEvent) }
-
-        // set and soon turn off debounce
-        debounce.add(debounceUUID)
-        plugin.shim.scheduleEvent(10UL) { debounce.remove(debounceUUID) }
     }
 }

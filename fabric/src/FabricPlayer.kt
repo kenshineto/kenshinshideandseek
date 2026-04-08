@@ -3,8 +3,10 @@ package cat.freya.khs.fabric
 import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.game.Board
 import cat.freya.khs.world.Inventory
+import cat.freya.khs.world.Location
 import cat.freya.khs.world.Material
 import cat.freya.khs.world.Player
+import cat.freya.khs.world.Vector
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import java.util.UUID
@@ -49,6 +51,10 @@ class FabricPlayer(mod: KhsMod, val inner: ServerPlayer) : FabricEntity(mod, inn
 
     override fun satiate() {
         inner.foodData.foodLevel = 20
+    }
+
+    override fun knockBack(direction: Vector) {
+        // TODO:
     }
 
     override fun getAllowedFlight(): Boolean {
@@ -134,6 +140,19 @@ class FabricPlayer(mod: KhsMod, val inner: ServerPlayer) : FabricEntity(mod, inn
 
     override fun getAttackDamage(): Double {
         return inner.getAttributeValue(Attributes.ATTACK_DAMAGE)
+    }
+
+    override fun getEyePosition(): Location {
+        TODO()
+    }
+
+    override fun getEyeDirection(): Vector {
+        TODO()
+    }
+
+    override fun getReach(maxReach: Double): Double? {
+        // TODO:
+        return null
     }
 
     override fun getGameMode(): Player.GameMode {

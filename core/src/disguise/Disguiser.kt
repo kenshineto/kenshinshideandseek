@@ -10,10 +10,11 @@ class Disguiser {
 
     fun getDisguise(uuid: UUID): Disguise? = disguises[uuid]
 
-    fun getByBlockId(id: Int): Disguise? = disguises.values.firstOrNull { it.block?.entityId == id }
-
-    fun getByHitBoxId(id: Int): Disguise? =
-        disguises.values.firstOrNull { it.hitBox?.entityId == id }
+    fun <T> mapDisguises(inner: (Disguise) -> T?): List<T> {
+        synchronized(disguises) {
+            return disguises.mapNotNull { inner(it.value) }
+        }
+    }
 
     fun disguise(player: Player, material: Material) {
         synchronized(disguises) {

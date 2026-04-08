@@ -16,6 +16,11 @@ interface Player : Entity {
     /** Set the players current health */
     fun setHealth(health: Double)
 
+    /** Damage the player by some amount */
+    fun damage(amount: Double) {
+        setHealth(maxOf(0.0, getHealth() - amount))
+    }
+
     /** Heal the player to max health */
     fun heal()
 
@@ -24,6 +29,9 @@ interface Player : Entity {
 
     /** Satiate the player to be fully fed */
     fun satiate()
+
+    /** Send the player flying */
+    fun knockBack(direction: Vector)
 
     /** @return if the player is allowed to fly */
     fun getAllowedFlight(): Boolean
@@ -63,6 +71,19 @@ interface Player : Entity {
 
     /** Get how much damage the player's equiped item can do */
     fun getAttackDamage(): Double
+
+    /** @return the position of where the player is looking from */
+    fun getEyePosition(): Location
+
+    /** @return the direction the player is looking */
+    fun getEyeDirection(): Vector
+
+    /**
+     * Raycast to see how far the player can reach (attack)
+     *
+     * @return double on hit, null if no hit
+     */
+    fun getReach(maxReach: Double): Double?
 
     // Other
     enum class GameMode {

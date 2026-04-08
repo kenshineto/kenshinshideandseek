@@ -25,6 +25,10 @@ data class Position(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.
         return LegacyPosition(x, y, z)
     }
 
+    fun toVector(): Vector {
+        return Vector(x, y, z)
+    }
+
     fun clone(): Position {
         return Position(x, y, z)
     }

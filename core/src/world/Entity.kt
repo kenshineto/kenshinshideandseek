@@ -34,9 +34,6 @@ interface Entity {
     /** Make the entity have a different base movement speed */
     fun setSpeed(amplifier: UInt)
 
-    /** Make the entity invisible to everyone else */
-    fun setInvisible(invisible: Boolean)
-
     /** Kill and remove the entity */
     fun destroy()
 }

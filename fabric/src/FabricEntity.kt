@@ -4,8 +4,6 @@ import cat.freya.khs.world.Effect
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.world.effect.MobEffectInstance
-import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.Relative
 import net.minecraft.world.entity.ai.attributes.Attributes
@@ -80,19 +78,6 @@ open class FabricEntity(val mod: KhsMod, private val inner: net.minecraft.world.
         val attribute = living.getAttribute(Attributes.MOVEMENT_SPEED)
 
         if (attribute != null) attribute.baseValue = 0.1 * amplifier.toFloat()
-    }
-
-    override fun setInvisible(invisible: Boolean) {
-        val living = inner as? LivingEntity ?: return
-        val holder = MobEffects.INVISIBILITY
-
-        if (!invisible) {
-            living.removeEffect(holder)
-            return
-        }
-
-        val effect = MobEffectInstance(holder, Integer.MAX_VALUE, 0, false, false)
-        living.addEffect(effect)
     }
 
     override fun destroy() {

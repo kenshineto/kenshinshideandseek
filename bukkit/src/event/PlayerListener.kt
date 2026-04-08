@@ -6,14 +6,18 @@ import cat.freya.khs.bukkit.KhsPlugin
 import cat.freya.khs.event.DropEvent
 import cat.freya.khs.event.HungerEvent
 import cat.freya.khs.event.RegenEvent
+import cat.freya.khs.event.SwingEvent
 import cat.freya.khs.event.onDrop
 import cat.freya.khs.event.onHunger
 import cat.freya.khs.event.onRegen
+import cat.freya.khs.event.onSwing
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
+import org.bukkit.event.player.PlayerAnimationEvent
+import org.bukkit.event.player.PlayerAnimationType
 import org.bukkit.event.player.PlayerDropItemEvent
 
 class PlayerListener(val plugin: KhsPlugin) : Listener {
@@ -54,5 +58,16 @@ class PlayerListener(val plugin: KhsPlugin) : Listener {
         onDrop(khsEvent)
 
         if (khsEvent.cancelled) event.isCancelled = true
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun onPlayerAnimation(event: PlayerAnimationEvent) {
+        val bukkitPlayer = event.player
+
+        if (event.animationType != PlayerAnimationType.ARM_SWING) return
+
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
+        val khsEvent = SwingEvent(plugin.khs, khsPlayer)
+        onSwing(khsEvent)
     }
 }

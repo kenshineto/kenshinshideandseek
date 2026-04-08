@@ -78,20 +78,6 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
         living.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 1000000, 5, false, false))
     }
 
-    override fun setInvisible(invisible: Boolean) {
-        val living = getBukkitLiving() ?: return
-
-        if (living.hasPotionEffect(PotionEffectType.INVISIBILITY) == invisible) return
-
-        if (invisible) {
-            living.addPotionEffect(
-                PotionEffect(PotionEffectType.INVISIBILITY, 1_000_000, 0, false, false)
-            )
-        } else {
-            living.removePotionEffect(PotionEffectType.INVISIBILITY)
-        }
-    }
-
     override fun destroy() {
         // this cannot be called async
         if (!plugin.server.isPrimaryThread()) {
