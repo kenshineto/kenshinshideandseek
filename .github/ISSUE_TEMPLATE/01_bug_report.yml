@@ -13,7 +13,7 @@ body:
         If you are using an older version, please update to the latest version and check if the issue persists before continuing this bug report
       options:
         - "Please select a version"
-        - "2.0.2"
+        - "2.1.0"
         - "main branch (latest commit)"
       default: 0
     validations:
