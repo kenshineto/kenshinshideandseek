@@ -12,7 +12,7 @@ data class ResourceKey(
     val minecraftKey: String?,
 
     /** The id used pre 1.13 */
-    val minecrafId: Int?,
+    val minecraftId: Int?,
 
     /**
      * A cutstom identifier used within the platform. On some platforms, this will be the same as
@@ -21,7 +21,7 @@ data class ResourceKey(
     val platformKey: String,
 ) {
     override fun toString(): String {
-        return minecraftKey ?: minecrafId?.toString() ?: platformKey
+        return minecraftKey ?: minecraftId?.toString() ?: platformKey
     }
 }
 

@@ -15,11 +15,13 @@ class BukkitEffect(val inner: PotionEffect, override val config: EffectConfig) :
     init {
         val platformKey = name
         val type = SpigotConversionUtil.fromBukkitPotionEffectType(inner.type)
-        val (minecraftKey, minecraftId) =
+
+        val minecraftId = runCatching { type.getId(null) }.getOrElse { null }
+        val minecraftKey =
             if (XMaterial.supports(1, 13)) {
-                type.name.toString() to null
+                type.name.toString()
             } else {
-                null to type.getId(null)
+                null
             }
 
         key = ResourceKey(minecraftKey, minecraftId, platformKey)

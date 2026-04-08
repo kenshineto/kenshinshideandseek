@@ -24,8 +24,8 @@ data class BlockChangePacket(val location: Location, val material: Material) {
                     val state = StateTypes.getByName(key.minecraftKey)?.createBlockState() ?: return
                     WrapperPlayServerBlockChange(vector, state)
                 }
-                key.minecrafId != null -> {
-                    val id = key.minecrafId shl 4
+                key.minecraftId != null -> {
+                    val id = key.minecraftId shl 4
                     WrapperPlayServerBlockChange(vector, id)
                 }
                 else -> return
