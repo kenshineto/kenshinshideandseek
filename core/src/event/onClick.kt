@@ -64,6 +64,10 @@ private fun onClickDebug(event: ClickEvent) {
         DebugMenu.handleDieInGame(plugin, player)
     } else if (item.similar(DebugMenu.REMOVE_DISGUISE)) {
         plugin.disguiser.reveal(player.uuid)
+    } else if (item.similar(DebugMenu.HIDE_SELF)) {
+        plugin.entityHider.hideEntity(player, player.uuid)
+    } else if (item.similar(DebugMenu.SHOW_SELF)) {
+        plugin.entityHider.showEntity(player)
     } else {
         return
     }
