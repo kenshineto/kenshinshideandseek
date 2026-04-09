@@ -1,12 +1,13 @@
 package cat.freya.khs.disguise
 
-import cat.freya.khs.KhsShim
+import cat.freya.khs.Khs
 import cat.freya.khs.packet.EntityDestroyPacket
 import cat.freya.khs.packet.EntityMetadataPacket
+import cat.freya.khs.packet.EntitySpawnPacket
 import cat.freya.khs.world.Entity
 import java.util.UUID
 
-class EntityHider(val shim: KhsShim) {
+class EntityHider(val plugin: Khs) {
     /**
      * Entities in this map are INVISIBLE to everyone but their provided OWNER (which can be null)
      */
@@ -30,12 +31,12 @@ class EntityHider(val shim: KhsShim) {
             map.put(id, owner)
         }
 
-        if (!wasLastHidden) {
-            val packet = EntityDestroyPacket(entity)
-            shim.getPlayers().forEach {
-                if (it.uuid == owner) return@forEach
-                packet.send(it)
-            }
+        if (wasLastHidden) return
+
+        val packet = EntityDestroyPacket(entity)
+        plugin.shim.getPlayers().forEach {
+            if (it.uuid == owner) return@forEach
+            packet.send(it)
         }
     }
 
@@ -49,9 +50,17 @@ class EntityHider(val shim: KhsShim) {
             map.remove(id)
         }
 
-        if (wasLastHidden) {
-            val packet = EntityMetadataPacket(entity, false)
-            shim.getPlayers().forEach { packet.send(it) }
+        if (!wasLastHidden) return
+
+        val destroy = EntityDestroyPacket(entity)
+        val spawn = EntitySpawnPacket(entity)
+        val meta = EntityMetadataPacket(plugin, entity, EntityMetadataPacket.Flags())
+        plugin.shim.getPlayers().forEach {
+            if (entity.uuid == it.uuid) return@forEach
+
+            destroy.send(it)
+            spawn.send(it)
+            meta.send(it)
         }
     }
 }
