@@ -3,6 +3,8 @@ package cat.freya.khs.bukkit
 import cat.freya.khs.world.Effect
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
+import cat.freya.khs.world.ResourceKey
+import cat.freya.khs.world.Vector
 import org.bukkit.entity.LivingEntity
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -13,6 +15,18 @@ const val KHS_COLLISION_TEAM_NAME = "KHS_Collision"
 open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.entity.Entity) :
     Entity {
     override val entityId = inner.entityId
+    override val uuid = inner.uniqueId
+    override val type = getResourceKey()
+
+    @Suppress("DEPRECATION")
+    private fun getResourceKey(): ResourceKey {
+        val bukkitType = inner.type
+        val platformKey = bukkitType.name
+        val minecraftId = runCatching { bukkitType.getTypeId() }.getOrElse { null }?.toInt()
+        val minecraftKey = runCatching { bukkitType.key.toString() }.getOrElse { null }
+
+        return ResourceKey(minecraftKey, minecraftId, platformKey)
+    }
 
     override fun isAlive(): Boolean {
         return !inner.isDead
@@ -21,6 +35,24 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
     override fun getLocation(): Location {
         val loc = inner.location
         return Location(loc.x, loc.y, loc.z, inner.world.name)
+    }
+
+    override fun getPitch(): Float {
+        return inner.getLocation().pitch
+    }
+
+    override fun getYaw(): Float {
+        return inner.getLocation().yaw
+    }
+
+    override fun getHeadYaw(): Float? {
+        val living = inner as? LivingEntity ?: return null
+        return living.eyeLocation.yaw
+    }
+
+    override fun getVelocity(): Vector {
+        val v = inner.velocity
+        return Vector(v.x, v.y, v.z)
     }
 
     override fun getWorld(): BukkitWorld? {

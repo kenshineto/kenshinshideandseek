@@ -3,11 +3,9 @@ package cat.freya.khs.world
 import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.game.Board
 import com.github.retrooper.packetevents.wrapper.PacketWrapper
-import java.util.UUID
 
 /** Represents a current online player on the minecraft server */
 interface Player : Entity {
-    val uuid: UUID
     val name: String
 
     /** Get the current health of the player */
@@ -85,7 +83,6 @@ interface Player : Entity {
      */
     fun getReach(maxReach: Double): Double?
 
-    // Other
     enum class GameMode {
         CREATIVE,
         SURVIVAL,

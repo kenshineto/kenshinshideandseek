@@ -20,7 +20,6 @@ import org.bukkit.util.BlockIterator
 
 class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
     BukkitEntity(plugin, inner), Player {
-    override val uuid = inner.uniqueId
     override val name = inner.name
 
     override fun getHealth(): Double {

@@ -1,14 +1,34 @@
 package cat.freya.khs.world
 
+import java.util.UUID
+
 interface Entity {
     /** The internal minecraft entity id */
     val entityId: Int
+
+    /** Every entity has a UUID */
+    val uuid: UUID
+
+    /** The minecraft type of this entity */
+    val type: ResourceKey
 
     /** @return if the entity is currently alive */
     fun isAlive(): Boolean
 
     /** @return the location of the entity */
     fun getLocation(): Location
+
+    /** @return the pitch of the entity */
+    fun getPitch(): Float
+
+    /** @return the yaw of the entity */
+    fun getYaw(): Float
+
+    /** @return the head yaw (if exists) */
+    fun getHeadYaw(): Float?
+
+    /** @return the velocity of the entity */
+    fun getVelocity(): Vector
 
     /** @return the world the entity is currently in */
     fun getWorld(): World?

@@ -3,6 +3,7 @@ package cat.freya.khs.fabric
 import cat.freya.khs.world.Effect
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
+import cat.freya.khs.world.Vector
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.Relative
@@ -16,6 +17,8 @@ open class FabricEntity(val mod: KhsMod, private val inner: net.minecraft.world.
     Entity {
 
     override val entityId = inner.id
+    override val uuid = inner.uuid
+    override val type = TODO()
 
     override fun isAlive(): Boolean {
         return inner.isAlive
@@ -24,6 +27,24 @@ open class FabricEntity(val mod: KhsMod, private val inner: net.minecraft.world.
     override fun getLocation(): Location {
         val worldName = getWorld().name
         return Location(inner.x, inner.y, inner.z, worldName)
+    }
+
+    override fun getPitch(): Float {
+        return inner.xRot
+    }
+
+    override fun getYaw(): Float {
+        return inner.yRot
+    }
+
+    override fun getHeadYaw(): Float? {
+        val living = inner as? LivingEntity ?: return null
+        return living.yHeadRot
+    }
+
+    override fun getVelocity(): Vector {
+        val v = inner.deltaMovement
+        return Vector(v.x, v.y, v.z)
     }
 
     override fun getWorld(): FabricWorld {

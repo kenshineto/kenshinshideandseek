@@ -9,7 +9,6 @@ import cat.freya.khs.world.Player
 import cat.freya.khs.world.Vector
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.wrapper.PacketWrapper
-import java.util.UUID
 import kotlin.runCatching
 import net.luckperms.api.LuckPermsProvider
 import net.minecraft.core.registries.BuiltInRegistries
@@ -28,9 +27,6 @@ import net.minecraft.world.level.GameType
 import net.minecraft.world.scores.DisplaySlot
 
 class FabricPlayer(mod: KhsMod, val inner: ServerPlayer) : FabricEntity(mod, inner), Player {
-
-    override val uuid: UUID = inner.getUUID()
-
     override val name: String = inner.name.string
 
     override fun getHealth(): Double {
