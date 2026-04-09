@@ -22,7 +22,7 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
 
     // intercept entity-related packets of entities that
     // are supposed to be hidden
-    override fun onPacketSend(event: PacketSendEvent) {
+    private fun handleHiddenEntity(event: PacketSendEvent): Boolean {
         val entityId =
             when (event.packetType) {
                 ENTITY_EQUIPMENT -> WrapperPlayServerEntityEquipment(event).entityId
@@ -35,19 +35,33 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
                 ENTITY_METADATA -> WrapperPlayServerEntityMetadata(event).entityId
                 ENTITY_EFFECT -> WrapperPlayServerEntityEffect(event).entityId
                 REMOVE_ENTITY_EFFECT -> WrapperPlayServerRemoveEntityEffect(event).entityId
-                else -> return
+                else -> return false
             }
 
-        val player = plugin.shim.wrapPlayer(event.getPlayer()) ?: return
-        if (plugin.entityHider.isHidden(player.uuid, entityId)) {
-            event.isCancelled = true
-        }
+        val player = plugin.shim.wrapPlayer(event.getPlayer()) ?: return false
+        return plugin.entityHider.isHidden(player.uuid, entityId)
     }
 
-    override fun onPacketReceive(event: PacketReceiveEvent) {
-        // we need to get the players
-        // client information
+    // dont allow spectators to make sounds
+    // sadly this does not include the punch sound
+    private fun handleSpectatorSound(event: PacketSendEvent): Boolean {
+        if (event.packetType != ENTITY_SOUND_EFFECT) return false
 
+        val packet = WrapperPlayServerEntitySoundEffect(event)
+        val entityId = packet.entityId
+        val player =
+            plugin.shim.getPlayers().firstOrNull { it.entityId == entityId } ?: return false
+        return plugin.game.isSpectator(player)
+    }
+
+    override fun onPacketSend(event: PacketSendEvent) {
+        val canceled = handleHiddenEntity(event) || handleSpectatorSound(event)
+        event.isCancelled = canceled
+    }
+
+    // we need to get the players
+    // client information
+    private fun saveClientSettings(event: PacketReceiveEvent) {
         val packet =
             when (event.packetType) {
                 Play.Client.CLIENT_SETTINGS -> WrapperPlayClientSettings(event)
@@ -58,5 +72,23 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
         val player = plugin.shim.wrapPlayer(event.getPlayer()) ?: return
         val settings = ClientSettings.fromPacket(packet)
         plugin.clientSettings[player.uuid] = settings
+    }
+
+    private fun stopSpectatorInteract(event: PacketReceiveEvent) {
+        val player = plugin.shim.wrapPlayer(event.getPlayer()) ?: return
+        if (!plugin.game.isSpectator(player)) return
+
+        val canceled =
+            when (event.packetType) {
+                Play.Client.INTERACT_ENTITY -> true
+                else -> false
+            }
+
+        event.isCancelled = canceled
+    }
+
+    override fun onPacketReceive(event: PacketReceiveEvent) {
+        saveClientSettings(event)
+        stopSpectatorInteract(event)
     }
 }
