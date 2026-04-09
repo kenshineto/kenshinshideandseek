@@ -20,6 +20,7 @@ import cat.freya.khs.disguise.Disguiser
 import cat.freya.khs.disguise.EntityHider
 import cat.freya.khs.game.Game
 import cat.freya.khs.game.KhsMap
+import cat.freya.khs.packet.ClientSettings
 import cat.freya.khs.packet.KhsPacketListener
 import java.io.File
 import java.io.InputStream
@@ -69,7 +70,7 @@ class Khs(val shim: KhsShim) {
     val game: Game = Game(this)
 
     /** Deserialize maps known to the plugin from `mapsConfig` */
-    val maps: MutableMap<String, KhsMap> = ConcurrentHashMap<String, KhsMap>()
+    val maps: MutableMap<String, KhsMap> = ConcurrentHashMap()
 
     /** Stores players name and win/loss/kill/death information */
     var database: Database? = null
@@ -82,10 +83,13 @@ class Khs(val shim: KhsShim) {
     val disguiser: Disguiser = Disguiser()
 
     /** Allows hiding entities for only some player observers */
-    val entityHider: EntityHider = EntityHider(shim)
+    val entityHider: EntityHider = EntityHider(this)
 
     /** Known requests that need to be completed with `/hs confirm` */
-    val requests: MutableMap<UUID, Request> = ConcurrentHashMap<UUID, Request>()
+    val requests: MutableMap<UUID, Request> = ConcurrentHashMap()
+
+    /** Client settings per player */
+    val clientSettings: MutableMap<UUID, ClientSettings> = ConcurrentHashMap()
 
     /** If a map save is currently in progress */
     val saving: AtomicBoolean = AtomicBoolean(false)

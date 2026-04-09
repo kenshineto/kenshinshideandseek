@@ -4,8 +4,13 @@ import cat.freya.khs.Khs
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.event.PacketListener
 import com.github.retrooper.packetevents.event.PacketListenerPriority
+import com.github.retrooper.packetevents.event.PacketReceiveEvent
 import com.github.retrooper.packetevents.event.PacketSendEvent
+import com.github.retrooper.packetevents.protocol.packettype.PacketType.Configuration
+import com.github.retrooper.packetevents.protocol.packettype.PacketType.Play
 import com.github.retrooper.packetevents.protocol.packettype.PacketType.Play.Server.*
+import com.github.retrooper.packetevents.wrapper.configuration.client.*
+import com.github.retrooper.packetevents.wrapper.play.client.*
 import com.github.retrooper.packetevents.wrapper.play.server.*
 
 class KhsPacketListener(val plugin: Khs) : PacketListener {
@@ -37,5 +42,21 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
         if (plugin.entityHider.isHidden(player.uuid, entityId)) {
             event.isCancelled = true
         }
+    }
+
+    override fun onPacketReceive(event: PacketReceiveEvent) {
+        // we need to get the players
+        // client information
+
+        val packet =
+            when (event.packetType) {
+                Play.Client.CLIENT_SETTINGS -> WrapperPlayClientSettings(event)
+                Configuration.Client.CLIENT_SETTINGS -> WrapperConfigClientSettings(event)
+                else -> return
+            }
+
+        val player = plugin.shim.wrapPlayer(event.getPlayer()) ?: return
+        val settings = ClientSettings.fromPacket(packet)
+        plugin.clientSettings[player.uuid] = settings
     }
 }
