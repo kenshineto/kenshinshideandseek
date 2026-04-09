@@ -17,9 +17,13 @@ data class ClickEvent(
     val clicked: Item,
 ) : Event()
 
-private fun onClickSpectator(event: ClickEvent) {
+private fun onClickTeleport(event: ClickEvent) {
     val (plugin, player, _, item) = event
     val name = item.name ?: return
+
+    // how did you get access to this menu???
+    if (!plugin.game.isSpectator(player)) return
+
     event.cancel()
 
     // teleport to player
@@ -43,6 +47,11 @@ private fun onClickSpectator(event: ClickEvent) {
 
 private fun onClickDebug(event: ClickEvent) {
     val (plugin, player, _, item) = event
+
+    // uhh you should not have access to
+    // this menu
+    if (!player.hasPermission("hs.debug")) return
+
     event.cancel()
 
     if (item.similar(DebugMenu.BECOME_SEEKER)) {
@@ -63,6 +72,9 @@ private fun onClickDebug(event: ClickEvent) {
 }
 
 private fun onClickBlockHunt(event: ClickEvent) {
+    // bro probably named a chest or something ;-;
+    if (!event.plugin.game.hasPlayer(event.player)) return
+
     event.cancel()
 
     val material = event.clicked.material
@@ -79,8 +91,8 @@ fun onClick(event: ClickEvent) {
         event.cancel()
     }
 
-    if (game.isSpectator(player)) {
-        onClickSpectator(event)
+    if (inv.title == TeleportMenu.TITLE) {
+        onClickTeleport(event)
     } else if (inv.title == DebugMenu.TITLE) {
         onClickDebug(event)
     } else if (inv.title?.startsWith(BlockHuntMenu.PREFIX) == true) {
