@@ -24,13 +24,15 @@ private fun eventHasJurisdiction(event: DamageEvent): Boolean {
 }
 
 /** Checks if the attacker (if exists) is allowed to attack the player */
-private fun isAttackAllowed(event: DamageEvent): Boolean {
+private fun isDamageAllowed(event: DamageEvent): Boolean {
     val (plugin, player, attacker, _) = event
     val game = plugin.game
 
     if (!game.hasPlayer(player)) return false
 
     if (game.status != Game.Status.SEEKING) return false
+
+    if (game.isSpectator(player)) return false
 
     if (attacker == null) {
         // assume natural causes
@@ -42,11 +44,11 @@ private fun isAttackAllowed(event: DamageEvent): Boolean {
     // attackers must be in the game to attack the player
     if (!game.hasPlayer(attacker)) return false
 
+    // spectators cannot attack
+    if (game.isSpectator(attacker)) return false
+
     // players cannot attack their team-mates
     if (game.getTeam(player.uuid) == game.getTeam(attacker.uuid)) return false
-
-    // spectators cannot attack/be attacked
-    if (game.isSpectator(player) || game.isSpectator(attacker)) return false
 
     // ignore if pvp is disabled, and a hider is trying to attack a seeker
     if (!plugin.config.pvp && game.isHider(attacker) && game.isSeeker(player)) return false
@@ -101,7 +103,7 @@ private fun broadcastDeath(event: DamageEvent) {
 }
 
 /** the attack is valid, handle it */
-private fun handleAttack(event: DamageEvent) {
+private fun handleDeath(event: DamageEvent) {
     val (plugin, player, attacker, _) = event
     val game = plugin.game
 
@@ -110,7 +112,7 @@ private fun handleAttack(event: DamageEvent) {
     player.getWorld()?.playSound(player.getLocation().toPosition(), soundName, 1.0, 1.0)
 
     // un solidify a player if their disguised
-    plugin.disguiser.getDisguise(player.uuid)?.shouldBeSolid = false
+    plugin.disguiser.reveal(player.uuid)
 
     // update leaderboard
     game.addDeath(player.uuid)
@@ -127,7 +129,7 @@ fun onDamage(event: DamageEvent) {
 
     if (!eventHasJurisdiction(event)) return
 
-    if (!isAttackAllowed(event)) {
+    if (!isDamageAllowed(event)) {
         event.cancel()
 
         // handle spectator taking damage
@@ -148,5 +150,5 @@ fun onDamage(event: DamageEvent) {
 
     /* handle death event (player was tagged or killed in pvp) */
     event.cancel()
-    handleAttack(event)
+    handleDeath(event)
 }
