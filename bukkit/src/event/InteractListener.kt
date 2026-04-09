@@ -11,7 +11,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.event.block.Action
+import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 
 class InteractListener(val plugin: KhsPlugin) : Listener {
@@ -34,17 +34,9 @@ class InteractListener(val plugin: KhsPlugin) : Listener {
     private fun handleInteract(event: PlayerInteractEvent): Boolean {
         val bukkitPlayer = event.player
         val block = event.clickedBlock?.type?.name
-        val action =
-            when (event.action) {
-                Action.LEFT_CLICK_BLOCK -> InteractEvent.Action.LEFT_CLICK
-                Action.LEFT_CLICK_AIR -> InteractEvent.Action.LEFT_CLICK
-                Action.RIGHT_CLICK_BLOCK -> InteractEvent.Action.RIGHT_CLICK
-                Action.RIGHT_CLICK_AIR -> InteractEvent.Action.RIGHT_CLICK
-                Action.PHYSICAL -> InteractEvent.Action.ATTACK
-            }
 
         val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
-        val khsEvent = InteractEvent(plugin.khs, khsPlayer, action, block)
+        val khsEvent = InteractEvent(plugin.khs, khsPlayer, block)
         onInteract(khsEvent)
 
         return khsEvent.cancelled
@@ -58,5 +50,16 @@ class InteractListener(val plugin: KhsPlugin) : Listener {
             event.isCancelled = true
             event.setUseInteractedBlock(Event.Result.DENY)
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun onPlayerInteractEntity(event: PlayerInteractEntityEvent) {
+        val bukkitPlayer = event.player
+
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
+        val khsEvent = InteractEvent(plugin.khs, khsPlayer, null)
+        onInteract(khsEvent)
+
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 }
