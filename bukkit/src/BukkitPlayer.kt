@@ -1,11 +1,11 @@
 package cat.freya.khs.bukkit
 
 import cat.freya.khs.game.Board
+import cat.freya.khs.math.Vector
+import cat.freya.khs.type.Material
 import cat.freya.khs.world.Inventory
 import cat.freya.khs.world.Location
-import cat.freya.khs.world.Material
 import cat.freya.khs.world.Player
-import cat.freya.khs.world.Vector
 import com.cryptomorin.xseries.XSound
 import com.cryptomorin.xseries.messages.ActionBar
 import com.cryptomorin.xseries.messages.Titles
@@ -21,6 +21,11 @@ import org.bukkit.util.BlockIterator
 class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
     BukkitEntity(plugin, inner), Player {
     override val name = inner.name
+    override val uuid = inner.uniqueId
+
+    override fun getHandle(): Any {
+        return inner
+    }
 
     override fun getHealth(): Double {
         return inner.health

@@ -5,7 +5,7 @@ import cat.freya.khs.config.ConfigCountdownDisplay
 import cat.freya.khs.config.ConfigLeaveType
 import cat.freya.khs.config.ConfigScoringMode
 import cat.freya.khs.menu.BlockHuntMenu
-import cat.freya.khs.world.Item
+import cat.freya.khs.type.Item
 import cat.freya.khs.world.Player
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap

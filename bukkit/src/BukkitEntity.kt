@@ -1,10 +1,10 @@
 package cat.freya.khs.bukkit
 
-import cat.freya.khs.world.Effect
+import cat.freya.khs.math.Vector
+import cat.freya.khs.type.Effect
+import cat.freya.khs.type.ResourceKey
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
-import cat.freya.khs.world.ResourceKey
-import cat.freya.khs.world.Vector
 import org.bukkit.entity.LivingEntity
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -18,14 +18,29 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
     override val uuid = inner.uniqueId
     override val type = getResourceKey()
 
-    @Suppress("DEPRECATION")
     private fun getResourceKey(): ResourceKey {
-        val bukkitType = inner.type
-        val platformKey = bukkitType.name
-        val minecraftId = runCatching { bukkitType.getTypeId() }.getOrElse { null }?.toInt()
-        val minecraftKey = runCatching { bukkitType.key.toString() }.getOrElse { null }
-
+        val minecraftKey = getMinecraftKey()
+        val minecraftId = getMinecraftId()
+        val platformKey = inner.type.name
         return ResourceKey(minecraftKey, minecraftId, platformKey)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun getMinecraftKey(): String? {
+        val keyd = runCatching { inner.type.key.toString() }.getOrElse { null }
+        if (keyd != null) return keyd
+
+        val fallback = runCatching { inner.type.name.lowercase() }.getOrElse { null }
+        if (fallback != null) return fallback
+
+        return null
+    }
+
+    @Suppress("DEPRECATION")
+    private fun getMinecraftId(): UInt? {
+        val id = runCatching { inner.type.getTypeId() }.getOrElse { null }
+        if (id == null || id < 0) return null
+        return id.toUInt()
     }
 
     override fun isAlive(): Boolean {

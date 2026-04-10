@@ -1,7 +1,7 @@
 package cat.freya.khs.fabric
 
-import cat.freya.khs.world.Material
-import cat.freya.khs.world.ResourceKey
+import cat.freya.khs.type.Material
+import cat.freya.khs.type.ResourceKey
 import net.minecraft.core.Holder
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries

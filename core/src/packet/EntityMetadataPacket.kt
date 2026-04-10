@@ -7,10 +7,7 @@ import com.github.retrooper.packetevents.protocol.entity.data.EntityData
 import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata
 
-data class EntityMetadataPacket(val plugin: Khs, val entity: Entity, val flags: Flags) {
-
-    private val data: List<EntityData<*>> = getData()
-    private val packet = WrapperPlayServerEntityMetadata(entity.entityId, data)
+data class EntityMetadataPacket(val plugin: Khs, val entity: Entity, val flags: Flags) : Packet {
 
     /** The first entry on the metadata packet. This is always set on every entity */
     data class Flags(val glowing: Boolean = false) {
@@ -23,7 +20,7 @@ data class EntityMetadataPacket(val plugin: Khs, val entity: Entity, val flags: 
         }
     }
 
-    private fun getData(): List<EntityData<*>> {
+    private fun getData(client: Player): List<EntityData<*>> {
         val list = mutableListOf<EntityData<*>>()
 
         // base entity metadata
@@ -33,13 +30,15 @@ data class EntityMetadataPacket(val plugin: Khs, val entity: Entity, val flags: 
         val player = entity as? Player
         if (player != null) {
             val settings = plugin.clientSettings[player.uuid] ?: ClientSettings()
-            list.addAll(settings.toData())
+            list.addAll(settings.toData(client))
         }
 
         return list
     }
 
-    fun send(player: Player) {
+    override fun send(player: Player) {
+        val data = getData(player)
+        val packet = WrapperPlayServerEntityMetadata(entity.entityId, data)
         player.sendPacket(packet)
     }
 }

@@ -1,6 +1,7 @@
 package cat.freya.khs.world
 
 import cat.freya.khs.config.LegacyPosition
+import cat.freya.khs.math.Vector
 import kotlin.math.pow
 import kotlin.math.sqrt
 

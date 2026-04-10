@@ -1,9 +1,9 @@
 package cat.freya.khs.fabric
 
-import cat.freya.khs.world.Effect
+import cat.freya.khs.math.Vector
+import cat.freya.khs.type.Effect
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
-import cat.freya.khs.world.Vector
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.Relative

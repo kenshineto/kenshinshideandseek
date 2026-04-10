@@ -1,5 +1,7 @@
 package cat.freya.khs.world
 
+import cat.freya.khs.type.Item
+
 /** Represents an inventory container */
 interface Inventory {
     /** The name of the container */

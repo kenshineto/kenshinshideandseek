@@ -1,30 +1,36 @@
 package cat.freya.khs.bukkit
 
 import cat.freya.khs.config.EffectConfig
-import cat.freya.khs.world.Effect
-import cat.freya.khs.world.ResourceKey
-import com.cryptomorin.xseries.XMaterial
+import cat.freya.khs.type.Effect
+import cat.freya.khs.type.ResourceKey
 import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
 class BukkitEffect(val inner: PotionEffect, override val config: EffectConfig) : Effect {
     @Suppress("DEPRECATION") override val name = inner.type.name
-    override val key: ResourceKey
+    override val key: ResourceKey = getResourceKey()
 
-    init {
+    private fun getResourceKey(): ResourceKey {
+        val minecraftKey = getMinecraftKey()
+        val minecraftId = getMinecraftId()
         val platformKey = name
+        return ResourceKey(minecraftKey, minecraftId, platformKey)
+    }
+
+    private fun getMinecraftKey(): String? {
         val type = SpigotConversionUtil.fromBukkitPotionEffectType(inner.type)
+        return runCatching { type.name.toString() }.getOrElse { null }
+    }
 
-        val minecraftId = runCatching { type.getId(null) }.getOrElse { null }
-        val minecraftKey =
-            if (XMaterial.supports(1, 13)) {
-                type.name.toString()
-            } else {
-                null
+    private fun getMinecraftId(): UInt? {
+        val type = SpigotConversionUtil.fromBukkitPotionEffectType(inner.type)
+        return runCatching {
+                val id = type.getId(null)
+                if (id < 0) error("invalid id")
+                id.toUInt()
             }
-
-        key = ResourceKey(minecraftKey, minecraftId, platformKey)
+            .getOrElse { null }
     }
 
     companion object {

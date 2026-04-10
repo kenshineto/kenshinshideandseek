@@ -1,5 +1,8 @@
 package cat.freya.khs.world
 
+import cat.freya.khs.math.Vector
+import cat.freya.khs.type.Effect
+import cat.freya.khs.type.ResourceKey
 import java.util.UUID
 
 interface Entity {

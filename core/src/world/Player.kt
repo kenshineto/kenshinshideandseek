@@ -2,11 +2,26 @@ package cat.freya.khs.world
 
 import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.game.Board
+import cat.freya.khs.math.Vector
+import cat.freya.khs.type.Material
+import com.github.retrooper.packetevents.PacketEvents
+import com.github.retrooper.packetevents.protocol.player.ClientVersion
 import com.github.retrooper.packetevents.wrapper.PacketWrapper
 
 /** Represents a current online player on the minecraft server */
 interface Player : Entity {
     val name: String
+
+    /**
+     * @return the internal type of this player Can be turned back into a [Player] with wrapPlayer
+     *   on the shim
+     */
+    fun getHandle(): Any
+
+    /** @return the client version */
+    fun getClientVersion(): ClientVersion {
+        return PacketEvents.getAPI().playerManager.getClientVersion(getHandle())
+    }
 
     /** Get the current health of the player */
     fun getHealth(): Double

@@ -1,7 +1,7 @@
 package cat.freya.khs.bukkit
 
 import cat.freya.khs.config.ItemConfig
-import cat.freya.khs.world.Item
+import cat.freya.khs.type.Item
 import com.cryptomorin.xseries.XItemStack
 import kotlin.collections.emptyMap
 import org.bukkit.configuration.MemoryConfiguration

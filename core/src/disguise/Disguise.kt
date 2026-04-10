@@ -3,9 +3,9 @@ package cat.freya.khs.disguise
 import cat.freya.khs.Khs
 import cat.freya.khs.packet.BlockChangePacket
 import cat.freya.khs.packet.EntityTeleportPacket
+import cat.freya.khs.type.Material
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
-import cat.freya.khs.world.Material
 import cat.freya.khs.world.Player
 import java.util.UUID
 import kotlin.math.round

@@ -1,7 +1,7 @@
 package cat.freya.khs.bukkit
 
+import cat.freya.khs.type.Item
 import cat.freya.khs.world.Inventory
-import cat.freya.khs.world.Item
 import cat.freya.khs.world.PlayerInventory
 
 open class BukkitInventory(

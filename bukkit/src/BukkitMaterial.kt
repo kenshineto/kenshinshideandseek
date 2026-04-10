@@ -1,27 +1,27 @@
 package cat.freya.khs.bukkit
 
-import cat.freya.khs.world.Material
-import cat.freya.khs.world.ResourceKey
+import cat.freya.khs.type.Material
+import cat.freya.khs.type.ResourceKey
 import com.cryptomorin.xseries.XMaterial
 import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import kotlin.jvm.optionals.getOrNull
 
 class BukkitMaterial(val inner: org.bukkit.Material) : Material {
 
-    override val key: ResourceKey
+    override val key: ResourceKey = getResourceKey()
 
     override val isBlock: Boolean = inner.isBlock
 
     override val isItem: Boolean = inner.isItem
 
-    private fun parseMinecraftId(): Int? {
-        if (XMaterial.supports(1, 13)) return null
-
-        @Suppress("DEPRECATION")
-        return inner.id
+    private fun getResourceKey(): ResourceKey {
+        val minecraftKey = getMinecraftKey()
+        val minecraftId = getMinecraftId()
+        val platformKey = inner.name
+        return ResourceKey(minecraftKey, minecraftId, platformKey)
     }
 
-    private fun parseMinecraftKey(): String? {
+    private fun getMinecraftKey(): String? {
         if (!XMaterial.supports(1, 13)) return null
 
         if (isBlock) {
@@ -33,16 +33,17 @@ class BukkitMaterial(val inner: org.bukkit.Material) : Material {
         }
     }
 
-    override fun toString(): String {
-        return key.toString()
+    @Suppress("DEPRECATION")
+    private fun getMinecraftId(): UInt? {
+        if (XMaterial.supports(1, 13)) return null
+
+        val id = inner.id
+        if (id < 0) return null
+        return id.toUInt()
     }
 
-    init {
-        val minecraftKey = parseMinecraftKey()
-        val minecraftId = parseMinecraftId()
-        val platformKey = inner.name
-
-        key = ResourceKey(minecraftKey, minecraftId, platformKey)
+    override fun toString(): String {
+        return key.toString()
     }
 
     companion object {

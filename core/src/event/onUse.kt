@@ -3,7 +3,7 @@ package cat.freya.khs.event
 import cat.freya.khs.Khs
 import cat.freya.khs.game.Game
 import cat.freya.khs.menu.TeleportMenu
-import cat.freya.khs.world.Item
+import cat.freya.khs.type.Item
 import cat.freya.khs.world.Player
 
 data class UseEvent(val plugin: Khs, val player: Player, val item: Item) : Event()

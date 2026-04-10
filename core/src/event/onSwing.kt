@@ -2,9 +2,9 @@ package cat.freya.khs.event
 
 import cat.freya.khs.Khs
 import cat.freya.khs.disguise.Disguise
+import cat.freya.khs.math.AABB
+import cat.freya.khs.math.Vector
 import cat.freya.khs.world.Player
-import cat.freya.khs.world.Vector
-import cat.freya.khs.world.VectorAABB
 import java.util.UUID
 
 private const val BLOCKHUNT_MAX_REACH: Double = 5.0
@@ -65,7 +65,7 @@ fun onSwing(event: SwingEvent) {
                 val vector = loc.toPosition().toVector()
                 val min = vector.subtract(Vector(0.5, 0.0, 0.5))
                 val max = vector.add(Vector(0.5, 1.0, 0.5))
-                val aabb = VectorAABB(min, max)
+                val aabb = AABB(min, max)
 
                 // ray cast to aabb
                 val distance = aabb.rayIntersects(eye, direction) ?: return@mapDisguises null

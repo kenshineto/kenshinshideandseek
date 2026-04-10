@@ -4,7 +4,10 @@ import cat.freya.khs.Khs
 import cat.freya.khs.packet.EntityDestroyPacket
 import cat.freya.khs.packet.EntityMetadataPacket
 import cat.freya.khs.packet.EntitySpawnPacket
+import cat.freya.khs.packet.PlayerSpawnPacket
 import cat.freya.khs.world.Entity
+import cat.freya.khs.world.Player
+import com.github.retrooper.packetevents.protocol.player.ClientVersion
 import java.util.UUID
 
 class EntityHider(val plugin: Khs) {
@@ -55,11 +58,24 @@ class EntityHider(val plugin: Khs) {
         val destroy = EntityDestroyPacket(entity)
         val spawn = EntitySpawnPacket(entity)
         val meta = EntityMetadataPacket(plugin, entity, EntityMetadataPacket.Flags())
+
+        val entityPlayer = entity as? Player
+        val spawnPlayer = entityPlayer?.let { PlayerSpawnPacket(it) }
+
         plugin.shim.getPlayers().forEach {
             if (entity.uuid == it.uuid) return@forEach
+            val clientVersion = it.getClientVersion()
 
             destroy.send(it)
-            spawn.send(it)
+
+            // pre 1.20.2, there is a different packet just for spawning
+            // players
+            if (spawnPlayer != null && clientVersion.isOlderThan(ClientVersion.V_1_20_2)) {
+                spawnPlayer.send(it)
+            } else {
+                spawn.send(it)
+            }
+
             meta.send(it)
         }
     }

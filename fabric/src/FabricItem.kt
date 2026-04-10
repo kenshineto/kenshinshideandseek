@@ -1,7 +1,7 @@
 package cat.freya.khs.fabric
 
 import cat.freya.khs.config.ItemConfig
-import cat.freya.khs.world.Item
+import cat.freya.khs.type.Item
 import kotlin.collections.emptyMap
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
