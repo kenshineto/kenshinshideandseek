@@ -15,7 +15,7 @@ import kotlin.synchronized
 import kotlin.toUInt
 
 class Game(val plugin: Khs) {
-    /// represents what state the game is in
+    /** represents what state the game is in */
     enum class Status {
         LOBBY,
         HIDING,
@@ -32,14 +32,14 @@ class Game(val plugin: Khs) {
         }
     }
 
-    /// what team a player is on
+    /** what team a player is on */
     enum class Team {
         HIDER,
         SEEKER,
         SPECTATOR,
     }
 
-    /// why was the game stopped?
+    /** why was the game stopped? */
     enum class WinType {
         NONE,
         SEEKER_WIN,
@@ -47,24 +47,24 @@ class Game(val plugin: Khs) {
     }
 
     @Volatile
-    /// the state the game is in
+    /** the state the game is in */
     var status: Status = Status.LOBBY
         private set
 
     @Volatile
-    /// timer for current game status (lobby, hiding, seeking, finished)
+    /** timer for current game status (lobby, hiding, seeking, finished) */
     var timer: ULong? = null
         private set
 
-    /// keep track till next second
+    /** keep track till next second */
     private var gameTick: UInt = 0u
     private val isSecond: Boolean
         get() = gameTick % 20u == 0u
 
-    /// if the last event was a hider leaving the game
+    /** if the last event was a hider leaving the game */
     private var hiderLeft: Boolean = false
 
-    /// the current game round
+    /** the current game round */
     private var round: UInt = 0u
 
     // what round was the uuid last picked to be seeker
@@ -450,7 +450,7 @@ class Game(val plugin: Khs) {
         players.forEach { reloadGameBoard(plugin, it) }
     }
 
-    /// during Status.LOBBY
+    /** during Status.LOBBY */
     private fun whileWaiting() {
         val countdown = plugin.config.lobby.countdown
         val changeCountdown = plugin.config.lobby.changeCountdown
@@ -473,7 +473,7 @@ class Game(val plugin: Khs) {
         if (timer == 0UL) start()
     }
 
-    /// during Status.HIDING
+    /** during Status.HIDING */
     private fun whileHiding() {
         if (!isSecond) return
 
@@ -517,7 +517,7 @@ class Game(val plugin: Khs) {
         }
     }
 
-    /// @returns distance to the closest seeker to the player
+    /** @returns distance to the closest seeker to the player */
     private fun distanceToSeeker(player: Player): Double {
         val distances =
             seekerPlayers.mapNotNull { seeker ->
@@ -526,7 +526,7 @@ class Game(val plugin: Khs) {
         return distances.minOrNull() ?: Double.POSITIVE_INFINITY
     }
 
-    /// plays the seeker ping for a hider
+    /** plays the seeker ping for a hider */
     private fun playSeekerPing(hider: Player) {
         val distance = distanceToSeeker(hider)
 
@@ -631,7 +631,7 @@ class Game(val plugin: Khs) {
         hiderLeft = false
     }
 
-    /// during Status.SEEKING
+    /** during Status.SEEKING */
     private fun whileSeeking() {
         if (plugin.config.seekerPing.enabled) hiderPlayers.forEach { playSeekerPing(it) }
 
@@ -659,7 +659,7 @@ class Game(val plugin: Khs) {
         checkWinConditions()
     }
 
-    /// during Status.FINISHED
+    /** during Status.FINISHED */
     private fun whileFinished() {
         synchronized(this) {
             var time = timer ?: plugin.config.endGameDelay

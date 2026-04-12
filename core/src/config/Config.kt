@@ -116,7 +116,7 @@ data class LobbyConfig(
 )
 
 data class SpectatorItemsConfig(
-    /// Item for spectators to toggle flight
+    /** Item for spectators to toggle flight */
     var flight: ItemConfig =
         ItemConfig(
             name = "&bToggle Flight",
@@ -124,7 +124,7 @@ data class SpectatorItemsConfig(
             lore = listOf("Turns flying on and off"),
         ),
 
-    /// Item for spectators to teleport to other players
+    /** Item for spectators to teleport to other players */
     var teleport: ItemConfig =
         ItemConfig(
             name = "&bTeleport to Others",

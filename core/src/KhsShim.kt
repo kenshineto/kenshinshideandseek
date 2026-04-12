@@ -34,7 +34,7 @@ interface KhsShim {
     /** Platforms implementation of a logger */
     val logger: Logger
 
-    /// Directory where config files and sqlitedb are stored
+    /** Directory where config files and sqlitedb are stored */
     val dataDirectory: Path
 
     /** @return a list of valid known materials */

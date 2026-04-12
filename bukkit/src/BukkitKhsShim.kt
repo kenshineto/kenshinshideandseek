@@ -203,7 +203,7 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
     }
 }
 
-/// formats &c like color codes to bukkit's colors
+/** formats &c like color codes to bukkit's colors */
 fun formatText(message: String): String {
     return ChatColor.translateAlternateColorCodes('&', message)
 }

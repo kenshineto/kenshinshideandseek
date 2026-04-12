@@ -34,7 +34,7 @@ data class Request(val fn: () -> Unit, val lengthSeconds: Long) {
         get() = (System.currentTimeMillis() - start) < lengthSeconds * 1000
 }
 
-/// Plugin wrapper
+/** Plugin wrapper */
 class Khs(val shim: KhsShim) {
 
     /** The main plugin config */

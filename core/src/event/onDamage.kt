@@ -122,7 +122,7 @@ private fun handleDeath(event: DamageEvent) {
     respawnPlayer(event)
 }
 
-/// handles when a player in the game is damaged
+/** handles when a player in the game is damaged */
 fun onDamage(event: DamageEvent) {
     val (plugin, player, _, damage) = event
     val game = plugin.game
