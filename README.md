@@ -35,4 +35,9 @@ The official pages distributing this plugin are:
 
 ## License
 
-This project is licensed under the [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html). View the LICENSE file for more information.
+This project is licensed under the [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+This means you MUST for all copies or derivatives of this project:
+- Maintain the GPLv3 license
+- Maintain and provide the copyright notice and attributions
+- Make source code publically available
