@@ -25,6 +25,14 @@ Contributions are always welcome. GitHub is used to make contributing as easy as
 
 For instructions please view [CONTRIBUTING.md](https://github.com/kenshineto/kenshinshideandseek2/blob/main/CONTRIBUTING.md)
 
+## Official Pages
+
+The official pages distributing this plugin are:
+
+- [Modrinth](https://modrinth.com/plugin/kenshins-hide-and-seek) - Popular mod and plugin database
+- [SpigotMC](https://www.spigotmc.org/resources/kenshins-hide-and-seek.95306/) - Spigot plugin database
+- [Hangar](https://hangar.papermc.io/kenshineto/KenshinsHideAndSeek) - PaperMC plugin database
+
 ## License
 
 This project is licensed under the [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html). View the LICENSE file for more information.
