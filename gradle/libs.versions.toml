@@ -4,6 +4,7 @@ kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
 shadow = "9.4.1"
 fabric-loom = "1.15-SNAPSHOT"
+ktlint = "14.2.0"
 
 # libs
 snakeyaml = "2.6"
@@ -71,3 +72,4 @@ minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 fabric-loom = { id = "net.fabricmc.fabric-loom", version.ref = "fabric-loom" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }

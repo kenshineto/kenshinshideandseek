@@ -4,6 +4,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     alias(libs.plugins.kotlin)
+    alias(libs.plugins.ktlint)
     alias(libs.plugins.shadow) apply false
 }
 
@@ -14,6 +15,7 @@ version = "2.1.0"
 allprojects { repositories { mavenCentral() } }
 
 subprojects {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "java-library")
 

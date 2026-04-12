@@ -14,7 +14,7 @@ If your PR was closed for not being a necessary feature, please do not resubmit 
 
 This project uses [ktlint](https://pinterest.github.io/ktlint/latest/) for formatting.
 
-You can run `ktlint --format` to format all the source files. Please make sure all gradle and kotlin files are formatted
+You can run `gradle ktlintFormat` to format all the source files. Please make sure all gradle and kotlin files are formatted
 before making your PR.
 
 ### Testing
