@@ -1,10 +1,10 @@
 package cat.freya.khs.fabric
 
 import cat.freya.khs.Khs
-import java.util.concurrent.atomic.AtomicBoolean
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.loader.api.ModContainer
+import java.util.concurrent.atomic.AtomicBoolean
 
 object KhsMod : ModInitializer {
     const val ID: String = "khs"

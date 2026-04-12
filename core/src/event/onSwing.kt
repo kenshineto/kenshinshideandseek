@@ -70,8 +70,7 @@ fun onSwing(event: SwingEvent) {
                 // ray cast to aabb
                 val distance = aabb.rayIntersects(eye, direction) ?: return@mapDisguises null
                 disguise to distance
-            }
-            .filter { (_, distance) -> distance <= reach }
+            }.filter { (_, distance) -> distance <= reach }
             .minByOrNull { it.second }
             ?.first ?: return
 

@@ -8,7 +8,6 @@ import net.minecraft.world.item.enchantment.Enchantment
 import net.minecraft.world.item.enchantment.ItemEnchantments
 
 class FabricEnchantment {
-
     companion object {
         fun parse(server: FabricServer, name: String): Holder<Enchantment>? {
             val id = Identifier.tryParse(name) ?: return null

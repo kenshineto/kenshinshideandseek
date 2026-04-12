@@ -1,8 +1,8 @@
 package cat.freya.khs.db
 
-import java.util.UUID
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.core.statements.UpdateBuilder
+import java.util.UUID
 
 object Players : Table("hs_players") {
     val uuid = varchar("uuid", 36)
@@ -75,7 +75,8 @@ enum class PlayerStat(val arg: String) {
     SEEKER_KILLS("seekerKills"),
     TOTAL_DEATHS("deaths"),
     HIDER_DEATHS("hiderDeaths"),
-    SEEKER_DEATHS("seekerDeaths");
+    SEEKER_DEATHS("seekerDeaths"),
+    ;
 
     companion object {
         fun fromArg(arg: String): PlayerStat? =
@@ -84,41 +85,127 @@ enum class PlayerStat(val arg: String) {
 
     fun getValue(player: Player): UInt =
         when (this) {
-            TOTAL_WINS -> player.hiderWins + player.seekerWins
-            HIDER_WINS -> player.hiderWins
-            SEEKER_WINS -> player.seekerWins
-            TOTAL_LOSSES -> player.hiderLosses + player.seekerLosses
-            HIDER_LOSSES -> player.hiderLosses
-            SEEKER_LOSSES -> player.seekerLosses
-            TOTAL_GAMES ->
+            TOTAL_WINS -> {
+                player.hiderWins + player.seekerWins
+            }
+
+            HIDER_WINS -> {
+                player.hiderWins
+            }
+
+            SEEKER_WINS -> {
+                player.seekerWins
+            }
+
+            TOTAL_LOSSES -> {
+                player.hiderLosses + player.seekerLosses
+            }
+
+            HIDER_LOSSES -> {
+                player.hiderLosses
+            }
+
+            SEEKER_LOSSES -> {
+                player.seekerLosses
+            }
+
+            TOTAL_GAMES -> {
                 player.hiderWins + player.seekerWins + player.hiderLosses + player.seekerLosses
-            HIDER_GAMES -> player.hiderWins + player.hiderLosses
-            SEEKER_GAMES -> player.seekerWins + player.seekerLosses
-            TOTAL_KILLS -> player.hiderKills + player.seekerKills
-            HIDER_KILLS -> player.hiderKills
-            SEEKER_KILLS -> player.seekerKills
-            TOTAL_DEATHS -> player.hiderDeaths + player.seekerDeaths
-            HIDER_DEATHS -> player.hiderDeaths
-            SEEKER_DEATHS -> player.seekerDeaths
+            }
+
+            HIDER_GAMES -> {
+                player.hiderWins + player.hiderLosses
+            }
+
+            SEEKER_GAMES -> {
+                player.seekerWins + player.seekerLosses
+            }
+
+            TOTAL_KILLS -> {
+                player.hiderKills + player.seekerKills
+            }
+
+            HIDER_KILLS -> {
+                player.hiderKills
+            }
+
+            SEEKER_KILLS -> {
+                player.seekerKills
+            }
+
+            TOTAL_DEATHS -> {
+                player.hiderDeaths + player.seekerDeaths
+            }
+
+            HIDER_DEATHS -> {
+                player.hiderDeaths
+            }
+
+            SEEKER_DEATHS -> {
+                player.seekerDeaths
+            }
         }
 
     fun getExpr(): Expression<Int> =
         when (this) {
-            TOTAL_WINS -> Players.hiderWins + Players.seekerWins
-            HIDER_WINS -> Players.hiderWins
-            SEEKER_WINS -> Players.seekerWins
-            TOTAL_LOSSES -> Players.hiderLosses + Players.seekerLosses
-            HIDER_LOSSES -> Players.hiderLosses
-            SEEKER_LOSSES -> Players.seekerLosses
-            TOTAL_GAMES ->
+            TOTAL_WINS -> {
+                Players.hiderWins + Players.seekerWins
+            }
+
+            HIDER_WINS -> {
+                Players.hiderWins
+            }
+
+            SEEKER_WINS -> {
+                Players.seekerWins
+            }
+
+            TOTAL_LOSSES -> {
+                Players.hiderLosses + Players.seekerLosses
+            }
+
+            HIDER_LOSSES -> {
+                Players.hiderLosses
+            }
+
+            SEEKER_LOSSES -> {
+                Players.seekerLosses
+            }
+
+            TOTAL_GAMES -> {
                 Players.hiderWins + Players.seekerWins + Players.hiderLosses + Players.seekerLosses
-            HIDER_GAMES -> Players.hiderWins + Players.hiderLosses
-            SEEKER_GAMES -> Players.seekerWins + Players.seekerLosses
-            TOTAL_KILLS -> Players.hiderKills + Players.seekerKills
-            HIDER_KILLS -> Players.hiderKills
-            SEEKER_KILLS -> Players.seekerKills
-            TOTAL_DEATHS -> Players.hiderDeaths + Players.seekerDeaths
-            HIDER_DEATHS -> Players.hiderDeaths
-            SEEKER_DEATHS -> Players.seekerDeaths
+            }
+
+            HIDER_GAMES -> {
+                Players.hiderWins + Players.hiderLosses
+            }
+
+            SEEKER_GAMES -> {
+                Players.seekerWins + Players.seekerLosses
+            }
+
+            TOTAL_KILLS -> {
+                Players.hiderKills + Players.seekerKills
+            }
+
+            HIDER_KILLS -> {
+                Players.hiderKills
+            }
+
+            SEEKER_KILLS -> {
+                Players.seekerKills
+            }
+
+            TOTAL_DEATHS -> {
+                Players.hiderDeaths + Players.seekerDeaths
+            }
+
+            HIDER_DEATHS -> {
+                Players.hiderDeaths
+            }
+
+            SEEKER_DEATHS -> {
+                Players.seekerDeaths
+            }
         }
 }

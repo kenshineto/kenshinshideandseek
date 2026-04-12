@@ -46,7 +46,11 @@ class KhsMapSetBounds : Command {
 
         map.reloadConfig()
         plugin.saveConfig()
-        player.message(plugin.locale.prefix.default + plugin.locale.map.set.bounds.with(num))
+        player.message(
+            plugin.locale.prefix.default +
+                plugin.locale.map.set.bounds
+                    .with(num),
+        )
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =

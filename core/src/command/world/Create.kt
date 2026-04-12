@@ -21,19 +21,37 @@ class KhsWorldCreate : Command {
 
         val world = plugin.shim.createWorld(name, type)
         if (world == null) {
-            player.message(plugin.locale.prefix.error + plugin.locale.world.addedFailed.with(name))
+            player.message(
+                plugin.locale.prefix.error +
+                    plugin.locale.world.addedFailed
+                        .with(name),
+            )
             return
         }
 
         player.teleport(world.getSpawn())
-        player.message(plugin.locale.prefix.default + plugin.locale.world.added.with(name))
+        player.message(
+            plugin.locale.prefix.default +
+                plugin.locale.world.added
+                    .with(name),
+        )
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> {
         return when (parameter) {
-            "name" -> listOf(parameter)
-            "type" -> World.Type.entries.map { it.name.lowercase() }.filter { it.startsWith(typed) }
-            else -> listOf()
+            "name" -> {
+                listOf(parameter)
+            }
+
+            "type" -> {
+                World.Type.entries
+                    .map { it.name.lowercase() }
+                    .filter { it.startsWith(typed) }
+            }
+
+            else -> {
+                listOf()
+            }
         }
     }
 }

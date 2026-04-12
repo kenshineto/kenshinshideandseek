@@ -23,8 +23,10 @@ fun onJoin(event: JoinEvent) {
     val worldName = player.getWorld()?.name ?: return
     if (
         (plugin.config.teleportStraysToExit && worldName == game.map?.worldName) ||
-            ((plugin.config.teleportStraysToExit || plugin.config.mapSaveEnabled) &&
-                worldName == game.map?.gameWorldName)
+        (
+            (plugin.config.teleportStraysToExit || plugin.config.mapSaveEnabled) &&
+                worldName == game.map?.gameWorldName
+        )
     ) {
         // teleport to exit if inside game world(s)
         plugin.config.exit?.let {

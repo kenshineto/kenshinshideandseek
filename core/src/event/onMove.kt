@@ -4,8 +4,7 @@ import cat.freya.khs.Khs
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.Position
 
-data class MoveEvent(val plugin: Khs, val player: Player, val from: Position, val to: Position) :
-    Event()
+data class MoveEvent(val plugin: Khs, val player: Player, val from: Position, val to: Position) : Event()
 
 fun onMove(event: MoveEvent) {
     val (plugin, player, _, to) = event

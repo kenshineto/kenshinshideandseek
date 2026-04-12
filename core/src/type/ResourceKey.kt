@@ -12,10 +12,8 @@ import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes
 data class ResourceKey(
     /** The namespaced key used 1.13+ */
     val minecraftKey: String?,
-
     /** The id used pre 1.13 */
     val minecraftId: UInt?,
-
     /**
      * A custom identifier used within the platform. On some platforms, this will be the same as
      * [minecraftKey]

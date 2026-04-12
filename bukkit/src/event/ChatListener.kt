@@ -10,7 +10,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerChatEvent
 
 class ChatListener(val plugin: KhsPlugin) : Listener {
-
     init {
         plugin.server.pluginManager.registerEvents(this, plugin)
     }

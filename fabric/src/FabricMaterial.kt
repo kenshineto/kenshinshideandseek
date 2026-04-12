@@ -6,12 +6,11 @@ import net.minecraft.core.Holder
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.Identifier
-import net.minecraft.resources.ResourceKey as McResourceKey
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
+import net.minecraft.resources.ResourceKey as McResourceKey
 
-class FabricBlockMaterial(val block: Holder<Block>, key: McResourceKey<Block>) :
-    FabricMaterial(key) {
+class FabricBlockMaterial(val block: Holder<Block>, key: McResourceKey<Block>) : FabricMaterial(key) {
     override val isItem = false
     override val isBlock = true
 }
@@ -22,7 +21,6 @@ class FabricItemMaterial(val item: Holder<Item>, key: McResourceKey<Item>) : Fab
 }
 
 abstract class FabricMaterial(val inner: McResourceKey<*>) : Material {
-
     private val name = inner.identifier().toString()
 
     override val key: ResourceKey = ResourceKey(name, null, name)

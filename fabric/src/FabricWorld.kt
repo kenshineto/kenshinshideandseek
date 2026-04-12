@@ -29,9 +29,7 @@ class FabricWorldBorder(val level: ServerLevel) : World.Border {
     }
 }
 
-class FabricWorldLoader(val mod: KhsMod, override val name: String) :
-    World.AbstractLoader(name, name, mod.server.getWorldContainer()) {
-
+class FabricWorldLoader(val mod: KhsMod, override val name: String) : World.AbstractLoader(name, name, mod.server.getWorldContainer()) {
     override fun load(): FabricWorld? {
         // TODO:
         return null
@@ -43,7 +41,6 @@ class FabricWorldLoader(val mod: KhsMod, override val name: String) :
 }
 
 class FabricWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim) {
-
     override val name = inner.toString() // toString calls serverLevelData.levelName
 
     override val type: World.Type = getTypeImpl()

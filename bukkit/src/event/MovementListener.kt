@@ -7,16 +7,15 @@ import cat.freya.khs.event.MoveEvent
 import cat.freya.khs.event.onJump
 import cat.freya.khs.event.onMove
 import cat.freya.khs.world.Position
-import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 class MovementListener(val plugin: KhsPlugin) : Listener {
-
     private val prevPlayersOnGround: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
 
     init {
@@ -25,7 +24,11 @@ class MovementListener(val plugin: KhsPlugin) : Listener {
 
     private fun isOnGround(player: org.bukkit.entity.Player): Boolean {
         if (plugin.shim.supports(16, 1)) {
-            val below = player.location.clone().subtract(0.0, 0.1, 0.0).block
+            val below =
+                player.location
+                    .clone()
+                    .subtract(0.0, 0.1, 0.0)
+                    .block
             return below.type.isSolid
         } else {
             @Suppress("DEPRECATION")
@@ -43,16 +46,19 @@ class MovementListener(val plugin: KhsPlugin) : Listener {
             val block = bukkitPlayer.location.block.type
             if (
                 block != Material.LADDER &&
-                    prevPlayersOnGround.contains(bukkitPlayer.uniqueId) &&
-                    isOnGround(bukkitPlayer)
+                prevPlayersOnGround.contains(bukkitPlayer.uniqueId) &&
+                isOnGround(bukkitPlayer)
             ) {
                 // trigger jump event
                 val khsEvent = JumpEvent(plugin.khs, khsPlayer)
                 onJump(khsEvent)
             }
             // update set
-            if (isOnGround(bukkitPlayer)) prevPlayersOnGround.add(bukkitPlayer.uniqueId)
-            else prevPlayersOnGround.remove(bukkitPlayer.uniqueId)
+            if (isOnGround(bukkitPlayer)) {
+                prevPlayersOnGround.add(bukkitPlayer.uniqueId)
+            } else {
+                prevPlayersOnGround.remove(bukkitPlayer.uniqueId)
+            }
         }
 
         val from = event.from.let { Position(it.x, it.y, it.z) }

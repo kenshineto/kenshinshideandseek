@@ -1,11 +1,11 @@
 package cat.freya.khs.db
 
 import cat.freya.khs.Khs
-import java.util.UUID
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
-import org.jetbrains.exposed.v1.jdbc.Database as Exposed
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import java.util.UUID
+import org.jetbrains.exposed.v1.jdbc.Database as Exposed
 
 class Database(plugin: Khs) {
     private val driver = getDriver(plugin)
@@ -20,19 +20,28 @@ class Database(plugin: Khs) {
     fun getPlayer(uuid: UUID): Player? =
         transaction(db) {
             val id = uuid.toString()
-            Players.selectAll().where { Players.uuid eq id }.map { it.toPlayer() }.singleOrNull()
+            Players
+                .selectAll()
+                .where { Players.uuid eq id }
+                .map { it.toPlayer() }
+                .singleOrNull()
         }
 
     fun getPlayer(name: String): Player? =
         transaction(db) {
-            Players.selectAll().where { Players.name eq name }.map { it.toPlayer() }.singleOrNull()
+            Players
+                .selectAll()
+                .where { Players.name eq name }
+                .map { it.toPlayer() }
+                .singleOrNull()
         }
 
     fun getPlayers(page: UInt, pageSize: UInt): List<Player> =
         transaction(db) {
             val offset = page * pageSize
             val wins = Players.hiderWins + Players.seekerWins
-            Players.selectAll()
+            Players
+                .selectAll()
                 .orderBy(wins to SortOrder.DESC)
                 .limit(pageSize.toInt())
                 .offset(offset.toLong())
@@ -41,7 +50,8 @@ class Database(plugin: Khs) {
 
     fun getPlayerNames(limit: UInt, startsWith: String): List<String> =
         transaction(db) {
-            Players.select(Players.name)
+            Players
+                .select(Players.name)
                 .where { Players.name like "$startsWith%" }
                 .orderBy(Players.name to SortOrder.ASC)
                 .limit(limit.toInt())
@@ -68,7 +78,8 @@ class Database(plugin: Khs) {
             val id = u.toString()
 
             val current =
-                Players.selectAll()
+                Players
+                    .selectAll()
                     .where { Players.uuid eq id }
                     .map { it.toPlayer() }
                     .singleOrNull()
@@ -86,7 +97,8 @@ class Database(plugin: Khs) {
 
     fun getByNthStat(n: ULong, stat: PlayerStat): Player? =
         transaction(db) {
-            Players.selectAll()
+            Players
+                .selectAll()
                 .orderBy(stat.getExpr(), SortOrder.DESC)
                 .offset(n.toLong())
                 .limit(1)
@@ -99,7 +111,11 @@ class Database(plugin: Khs) {
         val expr = stat.getExpr()
         val value = stat.getValue(player).toInt()
         return transaction(db) {
-            Players.selectAll().where { expr greaterEq intLiteral(value) }.count().toULong()
+            Players
+                .selectAll()
+                .where { expr greaterEq intLiteral(value) }
+                .count()
+                .toULong()
         }
     }
 
@@ -113,13 +129,13 @@ class Database(plugin: Khs) {
             if (!LegacyPlayers.exists() || !LegacyNames.exists()) return@transaction
 
             val legacy =
-                LegacyPlayers.join(
+                LegacyPlayers
+                    .join(
                         LegacyNames,
                         JoinType.FULL,
                         onColumn = LegacyPlayers.uuid,
                         otherColumn = LegacyNames.uuid,
-                    )
-                    .selectAll()
+                    ).selectAll()
                     .map { it.toLegacyPlayer() }
             Players.insertIgnore { legacy.forEach { player -> it.fromPlayer(player) } }
 

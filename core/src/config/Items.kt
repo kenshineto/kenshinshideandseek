@@ -37,7 +37,6 @@ data class KhsItemsConfig(
                 enchantments = mapOf("knockback" to 3u),
             ),
         ),
-
     // Armor provided to seekers
     var seekerHelmet: ItemConfig? = ItemConfig(material = "LEATHER_HELMET"),
     var seekerChestplate: ItemConfig? = ItemConfig(material = "LEATHER_CHESTPLATE"),

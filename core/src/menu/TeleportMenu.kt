@@ -45,8 +45,11 @@ object TeleportMenu {
             }
         val prev = if (page > 0u) createPageItem(plugin, page - 1u) else null
         val next =
-            if (players.size.toUInt() > offset + pageSize) createPageItem(plugin, page + 1u)
-            else null
+            if (players.size.toUInt() > offset + pageSize) {
+                createPageItem(plugin, page + 1u)
+            } else {
+                null
+            }
 
         // create inv
         val inv = plugin.shim.createInventory(TITLE, 9u) ?: return null

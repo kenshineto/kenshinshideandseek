@@ -5,8 +5,7 @@ import cat.freya.khs.world.Player
 
 private data class CommandData(val command: Command, val permission: String, val args: List<String>)
 
-class CommandGroup(val plugin: Khs, override val label: String, vararg commands: CommandPart) :
-    CommandPart {
+class CommandGroup(val plugin: Khs, override val label: String, vararg commands: CommandPart) : CommandPart {
     // set of commands to run in this group
     private val registry: Map<String, CommandPart> = commands.associateBy { it.label.lowercase() }
 
@@ -26,7 +25,7 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
         player.message(
             "&b&lKenshin's Hide and Seek &7(&f$version&7)\n" +
                 "&7Author: &f[KenshinEto]\n" +
-                "&7Help Command: &b/hs &fhelp"
+                "&7Help Command: &b/hs &fhelp",
         )
     }
 
@@ -52,7 +51,7 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
         runCatching { data.command.execute(plugin, player, data.args) }
             .onFailure {
                 player.message(
-                    plugin.locale.prefix.error + (it.message ?: plugin.locale.command.unknownError)
+                    plugin.locale.prefix.error + (it.message ?: plugin.locale.command.unknownError),
                 )
 
                 if (plugin.config.debug) {
@@ -74,9 +73,10 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
             command is Command -> {
                 if (
                     plugin.config.permissionsRequired &&
-                        !player.hasPermission("$permission.$invoke")
-                )
+                    !player.hasPermission("$permission.$invoke")
+                ) {
                     return listOf()
+                }
 
                 var index = maxOf(args.size - 1, 1)
                 val typed = args.getOrNull(index) ?: return listOf()
@@ -84,18 +84,27 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
                 // handle last argument of usage being a varadic (...)
                 if (
                     index >= command.usage.size &&
-                        command.usage.lastOrNull()?.endsWith("...") == true
-                )
+                    command.usage.lastOrNull()?.endsWith("...") == true
+                ) {
                     index = command.usage.size
+                }
 
                 val parameter = command.usage.getOrNull(index - 1) ?: return listOf()
 
                 command.autoComplete(plugin, parameter, typed)
             }
-            command is CommandGroup ->
+
+            command is CommandGroup -> {
                 command.handleTabComplete(player, args.drop(1), "$permission.$invoke")
-            args.size == 1 -> registry.keys.filter { it.startsWith(invoke) }
-            else -> listOf()
+            }
+
+            args.size == 1 -> {
+                registry.keys.filter { it.startsWith(invoke) }
+            }
+
+            else -> {
+                listOf()
+            }
         }
     }
 
@@ -114,13 +123,16 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
                 is Command -> {
                     if (
                         plugin.config.permissionsRequired &&
-                            !player.hasPermission("$permission.$invoke")
-                    )
+                        !player.hasPermission("$permission.$invoke")
+                    ) {
                         continue
+                    }
                     res.add("$label $invoke" to command)
                 }
-                is CommandGroup ->
+
+                is CommandGroup -> {
                     command.commandsFor(player, "$label $invoke", "$permission.$invoke", res)
+                }
             }
         }
     }

@@ -1,9 +1,9 @@
 package cat.freya.khs.db
 
-import java.nio.ByteBuffer
-import java.util.UUID
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.Table
+import java.nio.ByteBuffer
+import java.util.UUID
 
 // tables introduced in version 1.7.0
 // pre 1.7.x tables are NOT SUPPORTED

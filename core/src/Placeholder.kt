@@ -60,16 +60,45 @@ fun handlePlaceholder(req: PlaceholderRequest): String {
     val arg0 = req.arg0 ?: return req.invalid
     return when (arg0) {
         // game info
-        "hiders" -> req.plugin.game.hiderSize.toString()
-        "seekers" -> req.plugin.game.seekerSize.toString()
-        "spectators" -> req.plugin.game.spectatorSize.toString()
-        "map" -> req.plugin.game.map?.name ?: req.noData
+        "hiders" -> {
+            req.plugin.game.hiderSize
+                .toString()
+        }
+
+        "seekers" -> {
+            req.plugin.game.seekerSize
+                .toString()
+        }
+
+        "spectators" -> {
+            req.plugin.game.spectatorSize
+                .toString()
+        }
+
+        "map" -> {
+            req.plugin.game.map
+                ?.name ?: req.noData
+        }
+
         // player team
-        "team" -> req.plugin.game.getTeam(req.uuid)?.toString() ?: req.noData
+        "team" -> {
+            req.plugin.game
+                .getTeam(req.uuid)
+                ?.toString() ?: req.noData
+        }
+
         // database
-        "rank" -> handlePlayerRanking(req)
-        "stat" -> handlePlayerStat(req)
+        "rank" -> {
+            handlePlayerRanking(req)
+        }
+
+        "stat" -> {
+            handlePlayerStat(req)
+        }
+
         // else
-        else -> req.invalid
+        else -> {
+            req.invalid
+        }
     }
 }

@@ -7,7 +7,6 @@ import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import kotlin.jvm.optionals.getOrNull
 
 class BukkitMaterial(val inner: org.bukkit.Material) : Material {
-
     override val key: ResourceKey = getResourceKey()
 
     override val isBlock: Boolean = inner.isBlock

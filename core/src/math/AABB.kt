@@ -1,7 +1,6 @@
 package cat.freya.khs.math
 
 data class AABB(val min: Vector, val max: Vector) {
-
     fun rayIntersects(origin: Vector, direction: Vector): Double? {
         val t1 = (min.x - origin.x) / direction.x
         val t2 = (max.x - origin.x) / direction.x

@@ -4,13 +4,18 @@ import cat.freya.khs.world.Location
 import kotlin.UInt
 import kotlin.annotation.AnnotationTarget
 
-@Target(AnnotationTarget.PROPERTY) annotation class Section(val text: String)
+@Target(AnnotationTarget.PROPERTY)
+annotation class Section(val text: String)
 
-@Repeatable @Target(AnnotationTarget.PROPERTY) annotation class Comment(val text: String)
+@Repeatable
+@Target(AnnotationTarget.PROPERTY)
+annotation class Comment(val text: String)
 
-@Target(AnnotationTarget.PROPERTY) annotation class Omittable
+@Target(AnnotationTarget.PROPERTY)
+annotation class Omittable
 
-@Target(AnnotationTarget.PROPERTY) annotation class KhsDeprecated(val since: String)
+@Target(AnnotationTarget.PROPERTY)
+annotation class KhsDeprecated(val since: String)
 
 enum class ConfigCountdownDisplay {
     CHAT,
@@ -123,7 +128,6 @@ data class SpectatorItemsConfig(
             material = "FEATHER",
             lore = listOf("Turns flying on and off"),
         ),
-
     /** Item for spectators to teleport to other players */
     var teleport: ItemConfig =
         ItemConfig(
@@ -157,23 +161,20 @@ data class SeekerPingConfig(
 )
 
 data class KhsConfig(
-    /* General */
-
+    // General
     @Section("General")
     @Comment("Allow players to drop their items in game")
     var dropItems: Boolean = false,
     @Comment("When the game is starting, the plugin will state there is x seconds left to hide.")
-    @Comment(
-        "You change where countdown messages are to be displayed: in the chat, action bar, or a title."
-    )
+    @Comment("You change where countdown messages are to be displayed: in the chat, action bar, or a title.")
     @Comment("Below you can set CHAT, ACTIONBAR, or TITLE. Any invalid option will revert to CHAT.")
     var countdownDisplay: ConfigCountdownDisplay = ConfigCountdownDisplay.CHAT,
     @Comment(
-        "Allow Hiders to see their own teams nametags as well as seekers. Seekers can never see nametags regardless"
+        "Allow Hiders to see their own teams nametags as well as seekers. Seekers can never see nametags regardless",
     )
     var nametagsVisible: Boolean = false,
     @Comment(
-        "Require bukkit permissions though a permission plugin to run commands, or require op, recommended on most servers"
+        "Require bukkit permissions though a permission plugin to run commands, or require op, recommended on most servers",
     )
     var permissionsRequired: Boolean = true,
     @Comment("Minimum amount of players to start the game. Cannot go lower than 2.")
@@ -181,7 +182,7 @@ data class KhsConfig(
     @Comment("Amount of initial seekers when the game starts, minimum of 1")
     var startingSeekerCount: UInt = 1u,
     @Comment(
-        "By default, when a HIDER dies they will join the SEEKER team. If enabled they will instead become a SPECTATOR."
+        "By default, when a HIDER dies they will join the SEEKER team. If enabled they will instead become a SPECTATOR.",
     )
     var respawnAsSpectator: Boolean = false,
     @Comment("Along with a chat message, display a title describing the game over")
@@ -191,79 +192,47 @@ data class KhsConfig(
     @Comment("Configure the sounds that plays when a seeker is near")
     var seekerPing: SeekerPingConfig = SeekerPingConfig(),
     @Comment("For developers") var debug: Boolean = false,
-
-    /* Timing */
-
+    // Timing
     @Section("Timing")
     @Comment("How long in seconds will the game last, set to 0 to make game length infinite")
     var gameLength: ULong = 1200u,
     @Comment("How long in seconds will the initial hiding period last, minimum is 10 seconds")
     var hidingLength: ULong = 30u,
-    @Comment(
-        "The amount of seconds the game will wait until the players are teleported to the lobby after a game over"
-    )
+    @Comment("The amount of seconds the game will wait until the players are teleported to the lobby after a game over")
     var endGameDelay: ULong = 5u,
-    @Comment(
-        "If you die in game, you will have to wait [delay] seconds until you respawn, so that if you were a seeker,"
-    )
-    @Comment(
-        "you cannot instantly go to where the Hider that killed you was. Or if you were a Hider and dies,"
-    )
+    @Comment("If you die in game, you will have to wait [delay] seconds until you respawn, so that if you were a seeker,")
+    @Comment("you cannot instantly go to where the Hider that killed you was. Or if you were a Hider and dies,")
     @Comment("you can't instantly go to where you know other Hiders are. This can be disabled.")
     var delayedRespawn: DelayedRespawnConfig = DelayedRespawnConfig(),
-
-    /* Database */
-
+    // Database
     @Section("Database") var database: DatabaseConfig = DatabaseConfig(),
-
-    /* Scoring */
-
+    // Scoring
     @Section("Scoring")
     @Comment("The scoring mode decides the criteria for when the game has finished and who wins.")
-    @Comment(
-        "ALL_HIDERS_FOUND - The game will go until no hiders are left. If the timer runs out all hiders left will win."
-    )
-    @Comment(
-        "LAST_HIDER_WINS - The game will go until there is only one hider left. If the timer runs out, all hiders left win. If there is only one hider left, all initial seekers win along with the last hider."
-    )
+    @Comment("ALL_HIDERS_FOUND - The game will go until no hiders are left. If the timer runs out all hiders left will win.")
+    @Comment("LAST_HIDER_WINS - The game will go until there is only one hider left. If the timer runs out, all hiders left win. If there is only one hider left, all initial seekers win along with the last hider.")
     var scoringMode: ConfigScoringMode = ConfigScoringMode.ALL_HIDERS_FOUND,
-    @Comment(
-        "When enabled, if the last hider or seeker quits the game, a wine type of NONE is given, which doesn't mark anyone as winning."
-    )
-    @Comment(
-        "This can be used as a way to prevent players from quitting in a loop to get someone else points."
-    )
+    @Comment("When enabled, if the last hider or seeker quits the game, a wine type of NONE is given, which doesn't mark anyone as winning.")
+    @Comment("This can be used as a way to prevent players from quitting in a loop to get someone else points.")
     var dontRewardQuit: Boolean = true,
-
-    /* PVP */
-
+    // PVP
     @Section("PVP")
-    @Comment(
-        "This plugin by default functions as not tag to catch Hiders, but to pvp. All players are given weapons,"
-    )
-    @Comment(
-        "and seekers slightly better weapons (this can be changed in items.yml). If you want, you can disable this"
-    )
-    @Comment(
-        "entire pvp functionality, and make Hiders get found on a single hit. Hiders would also not be able to fight"
-    )
+    @Comment("This plugin by default functions as not tag to catch Hiders, but to pvp. All players are given weapons,")
+    @Comment("and seekers slightly better weapons (this can be changed in items.yml). If you want, you can disable this")
+    @Comment("entire pvp functionality, and make Hiders get found on a single hit. Hiders would also not be able to fight")
     @Comment("back against Seekers if disabled.")
     var pvp: Boolean = true,
     @Comment("Allow players to regen health") var regenHealth: Boolean = false,
     @Comment(
-        "If pvp is disabled, Hiders and Seekers can no longer take damage from natural causes unless this option is enabled."
+        "If pvp is disabled, Hiders and Seekers can no longer take damage from natural causes unless this option is enabled.",
     )
     @Comment("Such natural causes could be fall damage or projectiles.")
     var allowNaturalCauses: Boolean = false,
-
-    /* Lobby */
-
+    // Lobby
     @Section("Lobby")
     @Comment("Players that join the server will automatically be added into a game lobby")
     var autoJoin: Boolean = false,
-    @Comment(
-        "When players join the world containing the lobby, teleport them to the designated exit position so that they don't spawn in the lobby while not in the queue."
-    )
+    @Comment("When players join the world containing the lobby, teleport them to the designated exit position so that they don't spawn in the lobby while not in the queue.")
     @Comment("This setting is ignored when autoJoin is set to true.")
     var teleportStraysToExit: Boolean = false,
     @Comment("How to handle players leaving a game lobby.")
@@ -279,46 +248,26 @@ data class KhsConfig(
     var saveInventory: Boolean = false,
     @Comment("Restore the players previously active score board after leaving the game lobby")
     var saveScoreBoard: Boolean = true,
-
-    /* Events */
-
+    // Events
     @Section("Events") @Comment("Taunt event") var taunt: TauntConfig = TauntConfig(),
-
-    /* Power-ups */
-
+    // Power-ups
     @Section("Power-ups") @Comment("Glow power-up") var glow: GlowConfig = GlowConfig(),
-    @Comment(
-        "Instead of having a glow power-up, always make seeker position's known the the hider at all times."
-    )
+    @Comment("Instead of having a glow power-up, always make seeker position's known the the hider at all times.")
     var alwaysGlow: Boolean = false,
-
-    /* Protections */
-
+    // Protections
     @Section("Protections")
-    @Comment(
-        "By default, the plugin forces you to use a map save to protect from changes to a map thought a game play though. It copies your"
-    )
-    @Comment(
-        "hide-and-seek world to a separate world, and loads the game there to contain the game in an isolated and backed up map. This allows you to"
-    )
-    @Comment(
-        "not worry about your hide-and-seek map from changing, as all changes are made are in a separate world file that doesn't get saved. Once the game"
-    )
-    @Comment(
-        "ends, it unloads the map and doesn't save. Then reloads the duplicate to the original state, rolling back the map for the next game."
-    )
-    @Comment(
-        "It is highly recommended that you keep this set to true unless you have other means of protecting your hide-and-seek map."
-    )
+    @Comment("By default, the plugin forces you to use a map save to protect from changes to a map thought a game play though. It copies your")
+    @Comment("hide-and-seek world to a separate world, and loads the game there to contain the game in an isolated and backed up map. This allows you to")
+    @Comment("not worry about your hide-and-seek map from changing, as all changes are made are in a separate world file that doesn't get saved. Once the game")
+    @Comment("ends, it unloads the map and doesn't save. Then reloads the duplicate to the original state, rolling back the map for the next game.")
+    @Comment("It is highly recommended that you keep this set to true unless you have other means of protecting your hide-and-seek map.")
     var mapSaveEnabled: Boolean = true,
     @Comment("Block these commands for players in a game. Good for blocking communication")
     var blockedCommands: List<String> = listOf("msg", "reply", "me", "kill"),
     @Comment("Don't allow players to interact with these blocks")
     var blockedInteracts: List<String> =
         listOf("FURNACE", "CRAFTING_TABLE", "ANVIL", "CHEST", "BARREL"),
-
-    /* Auto Generated */
-
+    // Auto Generated
     @Section("Auto Generated")
     @Comment("Location where players are teleported to when they run (/hs leave).")
     var exit: Location? = null,

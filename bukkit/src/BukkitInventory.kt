@@ -45,8 +45,8 @@ class BukkitPlayerInventory(
     override val shim: BukkitKhsShim,
     override val inner: org.bukkit.inventory.PlayerInventory,
     override val title: String?,
-) : BukkitInventory(shim, inner, title), PlayerInventory {
-
+) : BukkitInventory(shim, inner, title),
+    PlayerInventory {
     override fun getHelmet(): Item? {
         return BukkitItem.wrap(inner.helmet)
     }

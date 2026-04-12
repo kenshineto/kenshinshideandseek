@@ -3,10 +3,12 @@ package cat.freya.khs.game
 import java.util.UUID
 
 class Taunt(val game: Game) {
-
     @Volatile var timer: ULong = 0UL
+
     @Volatile var running: Boolean = true
+
     @Volatile var taunted: UUID? = null
+
     @Volatile var last: UUID? = null
 
     val expired: Boolean
@@ -50,8 +52,7 @@ class Taunt(val game: Game) {
                     // only block last hider if there is another
                     // hider to taunt
                     it.uuid != last || (game.hiderSize <= 1UL)
-                }
-                .randomOrNull() ?: return
+                }.randomOrNull() ?: return
 
         game.broadcast(game.plugin.locale.prefix.taunt + game.plugin.locale.taunt.warning)
         hider.message(game.plugin.locale.taunt.chosen)

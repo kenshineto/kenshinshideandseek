@@ -27,11 +27,10 @@ class KhsPlugin : JavaPlugin() {
         // make sure onTick is run
         onTickTask =
             object : BukkitRunnable() {
-                    override fun run() {
-                        onTick()
-                    }
+                override fun run() {
+                    onTick()
                 }
-                .runTaskTimer(this, 0, 1)
+            }.runTaskTimer(this, 0, 1)
 
         // register bungee cord
         server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
@@ -70,21 +69,20 @@ class KhsPlugin : JavaPlugin() {
 
         val me = this
         object : PlaceholderExpansion() {
-                override fun getIdentifier() = "hs"
+            override fun getIdentifier() = "hs"
 
-                override fun getAuthor() = "KenshinEto"
+            override fun getAuthor() = "KenshinEto"
 
-                override fun getVersion() = me.description.version
+            override fun getVersion() = me.description.version
 
-                override fun persist() = true
+            override fun persist() = true
 
-                override fun onRequest(player: OfflinePlayer?, params: String): String? {
-                    val uuid = player?.uniqueId ?: return null
-                    val req = PlaceholderRequest(me.khs, uuid, params)
-                    return handlePlaceholder(req)
-                }
+            override fun onRequest(player: OfflinePlayer?, params: String): String? {
+                val uuid = player?.uniqueId ?: return null
+                val req = PlaceholderRequest(me.khs, uuid, params)
+                return handlePlaceholder(req)
             }
-            .register()
+        }.register()
     }
 
     fun scheduleTask(fn: () -> Unit) {

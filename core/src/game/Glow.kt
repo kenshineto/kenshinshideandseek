@@ -3,8 +3,8 @@ package cat.freya.khs.game
 import cat.freya.khs.packet.EntityMetadataPacket
 
 class Glow(val game: Game) {
-
     @Volatile var timer: ULong = 0UL
+
     @Volatile var running: Boolean = true
 
     // glow is only supported on 1.9+

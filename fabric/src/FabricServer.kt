@@ -1,7 +1,5 @@
 package cat.freya.khs.fabric
 
-import java.nio.file.Path
-import java.util.UUID
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.minecraft.core.registries.Registries
@@ -14,9 +12,10 @@ import net.minecraft.world.level.storage.LevelResource
 import net.minecraft.world.scores.DisplaySlot
 import net.minecraft.world.scores.Objective
 import net.minecraft.world.scores.criteria.ObjectiveCriteria
+import java.nio.file.Path
+import java.util.UUID
 
 class FabricServer(val mod: KhsMod) {
-
     private var server: MinecraftServer? = null
     private val tasks: MutableSet<() -> Boolean> = mutableSetOf()
 

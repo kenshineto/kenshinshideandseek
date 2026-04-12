@@ -9,7 +9,6 @@ import cat.freya.khs.world.Location
 import cat.freya.khs.world.Player
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.wrapper.PacketWrapper
-import kotlin.runCatching
 import net.luckperms.api.LuckPermsProvider
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
@@ -25,8 +24,11 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.level.GameType
 import net.minecraft.world.scores.DisplaySlot
+import kotlin.runCatching
 
-class FabricPlayer(mod: KhsMod, val inner: ServerPlayer) : FabricEntity(mod, inner), Player {
+class FabricPlayer(mod: KhsMod, val inner: ServerPlayer) :
+    FabricEntity(mod, inner),
+    Player {
     override val name: String = inner.name.string
 
     override fun getHandle(): Any {
@@ -171,12 +173,13 @@ class FabricPlayer(mod: KhsMod, val inner: ServerPlayer) : FabricEntity(mod, inn
                 Player.GameMode.CREATIVE -> GameType.CREATIVE
                 Player.GameMode.ADVENTURE -> GameType.ADVENTURE
                 Player.GameMode.SPECTATOR -> GameType.SPECTATOR
-            }
+            },
         )
     }
 
     private fun isOperator(): Boolean {
-        return mod.server.inner.playerList.isOp(inner.nameAndId())
+        return mod.server.inner.playerList
+            .isOp(inner.nameAndId())
     }
 
     override fun hasPermission(permission: String): Boolean {
@@ -184,7 +187,12 @@ class FabricPlayer(mod: KhsMod, val inner: ServerPlayer) : FabricEntity(mod, inn
         val default = isOperator()
 
         val user = api?.userManager?.getUser(inner.getUUID())
-        val hasPerm = user?.cachedData?.permissionData?.checkPermission(permission)?.asBoolean()
+        val hasPerm =
+            user
+                ?.cachedData
+                ?.permissionData
+                ?.checkPermission(permission)
+                ?.asBoolean()
 
         return hasPerm ?: default
     }

@@ -21,8 +21,7 @@ class KhsReload : Command {
             .reloadConfig()
             .onSuccess {
                 player.message(plugin.locale.prefix.default + plugin.locale.command.reloaded)
-            }
-            .onFailure {
+            }.onFailure {
                 player.message(plugin.locale.prefix.default + plugin.locale.command.errorReloading)
             }
     }

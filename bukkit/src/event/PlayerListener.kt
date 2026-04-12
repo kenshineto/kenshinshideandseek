@@ -21,7 +21,6 @@ import org.bukkit.event.player.PlayerAnimationType
 import org.bukkit.event.player.PlayerDropItemEvent
 
 class PlayerListener(val plugin: KhsPlugin) : Listener {
-
     init {
         plugin.server.pluginManager.registerEvents(this, plugin)
     }

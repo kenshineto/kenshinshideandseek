@@ -12,7 +12,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 
 class DamageListener(val plugin: KhsPlugin) : Listener {
-
     init {
         plugin.server.pluginManager.registerEvents(this, plugin)
     }

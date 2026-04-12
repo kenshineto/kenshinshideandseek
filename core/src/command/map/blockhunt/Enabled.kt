@@ -23,8 +23,11 @@ class KhsMapBlockHuntEnabled : Command {
         map.reloadConfig()
 
         val msg =
-            if (map.config.blockHunt.enabled) plugin.locale.blockHunt.enabled
-            else plugin.locale.blockHunt.disabled
+            if (map.config.blockHunt.enabled) {
+                plugin.locale.blockHunt.enabled
+            } else {
+                plugin.locale.blockHunt.disabled
+            }
 
         plugin.saveConfig()
         player.message(plugin.locale.prefix.default + msg)

@@ -13,9 +13,7 @@ import net.minecraft.world.scores.Team
 
 const val KHS_COLLISION_TEAM_NAME = "KHS_Collision"
 
-open class FabricEntity(val mod: KhsMod, private val inner: net.minecraft.world.entity.Entity) :
-    Entity {
-
+open class FabricEntity(val mod: KhsMod, private val inner: net.minecraft.world.entity.Entity) : Entity {
     override val entityId = inner.id
     override val uuid = inner.uuid
     override val type = TODO()

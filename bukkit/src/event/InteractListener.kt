@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 
 class InteractListener(val plugin: KhsPlugin) : Listener {
-
     init {
         plugin.server.pluginManager.registerEvents(this, plugin)
     }

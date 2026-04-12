@@ -8,7 +8,6 @@ import cat.freya.khs.world.Position
 import cat.freya.khs.world.World
 
 class KhsMap(val name: String, var config: MapConfig, var plugin: Khs) {
-
     /** The world where the map is created and where the lobby is hosted */
     lateinit var worldName: String
         private set
@@ -31,7 +30,10 @@ class KhsMap(val name: String, var config: MapConfig, var plugin: Khs) {
     fun reloadConfig() {
         worldName = config.world ?: error("map '$name' has no world set!")
         gameWorldName = if (plugin.config.mapSaveEnabled) "$MAP_SAVE_PREFIX$name" else worldName
-        gameSpawn = config.spawns.game?.toPosition()?.toLocation(gameWorldName)
+        gameSpawn =
+            config.spawns.game
+                ?.toPosition()
+                ?.toLocation(gameWorldName)
         lobbySpawn = config.spawns.lobby?.toLocation(worldName)
         seekerLobbySpawn = config.spawns.seeker?.toLocation(gameWorldName)
     }

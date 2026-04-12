@@ -7,12 +7,12 @@ import cat.freya.khs.config.LocaleString2
 import cat.freya.khs.config.LocaleString3
 import cat.freya.khs.config.Omittable
 import cat.freya.khs.config.Section
+import org.yaml.snakeyaml.DumperOptions
+import org.yaml.snakeyaml.Yaml
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.text.buildString
-import org.yaml.snakeyaml.DumperOptions
-import org.yaml.snakeyaml.Yaml
 
 fun typeInline(value: Any?): Boolean {
     if (value == null) return true
@@ -156,7 +156,7 @@ fun <T : Any> serializePrimitive(value: T): String {
             DumperOptions().apply {
                 defaultScalarStyle = DumperOptions.ScalarStyle.SINGLE_QUOTED
                 splitLines = false
-            }
+            },
         )
     val yaml = Yaml()
     return when (value) {

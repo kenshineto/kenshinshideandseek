@@ -6,12 +6,12 @@ import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.world.World
 import com.google.common.io.ByteStreams
-import java.io.File
-import java.nio.file.Path
-import java.util.UUID
 import org.bukkit.ChatColor
 import org.bukkit.WorldCreator
 import org.bukkit.WorldType
+import java.io.File
+import java.nio.file.Path
+import java.util.UUID
 
 class BukkitLogger(val plugin: KhsPlugin) : KhsShim.Logger {
     override fun info(message: String) = plugin.logger.info(message)
@@ -33,7 +33,8 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
     override val dataDirectory: Path = plugin.dataFolder.toPath()
 
     override fun getMaterials(): List<BukkitMaterial> {
-        return org.bukkit.Material.entries.map { BukkitMaterial(it) }
+        return org.bukkit.Material.entries
+            .map { BukkitMaterial(it) }
     }
 
     override fun parseMaterial(platformKey: String): BukkitMaterial? {
@@ -99,7 +100,12 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
         // Make sure the new dimensions folder
         // exists before using it
         val modernWorldContainer =
-            root.toPath().resolve(levelName).resolve("dimensions").resolve("minecraft").toFile()
+            root
+                .toPath()
+                .resolve(levelName)
+                .resolve("dimensions")
+                .resolve("minecraft")
+                .toFile()
         if (modernWorldContainer.exists()) return modernWorldContainer
 
         // server is using legacy bukkit world
@@ -184,10 +190,9 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
 
     override fun getBoard(name: String): BukkitBoard? {
         return runCatching {
-                val board = plugin.server.scoreboardManager?.newScoreboard ?: return null
-                return BukkitBoard(this, board)
-            }
-            .getOrElse { null }
+            val board = plugin.server.scoreboardManager?.newScoreboard ?: return null
+            return BukkitBoard(this, board)
+        }.getOrElse { null }
     }
 
     override fun broadcast(message: String) {

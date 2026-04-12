@@ -75,7 +75,11 @@ private fun respawnPlayer(event: DamageEvent) {
     if (plugin.config.delayedRespawn.enabled) {
         val time = plugin.config.delayedRespawn.delay
         player.teleport(game.map?.seekerLobbySpawn)
-        player.message(plugin.locale.prefix.default + plugin.locale.game.respawn.with(time))
+        player.message(
+            plugin.locale.prefix.default +
+                plugin.locale.game.respawn
+                    .with(time),
+        )
         plugin.shim.scheduleEvent(time * 20UL) {
             if (game.status == Game.Status.SEEKING) {
                 player.teleport(game.map?.gameSpawn)
@@ -92,11 +96,14 @@ private fun broadcastDeath(event: DamageEvent) {
 
     val msg =
         if (game.isSeeker(player)) {
-            plugin.locale.game.player.death.with(player.name)
+            plugin.locale.game.player.death
+                .with(player.name)
         } else if (attacker == null) {
-            plugin.locale.game.player.found.with(player.name)
+            plugin.locale.game.player.found
+                .with(player.name)
         } else {
-            plugin.locale.game.player.foundBy.with(player.name, attacker.name)
+            plugin.locale.game.player.foundBy
+                .with(player.name, attacker.name)
         }
 
     game.broadcast(msg)
@@ -148,7 +155,7 @@ fun onDamage(event: DamageEvent) {
     // if not then it is fine (if so we need to handle it)
     if (plugin.config.pvp && player.getHealth() - damage >= 0.5) return
 
-    /* handle death event (player was tagged or killed in pvp) */
+    // handle death event (player was tagged or killed in pvp)
     event.cancel()
     handleDeath(event)
 }

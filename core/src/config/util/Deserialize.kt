@@ -3,6 +3,7 @@ package cat.freya.khs.config.util
 import cat.freya.khs.config.LocaleString1
 import cat.freya.khs.config.LocaleString2
 import cat.freya.khs.config.LocaleString3
+import org.yaml.snakeyaml.Yaml
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.Reader
@@ -13,7 +14,6 @@ import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
-import org.yaml.snakeyaml.Yaml
 
 fun <T : Any> deserializeClass(type: KClass<T>, data: Map<String, Any?>): T {
     require(type.isData) { "$type is not a data class" }
@@ -113,30 +113,33 @@ fun <T : Any> deserializeField(
     value: Any?,
 ): T {
     return when {
-        type.isData ->
+        type.isData -> {
             deserializeClass(
                 type,
                 value as? Map<String, Any?>
                     ?: error("$key: expected map for data class $type, got $value"),
             )
+        }
 
-        type.java.isEnum ->
+        type.java.isEnum -> {
             deserializeEnum(
                 type as KClass<Enum<*>>,
                 key,
                 value as? String ?: error("$key: expected string for enum value, got $value"),
             )
                 as T
+        }
 
-        type.isSubclassOf(List::class) ->
+        type.isSubclassOf(List::class) -> {
             deserializeList(
                 innerTypes?.firstOrNull() ?: error("$key: innerType not set"),
                 key,
                 value as? List<*> ?: error("$key: expected list for type $type, got $value"),
             )
                 as T
+        }
 
-        type.isSubclassOf(Map::class) ->
+        type.isSubclassOf(Map::class) -> {
             deserializeMap(
                 innerTypes?.firstOrNull() ?: error("key type not set"),
                 innerTypes.getOrNull(1) ?: error("value type not set"),
@@ -144,8 +147,11 @@ fun <T : Any> deserializeField(
                 value as? Map<*, *> ?: error("$key: expected map for type $type, got $value"),
             )
                 as T
+        }
 
-        else -> deserializePrimitive(key, type, value ?: error("$key: value cannot be null"))
+        else -> {
+            deserializePrimitive(key, type, value ?: error("$key: value cannot be null"))
+        }
     }
 }
 

@@ -18,21 +18,22 @@ class KhsWorldList : Command {
             return
         }
 
-        val message = buildString {
-            appendLine(plugin.locale.world.list)
-            for (worldName in worlds) {
-                val world = plugin.shim.getWorld(worldName)
-                val status =
-                    when (world?.type) {
-                        World.Type.NORMAL -> "&aNORMAL"
-                        World.Type.FLAT -> "&aFLAT"
-                        World.Type.NETHER -> "&cNETHER"
-                        World.Type.END -> "&eEND"
-                        else -> "&7NOT LOADED"
-                    }
-                appendLine("&e- &f$worldName: $status")
+        val message =
+            buildString {
+                appendLine(plugin.locale.world.list)
+                for (worldName in worlds) {
+                    val world = plugin.shim.getWorld(worldName)
+                    val status =
+                        when (world?.type) {
+                            World.Type.NORMAL -> "&aNORMAL"
+                            World.Type.FLAT -> "&aFLAT"
+                            World.Type.NETHER -> "&cNETHER"
+                            World.Type.END -> "&eEND"
+                            else -> "&7NOT LOADED"
+                        }
+                    appendLine("&e- &f$worldName: $status")
+                }
             }
-        }
         player.message(message)
     }
 

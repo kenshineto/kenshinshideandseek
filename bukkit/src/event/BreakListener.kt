@@ -12,7 +12,6 @@ import org.bukkit.event.entity.EntityBreakDoorEvent
 import org.bukkit.event.hanging.HangingBreakByEntityEvent
 
 class BreakListener(val plugin: KhsPlugin) : Listener {
-
     init {
         plugin.server.pluginManager.registerEvents(this, plugin)
     }

@@ -20,7 +20,8 @@ class Game(val plugin: Khs) {
         LOBBY,
         HIDING,
         SEEKING,
-        FINISHED;
+        FINISHED,
+        ;
 
         fun inProgress(): Boolean {
             return when (this) {
@@ -46,13 +47,13 @@ class Game(val plugin: Khs) {
         HIDER_WIN,
     }
 
-    @Volatile
     /** the state the game is in */
+    @Volatile
     var status: Status = Status.LOBBY
         private set
 
-    @Volatile
     /** timer for current game status (lobby, hiding, seeking, finished) */
+    @Volatile
     var timer: ULong? = null
         private set
 
@@ -186,7 +187,9 @@ class Game(val plugin: Khs) {
 
     /** If a map is not set, select a new map */
     fun selectMap(): KhsMap? {
-        map = map ?: plugin.maps.values.filter { it.isSetup() }.randomOrNull()
+        map = map ?: plugin.maps.values
+            .filter { it.isSetup() }
+            .randomOrNull()
         return map
     }
 
@@ -247,21 +250,26 @@ class Game(val plugin: Khs) {
     fun start(requestedPool: Collection<UUID>) {
         val seekers = mutableSetOf<UUID>()
         val pool =
-            if (requestedPool.isEmpty()) playerUUIDs.toMutableSet()
-            else requestedPool.toMutableSet()
+            if (requestedPool.isEmpty()) {
+                playerUUIDs.toMutableSet()
+            } else {
+                requestedPool.toMutableSet()
+            }
 
         while (
             pool.isNotEmpty() &&
-                seekers.size.toUInt() < plugin.config.startingSeekerCount &&
-                seekers.size.toUInt() + 1u < size
+            seekers.size.toUInt() < plugin.config.startingSeekerCount &&
+            seekers.size.toUInt() + 1u < size
         ) {
             val uuid = randomSeeker(pool)
             pool.remove(uuid)
             seekers.add(uuid)
         }
 
-        if (seekers.isEmpty()) // warning here?
-         return
+        if (seekers.isEmpty()) {
+            // warning here?
+            return
+        }
 
         startWithSeekers(seekers)
     }
@@ -311,10 +319,12 @@ class Game(val plugin: Khs) {
                 if (team == Team.SEEKER) data.seekerWins++
                 if (team == Team.HIDER) data.hiderLosses++
             }
+
             WinType.HIDER_WIN -> {
                 if (team == Team.SEEKER) data.seekerLosses++
                 if (team == Team.HIDER) data.hiderWins++
             }
+
             WinType.NONE -> {}
         }
 
@@ -371,13 +381,21 @@ class Game(val plugin: Khs) {
         loadPlayerIntoLobby(player)
         reloadLobbyBoards()
 
-        broadcast(plugin.locale.prefix.default + plugin.locale.lobby.join.with(player.name))
+        broadcast(
+            plugin.locale.prefix.default +
+                plugin.locale.lobby.join
+                    .with(player.name),
+        )
     }
 
     fun leave(uuid: UUID) {
         val player = plugin.shim.getPlayer(uuid) ?: return
 
-        broadcast(plugin.locale.prefix.default + plugin.locale.game.leave.with(player.name))
+        broadcast(
+            plugin.locale.prefix.default +
+                plugin.locale.game.leave
+                    .with(player.name),
+        )
 
         mappings.remove(uuid)
         resetPlayer(player)
@@ -415,7 +433,8 @@ class Game(val plugin: Khs) {
             if (!successful) {
                 player.message(
                     plugin.locale.prefix.error +
-                        plugin.locale.command.sendToServerFailed.with(server)
+                        plugin.locale.command.sendToServerFailed
+                            .with(server),
                 )
                 player.teleport(plugin.config.exit)
             }
@@ -427,8 +446,14 @@ class Game(val plugin: Khs) {
     fun addKill(uuid: UUID) {
         val team = getTeam(uuid) ?: return
         when (team) {
-            Team.HIDER -> hiderKills[uuid] = hiderKills.getOrDefault(uuid, 0u) + 1u
-            Team.SEEKER -> seekerKills[uuid] = seekerKills.getOrDefault(uuid, 0u) + 1u
+            Team.HIDER -> {
+                hiderKills[uuid] = hiderKills.getOrDefault(uuid, 0u) + 1u
+            }
+
+            Team.SEEKER -> {
+                seekerKills[uuid] = seekerKills.getOrDefault(uuid, 0u) + 1u
+            }
+
             else -> {}
         }
     }
@@ -436,8 +461,14 @@ class Game(val plugin: Khs) {
     fun addDeath(uuid: UUID) {
         val team = getTeam(uuid) ?: return
         when (team) {
-            Team.HIDER -> hiderDeaths[uuid] = hiderDeaths.getOrDefault(uuid, 0u) + 1u
-            Team.SEEKER -> seekerDeaths[uuid] = seekerDeaths.getOrDefault(uuid, 0u) + 1u
+            Team.HIDER -> {
+                hiderDeaths[uuid] = hiderDeaths.getOrDefault(uuid, 0u) + 1u
+            }
+
+            Team.SEEKER -> {
+                seekerDeaths[uuid] = seekerDeaths.getOrDefault(uuid, 0u) + 1u
+            }
+
             else -> {}
         }
     }
@@ -496,8 +527,16 @@ class Game(val plugin: Khs) {
                     }
                     hiderPlayers.forEach { giveHiderItems(it) }
                 }
-                1UL -> message = plugin.locale.game.countdown.last
-                else -> message = plugin.locale.game.countdown.notify.with(time)
+
+                1UL -> {
+                    message = plugin.locale.game.countdown.last
+                }
+
+                else -> {
+                    message =
+                        plugin.locale.game.countdown.notify
+                            .with(time)
+                }
             }
 
             if (status == Status.HIDING) timer = if (time > 0UL) (time - 1UL) else time
@@ -507,8 +546,14 @@ class Game(val plugin: Khs) {
             val prefix = plugin.locale.prefix.default
             players.forEach { player ->
                 when (plugin.config.countdownDisplay) {
-                    ConfigCountdownDisplay.CHAT -> player.message(prefix + message)
-                    ConfigCountdownDisplay.ACTIONBAR -> player.actionBar(prefix + message)
+                    ConfigCountdownDisplay.CHAT -> {
+                        player.message(prefix + message)
+                    }
+
+                    ConfigCountdownDisplay.ACTIONBAR -> {
+                        player.actionBar(prefix + message)
+                    }
+
                     ConfigCountdownDisplay.TITLE -> {
                         if (time != 30UL) player.title(" ", message)
                     }
@@ -536,24 +581,33 @@ class Game(val plugin: Khs) {
 
         when (gameTick % 10u) {
             0u -> {
-                if (distance < distances.level1.toDouble())
+                if (distance < distances.level1.toDouble()) {
                     hider.playSound(sounds.heartbeatNoise, sounds.leadingVolume, sounds.pitch)
-                if (distance < distances.level3.toDouble())
+                }
+                if (distance < distances.level3.toDouble()) {
                     hider.playSound(sounds.ringingNoise, sounds.volume, sounds.pitch)
+                }
             }
+
             3u -> {
-                if (distance < distances.level1.toDouble())
+                if (distance < distances.level1.toDouble()) {
                     hider.playSound(sounds.heartbeatNoise, sounds.volume, sounds.pitch)
-                if (distance < distances.level3.toDouble())
+                }
+                if (distance < distances.level3.toDouble()) {
                     hider.playSound(sounds.ringingNoise, sounds.volume, sounds.pitch)
+                }
             }
+
             6u -> {
-                if (distance < distances.level3.toDouble())
+                if (distance < distances.level3.toDouble()) {
                     hider.playSound(sounds.ringingNoise, sounds.volume, sounds.pitch)
+                }
             }
+
             9u -> {
-                if (distance < distances.level2.toDouble())
+                if (distance < distances.level2.toDouble()) {
                     hider.playSound(sounds.ringingNoise, sounds.volume, sounds.pitch)
+                }
             }
         }
     }
@@ -576,52 +630,64 @@ class Game(val plugin: Khs) {
             // time ran out
             timer == 0UL -> {
                 broadcast(prefix.gameOver + plugin.locale.game.gameOver.time)
-                if (doTitle)
+                if (doTitle) {
                     broadcastTitle(
                         plugin.locale.game.title.hidersWin,
                         plugin.locale.game.gameOver.time,
                     )
+                }
                 stopReason = WinType.HIDER_WIN
             }
+
             // all seekers quit
             seekerSize < 1u -> {
                 broadcast(prefix.abort + plugin.locale.game.gameOver.seekerQuit)
-                if (doTitle)
+                if (doTitle) {
                     broadcastTitle(
                         plugin.locale.game.title.noWin,
                         plugin.locale.game.gameOver.seekerQuit,
                     )
+                }
                 stopReason = if (plugin.config.dontRewardQuit) WinType.NONE else WinType.HIDER_WIN
             }
+
             // hiders quit
             notEnoughHiders && hiderLeft -> {
                 broadcast(prefix.abort + plugin.locale.game.gameOver.hiderQuit)
-                if (doTitle)
+                if (doTitle) {
                     broadcastTitle(
                         plugin.locale.game.title.noWin,
                         plugin.locale.game.gameOver.hiderQuit,
                     )
+                }
                 stopReason = if (plugin.config.dontRewardQuit) WinType.NONE else WinType.SEEKER_WIN
             }
+
             // all hiders found
             notEnoughHiders && lastHider == null -> {
                 broadcast(prefix.gameOver + plugin.locale.game.gameOver.hidersFound)
-                if (doTitle)
+                if (doTitle) {
                     broadcastTitle(
                         plugin.locale.game.title.seekersWin,
                         plugin.locale.game.gameOver.hidersFound,
                     )
+                }
                 stopReason = WinType.SEEKER_WIN
             }
+
             // last hider wins (depends on scoring more)
             notEnoughHiders && lastHider != null -> {
-                val msg = plugin.locale.game.gameOver.lastHider.with(lastHider.name)
+                val msg =
+                    plugin.locale.game.gameOver.lastHider
+                        .with(lastHider.name)
                 broadcast(prefix.gameOver + msg)
-                if (doTitle)
+                if (doTitle) {
                     broadcastTitle(
-                        plugin.locale.game.title.singleHiderWin.with(lastHider.name),
+                        plugin.locale.game.title.singleHiderWin
+                            .with(lastHider.name),
                         msg,
                     )
+                }
                 stopReason = WinType.HIDER_WIN
             }
         }

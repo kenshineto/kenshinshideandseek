@@ -15,7 +15,11 @@ fun onClose(event: CloseEvent) {
     // only block hunt matters here
     if (inv.title?.startsWith(BlockHuntMenu.PREFIX) != true) return
 
-    val blocks = game.map?.config?.blockHunt?.blocks ?: return
+    val blocks =
+        game.map
+            ?.config
+            ?.blockHunt
+            ?.blocks ?: return
     val defaultBlock = blocks.firstOrNull() ?: return
     val material = plugin.shim.parseMaterial(defaultBlock) ?: return
     plugin.disguiser.disguiseIfNot(player, material)

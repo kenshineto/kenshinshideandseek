@@ -45,8 +45,11 @@ private fun onUseSpectator(event: UseEvent) {
         player.setAllowedFlight(!player.getFlying())
         player.setFlying(player.getAllowedFlight())
         player.actionBar(
-            if (player.getFlying()) plugin.locale.spectator.flyingEnabled
-            else plugin.locale.spectator.flyingDisabled
+            if (player.getFlying()) {
+                plugin.locale.spectator.flyingEnabled
+            } else {
+                plugin.locale.spectator.flyingDisabled
+            },
         )
     }
 
@@ -67,8 +70,14 @@ fun onUse(event: UseEvent) {
     if (!game.hasPlayer(player)) return
 
     when (game.status) {
-        Game.Status.LOBBY -> onUseLobby(event)
-        Game.Status.SEEKING -> onUseInGame(event)
+        Game.Status.LOBBY -> {
+            onUseLobby(event)
+        }
+
+        Game.Status.SEEKING -> {
+            onUseInGame(event)
+        }
+
         else -> {}
     }
 

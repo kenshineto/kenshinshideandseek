@@ -25,11 +25,15 @@ class KhsMapBlockHuntDebug : Command {
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =
         when (parameter) {
-            "map" ->
+            "map" -> {
                 plugin.maps
                     .filter { it.value.config.blockHunt.enabled }
                     .map { it.key }
                     .filter { it.startsWith(typed) }
-            else -> listOf()
+            }
+
+            else -> {
+                listOf()
+            }
         }
 }

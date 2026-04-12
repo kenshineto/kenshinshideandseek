@@ -5,13 +5,13 @@ import cat.freya.khs.world.Location
 import cat.freya.khs.world.Position
 import cat.freya.khs.world.World
 import com.cryptomorin.xseries.XSound
-import java.util.Random
 import org.bukkit.GameRule
 import org.bukkit.WorldCreator
 import org.bukkit.WorldType
 import org.bukkit.block.Biome
 import org.bukkit.generator.BlockPopulator
 import org.bukkit.generator.ChunkGenerator
+import java.util.Random
 
 private class VoidGenerator : ChunkGenerator() {
     // 1.14 And On
@@ -90,7 +90,6 @@ class BukkitWorldLoader(val plugin: KhsPlugin, name: String) :
         BukkitWorld.worldNameToFolderName(plugin.shim, name),
         plugin.shim.getWorldContainer().toPath(),
     ) {
-
     override fun load(): World? {
         // create/load the world
         // disable generation if a map save

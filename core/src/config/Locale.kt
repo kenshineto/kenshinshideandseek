@@ -230,7 +230,7 @@ data class LocaleWorldBorderConfig(
     @Comment("{3} - how much the border changes at a time")
     var enable: LocaleString3 =
         LocaleString3(
-            "Set border center to current location, size to {1}, delay to {2}, and steps by {3} blocks"
+            "Set border center to current location, size to {1}, delay to {2}, and steps by {3} blocks",
         ),
     var warn: String = "World border will shrink in the next 30s!",
     var shrinking: String = "&c&oWorld border is shrinking!",

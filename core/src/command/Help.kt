@@ -18,7 +18,7 @@ class KhsHelp : Command {
         player.message(
             buildString {
                 appendLine(
-                    "&b=================== &fHelp: Page ($page/$pages) &b==================="
+                    "&b=================== &fHelp: Page ($page/$pages) &b===================",
                 )
                 for ((label, command) in commands.chunked(pageSize.toInt())[page.toInt() - 1]) {
                     val cmd = label.substring(3)
@@ -28,7 +28,7 @@ class KhsHelp : Command {
                     appendLine("&7?&f  &7&o$description")
                 }
                 appendLine("&b=====================================================")
-            }
+            },
         )
     }
 

@@ -12,12 +12,10 @@ If your PR was closed for not being a necessary feature, please do not resubmit 
 
 ### Style Guide
 
-This project uses [ktfmt](https://github.com/facebook/ktfmt) for formatting. Please make sure all gradle and kotlin files are formatted
-with "kotlinlang" style before making your PR.
+This project uses [ktlint](https://pinterest.github.io/ktlint/latest/) for formatting.
 
-Please make sure there is no trailing whitespace.
-
-If you are on a unix system and have ktfmt installed, you can use the `format` script in the root of the repository.
+You can run `ktlint --format` to format all the source files. Please make sure all gradle and kotlin files are formatted
+before making your PR.
 
 ### Testing
 

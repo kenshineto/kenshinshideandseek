@@ -36,7 +36,6 @@ data class Request(val fn: () -> Unit, val lengthSeconds: Long) {
 
 /** Plugin wrapper */
 class Khs(val shim: KhsShim) {
-
     /** The main plugin config */
     var config: KhsConfig = KhsConfig()
         private set
@@ -100,8 +99,7 @@ class Khs(val shim: KhsShim) {
             .onFailure {
                 shim.logger.warning("Plugin loaded with errors :(")
                 shim.disable()
-            }
-            .onSuccess {
+            }.onSuccess {
                 shim.logger.info("Plugin loaded successfully!")
                 saveConfig()
             }
@@ -200,36 +198,35 @@ class Khs(val shim: KhsShim) {
 
     fun reloadConfig(): Result<Unit> {
         return runCatching {
-                shim.logger.info("Loading config...")
-                config = deserialize(KhsConfig::class, readConfigFile("config.yml"))
-                shim.logger.info("Loading items...")
-                itemsConfig = deserialize(KhsItemsConfig::class, readConfigFile("items.yml"))
-                shim.logger.info("Loading maps...")
-                mapsConfig = deserialize(KhsMapsConfig::class, readConfigFile("maps.yml"))
-                shim.logger.info("Loading board locale...")
-                boardConfig = deserialize(KhsBoardConfig::class, readConfigFile("board.yml"))
-                shim.logger.info("Loading locale...")
-                locale = deserialize(KhsLocale::class, readConfigFile("locale.yml"))
-                shim.logger.info("Loading database...")
+            shim.logger.info("Loading config...")
+            config = deserialize(KhsConfig::class, readConfigFile("config.yml"))
+            shim.logger.info("Loading items...")
+            itemsConfig = deserialize(KhsItemsConfig::class, readConfigFile("items.yml"))
+            shim.logger.info("Loading maps...")
+            mapsConfig = deserialize(KhsMapsConfig::class, readConfigFile("maps.yml"))
+            shim.logger.info("Loading board locale...")
+            boardConfig = deserialize(KhsBoardConfig::class, readConfigFile("board.yml"))
+            shim.logger.info("Loading locale...")
+            locale = deserialize(KhsLocale::class, readConfigFile("locale.yml"))
+            shim.logger.info("Loading database...")
 
-                // database config could have changed so we need to
-                // reconnect to the database
-                database = Database(this)
+            // database config could have changed so we need to
+            // reconnect to the database
+            database = Database(this)
 
-                // reload maps
-                // we need a separate newMaps, in case one of the maps below fails
-                // to load
-                val newMaps =
-                    mapsConfig.maps.mapValues { (name, mapConfig) -> KhsMap(name, mapConfig, this) }
+            // reload maps
+            // we need a separate newMaps, in case one of the maps below fails
+            // to load
+            val newMaps =
+                mapsConfig.maps.mapValues { (name, mapConfig) -> KhsMap(name, mapConfig, this) }
 
-                game.setMap(null)
-                maps.clear()
-                newMaps.forEach { maps[it.key] = it.value }
-            }
-            .onFailure {
-                shim.logger.error("failed to reload config: ${it.message}")
-                for (line in it.stackTraceToString().lines()) shim.logger.error(line)
-            }
+            game.setMap(null)
+            maps.clear()
+            newMaps.forEach { maps[it.key] = it.value }
+        }.onFailure {
+            shim.logger.error("failed to reload config: ${it.message}")
+            for (line in it.stackTraceToString().lines()) shim.logger.error(line)
+        }
     }
 
     private fun writeConfigFile(fileName: String, content: String) {
@@ -241,14 +238,13 @@ class Khs(val shim: KhsShim) {
 
     fun saveConfig() {
         runCatching {
-                val newMapsConfig = KhsMapsConfig(maps.mapValues { it.value.config })
-                writeConfigFile("config.yml", serialize(config))
-                writeConfigFile("items.yml", serialize(itemsConfig))
-                writeConfigFile("maps.yml", serialize(newMapsConfig))
-                writeConfigFile("board.yml", serialize(boardConfig))
-                writeConfigFile("locale.yml", serialize(locale))
-            }
-            .onFailure { shim.logger.error("failed to save config: ${it.message}") }
+            val newMapsConfig = KhsMapsConfig(maps.mapValues { it.value.config })
+            writeConfigFile("config.yml", serialize(config))
+            writeConfigFile("items.yml", serialize(itemsConfig))
+            writeConfigFile("maps.yml", serialize(newMapsConfig))
+            writeConfigFile("board.yml", serialize(boardConfig))
+            writeConfigFile("locale.yml", serialize(locale))
+        }.onFailure { shim.logger.error("failed to save config: ${it.message}") }
     }
 
     fun onTick() {

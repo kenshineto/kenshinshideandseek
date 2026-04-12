@@ -47,7 +47,10 @@ class Checks(val plugin: Khs, val player: Player) {
     /** check if the lobby has enough players to start */
     fun lobbyHasEnoughPlayers() {
         if (plugin.game.size < plugin.config.minPlayers) {
-            error(plugin.locale.lobby.notEnoughPlayers.with(plugin.config.minPlayers))
+            error(
+                plugin.locale.lobby.notEnoughPlayers
+                    .with(plugin.config.minPlayers),
+            )
         }
     }
 
@@ -71,7 +74,12 @@ class Checks(val plugin: Khs, val player: Player) {
     /** Checks that the map exists and is set up */
     fun mapSetup(map: KhsMap?) {
         if (map == null) error(plugin.locale.map.unknown)
-        if (!map.isSetup()) error(plugin.locale.map.setup.not.with(map.name))
+        if (!map.isSetup()) {
+            error(
+                plugin.locale.map.setup.not
+                    .with(map.name),
+            )
+        }
     }
 
     /** Checks if a map exists */
@@ -91,36 +99,58 @@ class Checks(val plugin: Khs, val player: Player) {
 
     /** Checks if a map name is valid */
     fun mapNameValid(name: String) {
-        if (!name.matches(Regex("[a-zA-Z0-9]*")) || name.isEmpty())
+        if (!name.matches(Regex("[a-zA-Z0-9]*")) || name.isEmpty()) {
             error(plugin.locale.map.invalidName)
+        }
     }
 
     /** Checks if a world exists */
     fun worldExists(worldName: String) {
-        if (!plugin.shim.getWorldNames().contains(worldName))
-            error(plugin.locale.world.doesntExist.with(worldName))
+        if (!plugin.shim.getWorldNames().contains(worldName)) {
+            error(
+                plugin.locale.world.doesntExist
+                    .with(worldName),
+            )
+        }
     }
 
     /** Checks if a world doesnt exists */
     fun worldDoesNotExist(worldName: String) {
-        if (plugin.shim.getWorldNames().contains(worldName))
-            error(plugin.locale.world.exists.with(worldName))
+        if (plugin.shim.getWorldNames().contains(worldName)) {
+            error(
+                plugin.locale.world.exists
+                    .with(worldName),
+            )
+        }
     }
 
     /** Checks if a world is valid for a map */
     fun worldValid(worldName: String) {
         worldExists(worldName)
-        if (worldName.startsWith(MAP_SAVE_PREFIX))
-            error(plugin.locale.world.doesntExist.with(worldName))
+        if (worldName.startsWith(MAP_SAVE_PREFIX)) {
+            error(
+                plugin.locale.world.doesntExist
+                    .with(worldName),
+            )
+        }
     }
 
     /** Checks that a world is not in use */
     fun worldNotInUse(worldName: String) {
         val map =
             plugin.maps.values.find { it.worldName == worldName || it.gameWorldName == worldName }
-        if (map != null) error(plugin.locale.world.inUseBy.with(worldName, map.name))
-        if (plugin.config.exit?.worldName == worldName)
-            error(plugin.locale.world.inUse.with(worldName))
+        if (map != null) {
+            error(
+                plugin.locale.world.inUseBy
+                    .with(worldName, map.name),
+            )
+        }
+        if (plugin.config.exit?.worldName == worldName) {
+            error(
+                plugin.locale.world.inUse
+                    .with(worldName),
+            )
+        }
     }
 
     /** Checks if blockhunt is supported */

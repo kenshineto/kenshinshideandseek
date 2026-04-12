@@ -17,7 +17,6 @@ import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.inventory.Inventory
 
 class InventoryListener(val plugin: KhsPlugin) : Listener {
-
     init {
         plugin.server.pluginManager.registerEvents(this, plugin)
     }

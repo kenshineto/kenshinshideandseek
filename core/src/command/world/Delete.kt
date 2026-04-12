@@ -25,19 +25,29 @@ class KhsWorldDelete : Command {
         val lock = loader.dir.resolve("session.lock").toFile()
         val data = loader.dir.resolve("level.dat").toFile()
         if (!lock.exists() || !data.exists()) {
-            player.message(plugin.locale.prefix.error + plugin.locale.world.doesntExist.with(name))
+            player.message(
+                plugin.locale.prefix.error +
+                    plugin.locale.world.doesntExist
+                        .with(name),
+            )
             return
         }
 
         loader.unload()
         if (!loader.dir.toFile().deleteRecursively()) {
             player.message(
-                plugin.locale.prefix.error + plugin.locale.world.removedFailed.with(name)
+                plugin.locale.prefix.error +
+                    plugin.locale.world.removedFailed
+                        .with(name),
             )
             return
         }
 
-        player.message(plugin.locale.prefix.default + plugin.locale.world.removed.with(name))
+        player.message(
+            plugin.locale.prefix.default +
+                plugin.locale.world.removed
+                    .with(name),
+        )
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> {

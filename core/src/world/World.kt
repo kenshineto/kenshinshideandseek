@@ -86,7 +86,6 @@ interface World {
         /** directory where all worlds/dimensions are stored */
         val worldContainer: Path,
     ) : Loader {
-
         override val isMapSave = folderName.startsWith(MAP_SAVE_PREFIX)
         override val dir: Path = worldContainer.resolve(folderName)
 

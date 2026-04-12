@@ -5,10 +5,10 @@ import cat.freya.khs.config.DatabaseConfig
 import cat.freya.khs.config.DatabaseType
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import java.io.File
-import javax.sql.DataSource
 import org.sqlite.SQLiteConfig
 import org.sqlite.SQLiteDataSource
+import java.io.File
+import javax.sql.DataSource
 
 abstract class Driver {
     abstract fun connect(): DataSource
@@ -61,7 +61,7 @@ class MysqlDriver(val config: DatabaseConfig) : HikariDriver() {
 
     override fun jdbcUrl(): String {
         val port = config.port ?: 3006u
-        return "jdbc:mysql://${config.host}:${port}/${config.database}"
+        return "jdbc:mysql://${config.host}:$port/${config.database}"
     }
 
     override fun configure(hikari: HikariConfig) {
@@ -75,7 +75,7 @@ class PostgresDriver(val config: DatabaseConfig) : HikariDriver() {
 
     override fun jdbcUrl(): String {
         val port = config.port ?: 5432u
-        return "jdbc:postgresql://${config.host}:${port}/${config.database}"
+        return "jdbc:postgresql://${config.host}:$port/${config.database}"
     }
 
     override fun configure(hikari: HikariConfig) {

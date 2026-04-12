@@ -29,16 +29,17 @@ class KhsTop : Command {
             return
         }
 
-        val message = buildString {
-            appendLine("&f------- &lLEADERBOARD &7(Page ${page + 1u}) &f-------")
-            for ((i, entry) in entries.withIndex()) {
-                val wins = entry.hiderWins + entry.seekerWins
-                val idx = (pageSize * page) + i.toUInt()
-                val color = getColor(idx)
-                val name = entry.name ?: continue
-                appendLine("&$color${idx + 1u}. &c$wins &f$name")
+        val message =
+            buildString {
+                appendLine("&f------- &lLEADERBOARD &7(Page ${page + 1u}) &f-------")
+                for ((i, entry) in entries.withIndex()) {
+                    val wins = entry.hiderWins + entry.seekerWins
+                    val idx = (pageSize * page) + i.toUInt()
+                    val color = getColor(idx)
+                    val name = entry.name ?: continue
+                    appendLine("&$color${idx + 1u}. &c$wins &f$name")
+                }
             }
-        }
 
         player.message(message)
     }

@@ -4,7 +4,6 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 data class Vector(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0) {
-
     fun add(b: Vector): Vector {
         return Vector(x + b.x, y + b.y, z + b.z)
     }

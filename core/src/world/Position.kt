@@ -6,7 +6,6 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 data class Position(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0) {
-
     /** @return the 3d distance between this and other */
     fun distance(other: Position): Double {
         val dx = this.x - other.x

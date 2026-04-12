@@ -53,7 +53,7 @@ class FabricContainer(val size: UInt, val title: String) : Container {
     }
 
     override fun setChanged() {
-        /* eh */
+        // eh
     }
 
     override fun stillValid(player: Player): Boolean {
@@ -132,8 +132,8 @@ open class FabricInventory(open val shim: FabricKhsShim, val container: Containe
 }
 
 class FabricPlayerInventory(override val shim: FabricKhsShim, val player: ServerPlayer) :
-    FabricInventory(shim, player.inventory), PlayerInventory {
-
+    FabricInventory(shim, player.inventory),
+    PlayerInventory {
     override fun getHelmet(): Item? {
         return FabricItem.wrap(player.getItemBySlot(EquipmentSlot.HEAD))
     }

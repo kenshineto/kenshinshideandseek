@@ -29,11 +29,16 @@ class KhsMapStatus : Command {
                 if (map.seekerLobbySpawn == null) appendLine(plugin.locale.map.setup.seekerLobby)
                 if (plugin.config.exit == null) appendLine(plugin.locale.map.setup.exit)
                 if (map.getBounds() == null) appendLine(plugin.locale.map.setup.bounds)
-                if (plugin.config.mapSaveEnabled && !map.hasMapSave())
+                if (plugin.config.mapSaveEnabled && !map.hasMapSave()) {
                     appendLine(plugin.locale.map.setup.saveMap)
-                if (map.config.blockHunt.enabled && map.config.blockHunt.blocks.isEmpty())
+                }
+                if (map.config.blockHunt.enabled &&
+                    map.config.blockHunt.blocks
+                        .isEmpty()
+                ) {
                     appendLine(plugin.locale.map.setup.blockHunt)
-            }
+                }
+            },
         )
     }
 

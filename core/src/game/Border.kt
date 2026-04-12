@@ -6,7 +6,6 @@ import cat.freya.khs.world.World
 const val BORDER_MIN_SIZE: ULong = 100UL
 
 class Border(val game: Game) {
-
     enum class State {
         WAITING,
         WARNED,

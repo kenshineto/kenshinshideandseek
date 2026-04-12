@@ -71,8 +71,16 @@ subprojects {
         configurations = listOf(project.configurations.named("shadow").get())
 
         val core = project(":core")
-        from(core.sourceSets.main.get().output)
-        from(project.sourceSets.main.get().output)
+        from(
+            core.sourceSets.main
+                .get()
+                .output,
+        )
+        from(
+            project.sourceSets.main
+                .get()
+                .output,
+        )
         from("../img") { into("assets") }
 
         val coreRelocations = core.ext["relocations"] as List<String>
@@ -100,6 +108,6 @@ tasks.build {
     dependsOn(
         subprojects
             .filter { it.tasks.findByName("shadowJar") != null }
-            .map { it.tasks.named("build") }
+            .map { it.tasks.named("build") },
     )
 }

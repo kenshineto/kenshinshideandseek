@@ -49,7 +49,9 @@ class KhsMapSetBorder : Command {
 
         plugin.saveConfig()
         player.message(
-            plugin.locale.prefix.default + plugin.locale.worldBorder.enable.with(size, delay, move)
+            plugin.locale.prefix.default +
+                plugin.locale.worldBorder.enable
+                    .with(size, delay, move),
         )
 
         val loc = player.getLocation().toPosition()

@@ -5,15 +5,15 @@ import cat.freya.khs.KhsShim
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.world.World
-import java.io.File
-import java.nio.file.Path
-import java.util.UUID
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerPlayer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.File
+import java.nio.file.Path
+import java.util.UUID
 
 class FabricLogger(mod: KhsMod) : KhsShim.Logger {
     private val logger: Logger? = LoggerFactory.getLogger(mod.ID)
@@ -32,11 +32,16 @@ class FabricLogger(mod: KhsMod) : KhsShim.Logger {
 }
 
 class FabricKhsShim(val mod: KhsMod) : AbstractKhsShim("Fabric") {
-
-    override val pluginVersion: String = mod.container.metadata?.version?.friendlyString ?: "null"
+    override val pluginVersion: String =
+        mod.container.metadata
+            ?.version
+            ?.friendlyString ?: "null"
 
     override val serverVersion: String =
-        mod.loader.getModContainer("minecraft").get().metadata.version.friendlyString
+        mod.loader
+            .getModContainer("minecraft")
+            .get()
+            .metadata.version.friendlyString
 
     override val logger: KhsShim.Logger = FabricLogger(mod)
 
@@ -115,10 +120,8 @@ class FabricKhsShim(val mod: KhsMod) : AbstractKhsShim("Fabric") {
                         val level = File(it, "level.dat")
 
                         session.exists() && level.exists()
-                    }
-                    .map { "${namespace.name}:${it.name}" }
-            }
-            .flatten()
+                    }.map { "${namespace.name}:${it.name}" }
+            }.flatten()
     }
 
     override fun getWorld(worldName: String): FabricWorld? {

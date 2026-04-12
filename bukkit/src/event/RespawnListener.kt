@@ -5,16 +5,15 @@ import cat.freya.khs.bukkit.KhsPlugin
 import cat.freya.khs.event.DeathEvent
 import cat.freya.khs.event.onDeath
 import cat.freya.khs.world.Location
-import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerRespawnEvent
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 class RespawnListener(val plugin: KhsPlugin) : Listener {
-
     private val respawnLocation: MutableMap<UUID, Location> = ConcurrentHashMap<UUID, Location>()
 
     init {

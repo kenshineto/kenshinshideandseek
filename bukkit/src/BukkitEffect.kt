@@ -8,7 +8,8 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
 class BukkitEffect(val inner: PotionEffect, override val config: EffectConfig) : Effect {
-    @Suppress("DEPRECATION") override val name = inner.type.name
+    @Suppress("DEPRECATION")
+    override val name = inner.type.name
     override val key: ResourceKey = getResourceKey()
 
     private fun getResourceKey(): ResourceKey {
@@ -26,11 +27,10 @@ class BukkitEffect(val inner: PotionEffect, override val config: EffectConfig) :
     private fun getMinecraftId(): UInt? {
         val type = SpigotConversionUtil.fromBukkitPotionEffectType(inner.type)
         return runCatching {
-                val id = type.getId(null)
-                if (id < 0) error("invalid id")
-                id.toUInt()
-            }
-            .getOrElse { null }
+            val id = type.getId(null)
+            if (id < 0) error("invalid id")
+            id.toUInt()
+        }.getOrElse { null }
     }
 
     companion object {

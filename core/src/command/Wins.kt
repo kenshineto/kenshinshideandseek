@@ -17,17 +17,21 @@ class KhsWins : Command {
             return
         }
 
-        val message = buildString {
-            val wins = data.seekerWins + data.hiderWins
-            val games = wins + data.seekerLosses + data.hiderLosses
-            appendLine("&f&l" + "=".repeat(30))
-            appendLine(plugin.locale.database.infoFor.with(name))
-            appendLine("&bTOTAL WINS: &f$wins")
-            appendLine("&6HIDER WINS: &f${data.hiderWins}")
-            appendLine("&cSEEKER WINS: &f${data.seekerWins}")
-            appendLine("GAMES PLAYED: $games")
-            append("&f&l" + "=".repeat(30))
-        }
+        val message =
+            buildString {
+                val wins = data.seekerWins + data.hiderWins
+                val games = wins + data.seekerLosses + data.hiderLosses
+                appendLine("&f&l" + "=".repeat(30))
+                appendLine(
+                    plugin.locale.database.infoFor
+                        .with(name),
+                )
+                appendLine("&bTOTAL WINS: &f$wins")
+                appendLine("&6HIDER WINS: &f${data.hiderWins}")
+                appendLine("&cSEEKER WINS: &f${data.seekerWins}")
+                appendLine("GAMES PLAYED: $games")
+                append("&f&l" + "=".repeat(30))
+            }
 
         player.message(message)
     }

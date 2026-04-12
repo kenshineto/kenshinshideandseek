@@ -12,8 +12,7 @@ import org.bukkit.scoreboard.Team
 
 const val KHS_COLLISION_TEAM_NAME = "KHS_Collision"
 
-open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.entity.Entity) :
-    Entity {
+open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.entity.Entity) : Entity {
     override val entityId = inner.entityId
     override val uuid = inner.uniqueId
     override val type = getResourceKey()

@@ -22,7 +22,7 @@ class KhsMapList : Command {
                     append("&e- &f$name: ")
                     appendLine(if (map.isSetup()) "&aSETUP" else "&cNOT SETUP")
                 }
-            }
+            },
         )
     }
 
