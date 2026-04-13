@@ -10,7 +10,7 @@ plugins {
 
 group = "cat.freya.khs"
 
-version = "2.1.0"
+version = "2.1.1"
 
 allprojects { repositories { mavenCentral() } }
 
