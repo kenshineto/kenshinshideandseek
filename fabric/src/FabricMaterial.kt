@@ -27,7 +27,7 @@ abstract class FabricMaterial(val inner: McResourceKey<*>) : Material {
 
     companion object {
         fun parse(name: String): FabricMaterial? {
-            val id = Identifier.parse(name) ?: return null
+            val id = Identifier.parse(name)
 
             val block: Holder<Block>? = BuiltInRegistries.BLOCK.get(id).orElse(null)
             if (block != null) {

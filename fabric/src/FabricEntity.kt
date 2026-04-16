@@ -54,10 +54,9 @@ open class FabricEntity(val mod: KhsMod, private val inner: net.minecraft.world.
 
         val loader = mod.shim.getWorldLoader(location.worldName)
         val world = loader.load() ?: return
-        val fabricWorld = (world as? FabricWorld)?.inner ?: return
 
         val relative = Relative.union(Relative.DELTA, Relative.ROTATION)
-        inner.teleportTo(fabricWorld, location.x, location.y, location.z, relative, 0f, 0f, false)
+        inner.teleportTo(world.inner, location.x, location.y, location.z, relative, 0f, 0f, false)
     }
 
     private fun getCollidesTeam(): PlayerTeam {

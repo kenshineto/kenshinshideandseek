@@ -17,7 +17,7 @@ class FabricEffect(val inner: MobEffectInstance, override val config: EffectConf
 
     companion object {
         fun parse(config: EffectConfig): FabricEffect? {
-            val id = Identifier.parse(config.type) ?: return null
+            val id = Identifier.parse(config.type)
             val effect = BuiltInRegistries.MOB_EFFECT.get(id).getOrNull() ?: return null
 
             val ticks = config.duration.toInt() * 20
