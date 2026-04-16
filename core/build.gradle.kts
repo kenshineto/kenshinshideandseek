@@ -24,7 +24,3 @@ dependencies {
     implementation(libs.postgres)
     implementation(libs.hikari)
 }
-
-ext["relocations"] = listOf("org.jetbrains.exposed", "com.zaxxer.hikari")
-
-ext["templates"] = listOf<String>()

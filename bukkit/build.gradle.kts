@@ -18,7 +18,3 @@ dependencies {
     shadow(libs.xseries)
     shadow(project(":core"))
 }
-
-ext["relocations"] = listOf("com.cryptomorin.xseries")
-
-ext["templates"] = listOf("plugin.yml")

@@ -27,8 +27,11 @@ subprojects {
 
     // we need to support java 8 so that we can support old
     // minecraft versions such as 1.8
-
-    val jvmVersion = if (project.name == "fabric") 17 else 8
+    val jvmVersion =
+        when (project.name) {
+            "fabric" -> 17
+            else -> 8
+        }
 
     kotlin {
         jvmToolchain(jvmVersion)
@@ -50,8 +53,8 @@ subprojects {
 
         inputs.properties(props.mapValues { it.value.get() })
 
-        val projectTemplates = project.ext["templates"] as List<String>
-        projectTemplates.forEach { resource ->
+        val templates = listOf("*.yml", "*.json")
+        templates.forEach { resource ->
             filesMatching(resource) { expand(props.mapValues { it.value.get() }) }
         }
     }
@@ -61,39 +64,47 @@ subprojects {
         val jarVersion = rootProject.version.toString()
         val jarPlatform = project.name
 
-        dependsOn(tasks.processResources)
-
+        // calculate jar name
         archiveBaseName.set(jarName)
         archiveVersion.set(jarVersion)
         archiveClassifier.set(jarPlatform)
         destinationDirectory.set(layout.buildDirectory.dir("libs"))
         archiveFileName.set("$jarName-$jarVersion+$jarPlatform.jar")
 
+        // we need to process resources before
+        // putting them in the jar
+        dependsOn(tasks.processResources)
+
         // only include shadow'd depends (not implementation)
         configurations = listOf(project.configurations.named("shadow").get())
 
-        val core = project(":core")
-        from(
-            core.sourceSets.main
-                .get()
-                .output,
-        )
-        from(
-            project.sourceSets.main
-                .get()
-                .output,
-        )
+        // load in image assets
         from("../img") { into("assets") }
 
-        val coreRelocations = core.ext["relocations"] as List<String>
-        val projectRelocations = project.ext["relocations"] as List<String>
-        (coreRelocations + projectRelocations).forEach { dep ->
+        // relocate shaded deps
+        val relocations =
+            listOf(
+                // core
+                "org.jetbrains.exposed",
+                "com.zaxxer.hikari",
+                // bukkit
+                "com.cryptomorin.xseries",
+            )
+        relocations.forEach { dep ->
             val module = dep.split('.').last()
-            relocate(dep, "cat.freya.depend.$module")
+            val hasDep =
+                project.configurations
+                    .flatMap { it.dependencies }
+                    .any { it.group == group }
+            if (hasDep) {
+                relocate(dep, "cat.freya.depend.$module")
+            }
         }
 
+        // multiple database drivers may collide here
         mergeServiceFiles { include("META-INF/services/java.sql.Driver") }
 
+        // remove META-INF crap
         exclude {
             it.path.startsWith("META-INF/") &&
                 !it.path.startsWith("META-INF/services/") &&

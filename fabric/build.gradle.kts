@@ -23,7 +23,3 @@ dependencies {
     shadow(libs.sqlite)
     shadow(libs.snakeyaml)
 }
-
-ext["relocations"] = listOf<String>()
-
-ext["templates"] = listOf("fabric.mod.json")
