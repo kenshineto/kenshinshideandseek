@@ -23,6 +23,7 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.level.GameType
+import net.minecraft.world.phys.HitResult
 import net.minecraft.world.scores.DisplaySlot
 import kotlin.runCatching
 
@@ -56,7 +57,12 @@ class FabricPlayer(mod: KhsMod, val inner: ServerPlayer) :
     }
 
     override fun knockBack(direction: Vector) {
-        // TODO:
+        inner.setDeltaMovement(
+            direction.x * 0.4,
+            0.4,
+            direction.z * 0.4,
+        )
+        inner.hurtMarked = true
     }
 
     override fun getAllowedFlight(): Boolean {
@@ -145,16 +151,23 @@ class FabricPlayer(mod: KhsMod, val inner: ServerPlayer) :
     }
 
     override fun getEyePosition(): Location {
-        TODO()
+        val v = inner.eyePosition
+        return Location(v.x, v.y, v.z, getWorld().name)
     }
 
     override fun getEyeDirection(): Vector {
-        TODO()
+        val v = inner.lookAngle
+        return Vector(v.x, v.y, v.z)
     }
 
     override fun getReach(maxReach: Double): Double? {
-        // TODO:
-        return null
+        val hit = inner.pick(maxReach, 0.0F, false)
+
+        if (hit.type != HitResult.Type.BLOCK) {
+            return null
+        }
+
+        return inner.eyePosition.distanceTo(hit.location)
     }
 
     override fun getGameMode(): Player.GameMode {
