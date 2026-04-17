@@ -12,7 +12,18 @@ group = "cat.freya.khs"
 
 version = "2.1.1"
 
-allprojects { repositories { mavenCentral() } }
+allprojects {
+    repositories { mavenCentral() }
+
+    // only run when explicitly requested
+    // i.e. dont lint on builds
+    tasks.matching { it.name.contains("ktlint", ignoreCase = true) }.configureEach {
+        onlyIf {
+            project.gradle.startParameter.taskNames
+                .any { it == "lint" || it == "format" }
+        }
+    }
+}
 
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
@@ -117,10 +128,12 @@ subprojects {
 
 tasks.named<Jar>("jar") { enabled = false }
 
-tasks.build {
-    dependsOn(
-        subprojects
-            .filter { it.tasks.findByName("shadowJar") != null }
-            .map { it.tasks.named("build") },
-    )
+tasks.register("lint") {
+    dependsOn(subprojects.map { it.tasks.named("ktlintCheck") })
+    dependsOn(tasks.named("ktlintCheck"))
+}
+
+tasks.register("format") {
+    dependsOn(subprojects.map { it.tasks.named("ktlintFormat") })
+    dependsOn(tasks.named("ktlintFormat"))
 }
