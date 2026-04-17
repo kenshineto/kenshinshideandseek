@@ -2,6 +2,7 @@
 .gradle
 .kotlin
 .settings
+.kls
 kls_database.db
 build
 bukkit/build
