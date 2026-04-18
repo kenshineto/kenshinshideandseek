@@ -3,10 +3,10 @@ package cat.freya.khs
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.game.Board
+import cat.freya.khs.menu.Inventory
 import cat.freya.khs.type.Effect
 import cat.freya.khs.type.Item
 import cat.freya.khs.type.Material
-import cat.freya.khs.world.Inventory
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.World
 import java.nio.file.Path

@@ -2,7 +2,7 @@ package cat.freya.khs.event
 
 import cat.freya.khs.Khs
 import cat.freya.khs.menu.BlockHuntMenu
-import cat.freya.khs.world.Inventory
+import cat.freya.khs.menu.Inventory
 import cat.freya.khs.world.Player
 import kotlin.text.startsWith
 

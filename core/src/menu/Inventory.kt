@@ -1,4 +1,4 @@
-package cat.freya.khs.world
+package cat.freya.khs.menu
 
 import cat.freya.khs.type.Item
 

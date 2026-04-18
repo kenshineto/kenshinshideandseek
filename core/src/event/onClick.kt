@@ -4,9 +4,9 @@ import cat.freya.khs.Khs
 import cat.freya.khs.game.Game
 import cat.freya.khs.menu.BlockHuntMenu
 import cat.freya.khs.menu.DebugMenu
+import cat.freya.khs.menu.Inventory
 import cat.freya.khs.menu.TeleportMenu
 import cat.freya.khs.type.Item
-import cat.freya.khs.world.Inventory
 import cat.freya.khs.world.Player
 import kotlin.text.startsWith
 

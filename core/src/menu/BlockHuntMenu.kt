@@ -3,7 +3,6 @@ package cat.freya.khs.menu
 import cat.freya.khs.Khs
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.game.KhsMap
-import cat.freya.khs.world.Inventory
 
 object BlockHuntMenu {
     const val PREFIX = "Select a Block: "

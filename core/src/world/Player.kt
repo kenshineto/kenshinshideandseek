@@ -3,6 +3,8 @@ package cat.freya.khs.world
 import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.game.Board
 import cat.freya.khs.math.Vector
+import cat.freya.khs.menu.Inventory
+import cat.freya.khs.menu.PlayerInventory
 import cat.freya.khs.type.Material
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.protocol.player.ClientVersion

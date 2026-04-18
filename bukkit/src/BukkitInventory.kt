@@ -1,8 +1,8 @@
 package cat.freya.khs.bukkit
 
+import cat.freya.khs.menu.Inventory
+import cat.freya.khs.menu.PlayerInventory
 import cat.freya.khs.type.Item
-import cat.freya.khs.world.Inventory
-import cat.freya.khs.world.PlayerInventory
 
 open class BukkitInventory(
     open val shim: BukkitKhsShim,

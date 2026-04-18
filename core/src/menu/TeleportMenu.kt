@@ -4,7 +4,6 @@ import cat.freya.khs.Khs
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.game.Game
 import cat.freya.khs.type.Item
-import cat.freya.khs.world.Inventory
 import cat.freya.khs.world.Player
 
 object TeleportMenu {
