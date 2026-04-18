@@ -86,6 +86,8 @@ class Game(val plugin: Khs) {
     private var hiderDeaths: MutableMap<UUID, UInt> = ConcurrentHashMap()
     private var seekerDeaths: MutableMap<UUID, UInt> = ConcurrentHashMap()
 
+    private var lock = Any()
+
     /* what players are in the game and what teams
      * are they on */
     val teams: Teams = Teams()
@@ -209,7 +211,7 @@ class Game(val plugin: Khs) {
             map?.getGameWorld()?.loader?.rollback()
         }
 
-        synchronized(this) {
+        synchronized(lock) {
             // set teams
             teams.getUUIDs().forEach { teams.put(it, Team.HIDER) }
             seekers.forEach { teams.put(it, Team.SEEKER) }
@@ -413,7 +415,7 @@ class Game(val plugin: Khs) {
         val countdown = plugin.config.lobby.countdown
         val changeCountdown = plugin.config.lobby.changeCountdown
 
-        synchronized(this) {
+        synchronized(lock) {
             // countdown is disabled when set to at 0s
             if (countdown == 0UL || teams.size() < plugin.config.lobby.min) {
                 timer = null
@@ -441,7 +443,7 @@ class Game(val plugin: Khs) {
 
         val time: ULong
         val message: String
-        synchronized(this) {
+        synchronized(lock) {
             time = timer ?: plugin.config.hidingLength
             when (time) {
                 0UL -> {
@@ -628,7 +630,7 @@ class Game(val plugin: Khs) {
     private fun whileSeeking() {
         if (plugin.config.seekerPing.enabled) teams.getHiderPlayers().forEach { playSeekerPing(it) }
 
-        synchronized(this) {
+        synchronized(lock) {
             var time = timer
             if (time == null && plugin.config.gameLength != 0UL) time = plugin.config.gameLength
 
@@ -654,7 +656,7 @@ class Game(val plugin: Khs) {
 
     /** during Status.FINISHED */
     private fun whileFinished() {
-        synchronized(this) {
+        synchronized(lock) {
             var time = timer ?: plugin.config.endGameDelay
             if (isSecond && time > 0UL) time--
 
