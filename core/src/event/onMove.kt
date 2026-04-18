@@ -10,7 +10,7 @@ fun onMove(event: MoveEvent) {
     val (plugin, player, _, to) = event
     val game = plugin.game
 
-    if (!game.hasPlayer(player)) return
+    if (!game.teams.contains(player.uuid)) return
 
     val map = game.map ?: return
     if (player.getLocation().worldName != map.gameWorldName) return

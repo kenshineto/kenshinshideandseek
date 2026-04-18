@@ -108,7 +108,7 @@ class Khs(val shim: KhsShim) {
     }
 
     fun cleanup() {
-        for (uuid in game.playerUUIDs) game.leave(uuid)
+        game.teams.getUUIDs().forEach { game.leave(it) }
         disguiser.cleanup()
     }
 

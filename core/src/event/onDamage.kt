@@ -16,9 +16,9 @@ private fun eventHasJurisdiction(event: DamageEvent): Boolean {
     val (plugin, player, attacker, _) = event
     val game = plugin.game
 
-    if (game.hasPlayer(player)) return true
+    if (game.teams.contains(player.uuid)) return true
 
-    if (attacker != null && game.hasPlayer(attacker)) return true
+    if (attacker != null && game.teams.contains(attacker.uuid)) return true
 
     return false
 }
@@ -28,11 +28,11 @@ private fun isDamageAllowed(event: DamageEvent): Boolean {
     val (plugin, player, attacker, _) = event
     val game = plugin.game
 
-    if (!game.hasPlayer(player)) return false
+    if (!game.teams.contains(player.uuid)) return false
 
     if (game.status != Game.Status.SEEKING) return false
 
-    if (game.isSpectator(player)) return false
+    if (game.teams.isSpectator(player.uuid)) return false
 
     if (attacker == null) {
         // assume natural causes
@@ -42,16 +42,16 @@ private fun isDamageAllowed(event: DamageEvent): Boolean {
     }
 
     // attackers must be in the game to attack the player
-    if (!game.hasPlayer(attacker)) return false
+    if (!game.teams.contains(attacker.uuid)) return false
 
     // spectators cannot attack
-    if (game.isSpectator(attacker)) return false
+    if (game.teams.isSpectator(attacker.uuid)) return false
 
     // players cannot attack their team-mates
-    if (game.getTeam(player.uuid) == game.getTeam(attacker.uuid)) return false
+    if (game.teams.get(player.uuid) == game.teams.get(attacker.uuid)) return false
 
     // ignore if pvp is disabled, and a hider is trying to attack a seeker
-    if (!plugin.config.pvp && game.isHider(attacker) && game.isSeeker(player)) return false
+    if (!plugin.config.pvp && game.teams.isHider(attacker.uuid) && game.teams.isSeeker(player.uuid)) return false
 
     return true
 }
@@ -60,14 +60,14 @@ private fun respawnPlayer(event: DamageEvent) {
     val (plugin, player, _, _) = event
     val game = plugin.game
 
-    if (game.isHider(player) && plugin.config.respawnAsSpectator) {
-        game.setTeam(player.uuid, Game.Team.SPECTATOR)
+    if (game.teams.isHider(player.uuid) && plugin.config.respawnAsSpectator) {
+        game.teams.put(player.uuid, Game.Team.SPECTATOR)
         game.loadSpectator(player)
         return
     }
 
     // respawn as a seeker
-    game.setTeam(player.uuid, Game.Team.SEEKER)
+    game.teams.put(player.uuid, Game.Team.SEEKER)
     game.resetPlayer(player)
     game.giveSeekerItems(player)
 
@@ -95,7 +95,7 @@ private fun broadcastDeath(event: DamageEvent) {
     val game = plugin.game
 
     val msg =
-        if (game.isSeeker(player)) {
+        if (game.teams.isSeeker(player.uuid)) {
             plugin.locale.game.player.death
                 .with(player.name)
         } else if (attacker == null) {
@@ -140,7 +140,7 @@ fun onDamage(event: DamageEvent) {
         event.cancel()
 
         // handle spectator taking damage
-        if (game.isSpectator(player)) {
+        if (game.teams.isSpectator(player.uuid)) {
             val minY = player.getWorld()?.minY ?: 0
             if (player.getLocation().y < minY) {
                 // make sure they don't try to kill them self to the void lol

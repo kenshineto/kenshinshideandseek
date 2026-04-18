@@ -12,7 +12,7 @@ class Taunt(val game: Game) {
     @Volatile var last: UUID? = null
 
     val expired: Boolean
-        get() = (game.hiderSize <= 1UL && game.plugin.config.taunt.disableForLastHider)
+        get() = (game.teams.hiderCount() <= 1UL && game.plugin.config.taunt.disableForLastHider)
 
     fun reset() {
         running = false
@@ -32,7 +32,7 @@ class Taunt(val game: Game) {
         // running means we are to taunt!
         if (running) {
             // if player left, well, damn
-            if (taunted?.let { game.hasPlayer(it) } != true) {
+            if (taunted?.let { game.teams.contains(it) } != true) {
                 reset()
                 return
             }
@@ -47,11 +47,12 @@ class Taunt(val game: Game) {
 
         // select a hider to taunt
         val hider =
-            game.hiderPlayers
+            game.teams
+                .getHiderPlayers()
                 .filter {
                     // only block last hider if there is another
                     // hider to taunt
-                    it.uuid != last || (game.hiderSize <= 1UL)
+                    it.uuid != last || (game.teams.hiderCount() <= 1UL)
                 }.randomOrNull() ?: return
 
         game.broadcast(game.plugin.locale.prefix.taunt + game.plugin.locale.taunt.warning)

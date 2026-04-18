@@ -51,7 +51,7 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
         val entityId = packet.entityId
         val player =
             plugin.shim.getPlayers().firstOrNull { it.entityId == entityId } ?: return false
-        return plugin.game.isSpectator(player)
+        return plugin.game.teams.isSpectator(player.uuid)
     }
 
     private fun debugEntityMetadata(event: PacketSendEvent) {
@@ -89,7 +89,7 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
 
     private fun stopSpectatorInteract(event: PacketReceiveEvent) {
         val player = plugin.shim.wrapPlayer(event.getPlayer()) ?: return
-        if (!plugin.game.isSpectator(player)) return
+        if (!plugin.game.teams.isSpectator(player.uuid)) return
 
         val canceled =
             when (event.packetType) {

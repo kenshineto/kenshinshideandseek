@@ -9,7 +9,7 @@ fun onRegen(event: RegenEvent) {
     val (plugin, player, natural) = event
     val game = plugin.game
 
-    if (!game.hasPlayer(player)) return
+    if (!game.teams.contains(player.uuid)) return
 
     if (!natural || plugin.config.regenHealth) return
 

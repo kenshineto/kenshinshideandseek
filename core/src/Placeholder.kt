@@ -61,17 +61,20 @@ fun handlePlaceholder(req: PlaceholderRequest): String {
     return when (arg0) {
         // game info
         "hiders" -> {
-            req.plugin.game.hiderSize
+            req.plugin.game.teams
+                .hiderCount()
                 .toString()
         }
 
         "seekers" -> {
-            req.plugin.game.seekerSize
+            req.plugin.game.teams
+                .seekerCount()
                 .toString()
         }
 
         "spectators" -> {
-            req.plugin.game.spectatorSize
+            req.plugin.game.teams
+                .spectatorCount()
                 .toString()
         }
 
@@ -83,7 +86,8 @@ fun handlePlaceholder(req: PlaceholderRequest): String {
         // player team
         "team" -> {
             req.plugin.game
-                .getTeam(req.uuid)
+                .teams
+                .get(req.uuid)
                 ?.toString() ?: req.noData
         }
 

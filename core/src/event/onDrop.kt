@@ -10,7 +10,7 @@ fun onDrop(event: DropEvent) {
     val (plugin, player, _) = event
     val game = plugin.game
 
-    if (!game.hasPlayer(player)) return
+    if (!game.teams.contains(player.uuid)) return
 
     if (!plugin.config.dropItems) event.cancel()
 }

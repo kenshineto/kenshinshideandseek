@@ -32,21 +32,21 @@ class Checks(val plugin: Khs, val player: Player) {
 
     /** checks that the caller is in the game */
     fun playerNotInGame() {
-        if (plugin.game.hasPlayer(player)) {
+        if (plugin.game.teams.contains(player.uuid)) {
             error(plugin.locale.game.inGame)
         }
     }
 
     /** checks that the caller is in the game */
     fun playerInGame() {
-        if (!plugin.game.hasPlayer(player)) {
+        if (!plugin.game.teams.contains(player.uuid)) {
             error(plugin.locale.game.notInGame)
         }
     }
 
     /** check if the lobby has enough players to start */
     fun lobbyHasEnoughPlayers() {
-        if (plugin.game.size < plugin.config.minPlayers) {
+        if (plugin.game.teams.size() < plugin.config.minPlayers) {
             error(
                 plugin.locale.lobby.notEnoughPlayers
                     .with(plugin.config.minPlayers),
@@ -56,7 +56,7 @@ class Checks(val plugin: Khs, val player: Player) {
 
     /** check if the lobby is empty */
     fun lobbyEmpty() {
-        if (plugin.game.size > 0u) {
+        if (plugin.game.teams.size() > 0u) {
             error(plugin.locale.lobby.inUse)
         }
     }

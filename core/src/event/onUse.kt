@@ -67,7 +67,7 @@ fun onUse(event: UseEvent) {
     val (plugin, player, _) = event
     val game = plugin.game
 
-    if (!game.hasPlayer(player)) return
+    if (!game.teams.contains(player.uuid)) return
 
     when (game.status) {
         Game.Status.LOBBY -> {
@@ -81,5 +81,5 @@ fun onUse(event: UseEvent) {
         else -> {}
     }
 
-    if (game.isSpectator(player)) onUseSpectator(event)
+    if (game.teams.isSpectator(player.uuid)) onUseSpectator(event)
 }

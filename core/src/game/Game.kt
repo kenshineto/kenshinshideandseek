@@ -86,6 +86,11 @@ class Game(val plugin: Khs) {
     private var hiderDeaths: MutableMap<UUID, UInt> = ConcurrentHashMap()
     private var seekerDeaths: MutableMap<UUID, UInt> = ConcurrentHashMap()
 
+    /* what players are in the game and what teams
+     * are they on */
+    val teams: Teams = Teams()
+
+    // events and powerups
     val glow: Glow = Glow(this)
     val taunt: Taunt = Taunt(this)
     val border: Border = Border(this)
@@ -93,84 +98,6 @@ class Game(val plugin: Khs) {
     @Volatile
     var map: KhsMap? = null
         private set
-
-    private val mappings: MutableMap<UUID, Team> = ConcurrentHashMap<UUID, Team>()
-
-    val players: List<Player>
-        get() = playerUUIDs.mapNotNull { plugin.shim.getPlayer(it) }
-
-    val playerUUIDs: Set<UUID>
-        get() = mappings.keys.toSet()
-
-    val hiderUUIDs: Set<UUID>
-        get() = mappings.filter { it.value == Team.HIDER }.keys
-
-    val hiderPlayers: List<Player>
-        get() = hiderUUIDs.mapNotNull { plugin.shim.getPlayer(it) }
-
-    val seekerUUIDs: Set<UUID>
-        get() = mappings.filter { it.value == Team.SEEKER }.keys
-
-    val seekerPlayers: List<Player>
-        get() = seekerUUIDs.mapNotNull { plugin.shim.getPlayer(it) }
-
-    val spectatorUUIDs: Set<UUID>
-        get() = mappings.filter { it.value == Team.SPECTATOR }.keys
-
-    val spectatorPlayers: List<Player>
-        get() = spectatorUUIDs.mapNotNull { plugin.shim.getPlayer(it) }
-
-    val size: UInt
-        get() = mappings.size.toUInt()
-
-    val hiderSize: UInt
-        get() = hiderUUIDs.size.toUInt()
-
-    val seekerSize: UInt
-        get() = seekerUUIDs.size.toUInt()
-
-    val spectatorSize: UInt
-        get() = spectatorUUIDs.size.toUInt()
-
-    fun hasPlayer(uuid: UUID): Boolean {
-        return mappings.containsKey(uuid)
-    }
-
-    fun hasPlayer(player: Player): Boolean {
-        return hasPlayer(player.uuid)
-    }
-
-    fun isHider(uuid: UUID): Boolean {
-        return getTeam(uuid) == Team.HIDER
-    }
-
-    fun isHider(player: Player): Boolean {
-        return isHider(player.uuid)
-    }
-
-    fun isSeeker(uuid: UUID): Boolean {
-        return getTeam(uuid) == Team.SEEKER
-    }
-
-    fun isSeeker(player: Player): Boolean {
-        return isSeeker(player.uuid)
-    }
-
-    fun isSpectator(uuid: UUID): Boolean {
-        return getTeam(uuid) == Team.SPECTATOR
-    }
-
-    fun isSpectator(player: Player): Boolean {
-        return isSpectator(player.uuid)
-    }
-
-    fun getTeam(uuid: UUID): Team? {
-        return mappings[uuid]
-    }
-
-    fun setTeam(uuid: UUID, team: Team) {
-        mappings[uuid] = team
-    }
 
     fun doTick() {
         if (map?.isSetup() != true) return
@@ -196,10 +123,10 @@ class Game(val plugin: Khs) {
     fun setMap(map: KhsMap?) {
         if (status != Status.LOBBY) return
 
-        if (map == null && size > 0u) return
+        if (map == null && teams.size() > 0u) return
 
         this.map = map
-        players.forEach { player -> loadPlayerIntoLobby(player) }
+        teams.getPlayers().forEach { player -> loadPlayerIntoLobby(player) }
     }
 
     fun getSeekerWeight(uuid: UUID): Double {
@@ -211,7 +138,7 @@ class Game(val plugin: Khs) {
     }
 
     fun getSeekerChance(uuid: UUID): Double {
-        val weights = playerUUIDs.map { getSeekerWeight(it) }
+        val weights = teams.getUUIDs().map { getSeekerWeight(it) }
         val totalWeight = weights.sum()
         val weight = getSeekerWeight(uuid)
         if (totalWeight == 0.0) return 0.0
@@ -219,7 +146,7 @@ class Game(val plugin: Khs) {
 
         // calculate probable team sizes
         val wantedSeekerCount = maxOf(plugin.config.startingSeekerCount, 1u)
-        val numPlayers = maxOf(size, 1u)
+        val numPlayers = maxOf(teams.size(), 1u)
         val numSeekers = minOf(wantedSeekerCount, numPlayers - 1u)
 
         // return percent * num seekers
@@ -251,7 +178,7 @@ class Game(val plugin: Khs) {
         val seekers = mutableSetOf<UUID>()
         val pool =
             if (requestedPool.isEmpty()) {
-                playerUUIDs.toMutableSet()
+                teams.getUUIDs().toMutableSet()
             } else {
                 requestedPool.toMutableSet()
             }
@@ -259,7 +186,7 @@ class Game(val plugin: Khs) {
         while (
             pool.isNotEmpty() &&
             seekers.size.toUInt() < plugin.config.startingSeekerCount &&
-            seekers.size.toUInt() + 1u < size
+            seekers.size.toUInt() + 1u < teams.size()
         ) {
             val uuid = randomSeeker(pool)
             pool.remove(uuid)
@@ -284,11 +211,11 @@ class Game(val plugin: Khs) {
 
         synchronized(this) {
             // set teams
-            playerUUIDs.forEach { setTeam(it, Team.HIDER) }
-            seekers.forEach { setTeam(it, Team.SEEKER) }
+            teams.getUUIDs().forEach { teams.put(it, Team.HIDER) }
+            seekers.forEach { teams.put(it, Team.SEEKER) }
 
             // reset game state
-            initialTeams = mappings.toMap()
+            initialTeams = teams.getMappings()
             hiderKills.clear()
             seekerKills.clear()
             hiderDeaths.clear()
@@ -340,14 +267,14 @@ class Game(val plugin: Khs) {
         if (!status.inProgress()) return
 
         // update database
-        playerUUIDs.forEach { updatePlayerInfo(it, reason) }
+        teams.getUUIDs().forEach { updatePlayerInfo(it, reason) }
 
         round++
         status = Status.FINISHED
         timer = null
 
         if (plugin.config.leaveOnEnd) {
-            playerUUIDs.forEach { leave(it) }
+            teams.getUUIDs().forEach { leave(it) }
         }
     }
 
@@ -362,7 +289,7 @@ class Game(val plugin: Khs) {
         }
 
         if (status != Status.LOBBY) {
-            setTeam(uuid, Team.SPECTATOR)
+            teams.put(uuid, Team.SPECTATOR)
             loadSpectator(player)
             reloadGameBoards()
             player.message(plugin.locale.prefix.default + plugin.locale.game.join)
@@ -377,7 +304,7 @@ class Game(val plugin: Khs) {
             savedScoreBoards[uuid] = player.getScoreBoard()
         }
 
-        setTeam(uuid, Team.HIDER)
+        teams.put(uuid, Team.HIDER)
         loadPlayerIntoLobby(player)
         reloadLobbyBoards()
 
@@ -397,7 +324,7 @@ class Game(val plugin: Khs) {
                     .with(player.name),
         )
 
-        mappings.remove(uuid)
+        teams.remove(uuid)
         resetPlayer(player)
 
         // restore inventory
@@ -444,7 +371,7 @@ class Game(val plugin: Khs) {
     }
 
     fun addKill(uuid: UUID) {
-        val team = getTeam(uuid) ?: return
+        val team = teams.get(uuid) ?: return
         when (team) {
             Team.HIDER -> {
                 hiderKills[uuid] = hiderKills.getOrDefault(uuid, 0u) + 1u
@@ -459,7 +386,7 @@ class Game(val plugin: Khs) {
     }
 
     fun addDeath(uuid: UUID) {
-        val team = getTeam(uuid) ?: return
+        val team = teams.get(uuid) ?: return
         when (team) {
             Team.HIDER -> {
                 hiderDeaths[uuid] = hiderDeaths.getOrDefault(uuid, 0u) + 1u
@@ -474,11 +401,11 @@ class Game(val plugin: Khs) {
     }
 
     private fun reloadLobbyBoards() {
-        players.forEach { reloadLobbyBoard(plugin, it) }
+        teams.getPlayers().forEach { reloadLobbyBoard(plugin, it) }
     }
 
     private fun reloadGameBoards() {
-        players.forEach { reloadGameBoard(plugin, it) }
+        teams.getPlayers().forEach { reloadGameBoard(plugin, it) }
     }
 
     /** during Status.LOBBY */
@@ -488,13 +415,13 @@ class Game(val plugin: Khs) {
 
         synchronized(this) {
             // countdown is disabled when set to at 0s
-            if (countdown == 0UL || size < plugin.config.lobby.min) {
+            if (countdown == 0UL || teams.size() < plugin.config.lobby.min) {
                 timer = null
                 return@synchronized
             }
 
             var time = timer ?: countdown
-            if (size >= changeCountdown && changeCountdown != 0u) time = min(time, 10UL)
+            if (teams.size() >= changeCountdown && changeCountdown != 0u) time = min(time, 10UL)
             if (isSecond && time > 0UL) time--
             timer = time
         }
@@ -521,11 +448,11 @@ class Game(val plugin: Khs) {
                     message = plugin.locale.game.start
                     status = Status.SEEKING
                     timer = null
-                    seekerPlayers.forEach {
+                    teams.getSeekerPlayers().forEach {
                         giveSeekerItems(it)
                         it.teleport(map?.gameSpawn)
                     }
-                    hiderPlayers.forEach { giveHiderItems(it) }
+                    teams.getHiderPlayers().forEach { giveHiderItems(it) }
                 }
 
                 1UL -> {
@@ -544,7 +471,7 @@ class Game(val plugin: Khs) {
 
         if (time % 5UL == 0UL || time <= 5UL) {
             val prefix = plugin.locale.prefix.default
-            players.forEach { player ->
+            teams.getPlayers().forEach { player ->
                 when (plugin.config.countdownDisplay) {
                     ConfigCountdownDisplay.CHAT -> {
                         player.message(prefix + message)
@@ -565,7 +492,7 @@ class Game(val plugin: Khs) {
     /** @returns distance to the closest seeker to the player */
     private fun distanceToSeeker(player: Player): Double {
         val distances =
-            seekerPlayers.mapNotNull { seeker ->
+            teams.getSeekerPlayers().mapNotNull { seeker ->
                 player.getLocation().distance(seeker.getLocation())
             }
         return distances.minOrNull() ?: Double.POSITIVE_INFINITY
@@ -618,10 +545,10 @@ class Game(val plugin: Khs) {
         val scoreMode = plugin.config.scoringMode
         val notEnoughHiders =
             when (scoreMode) {
-                ConfigScoringMode.ALL_HIDERS_FOUND -> hiderSize == 0u
-                ConfigScoringMode.LAST_HIDER_WINS -> hiderSize == 1u
+                ConfigScoringMode.ALL_HIDERS_FOUND -> teams.hiderCount() == 0u
+                ConfigScoringMode.LAST_HIDER_WINS -> teams.hiderCount() == 1u
             }
-        val lastHider = hiderPlayers.firstOrNull()
+        val lastHider = teams.getHiderPlayers().firstOrNull()
 
         val doTitle = plugin.config.gameOverTitle
         val prefix = plugin.locale.prefix
@@ -640,7 +567,7 @@ class Game(val plugin: Khs) {
             }
 
             // all seekers quit
-            seekerSize < 1u -> {
+            teams.seekerCount() < 1u -> {
                 broadcast(prefix.abort + plugin.locale.game.gameOver.seekerQuit)
                 if (doTitle) {
                     broadcastTitle(
@@ -699,7 +626,7 @@ class Game(val plugin: Khs) {
 
     /** during Status.SEEKING */
     private fun whileSeeking() {
-        if (plugin.config.seekerPing.enabled) hiderPlayers.forEach { playSeekerPing(it) }
+        if (plugin.config.seekerPing.enabled) teams.getHiderPlayers().forEach { playSeekerPing(it) }
 
         synchronized(this) {
             var time = timer
@@ -720,7 +647,7 @@ class Game(val plugin: Khs) {
 
         // update spectator flight
         // (the toggle they have only changed allowed flight)
-        spectatorPlayers.forEach { it.setFlying(it.getAllowedFlight()) }
+        teams.getSpectatorPlayers().forEach { it.setFlying(it.getAllowedFlight()) }
 
         checkWinConditions()
     }
@@ -745,22 +672,22 @@ class Game(val plugin: Khs) {
 
                 status = Status.LOBBY
 
-                players.forEach { loadPlayerIntoLobby(it) }
+                teams.getPlayers().forEach { loadPlayerIntoLobby(it) }
             }
         }
     }
 
     fun broadcast(message: String) {
-        players.forEach { it.message(message) }
+        teams.getPlayers().forEach { it.message(message) }
     }
 
     fun broadcastTitle(title: String, subTitle: String) {
-        players.forEach { it.title(title, subTitle) }
+        teams.getPlayers().forEach { it.title(title, subTitle) }
     }
 
-    private fun loadHiders() = hiderPlayers.forEach { loadHider(it) }
+    private fun loadHiders() = teams.getHiderPlayers().forEach { loadHider(it) }
 
-    private fun loadSeekers() = seekerPlayers.forEach { loadSeeker(it) }
+    private fun loadSeekers() = teams.getSeekerPlayers().forEach { loadSeeker(it) }
 
     private fun setPlayerHidden(player: Player, hidden: Boolean) {
         if (hidden) {

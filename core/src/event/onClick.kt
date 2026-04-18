@@ -22,7 +22,7 @@ private fun onClickTeleport(event: ClickEvent) {
     val name = item.name ?: return
 
     // how did you get access to this menu???
-    if (!plugin.game.isSpectator(player)) return
+    if (!plugin.game.teams.isSpectator(player.uuid)) return
 
     event.cancel()
 
@@ -77,7 +77,11 @@ private fun onClickDebug(event: ClickEvent) {
 
 private fun onClickBlockHunt(event: ClickEvent) {
     // bro probably named a chest or something ;-;
-    if (!event.plugin.game.hasPlayer(event.player)) return
+    if (!event.plugin.game.teams
+            .contains(event.player.uuid)
+    ) {
+        return
+    }
 
     event.cancel()
 
@@ -91,7 +95,7 @@ fun onClick(event: ClickEvent) {
     val game = plugin.game
 
     // don't allow interactions in the lobby
-    if (game.hasPlayer(player) && game.status == Game.Status.LOBBY) {
+    if (game.teams.contains(player.uuid) && game.status == Game.Status.LOBBY) {
         event.cancel()
     }
 

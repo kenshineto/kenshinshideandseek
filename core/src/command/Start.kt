@@ -20,12 +20,14 @@ class KhsStart : Command {
         }
 
         val pool =
-            args.mapNotNull { plugin.shim.getPlayer(it)?.uuid }.filter { plugin.game.hasPlayer(it) }
+            args.mapNotNull { plugin.shim.getPlayer(it)?.uuid }.filter { plugin.game.teams.contains(it) }
 
         plugin.game.start(pool)
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> {
-        return plugin.game.players.map(Player::name)
+        return plugin.game.teams
+            .getPlayers()
+            .map(Player::name)
     }
 }

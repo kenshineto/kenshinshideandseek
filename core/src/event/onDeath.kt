@@ -12,7 +12,7 @@ fun onDeath(event: DeathEvent) {
     // uh, if u dead, kinda aren't disguised anymore lol
     plugin.disguiser.reveal(player.uuid)
 
-    if (!game.hasPlayer(player)) return
+    if (!game.teams.contains(player.uuid)) return
 
     event.cancel()
 }

@@ -20,7 +20,7 @@ class KhsJoin : Command {
             if (mapName != null) mapSetup(map)
         }
 
-        if (plugin.game.size == 0u) plugin.game.setMap(map)
+        if (plugin.game.teams.size() == 0u) plugin.game.setMap(map)
 
         plugin.game.join(player.uuid)
     }

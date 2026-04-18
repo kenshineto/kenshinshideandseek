@@ -9,7 +9,7 @@ fun onJump(event: JumpEvent) {
     val (plugin, player) = event
     val game = plugin.game
 
-    if (!game.isSpectator(player)) return
+    if (!game.teams.isSpectator(player.uuid)) return
 
     if (player.getAllowedFlight()) {
         player.setFlying(true)

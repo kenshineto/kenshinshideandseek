@@ -9,7 +9,7 @@ fun onBreak(event: BreakEvent) {
     val (plugin, player, _) = event
     val game = plugin.game
 
-    if (!game.hasPlayer(player)) return
+    if (!game.teams.contains(player.uuid)) return
 
     event.cancel()
 }

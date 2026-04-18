@@ -10,7 +10,7 @@ fun onCommand(event: CommandEvent) {
     val (plugin, player, msg) = event
     val game = plugin.game
 
-    if (!game.hasPlayer(player) || game.status == Game.Status.LOBBY) return
+    if (!game.teams.contains(player.uuid) || game.status == Game.Status.LOBBY) return
 
     // parse command
     val arg1 = msg.split(Regex("\\s+")).firstOrNull()?.lowercase() ?: return

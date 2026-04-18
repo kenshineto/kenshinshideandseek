@@ -9,11 +9,11 @@ fun onInteract(event: InteractEvent) {
     val (plugin, player, block) = event
     val game = plugin.game
 
-    if (!game.hasPlayer(player)) return
+    if (!game.teams.contains(player.uuid)) return
 
     // seekers are not allowed to interact
     // with anything
-    if (game.isSpectator(player)) {
+    if (game.teams.isSpectator(player.uuid)) {
         event.cancel()
         return
     }

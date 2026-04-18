@@ -9,7 +9,10 @@ fun onLeave(event: LeaveEvent) {
     val (plugin, player) = event
     val game = plugin.game
 
-    if (game.hasPlayer(player)) game.leave(player.uuid)
+    if (game.teams.contains(player.uuid)) game.leave(player.uuid)
+
+    // remove player from cache
+    game.teams.cacheRemove(player.uuid)
 
     // remove player from disguiser
     plugin.entityHider.showEntity(player)

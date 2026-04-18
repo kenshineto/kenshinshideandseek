@@ -13,7 +13,10 @@ fun onJoin(event: JoinEvent) {
     plugin.database?.upsertName(player.uuid, player.name)
 
     // uhhhh
-    if (game.hasPlayer(player)) game.leave(player.uuid)
+    if (game.teams.contains(player.uuid)) game.leave(player.uuid)
+
+    // add to team cache
+    game.teams.cachePut(player)
 
     if (plugin.config.autoJoin) {
         game.join(player.uuid)

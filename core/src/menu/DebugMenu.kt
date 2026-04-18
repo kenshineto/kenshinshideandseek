@@ -17,24 +17,24 @@ object DebugMenu {
     val SHOW_SELF = ItemConfig("&cShow self", "GREEN_WOOL")
 
     fun handleBecomeHider(plugin: Khs, player: Player) {
-        plugin.game.setTeam(player.uuid, Game.Team.HIDER)
+        plugin.game.teams.put(player.uuid, Game.Team.HIDER)
         plugin.game.loadHider(player)
         if (plugin.game.status == Game.Status.SEEKING) plugin.game.giveHiderItems(player)
     }
 
     fun handleBecomeSeeker(plugin: Khs, player: Player) {
-        plugin.game.setTeam(player.uuid, Game.Team.SEEKER)
+        plugin.game.teams.put(player.uuid, Game.Team.SEEKER)
         plugin.game.loadSeeker(player)
         if (plugin.game.status == Game.Status.SEEKING) plugin.game.giveSeekerItems(player)
     }
 
     fun handleBecomeSpectator(plugin: Khs, player: Player) {
-        plugin.game.setTeam(player.uuid, Game.Team.SPECTATOR)
+        plugin.game.teams.put(player.uuid, Game.Team.SPECTATOR)
         plugin.game.loadSpectator(player)
     }
 
     fun handleDieInGame(plugin: Khs, player: Player) {
-        val team = plugin.game.getTeam(player.uuid)
+        val team = plugin.game.teams.get(player.uuid)
         if (team == null || team == Game.Team.SPECTATOR) return
         if (plugin.game.status != Game.Status.SEEKING) return
         player.setHealth(0.1)

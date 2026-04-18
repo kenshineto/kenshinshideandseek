@@ -9,7 +9,7 @@ fun onHunger(event: HungerEvent) {
     val (plugin, player) = event
     val game = plugin.game
 
-    if (!game.hasPlayer(player)) return
+    if (!game.teams.contains(player.uuid)) return
 
     event.cancel()
 }

@@ -16,7 +16,7 @@ object TeleportMenu {
     }
 
     private fun createPlayerItem(plugin: Khs, player: Player): Item? {
-        val team = plugin.game.getTeam(player.uuid) ?: return null
+        val team = plugin.game.teams.get(player.uuid) ?: return null
         val teamName =
             when (team) {
                 Game.Team.HIDER -> plugin.locale.game.team.hider
@@ -38,7 +38,7 @@ object TeleportMenu {
         val offset = pageSize * page
 
         // make items
-        val players = (plugin.game.seekerPlayers + plugin.game.hiderPlayers)
+        val players = (plugin.game.teams.getSeekerPlayers() + plugin.game.teams.getHiderPlayers())
         val items =
             players.drop(offset.toInt()).take(pageSize.toInt()).mapNotNull {
                 createPlayerItem(plugin, it)

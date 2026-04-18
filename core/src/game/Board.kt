@@ -31,8 +31,8 @@ fun updateTeams(plugin: Khs, board: Board) {
     val hider = board.getTeam("Hider")
     val seeker = board.getTeam("Seeker")
 
-    hider.setPlayers(plugin.game.hiderUUIDs)
-    seeker.setPlayers(plugin.game.seekerUUIDs)
+    hider.setPlayers(plugin.game.teams.getHiders())
+    seeker.setPlayers(plugin.game.teams.getSeekers())
 
     hider.setNameTagsVisible(plugin.config.nametagsVisible)
     seeker.setNameTagsVisible(plugin.config.nametagsVisible)
@@ -61,7 +61,7 @@ fun reloadLobbyBoard(plugin: Khs, player: Player) {
                 plugin.boardConfig.countdown.waiting
             }
         }
-    val count = plugin.game.size
+    val count = plugin.game.teams.size()
     val seekerPercent = (plugin.game.getSeekerChance(player.uuid) * 100).roundToInt()
     val hiderPercent = 100 - seekerPercent
     val map = plugin.game.map?.name ?: ""
@@ -137,18 +137,19 @@ fun reloadGameBoard(plugin: Khs, player: Player) {
         plugin.boardConfig.countdown.timer
             .with((timer ?: 0UL) / 60UL, (timer ?: 0UL) % 60UL)
     val team =
-        when (plugin.game.getTeam(player.uuid)) {
+        when (plugin.game.teams.get(player.uuid)) {
             Game.Team.HIDER -> plugin.locale.game.team.hider
             Game.Team.SEEKER -> plugin.locale.game.team.seeker
-            else -> plugin.locale.game.team.spectator
+            Game.Team.SPECTATOR -> plugin.locale.game.team.spectator
+            else -> ""
         }
 
     // border event
     val border = getBorderLocale(plugin)
     val taunt = getTauntLocale(plugin)
     val glow = getGlowLocale(plugin)
-    val numSeeker = plugin.game.seekerSize
-    val numHider = plugin.game.hiderSize
+    val numSeeker = plugin.game.teams.seekerCount()
+    val numHider = plugin.game.teams.hiderCount()
     val map = plugin.game.map?.name ?: ""
 
     val board = getGameBoard(plugin, player.uuid) ?: return

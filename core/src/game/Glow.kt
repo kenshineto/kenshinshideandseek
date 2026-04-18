@@ -30,8 +30,11 @@ class Glow(val game: Game) {
     }
 
     private fun sendPackets(glow: Boolean) {
-        game.hiderPlayers.forEach { hider ->
-            game.seekerPlayers.forEach { seeker ->
+        val hiders = game.teams.getHiderPlayers()
+        val seekers = game.teams.getSeekerPlayers()
+
+        hiders.forEach { hider ->
+            seekers.forEach { seeker ->
                 val flags = EntityMetadataPacket.Flags(glow)
                 val packet = EntityMetadataPacket(game.plugin, seeker, flags)
                 packet.send(hider)
