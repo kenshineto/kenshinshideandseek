@@ -1,10 +1,12 @@
 @file:Suppress("UNCHECKED_CAST")
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import dev.detekt.gradle.Detekt
 
 plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
     alias(libs.plugins.shadow) apply false
 }
 
@@ -26,9 +28,13 @@ allprojects {
 }
 
 subprojects {
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    // jvm
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "java-library")
+
+    // linting
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    apply(plugin = "dev.detekt")
 
     // make projects like cat.freya.khs.bukkit to be in
     // the .bukkit package
@@ -54,6 +60,20 @@ subprojects {
     }
 
     java { toolchain { languageVersion.set(JavaLanguageVersion.of(jvmVersion)) } }
+
+    detekt {
+        config.setFrom("$rootDir/detekt.yml")
+        source.setFrom("src")
+    }
+
+    tasks.withType<Detekt>().configureEach {
+        reports {
+            html.required.set(false)
+            checkstyle.required.set(false)
+            sarif.required.set(false)
+            markdown.required.set(false)
+        }
+    }
 
     tasks.processResources {
         val props =
@@ -131,6 +151,7 @@ tasks.named<Jar>("jar") { enabled = false }
 tasks.register("lint") {
     dependsOn(subprojects.map { it.tasks.named("ktlintCheck") })
     dependsOn(tasks.named("ktlintCheck"))
+    dependsOn(subprojects.map { it.tasks.named("detekt") })
 }
 
 tasks.register("format") {

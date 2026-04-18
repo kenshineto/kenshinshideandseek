@@ -121,7 +121,7 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
 
     override fun setSpeed(amplifier: UInt) {
         val living = getBukkitLiving() ?: return
-        living.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 1000000, 5, false, false))
+        living.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 1_000_000, 5, false, false))
     }
 
     override fun destroy() {

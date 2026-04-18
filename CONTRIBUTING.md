@@ -12,11 +12,13 @@ If your PR was closed for not being a necessary feature, please do not resubmit 
 
 ### Style Guide
 
-This project uses [ktlint](https://pinterest.github.io/ktlint/latest/) for formatting.
+This project uses [ktlint](https://pinterest.github.io/ktlint/latest/) for formatting and [detekt](https://detekt.dev/) for static code analysis.
 
-You can run `gradle lint` to check for formatting errors, and `gradle format` to format all the source files.
+Run `gradle lint` to check for formatting errors and run static code analysis.
 
-Please make sure all gradle and kotlin files are formatted before making your PR.
+Run `gradle format` to format all the source files.
+
+Please make sure there are no formatting or code analysis warnings/errors before making your PR.
 
 ### Testing
 

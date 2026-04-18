@@ -12,10 +12,11 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
     private fun getCommand(args: List<String>, permission: String): CommandData? {
         val invoke = args.firstOrNull()?.lowercase() ?: return null
         val command = registry[invoke] ?: return null
+        val perm = "$permission.$invoke"
 
         return when (command) {
-            is Command -> CommandData(command, "$permission.$invoke", args.drop(1))
-            is CommandGroup -> command.getCommand(args.drop(1), "$permission.$invoke")
+            is Command -> CommandData(command, perm, args.drop(1))
+            is CommandGroup -> command.getCommand(args.drop(1), perm)
             else -> null
         }
     }
