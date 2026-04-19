@@ -52,7 +52,7 @@ object DebugMenu {
                 SHOW_SELF,
             )
         items
-            .mapNotNull { plugin.shim.parseItem(it) }
+            .mapNotNull { plugin.parseItem(it) }
             .withIndex()
             .forEach { (i, item) -> inv.set(i.toUInt(), item) }
         return inv

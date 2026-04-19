@@ -55,14 +55,14 @@ interface KhsShim {
      *
      * @return the parsed item or null
      */
-    fun parseItem(itemConfig: ItemConfig?): Item?
+    fun parseItem(itemConfig: ItemConfig): Item?
 
     /**
      * Parse an [Effect] given its specification
      *
      * @return the parsed effect or null
      */
-    fun parseEffect(effectConfig: EffectConfig?): Effect?
+    fun parseEffect(effectConfig: EffectConfig): Effect?
 
     /** @return list of currently online players */
     fun getPlayers(): List<Player>

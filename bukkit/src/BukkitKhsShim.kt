@@ -41,13 +41,11 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
         return BukkitMaterial.parse(platformKey)
     }
 
-    override fun parseItem(itemConfig: ItemConfig?): BukkitItem? {
-        if (itemConfig == null) return null
+    override fun parseItem(itemConfig: ItemConfig): BukkitItem? {
         return BukkitItem.parse(itemConfig)
     }
 
-    override fun parseEffect(effectConfig: EffectConfig?): BukkitEffect? {
-        if (effectConfig == null) return null
+    override fun parseEffect(effectConfig: EffectConfig): BukkitEffect? {
         return BukkitEffect.parse(effectConfig)
     }
 

@@ -8,6 +8,8 @@ import cat.freya.khs.command.map.set.*
 import cat.freya.khs.command.map.unset.*
 import cat.freya.khs.command.util.CommandGroup
 import cat.freya.khs.command.world.*
+import cat.freya.khs.config.EffectConfig
+import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.config.KhsBoardConfig
 import cat.freya.khs.config.KhsConfig
 import cat.freya.khs.config.KhsItemsConfig
@@ -22,6 +24,9 @@ import cat.freya.khs.game.Game
 import cat.freya.khs.game.KhsMap
 import cat.freya.khs.packet.ClientSettings
 import cat.freya.khs.packet.KhsPacketListener
+import cat.freya.khs.type.Effect
+import cat.freya.khs.type.Item
+import cat.freya.khs.type.Material
 import java.io.File
 import java.io.InputStream
 import java.util.UUID
@@ -92,6 +97,15 @@ class Khs(val shim: KhsShim) {
 
     /** If a map save is currently in progress */
     val saving: AtomicBoolean = AtomicBoolean(false)
+
+    /** Caches parseMaterial requests */
+    private val materialCache: MutableMap<String, Material?> = mutableMapOf()
+
+    /** Caches parseItem requests */
+    private val itemCache: MutableMap<ItemConfig, Item?> = mutableMapOf()
+
+    /** Caches parseEffect requests */
+    private val effectCache: MutableMap<EffectConfig, Effect?> = mutableMapOf()
 
     fun init() {
         printBanner()
@@ -250,5 +264,22 @@ class Khs(val shim: KhsShim) {
     fun onTick() {
         game.doTick()
         disguiser.update()
+    }
+
+    @Synchronized
+    fun parseMaterial(platformKey: String): Material? {
+        return materialCache.getOrPut(platformKey) { shim.parseMaterial(platformKey) }
+    }
+
+    @Synchronized
+    fun parseItem(itemConfig: ItemConfig?): Item? {
+        if (itemConfig == null) return null
+        return itemCache.getOrPut(itemConfig) { shim.parseItem(itemConfig) }
+    }
+
+    @Synchronized
+    fun parseEffect(effectConfig: EffectConfig?): Effect? {
+        if (effectConfig == null) return null
+        return effectCache.getOrPut(effectConfig) { shim.parseEffect(effectConfig) }
     }
 }

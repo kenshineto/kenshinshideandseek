@@ -73,13 +73,11 @@ class FabricKhsShim(val mod: KhsMod) : AbstractKhsShim("Fabric") {
         return FabricMaterial.parse(platformKey)
     }
 
-    override fun parseItem(itemConfig: ItemConfig?): FabricItem? {
-        if (itemConfig == null) return null
+    override fun parseItem(itemConfig: ItemConfig): FabricItem? {
         return FabricItem.parse(mod.server, itemConfig)
     }
 
-    override fun parseEffect(effectConfig: EffectConfig?): FabricEffect? {
-        if (effectConfig == null) return null
+    override fun parseEffect(effectConfig: EffectConfig): FabricEffect? {
         return FabricEffect.parse(effectConfig)
     }
 

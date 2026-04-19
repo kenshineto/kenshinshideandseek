@@ -775,22 +775,22 @@ class Game(val plugin: Khs) {
 
     fun giveHiderItems(hider: Player) {
         val inventory = hider.getInventory()
-        val items = plugin.itemsConfig.hiderItems.mapNotNull { plugin.shim.parseItem(it) }
-        val effects = plugin.itemsConfig.hiderEffects.mapNotNull { plugin.shim.parseEffect(it) }
+        val items = plugin.itemsConfig.hiderItems.mapNotNull { plugin.parseItem(it) }
+        val effects = plugin.itemsConfig.hiderEffects.mapNotNull { plugin.parseEffect(it) }
 
         inventory.clearAll()
         items.withIndex().forEach { (i, item) -> inventory.set(i.toUInt(), item) }
 
         // glow power-up
         if (!plugin.config.alwaysGlow && plugin.config.glow.enabled) {
-            val item = plugin.shim.parseItem(plugin.config.glow.item)
+            val item = plugin.parseItem(plugin.config.glow.item)
             item?.let { hider.getInventory().set(items.size.toUInt(), it) }
         }
 
-        val helmet = plugin.shim.parseItem(plugin.itemsConfig.hiderHelmet)
-        val chestplate = plugin.shim.parseItem(plugin.itemsConfig.hiderChestplate)
-        val leggings = plugin.shim.parseItem(plugin.itemsConfig.hiderLeggings)
-        val boots = plugin.shim.parseItem(plugin.itemsConfig.hiderBoots)
+        val helmet = plugin.parseItem(plugin.itemsConfig.hiderHelmet)
+        val chestplate = plugin.parseItem(plugin.itemsConfig.hiderChestplate)
+        val leggings = plugin.parseItem(plugin.itemsConfig.hiderLeggings)
+        val boots = plugin.parseItem(plugin.itemsConfig.hiderBoots)
 
         inventory.setHelmet(helmet)
         inventory.setChestplate(chestplate)
@@ -809,16 +809,16 @@ class Game(val plugin: Khs) {
 
     fun giveSeekerItems(seeker: Player) {
         val inventory = seeker.getInventory()
-        val items = plugin.itemsConfig.seekerItems.mapNotNull { plugin.shim.parseItem(it) }
-        val effects = plugin.itemsConfig.seekerEffects.mapNotNull { plugin.shim.parseEffect(it) }
+        val items = plugin.itemsConfig.seekerItems.mapNotNull { plugin.parseItem(it) }
+        val effects = plugin.itemsConfig.seekerEffects.mapNotNull { plugin.parseEffect(it) }
 
         inventory.clearAll()
         items.withIndex().forEach { (i, item) -> inventory.set(i.toUInt(), item) }
 
-        val helmet = plugin.shim.parseItem(plugin.itemsConfig.seekerHelmet)
-        val chestplate = plugin.shim.parseItem(plugin.itemsConfig.seekerChestplate)
-        val leggings = plugin.shim.parseItem(plugin.itemsConfig.seekerLeggings)
-        val boots = plugin.shim.parseItem(plugin.itemsConfig.seekerBoots)
+        val helmet = plugin.parseItem(plugin.itemsConfig.seekerHelmet)
+        val chestplate = plugin.parseItem(plugin.itemsConfig.seekerChestplate)
+        val leggings = plugin.parseItem(plugin.itemsConfig.seekerLeggings)
+        val boots = plugin.parseItem(plugin.itemsConfig.seekerBoots)
 
         inventory.setHelmet(helmet)
         inventory.setChestplate(chestplate)
@@ -836,8 +836,8 @@ class Game(val plugin: Khs) {
         spectator.setFlying(true)
 
         val inventory = spectator.getInventory()
-        val teleportItem = plugin.shim.parseItem(plugin.config.spectatorItems.teleport)
-        val flightItem = plugin.shim.parseItem(plugin.config.spectatorItems.flight)
+        val teleportItem = plugin.parseItem(plugin.config.spectatorItems.teleport)
+        val flightItem = plugin.parseItem(plugin.config.spectatorItems.flight)
 
         inventory.set(3u, teleportItem)
         inventory.set(6u, flightItem)
@@ -850,8 +850,8 @@ class Game(val plugin: Khs) {
         resetPlayer(player)
 
         val inventory = player.getInventory()
-        val leaveItem = plugin.shim.parseItem(plugin.config.lobby.leaveItem)
-        val startItem = plugin.shim.parseItem(plugin.config.lobby.startItem)
+        val leaveItem = plugin.parseItem(plugin.config.lobby.leaveItem)
+        val startItem = plugin.parseItem(plugin.config.lobby.startItem)
 
         inventory.set(0u, leaveItem)
         if (player.hasPermission("hs.start")) {

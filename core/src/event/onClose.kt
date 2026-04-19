@@ -21,6 +21,6 @@ fun onClose(event: CloseEvent) {
             ?.blockHunt
             ?.blocks ?: return
     val defaultBlock = blocks.firstOrNull() ?: return
-    val material = plugin.shim.parseMaterial(defaultBlock) ?: return
+    val material = plugin.parseMaterial(defaultBlock) ?: return
     plugin.disguiser.disguiseIfNot(player, material)
 }

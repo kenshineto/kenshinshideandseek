@@ -159,7 +159,7 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
 
     private fun sendBlockUpdate(wantedMaterial: Material?) {
         val location = solidifiedPosition ?: return
-        val material = wantedMaterial ?: plugin.shim.parseMaterial("AIR") ?: return
+        val material = wantedMaterial ?: plugin.parseMaterial("AIR") ?: return
         val packet = BlockChangePacket(location, material)
         plugin.shim.getPlayers().forEach {
             if (it.uuid == uuid) return@forEach

@@ -17,7 +17,7 @@ object BlockHuntMenu {
 
         // add items
         blocks
-            .mapNotNull { plugin.shim.parseItem(ItemConfig(material = it)) }
+            .mapNotNull { plugin.parseItem(ItemConfig(material = it)) }
             .withIndex()
             .forEach { (i, item) -> inv.set(i.toUInt(), item) }
 

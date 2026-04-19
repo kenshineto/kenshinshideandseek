@@ -14,7 +14,7 @@ class KhsMapBlockHuntDisguise : Command {
         val (blockName) = args
         runChecks(plugin, player) { blockHuntSupported() }
 
-        val material = plugin.shim.parseMaterial(blockName)
+        val material = plugin.parseMaterial(blockName)
         if (material == null) {
             player.message(plugin.locale.prefix.error + plugin.locale.blockHunt.block.unknown)
             return

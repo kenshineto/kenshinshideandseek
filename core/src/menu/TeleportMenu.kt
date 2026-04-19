@@ -11,7 +11,7 @@ object TeleportMenu {
 
     private fun createPageItem(plugin: Khs, page: UInt): Item? {
         val config = ItemConfig("Page ${page + 1u}", "ENCHANTED_BOOK")
-        return plugin.shim.parseItem(config)
+        return plugin.parseItem(config)
     }
 
     private fun createPlayerItem(plugin: Khs, player: Player): Item? {
@@ -29,7 +29,7 @@ object TeleportMenu {
                 owner = player.name,
                 lore = listOf(teamName),
             )
-        return plugin.shim.parseItem(config)
+        return plugin.parseItem(config)
     }
 
     fun create(plugin: Khs, page: UInt): Inventory? {
