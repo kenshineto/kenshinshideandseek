@@ -120,7 +120,7 @@ data class LocaleGameConfig(
     var notInGame: String = "You are not in a lobby/game",
     var inProgress: String = "There is currently a game in progress",
     var notInProgress: String = "There is no game in progress",
-    var join: String = "You have joined mid game and are not a spectator",
+    var join: String = "You have joined mid game and are now a spectator",
     @Comment("{1} - the name of the player who left the game")
     var leave: LocaleString1 = LocaleString1("{1} has left the game"),
     var start: String = "Attention SEEKERS, it's time to find the hiders!",

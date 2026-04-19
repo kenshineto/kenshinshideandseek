@@ -116,19 +116,23 @@ class Game(val plugin: Khs) {
 
     /** If a map is not set, select a new map */
     fun selectMap(): KhsMap? {
-        map = map ?: plugin.maps.values
-            .filter { it.isSetup() }
-            .randomOrNull()
-        return map
+        synchronized(lock) {
+            map = map ?: plugin.maps.values
+                .filter { it.isSetup() }
+                .randomOrNull()
+            return map
+        }
     }
 
     fun setMap(map: KhsMap?) {
-        if (status != Status.LOBBY) return
+        synchronized(lock) {
+            if (status != Status.LOBBY) return
 
-        if (map == null && teams.size() > 0u) return
+            if (map == null && teams.size() > 0u) return
 
-        this.map = map
-        teams.getPlayers().forEach { player -> loadPlayerIntoLobby(player) }
+            this.map = map
+            teams.getPlayers().forEach { player -> loadPlayerIntoLobby(player) }
+        }
     }
 
     fun getSeekerWeight(uuid: UUID): Double {
@@ -204,16 +208,16 @@ class Game(val plugin: Khs) {
     }
 
     private fun startWithSeekers(seekers: Set<UUID>) {
-        if (status != Status.LOBBY) return
-
-        if (plugin.config.mapSaveEnabled) {
-            // roll back the mapsave
-            map?.getGameWorld()?.loader?.rollback()
-        }
-
         synchronized(lock) {
+            if (status != Status.LOBBY) return
+
+            if (plugin.config.mapSaveEnabled) {
+                // roll back the mapsave
+                map?.getGameWorld()?.loader?.rollback()
+            }
+
             // set teams
-            teams.getUUIDs().forEach { teams.put(it, Team.HIDER) }
+            teams.reset()
             seekers.forEach { teams.put(it, Team.SEEKER) }
 
             // reset game state
@@ -267,17 +271,22 @@ class Game(val plugin: Khs) {
 
     fun stop(reason: WinType) {
         if (!status.inProgress()) return
+        val uuids = teams.getUUIDs()
+
+        synchronized(lock) {
+            round++
+            status = Status.FINISHED
+            timer = null
+        }
 
         // update database
-        teams.getUUIDs().forEach { updatePlayerInfo(it, reason) }
-
-        round++
-        status = Status.FINISHED
-        timer = null
+        uuids.forEach { updatePlayerInfo(it, reason) }
 
         if (plugin.config.leaveOnEnd) {
-            teams.getUUIDs().forEach { leave(it) }
+            uuids.forEach { leave(it) }
         }
+
+        teams.reset()
     }
 
     fun join(uuid: UUID) {
@@ -290,23 +299,33 @@ class Game(val plugin: Khs) {
             return
         }
 
-        if (status != Status.LOBBY) {
-            teams.put(uuid, Team.SPECTATOR)
+        val spectator: Boolean
+        synchronized(lock) {
+            if (teams.contains(uuid)) return
+
+            spectator = status != Status.LOBBY
+            if (spectator) {
+                teams.put(uuid, Team.SPECTATOR)
+            } else {
+                teams.put(uuid, Team.HIDER)
+            }
+
+            if (plugin.config.saveInventory) {
+                savedInventories[uuid] = player.getInventory().getContents()
+            }
+
+            if (plugin.config.saveScoreBoard) {
+                savedScoreBoards[uuid] = player.getScoreBoard()
+            }
+        }
+
+        if (spectator) {
             loadSpectator(player)
-            reloadGameBoards()
+            reloadGameBoard(plugin, player)
             player.message(plugin.locale.prefix.default + plugin.locale.game.join)
             return
         }
 
-        if (plugin.config.saveInventory) {
-            savedInventories[uuid] = player.getInventory().getContents()
-        }
-
-        if (plugin.config.saveScoreBoard) {
-            savedScoreBoards[uuid] = player.getScoreBoard()
-        }
-
-        teams.put(uuid, Team.HIDER)
         loadPlayerIntoLobby(player)
         reloadLobbyBoards()
 
@@ -320,14 +339,18 @@ class Game(val plugin: Khs) {
     fun leave(uuid: UUID) {
         val player = plugin.shim.getPlayer(uuid) ?: return
 
+        synchronized(lock) {
+            if (!teams.contains(uuid)) return
+            teams.remove(uuid)
+        }
+
+        resetPlayer(player)
+
         broadcast(
             plugin.locale.prefix.default +
                 plugin.locale.game.leave
                     .with(player.name),
         )
-
-        teams.remove(uuid)
-        resetPlayer(player)
 
         // restore inventory
 
@@ -373,8 +396,7 @@ class Game(val plugin: Khs) {
     }
 
     fun addKill(uuid: UUID) {
-        val team = teams.get(uuid) ?: return
-        when (team) {
+        when (teams.get(uuid)) {
             Team.HIDER -> {
                 hiderKills[uuid] = hiderKills.getOrDefault(uuid, 0u) + 1u
             }
@@ -388,8 +410,7 @@ class Game(val plugin: Khs) {
     }
 
     fun addDeath(uuid: UUID) {
-        val team = teams.get(uuid) ?: return
-        when (team) {
+        when (teams.get(uuid)) {
             Team.HIDER -> {
                 hiderDeaths[uuid] = hiderDeaths.getOrDefault(uuid, 0u) + 1u
             }
@@ -415,22 +436,26 @@ class Game(val plugin: Khs) {
         val countdown = plugin.config.lobby.countdown
         val changeCountdown = plugin.config.lobby.changeCountdown
 
+        if (isSecond) reloadLobbyBoards()
+
+        var time: ULong
         synchronized(lock) {
             // countdown is disabled when set to at 0s
             if (countdown == 0UL || teams.size() < plugin.config.lobby.min) {
                 timer = null
-                return@synchronized
+                return
             }
 
-            var time = timer ?: countdown
+            time = timer ?: countdown
             if (teams.size() >= changeCountdown && changeCountdown != 0u) time = min(time, 10UL)
             if (isSecond && time > 0UL) time--
             timer = time
         }
 
-        if (isSecond) reloadLobbyBoards()
-
-        if (timer == 0UL) start()
+        if (time == 0UL) {
+            start()
+            return
+        }
     }
 
     /** during Status.HIDING */
@@ -683,7 +708,7 @@ class Game(val plugin: Khs) {
         teams.getPlayers().forEach { it.message(message) }
     }
 
-    fun broadcastTitle(title: String, subTitle: String) {
+    private fun broadcastTitle(title: String, subTitle: String) {
         teams.getPlayers().forEach { it.title(title, subTitle) }
     }
 
