@@ -58,9 +58,8 @@ class Game(val plugin: Khs) {
         private set
 
     /** keep track till next second */
-    private var gameTick: UInt = 0u
-    private val isSecond: Boolean
-        get() = gameTick % 20u == 0u
+    private var gameTick: UByte = 0u
+    private var isSecond: Boolean = false
 
     /** if the last event was a hider leaving the game */
     private var hiderLeft: Boolean = false
@@ -111,7 +110,11 @@ class Game(val plugin: Khs) {
             Status.FINISHED -> whileFinished()
         }
 
-        gameTick++
+        synchronized(lock) {
+            gameTick++
+            gameTick = (gameTick % 20u).toUByte()
+            isSecond = gameTick == 0u.toUByte()
+        }
     }
 
     /** If a map is not set, select a new map */
