@@ -135,6 +135,23 @@ class Game(val plugin: Khs) {
         }
     }
 
+    fun reset() {
+        val uuids: Set<UUID>
+        synchronized(lock) {
+            map = null
+            round = 0u
+            gameTick = 0u
+            status = Status.LOBBY
+            uuids = teams.clear()
+            lastPicked.clear()
+        }
+
+        uuids.forEach { leave(it) }
+
+        savedInventories.clear()
+        savedScoreBoards.clear()
+    }
+
     fun getSeekerWeight(uuid: UUID): Double {
         val maxWeight = 4u
         val lastRoundSeeker = lastPicked[uuid]?.let { minOf(it, round) }
@@ -292,7 +309,10 @@ class Game(val plugin: Khs) {
     fun join(uuid: UUID) {
         val player = plugin.shim.getPlayer(uuid) ?: return
 
-        if (map == null) selectMap()
+        synchronized(lock) {
+            // try to select a map
+            if (map == null) selectMap()
+        }
 
         if (map == null) {
             player.message(plugin.locale.prefix.error + plugin.locale.map.none)

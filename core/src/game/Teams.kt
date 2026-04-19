@@ -66,6 +66,17 @@ class Teams {
         }
     }
 
+    fun clear(): Set<UUID> {
+        synchronized(lock) {
+            val uuids = mappings.keys.toSet()
+            mappings.clear()
+            hiders.clear()
+            seekers.clear()
+            spectators.clear()
+            return uuids
+        }
+    }
+
     fun getHiders(): Set<UUID> {
         synchronized(lock) {
             return hiders.toSet()

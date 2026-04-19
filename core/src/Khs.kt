@@ -220,7 +220,7 @@ class Khs(val shim: KhsShim) {
             val newMaps =
                 mapsConfig.maps.mapValues { (name, mapConfig) -> KhsMap(name, mapConfig, this) }
 
-            game.setMap(null)
+            game.reset()
             maps.clear()
             newMaps.forEach { maps[it.key] = it.value }
         }.onFailure {
