@@ -20,6 +20,10 @@ data class ResourceKey(
      */
     val platformKey: String,
 ) {
+    // this is properly cached since the
+    // material it comes from is also cached
+    private var cachedBlockId: Int? = null
+
     fun toEntityType(client: Player): EntityType? {
         val clientVersion = client.getClientVersion()
 
@@ -36,7 +40,7 @@ data class ResourceKey(
         return null
     }
 
-    fun toBlockId(): Int? {
+    private fun computeBlockId(): Int? {
         if (minecraftId != null) {
             return (minecraftId shl 4).toInt()
         }
@@ -47,6 +51,12 @@ data class ResourceKey(
         }
 
         return null
+    }
+
+    fun toBlockId(): Int? {
+        val id = cachedBlockId ?: computeBlockId()
+        cachedBlockId = id
+        return id
     }
 
     override fun toString(): String {
