@@ -247,10 +247,6 @@ class Game(val plugin: Khs) {
             hiderDeaths.clear()
             seekerDeaths.clear()
 
-            // give items
-            loadHiders()
-            loadSeekers()
-
             // reload sidebar
             reloadGameBoards()
 
@@ -493,6 +489,18 @@ class Game(val plugin: Khs) {
         val message: String
         synchronized(lock) {
             time = timer ?: plugin.config.hidingLength
+
+            if (time == plugin.config.hidingLength) {
+                // load players into the game
+                //
+                // this is a 1 tick delay from startWithSeekers
+                //
+                // this stops a possible death loop inside
+                // the minecraft serverr code
+                loadHiders()
+                loadSeekers()
+            }
+
             when (time) {
                 0UL -> {
                     message = plugin.locale.game.start
