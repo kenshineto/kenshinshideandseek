@@ -1,0 +1,40 @@
+modLoader = "kotlinforforge"
+loaderVersion="[5.10,)"
+license = "GPLv3"
+issueTrackerURL = "https://github.com/kenshineto/kenshinshideandseek2/issues"
+
+[[mods]]
+modId = "khs"
+version = "${version}"
+displayName = "Kenshins Hide And Seek"
+authors = "KenshinEto"
+description = "Minecrafts Best Hide and Seek and Block Hunt Mod"
+logoFile = "assets/logo.png"
+
+[[dependencies.khs]]
+modId = "neoforge"
+type = "required"
+versionRange = "[26.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.khs]]
+modId = "minecraft"
+type = "required"
+versionRange = "[26.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.khs]]
+modId = "architectury"
+type = "required"
+versionRange = "[18.0.6,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.khs]]
+modId = "packetevents"
+type = "required"
+versionRange = "[2.12,)"
+ordering = "AFTER"
+side = "BOTH"

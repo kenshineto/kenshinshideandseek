@@ -13,7 +13,7 @@ For general plugin information and resources, view the [description](https://git
 ## Building
 
 - This project uses Gradle 9 to build
-- Java 21 is required to run Gradle, but java 8 is used for the code
+- Java 25 is required to run Gradle, but java 8 is used for the code
 
 To build the project run `gradle build`. Jar files can be found in `{bukkit,fabric}/build/libs`
 

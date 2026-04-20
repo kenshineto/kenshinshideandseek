@@ -1,4 +1,4 @@
-package cat.freya.khs.fabric
+package cat.freya.khs.mod
 
 import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.game.Board
@@ -27,8 +27,8 @@ import net.minecraft.world.phys.HitResult
 import net.minecraft.world.scores.DisplaySlot
 import kotlin.runCatching
 
-class FabricPlayer(mod: KhsMod, val inner: ServerPlayer) :
-    FabricEntity(mod, inner),
+class ModPlayer(mod: KhsMod, val inner: ServerPlayer) :
+    ModEntity(mod, inner),
     Player {
     override val name: String = inner.name.string
 
@@ -52,8 +52,12 @@ class FabricPlayer(mod: KhsMod, val inner: ServerPlayer) :
         return inner.foodData.foodLevel.toUInt()
     }
 
+    fun setHunger(hunger: UInt) {
+        inner.foodData.foodLevel = hunger.toInt()
+    }
+
     override fun satiate() {
-        inner.foodData.foodLevel = 20
+        setHunger(20u)
     }
 
     override fun knockBack(direction: Vector) {
@@ -82,12 +86,12 @@ class FabricPlayer(mod: KhsMod, val inner: ServerPlayer) :
         inner.onUpdateAbilities()
     }
 
-    override fun getInventory(): FabricPlayerInventory {
-        return FabricPlayerInventory(mod.shim, inner)
+    override fun getInventory(): ModPlayerInventory {
+        return ModPlayerInventory(mod.shim, inner)
     }
 
     override fun showInventory(inv: Inventory) {
-        val fabricInv = inv as? FabricInventory ?: return
+        val fabricInv = inv as? ModInventory ?: return
         val title = Component.literal(fabricInv.title ?: "")
 
         // close if inventory already open
@@ -210,12 +214,12 @@ class FabricPlayer(mod: KhsMod, val inner: ServerPlayer) :
         return hasPerm ?: default
     }
 
-    override fun getScoreBoard(): FabricBoard {
+    override fun getScoreBoard(): ModBoard {
         return mod.server.getScoreBoard(uuid)
     }
 
     override fun setScoreBoard(board: Board?) {
-        val fabricBoard = board as? FabricBoard ?: return
+        val fabricBoard = board as? ModBoard ?: return
         val objective = mod.server.setScoreBoard(this, fabricBoard)
         val packet = ClientboundSetDisplayObjectivePacket(DisplaySlot.SIDEBAR, objective)
         inner.connection.send(packet)

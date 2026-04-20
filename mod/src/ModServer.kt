@@ -1,7 +1,7 @@
-package cat.freya.khs.fabric
+package cat.freya.khs.mod
 
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
+import dev.architectury.event.events.common.LifecycleEvent
+import dev.architectury.event.events.common.TickEvent
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
@@ -15,7 +15,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria
 import java.nio.file.Path
 import java.util.UUID
 
-class FabricServer(val mod: KhsMod) {
+class ModServer(val mod: KhsMod) {
     private var server: MinecraftServer? = null
     private val tasks: MutableSet<() -> Boolean> = mutableSetOf()
 
@@ -31,19 +31,18 @@ class FabricServer(val mod: KhsMod) {
         // register core event listeners
         // we cannot initialize yet since we don't
         // have access to a MinecraftServer instance yet
-        ServerTickEvents.END_SERVER_TICK.register { server ->
-            // see if we need to initialize
-            if (this.server == null) {
-                this.server = server
-            }
-
+        TickEvent.SERVER_POST.register { _ ->
             handleScheduledTasks()
             mod.onTick()
         }
 
-        ServerLifecycleEvents.SERVER_STOPPING.register { _ ->
+        LifecycleEvent.SERVER_STOPPING.register { _ ->
             mod.onShutdown()
-            this.server = null
+        }
+
+        LifecycleEvent.SERVER_STARTING.register { server ->
+            this.server = server
+            mod.init()
         }
     }
 
@@ -66,30 +65,30 @@ class FabricServer(val mod: KhsMod) {
         }
     }
 
-    fun getPlayer(uuid: UUID): FabricPlayer? {
-        return inner.playerList.getPlayer(uuid)?.let { FabricPlayer(mod, it) }
+    fun getPlayer(uuid: UUID): ModPlayer? {
+        return inner.playerList.getPlayer(uuid)?.let { ModPlayer(mod, it) }
     }
 
-    fun getPlayer(name: String): FabricPlayer? {
-        return inner.playerList.getPlayer(name)?.let { FabricPlayer(mod, it) }
+    fun getPlayer(name: String): ModPlayer? {
+        return inner.playerList.getPlayer(name)?.let { ModPlayer(mod, it) }
     }
 
-    fun getPlayers(): List<FabricPlayer> {
-        return inner.playerList.players.map { FabricPlayer(mod, it) }
+    fun getPlayers(): List<ModPlayer> {
+        return inner.playerList.players.map { ModPlayer(mod, it) }
     }
 
-    fun getWorld(name: String): FabricWorld? {
+    fun getWorld(name: String): ModWorld? {
         val id = Identifier.tryParse(name) ?: return null
         val key = ResourceKey.create(Registries.DIMENSION, id)
         return getWorld(key)
     }
 
-    fun getWorld(key: ResourceKey<Level>): FabricWorld? {
-        return inner.getLevel(key)?.let { FabricWorld(mod, it) }
+    fun getWorld(key: ResourceKey<Level>): ModWorld? {
+        return inner.getLevel(key)?.let { ModWorld(mod, it) }
     }
 
-    fun getWorlds(): List<FabricWorld> {
-        return inner.allLevels.map { FabricWorld(mod, it) }
+    fun getWorlds(): List<ModWorld> {
+        return inner.allLevels.map { ModWorld(mod, it) }
     }
 
     fun getWorldContainer(): Path {
@@ -101,17 +100,17 @@ class FabricServer(val mod: KhsMod) {
         return scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR)
     }
 
-    fun getScoreBoard(uuid: UUID): FabricBoard {
+    fun getScoreBoard(uuid: UUID): ModBoard {
         val scoreboard = inner.scoreboard
         val current = activeScoreBoards[uuid]
         if (current != null) {
             return getScoreBoard(current)
         }
 
-        return FabricBoard(scoreboard, getDefaultObjective())
+        return ModBoard(scoreboard, getDefaultObjective())
     }
 
-    fun getScoreBoard(name: String): FabricBoard {
+    fun getScoreBoard(name: String): ModBoard {
         val scoreboard = inner.scoreboard
         val objective =
             scoreboard.getObjective(name)
@@ -124,10 +123,10 @@ class FabricServer(val mod: KhsMod) {
                     null,
                 )
 
-        return FabricBoard(scoreboard, objective)
+        return ModBoard(scoreboard, objective)
     }
 
-    fun setScoreBoard(player: FabricPlayer, board: FabricBoard): Objective? {
+    fun setScoreBoard(player: ModPlayer, board: ModBoard): Objective? {
         val objective = board.objective ?: getDefaultObjective()
 
         if (objective == null) {

@@ -3,7 +3,7 @@
 	"id": "khs",
 	"version": "${version}",
 	"name": "${name}",
-	"description": "todo",
+	"description": "The Best Hide and Seek and Block Hunt mod for Minecraft",
 	"authors": ["KenshinEto"],
 	"contact": {
 		"homepage": "https://freya.cat/",
@@ -15,7 +15,7 @@
 	"entrypoints": {
 		"main": [
 			{
-				"value": "cat.freya.khs.fabric.KhsMod",
+				"value": "cat.freya.khs.fabric.KhsModFabric",
 				"adapter": "kotlin"
 			}
 		]
@@ -23,8 +23,9 @@
 	"depends": {
 		"fabricloader": ">=0.18.6",
 		"minecraft": "~26.1",
-		"java": ">=8",
-		"fabric-api": "*",
+		"java": ">=25",
+		"architectury": ">=18.0.6",
+		"packetevents": ">=2.12",
 		"fabric-language-kotlin": "*"
 	}
 }

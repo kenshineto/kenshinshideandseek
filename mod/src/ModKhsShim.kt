@@ -1,4 +1,4 @@
-package cat.freya.khs.fabric
+package cat.freya.khs.mod
 
 import cat.freya.khs.AbstractKhsShim
 import cat.freya.khs.KhsShim
@@ -15,8 +15,8 @@ import java.io.File
 import java.nio.file.Path
 import java.util.UUID
 
-class FabricLogger(mod: KhsMod) : KhsShim.Logger {
-    private val logger: Logger? = LoggerFactory.getLogger(mod.ID)
+object ModLogger : KhsShim.Logger {
+    private val logger: Logger? = LoggerFactory.getLogger(KhsMod.ID)
 
     override fun info(message: String) {
         logger?.info(message)
@@ -31,71 +31,69 @@ class FabricLogger(mod: KhsMod) : KhsShim.Logger {
     }
 }
 
-class FabricKhsShim(val mod: KhsMod) : AbstractKhsShim("Fabric") {
-    override val pluginVersion: String =
-        mod.container.metadata
-            ?.version
-            ?.friendlyString ?: "null"
+class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.info.platform) {
+    override val pluginVersion: String = mod.info.pluginVersion
 
-    override val serverVersion: String =
-        mod.loader
-            .getModContainer("minecraft")
-            .get()
-            .metadata.version.friendlyString
+    override val serverVersion: String
+        get() = mod.server.inner.serverVersion
 
-    override val logger: KhsShim.Logger = FabricLogger(mod)
+    override val logger: KhsShim.Logger = ModLogger
 
-    override val dataDirectory: Path = mod.loader.configDir.resolve(mod.ID)
+    override val dataDirectory: Path
+        get() =
+            mod.server.inner.serverDirectory
+                .resolve("config")
+                .resolve(KhsMod.ID)
 
-    override fun getMaterials(): List<FabricMaterial> {
+    override fun getMaterials(): List<ModMaterial> {
         return getBlocks() + getItems()
     }
 
-    override fun getBlocks(): List<FabricBlockMaterial> {
+    override fun getBlocks(): List<ModBlockMaterial> {
         return BuiltInRegistries.BLOCK.map { block ->
             val id = BuiltInRegistries.BLOCK.getKey(block)
             val key = ResourceKey.create(Registries.BLOCK, id)
             val holder = BuiltInRegistries.BLOCK.get(key).get()
-            FabricBlockMaterial(holder, key)
+            ModBlockMaterial(holder, key)
         }
     }
 
-    private fun getItems(): List<FabricItemMaterial> {
+    private fun getItems(): List<ModItemMaterial> {
         return BuiltInRegistries.ITEM.map { item ->
             val id = BuiltInRegistries.ITEM.getKey(item)
             val key = ResourceKey.create(Registries.ITEM, id)
             val holder = BuiltInRegistries.ITEM.get(key).get()
-            FabricItemMaterial(holder, key)
+            ModItemMaterial(holder, key)
         }
     }
 
-    override fun parseMaterial(platformKey: String): FabricMaterial? {
-        return FabricMaterial.parse(platformKey)
+    override fun parseMaterial(platformKey: String): ModMaterial? {
+        return ModMaterial.parse(platformKey)
     }
 
-    override fun parseItem(itemConfig: ItemConfig): FabricItem? {
-        return FabricItem.parse(mod.server, itemConfig)
+    override fun parseItem(itemConfig: ItemConfig): ModItem? {
+        return ModItem.parse(mod.server, itemConfig)
     }
 
-    override fun parseEffect(effectConfig: EffectConfig): FabricEffect? {
-        return FabricEffect.parse(effectConfig)
+    override fun parseEffect(effectConfig: EffectConfig): ModEffect? {
+        return ModEffect.parse(effectConfig)
     }
 
-    override fun getPlayers(): List<FabricPlayer> {
+    override fun getPlayers(): List<ModPlayer> {
         return mod.server.getPlayers()
     }
 
-    override fun getPlayer(uuid: UUID): FabricPlayer? {
+    override fun getPlayer(uuid: UUID): ModPlayer? {
         return mod.server.getPlayer(uuid)
     }
 
-    override fun getPlayer(name: String): FabricPlayer? {
+    override fun getPlayer(name: String): ModPlayer? {
         return mod.server.getPlayer(name)
     }
 
-    override fun wrapPlayer(inner: Any?): FabricPlayer? {
+    override fun wrapPlayer(inner: Any?): ModPlayer? {
         val player = inner as? ServerPlayer ?: return null
-        return FabricPlayer(mod, player)
+        return ModPlayer(mod, player)
     }
 
     override fun sendPlayerToServer(uuid: UUID, server: String): Boolean {
@@ -122,25 +120,25 @@ class FabricKhsShim(val mod: KhsMod) : AbstractKhsShim("Fabric") {
             }.flatten()
     }
 
-    override fun getWorld(worldName: String): FabricWorld? {
+    override fun getWorld(worldName: String): ModWorld? {
         return mod.server.getWorld(worldName)
     }
 
-    override fun getWorldLoader(worldName: String): FabricWorldLoader {
-        return FabricWorldLoader(mod, worldName)
+    override fun getWorldLoader(worldName: String): ModWorldLoader {
+        return ModWorldLoader(mod, worldName)
     }
 
-    override fun createWorld(worldName: String, type: World.Type): FabricWorld? {
+    override fun createWorld(worldName: String, type: World.Type): ModWorld? {
         // TODO:
         return null
     }
 
-    override fun createInventory(title: String, size: UInt): FabricInventory {
-        val inv = FabricContainer(size, title)
-        return FabricInventory(mod.shim, inv)
+    override fun createInventory(title: String, size: UInt): ModInventory {
+        val inv = ModContainer(size, title)
+        return ModInventory(mod.shim, inv)
     }
 
-    override fun getBoard(name: String): FabricBoard {
+    override fun getBoard(name: String): ModBoard {
         return mod.server.getScoreBoard(name)
     }
 

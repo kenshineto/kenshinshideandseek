@@ -1,4 +1,4 @@
-package cat.freya.khs.fabric
+package cat.freya.khs.mod
 
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.type.Item
@@ -14,19 +14,19 @@ import net.minecraft.world.item.alchemy.PotionContents
 import net.minecraft.world.item.component.ItemLore
 import kotlin.collections.emptyMap
 
-class FabricItem(
+class ModItem(
     val inner: ItemStack,
-    override val material: FabricItemMaterial,
+    override val material: ModItemMaterial,
     override val config: ItemConfig,
 ) : Item {
     override val name: String = inner.displayName.string
 
     companion object {
-        fun parse(server: FabricServer, itemConfig: ItemConfig): FabricItem? {
+        fun parse(server: ModServer, itemConfig: ItemConfig): ModItem? {
             val materialParts = itemConfig.material.split(":")
             val materialName = materialParts.first()
 
-            val material = FabricMaterial.parse(materialName) as? FabricItemMaterial ?: return null
+            val material = ModMaterial.parse(materialName) as? ModItemMaterial ?: return null
             val stack = ItemStack(material.item, 1)
 
             // name
@@ -40,7 +40,7 @@ class FabricItem(
             stack.set(DataComponents.LORE, ItemLore(lore.map { Component.literal(it) }))
 
             // enchantments
-            val enchants = FabricEnchantment.parse(server, itemConfig.enchantments)
+            val enchants = ModEnchantment.parse(server, itemConfig.enchantments)
             stack.set(DataComponents.ENCHANTMENTS, enchants)
 
             // unbreakable
@@ -61,16 +61,16 @@ class FabricItem(
 
             // TODO: player head
 
-            return FabricItem(stack, material, itemConfig)
+            return ModItem(stack, material, itemConfig)
         }
 
-        fun wrap(stack: ItemStack?): FabricItem? {
+        fun wrap(stack: ItemStack?): ModItem? {
             if (stack == null) return null
 
             val id = BuiltInRegistries.ITEM.getKey(stack.item)
             val key = ResourceKey.create(Registries.ITEM, id)
             val holder = BuiltInRegistries.ITEM.get(key).get()
-            val material = FabricItemMaterial(holder, key)
+            val material = ModItemMaterial(holder, key)
 
             val config = ItemConfig()
             config.name = stack.displayName.string
@@ -83,7 +83,7 @@ class FabricItem(
                     enchant.registeredName to level.toUInt()
                 } ?: emptyMap()
 
-            return FabricItem(stack, material, config)
+            return ModItem(stack, material, config)
         }
     }
 }

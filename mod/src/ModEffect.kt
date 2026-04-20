@@ -1,4 +1,4 @@
-package cat.freya.khs.fabric
+package cat.freya.khs.mod
 
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.type.Effect
@@ -8,7 +8,7 @@ import net.minecraft.resources.Identifier
 import net.minecraft.world.effect.MobEffectInstance
 import kotlin.jvm.optionals.getOrNull
 
-class FabricEffect(val inner: MobEffectInstance, override val config: EffectConfig) : Effect {
+class ModEffect(val inner: MobEffectInstance, override val config: EffectConfig) : Effect {
     private val effect = inner.effect.value()
     private val id = BuiltInRegistries.MOB_EFFECT.getKey(effect) ?: error("could not get effect id")
 
@@ -16,14 +16,14 @@ class FabricEffect(val inner: MobEffectInstance, override val config: EffectConf
     override val key: ResourceKey = ResourceKey(name, null, name)
 
     companion object {
-        fun parse(config: EffectConfig): FabricEffect? {
+        fun parse(config: EffectConfig): ModEffect? {
             val id = Identifier.parse(config.type)
             val effect = BuiltInRegistries.MOB_EFFECT.get(id).getOrNull() ?: return null
 
             val ticks = config.duration.toInt() * 20
             val level = config.amplifier.toInt()
             val instance = MobEffectInstance(effect, ticks, level, config.ambient, config.particles)
-            return FabricEffect(instance, config)
+            return ModEffect(instance, config)
         }
     }
 }

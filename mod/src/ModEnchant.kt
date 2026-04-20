@@ -1,4 +1,4 @@
-package cat.freya.khs.fabric
+package cat.freya.khs.mod
 
 import net.minecraft.core.Holder
 import net.minecraft.core.registries.Registries
@@ -7,8 +7,8 @@ import net.minecraft.resources.ResourceKey
 import net.minecraft.world.item.enchantment.Enchantment
 import net.minecraft.world.item.enchantment.ItemEnchantments
 
-object FabricEnchantment {
-    fun parse(server: FabricServer, name: String): Holder<Enchantment>? {
+object ModEnchantment {
+    fun parse(server: ModServer, name: String): Holder<Enchantment>? {
         val id = Identifier.tryParse(name) ?: return null
         val key = ResourceKey.create(Registries.ENCHANTMENT, id)
 
@@ -18,11 +18,11 @@ object FabricEnchantment {
         return enchant
     }
 
-    fun parse(server: FabricServer, map: Map<String, UInt>): ItemEnchantments {
+    fun parse(server: ModServer, map: Map<String, UInt>): ItemEnchantments {
         val list = ItemEnchantments.Mutable(ItemEnchantments.EMPTY)
 
         for ((name, level) in map) {
-            val enchant = FabricEnchantment.parse(server, name) ?: continue
+            val enchant = ModEnchantment.parse(server, name) ?: continue
             list.set(enchant, level.toInt())
         }
 

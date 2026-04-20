@@ -1,4 +1,4 @@
-package cat.freya.khs.fabric
+package cat.freya.khs.mod
 
 import cat.freya.khs.game.Board
 import net.minecraft.network.chat.Component
@@ -9,7 +9,7 @@ import net.minecraft.world.scores.Scoreboard
 import net.minecraft.world.scores.Team
 import java.util.UUID
 
-class FabricTeam(val inner: PlayerTeam) : Board.Team {
+class ModTeam(val inner: PlayerTeam) : Board.Team {
     override fun setPrefix(prefix: String) {
         inner.setPlayerPrefix(Component.literal(prefix))
     }
@@ -40,12 +40,12 @@ class FabricTeam(val inner: PlayerTeam) : Board.Team {
     }
 }
 
-class FabricBoard(val board: Scoreboard, val objective: Objective?) : Board {
+class ModBoard(val board: Scoreboard, val objective: Objective?) : Board {
     private var blanks: Int = 0
 
-    override fun getTeam(name: String): FabricTeam {
+    override fun getTeam(name: String): ModTeam {
         val team = board.getPlayerTeam(name) ?: board.addPlayerTeam(name)
-        return FabricTeam(team)
+        return ModTeam(team)
     }
 
     private fun clearObjective() {

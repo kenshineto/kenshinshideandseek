@@ -46,7 +46,9 @@ subprojects {
     // minecraft versions such as 1.8
     val jvmVersion =
         when (project.name) {
-            "fabric" -> 17
+            "neoforge" -> 25
+            "fabric" -> 25
+            "mod" -> 25
             else -> 8
         }
 
@@ -84,7 +86,7 @@ subprojects {
 
         inputs.properties(props.mapValues { it.value.get() })
 
-        val templates = listOf("*.yml", "*.json")
+        val templates = listOf("**.yml", "**/*.json", "**/*.toml")
         templates.forEach { resource ->
             filesMatching(resource) { expand(props.mapValues { it.value.get() }) }
         }
@@ -139,7 +141,8 @@ subprojects {
         exclude {
             it.path.startsWith("META-INF/") &&
                 !it.path.startsWith("META-INF/services/") &&
-                !it.path.endsWith(".kotlin_module")
+                !it.path.endsWith(".kotlin_module") &&
+                !it.path.endsWith("neoforge.mods.toml")
         }
     }
 

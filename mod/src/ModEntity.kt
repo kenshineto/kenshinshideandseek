@@ -1,10 +1,12 @@
-package cat.freya.khs.fabric
+package cat.freya.khs.mod
 
 import cat.freya.khs.math.Vector
 import cat.freya.khs.type.Effect
+import cat.freya.khs.type.ResourceKey
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.Relative
 import net.minecraft.world.entity.ai.attributes.Attributes
@@ -13,10 +15,12 @@ import net.minecraft.world.scores.Team
 
 const val KHS_COLLISION_TEAM_NAME = "KHS_Collision"
 
-open class FabricEntity(val mod: KhsMod, private val inner: net.minecraft.world.entity.Entity) : Entity {
+open class ModEntity(val mod: KhsMod, private val inner: net.minecraft.world.entity.Entity) : Entity {
     override val entityId = inner.id
     override val uuid = inner.uuid
-    override val type = TODO()
+
+    private val entityType = EntityType.getKey(inner.type)
+    override val type = ResourceKey(entityType.toString(), null, entityType.toString())
 
     override fun isAlive(): Boolean {
         return inner.isAlive
@@ -45,8 +49,8 @@ open class FabricEntity(val mod: KhsMod, private val inner: net.minecraft.world.
         return Vector(v.x, v.y, v.z)
     }
 
-    override fun getWorld(): FabricWorld {
-        return FabricWorld(mod, inner.level() as ServerLevel)
+    override fun getWorld(): ModWorld {
+        return ModWorld(mod, inner.level() as ServerLevel)
     }
 
     override fun teleport(location: Location?) {
@@ -82,7 +86,7 @@ open class FabricEntity(val mod: KhsMod, private val inner: net.minecraft.world.
 
     override fun giveEffect(effect: Effect) {
         val living = inner as? LivingEntity ?: return
-        val wrapper = effect as? FabricEffect ?: return
+        val wrapper = effect as? ModEffect ?: return
         living.addEffect(wrapper.inner)
     }
 

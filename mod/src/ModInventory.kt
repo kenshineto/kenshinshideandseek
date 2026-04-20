@@ -1,4 +1,4 @@
-package cat.freya.khs.fabric
+package cat.freya.khs.mod
 
 import cat.freya.khs.menu.Inventory
 import cat.freya.khs.menu.PlayerInventory
@@ -8,10 +8,11 @@ import net.minecraft.world.Container
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.ChestMenu
+import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.item.ItemStack
 
-class FabricContainer(val size: UInt, val title: String) : Container {
+class ModContainer(val size: UInt, val title: String) : Container {
     private val items = MutableList(size.toInt()) { ItemStack.EMPTY }
 
     override fun clearContent() {
@@ -61,11 +62,27 @@ class FabricContainer(val size: UInt, val title: String) : Container {
     }
 }
 
-open class FabricInventory(open val shim: FabricKhsShim, val container: Container) : Inventory {
+typealias ClickEvent = (ServerPlayer, ModInventory, Int) -> Boolean
+
+class ModMenu(val player: ServerPlayer, val inv: ModInventory) : ChestMenu(inv.getMenuType(), -1, player.inventory, inv.container, inv.container.containerSize / 9) {
+    val listeners: MutableList<ClickEvent> = mutableListOf()
+
+    override fun clicked(slotId: Int, button: Int, input: ContainerInput, _player: net.minecraft.world.entity.player.Player) {
+        listeners.forEach { fn ->
+            if (fn(player, inv, slotId)) {
+                return
+            }
+        }
+
+        super.clicked(slotId, button, input, player)
+    }
+}
+
+open class ModInventory(open val shim: ModKhsShim, val container: Container) : Inventory {
     override val title: String?
         get() =
             when (container) {
-                is FabricContainer -> container.title
+                is ModContainer -> container.title
                 is net.minecraft.world.entity.player.Inventory -> container.displayName.string
                 else -> null
             }
@@ -86,28 +103,22 @@ open class FabricInventory(open val shim: FabricKhsShim, val container: Containe
         }
     }
 
-    fun createMenu(player: ServerPlayer): ChestMenu {
-        return ChestMenu(
-            getMenuType(),
-            -1,
-            player.inventory,
-            container,
-            container.containerSize / 9,
-        )
+    fun createMenu(player: ServerPlayer): ModMenu {
+        return ModMenu(player, this)
     }
 
     override fun get(index: UInt): Item? {
         val item = runCatching { container.getItem(index.toInt()) }.getOrElse { null }
-        return FabricItem.wrap(item)
+        return ModItem.wrap(item)
     }
 
     override fun set(index: UInt, item: Item?) {
-        val stack = (item as? FabricItem)?.inner ?: return
+        val stack = (item as? ModItem)?.inner ?: return
         runCatching { container.setItem(index.toInt(), stack) }
     }
 
     override fun remove(item: Item) {
-        val stack = (item as? FabricItem)?.inner ?: return
+        val stack = (item as? ModItem)?.inner ?: return
         for (i in range()) {
             val value = container.getItem(i)
             if (value == stack) container.setItem(i, ItemStack.EMPTY)
@@ -115,13 +126,13 @@ open class FabricInventory(open val shim: FabricKhsShim, val container: Containe
     }
 
     override fun getContents(): List<Item?> {
-        return range().map { container.getItem(it) }.map(FabricItem::wrap)
+        return range().map { container.getItem(it) }.map(ModItem::wrap)
     }
 
     override fun setContents(contents: List<Item?>) {
         for ((i, item) in contents.withIndex()) {
             if (i >= container.containerSize) break
-            val stack = (item as? FabricItem)?.inner ?: ItemStack.EMPTY
+            val stack = (item as? ModItem)?.inner ?: ItemStack.EMPTY
             container.setItem(i, stack)
         }
     }
@@ -131,42 +142,42 @@ open class FabricInventory(open val shim: FabricKhsShim, val container: Containe
     }
 }
 
-class FabricPlayerInventory(override val shim: FabricKhsShim, val player: ServerPlayer) :
-    FabricInventory(shim, player.inventory),
+class ModPlayerInventory(override val shim: ModKhsShim, val player: ServerPlayer) :
+    ModInventory(shim, player.inventory),
     PlayerInventory {
     override fun getHelmet(): Item? {
-        return FabricItem.wrap(player.getItemBySlot(EquipmentSlot.HEAD))
+        return ModItem.wrap(player.getItemBySlot(EquipmentSlot.HEAD))
     }
 
     override fun setHelmet(helmet: Item?) {
-        val stack = (helmet as? FabricItem)?.inner ?: ItemStack.EMPTY
+        val stack = (helmet as? ModItem)?.inner ?: ItemStack.EMPTY
         player.setItemSlot(EquipmentSlot.HEAD, stack)
     }
 
     override fun getChestplate(): Item? {
-        return FabricItem.wrap(player.getItemBySlot(EquipmentSlot.CHEST))
+        return ModItem.wrap(player.getItemBySlot(EquipmentSlot.CHEST))
     }
 
     override fun setChestplate(chestplate: Item?) {
-        val stack = (chestplate as? FabricItem)?.inner ?: ItemStack.EMPTY
+        val stack = (chestplate as? ModItem)?.inner ?: ItemStack.EMPTY
         player.setItemSlot(EquipmentSlot.CHEST, stack)
     }
 
     override fun getLeggings(): Item? {
-        return FabricItem.wrap(player.getItemBySlot(EquipmentSlot.LEGS))
+        return ModItem.wrap(player.getItemBySlot(EquipmentSlot.LEGS))
     }
 
     override fun setLeggings(leggings: Item?) {
-        val stack = (leggings as? FabricItem)?.inner ?: ItemStack.EMPTY
+        val stack = (leggings as? ModItem)?.inner ?: ItemStack.EMPTY
         player.setItemSlot(EquipmentSlot.LEGS, stack)
     }
 
     override fun getBoots(): Item? {
-        return FabricItem.wrap(player.getItemBySlot(EquipmentSlot.FEET))
+        return ModItem.wrap(player.getItemBySlot(EquipmentSlot.FEET))
     }
 
     override fun setBoots(boots: Item?) {
-        val stack = (boots as? FabricItem)?.inner ?: ItemStack.EMPTY
+        val stack = (boots as? ModItem)?.inner ?: ItemStack.EMPTY
         player.setItemSlot(EquipmentSlot.FEET, stack)
     }
 }

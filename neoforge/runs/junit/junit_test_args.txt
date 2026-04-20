@@ -1,0 +1,6 @@
+--version
+26.1.2.21-beta
+--assetIndex
+{asset_index}
+--assetsDir
+{assets_root}

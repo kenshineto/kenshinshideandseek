@@ -1,4 +1,4 @@
-package cat.freya.khs.fabric
+package cat.freya.khs.mod
 
 import cat.freya.khs.world.AbstractWorld
 import cat.freya.khs.world.Location
@@ -7,7 +7,7 @@ import cat.freya.khs.world.World
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
 
-class FabricWorldBorder(val level: ServerLevel) : World.Border {
+class ModWorldBorder(val level: ServerLevel) : World.Border {
     private val border = level.worldBorder
 
     override val x: Double
@@ -29,8 +29,8 @@ class FabricWorldBorder(val level: ServerLevel) : World.Border {
     }
 }
 
-class FabricWorldLoader(val mod: KhsMod, override val name: String) : World.AbstractLoader(name, name, mod.server.getWorldContainer()) {
-    override fun load(): FabricWorld? {
+class ModWorldLoader(val mod: KhsMod, override val name: String) : World.AbstractLoader(name, name, mod.server.getWorldContainer()) {
+    override fun load(): ModWorld? {
         // TODO:
         return null
     }
@@ -40,7 +40,7 @@ class FabricWorldLoader(val mod: KhsMod, override val name: String) : World.Abst
     }
 }
 
-class FabricWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim) {
+class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim) {
     override val name = inner.toString() // toString calls serverLevelData.levelName
 
     override val type: World.Type = getTypeImpl()
@@ -57,9 +57,9 @@ class FabricWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.s
         }
     }
 
-    override val border = FabricWorldBorder(inner)
+    override val border = ModWorldBorder(inner)
 
-    override val loader = FabricWorldLoader(mod, name)
+    override val loader = ModWorldLoader(mod, name)
 
     override fun getSpawn(): Location {
         val pos = inner.respawnData.pos()
