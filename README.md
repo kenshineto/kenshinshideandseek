@@ -15,9 +15,11 @@ For general plugin information and resources, view the [description](https://git
 - This project uses Gradle 9 to build
 - Java 25 is required to run Gradle, but java 8 is used for the code
 
-To build the project run `gradle build`. Jar files can be found in `{bukkit,fabric}/build/libs`
+To build the project run `gradle build`. Jar files can be found in `{bukkit,fabric,neoforge}/build/libs`
 
 To build for only one platform run `gradle :{platform}:build`
+
+Note, PacketEvents currently does not have a NeoForge version so that module cannot currently be tested or run.
 
 ## Contributing
 
