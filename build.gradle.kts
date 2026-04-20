@@ -146,7 +146,9 @@ subprojects {
         }
     }
 
-    tasks.named("build") { dependsOn(tasks.withType<ShadowJar>()) }
+    tasks.withType<ShadowJar>().all {
+        tasks.findByName("assemble")?.dependsOn(this)
+    }
 }
 
 tasks.named<Jar>("jar") { enabled = false }
