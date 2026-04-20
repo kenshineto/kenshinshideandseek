@@ -3,6 +3,7 @@ repositories { maven("https://repo.codemc.io/repository/maven-releases/") }
 val excludeKotlin: ExternalModuleDependency.() -> Unit = {
     exclude(group = "org.jetbrains.kotlin")
     exclude(group = "org.jetbrains.kotlinx")
+    exclude(group = "org.slf4j")
 }
 
 dependencies {
@@ -22,5 +23,7 @@ dependencies {
     compileOnly(libs.sqlite)
     implementation(libs.mysql)
     implementation(libs.postgres)
-    implementation(libs.hikari)
+    implementation(libs.hikari) {
+        exclude(group = "org.slf4j")
+    }
 }
