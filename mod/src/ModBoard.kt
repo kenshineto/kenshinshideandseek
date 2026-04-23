@@ -1,7 +1,7 @@
 package cat.freya.khs.mod
 
 import cat.freya.khs.game.Board
-import net.minecraft.network.chat.Component
+import cat.freya.khs.mod.KhsMod
 import net.minecraft.world.scores.Objective
 import net.minecraft.world.scores.PlayerTeam
 import net.minecraft.world.scores.ScoreHolder
@@ -11,7 +11,7 @@ import java.util.UUID
 
 class ModTeam(val inner: PlayerTeam) : Board.Team {
     override fun setPrefix(prefix: String) {
-        inner.setPlayerPrefix(Component.literal(prefix))
+        inner.setPlayerPrefix(KhsMod.parseText(prefix))
     }
 
     override fun setCanCollide(canCollide: Boolean) {
@@ -72,7 +72,7 @@ class ModBoard(val board: Scoreboard, val objective: Objective?) : Board {
         clearObjective()
 
         // set title
-        objective?.displayName = Component.literal(title)
+        objective?.displayName = KhsMod.parseText(title)
 
         // set content
         blanks = 0

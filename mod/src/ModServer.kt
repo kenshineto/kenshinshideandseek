@@ -1,9 +1,9 @@
 package cat.freya.khs.mod
 
+import cat.freya.khs.mod.KhsMod
 import dev.architectury.event.events.common.LifecycleEvent
 import dev.architectury.event.events.common.TickEvent
 import net.minecraft.core.registries.Registries
-import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
 import net.minecraft.resources.ResourceKey
 import net.minecraft.server.MinecraftServer
@@ -40,7 +40,7 @@ class ModServer(val mod: KhsMod) {
             mod.onShutdown()
         }
 
-        LifecycleEvent.SERVER_STARTING.register { server ->
+        LifecycleEvent.SERVER_BEFORE_START.register { server ->
             this.server = server
             mod.init()
         }
@@ -117,7 +117,7 @@ class ModServer(val mod: KhsMod) {
                 ?: scoreboard.addObjective(
                     name,
                     ObjectiveCriteria.DUMMY,
-                    Component.literal(name),
+                    KhsMod.parseText(name),
                     ObjectiveCriteria.RenderType.INTEGER,
                     true,
                     null,

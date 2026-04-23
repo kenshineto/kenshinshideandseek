@@ -4,6 +4,7 @@ import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.game.Board
 import cat.freya.khs.math.Vector
 import cat.freya.khs.menu.Inventory
+import cat.freya.khs.mod.KhsMod
 import cat.freya.khs.type.Material
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Player
@@ -11,7 +12,6 @@ import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import net.luckperms.api.LuckPermsProvider
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket
@@ -92,7 +92,7 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) :
 
     override fun showInventory(inv: Inventory) {
         val fabricInv = inv as? ModInventory ?: return
-        val title = Component.literal(fabricInv.title ?: "")
+        val title = KhsMod.parseText(fabricInv.title ?: "")
 
         // close if inventory already open
         if (inner.containerMenu != inner.inventoryMenu) {
@@ -113,18 +113,18 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) :
     }
 
     override fun message(message: String) {
-        inner.sendSystemMessage(Component.literal(message), false)
+        inner.sendSystemMessage(KhsMod.parseText(message), false)
     }
 
     override fun actionBar(message: String) {
-        inner.sendSystemMessage(Component.literal(message), true)
+        inner.sendSystemMessage(KhsMod.parseText(message), true)
     }
 
     override fun title(title: String, subTitle: String) {
-        val titlePacket = ClientboundSetTitleTextPacket(Component.literal(title))
+        val titlePacket = ClientboundSetTitleTextPacket(KhsMod.parseText(title))
         inner.connection.send(titlePacket)
 
-        val subTitlePacket = ClientboundSetSubtitleTextPacket(Component.literal(subTitle))
+        val subTitlePacket = ClientboundSetSubtitleTextPacket(KhsMod.parseText(subTitle))
         inner.connection.send(subTitlePacket)
     }
 

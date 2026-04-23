@@ -1,11 +1,11 @@
 package cat.freya.khs.mod
 
 import cat.freya.khs.config.ItemConfig
+import cat.freya.khs.mod.KhsMod
 import cat.freya.khs.type.Item
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
-import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
 import net.minecraft.resources.ResourceKey
 import net.minecraft.util.Unit
@@ -32,12 +32,12 @@ class ModItem(
             // name
             val name = itemConfig.name
             if (name != null) {
-                stack.set(DataComponents.CUSTOM_NAME, Component.literal(name))
+                stack.set(DataComponents.CUSTOM_NAME, KhsMod.parseText(name))
             }
 
             // lore
             val lore = itemConfig.lore
-            stack.set(DataComponents.LORE, ItemLore(lore.map { Component.literal(it) }))
+            stack.set(DataComponents.LORE, ItemLore(lore.map { KhsMod.parseText(it) }))
 
             // enchantments
             val enchants = ModEnchantment.parse(server, itemConfig.enchantments)
