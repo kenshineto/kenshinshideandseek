@@ -33,6 +33,14 @@ allprojects {
                 .any { it == "lint" || it == "format" }
         }
     }
+
+    // only run detekt during lint
+    tasks.matching { it.name == "detekt" }.configureEach {
+        onlyIf {
+            project.gradle.startParameter.taskNames
+                .contains("lint")
+        }
+    }
 }
 
 subprojects {
