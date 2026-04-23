@@ -15,7 +15,15 @@ group = "cat.freya.khs"
 version = "2.1.1"
 
 allprojects {
-    repositories { mavenCentral() }
+    repositories {
+        mavenCentral()
+        maven("https://hub.spigotmc.org/nexus/content/repositories/public/")
+        maven("https://maven.neoforged.net/releases")
+        maven("https://maven.fabricmc.net/")
+        maven("https://maven.architectury.dev/")
+        maven("https://repo.codemc.io/repository/maven-releases/")
+        maven("https://repo.extendedclip.com/releases/")
+    }
 
     // only run when explicitly requested
     // i.e. dont lint on builds

@@ -4,11 +4,6 @@ plugins {
     alias(libs.plugins.fabric.loom)
 }
 
-repositories {
-    maven("https://repo.codemc.io/repository/maven-releases/")
-    maven("https://maven.architectury.dev/")
-}
-
 dependencies {
     minecraft(libs.minecraft)
     implementation(project(":core"))
