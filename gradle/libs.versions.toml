@@ -37,7 +37,7 @@ fabric-loom = "1.15-SNAPSHOT"
 fabric-loader = "0.18.6"
 
 # neoforge
-neoforge = "26.1.2.21-beta"
+neoforge = "26.1.2.23-beta"
 neogradle = "7.1.25"
 
 [libraries]
