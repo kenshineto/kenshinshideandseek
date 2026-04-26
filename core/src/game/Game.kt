@@ -307,20 +307,17 @@ class Game(val plugin: Khs) {
 
     fun join(uuid: UUID) {
         val player = plugin.shim.getPlayer(uuid) ?: return
-
-        synchronized(lock) {
-            // try to select a map
-            if (map == null) selectMap()
-        }
-
-        if (map == null) {
-            player.message(plugin.locale.prefix.error + plugin.locale.map.none)
-            return
-        }
-
         val spectator: Boolean
+
         synchronized(lock) {
             if (teams.contains(uuid)) return
+
+            // try to select a map
+            if (map == null && selectMap() == null) {
+                // map loading failed :(
+                player.message(plugin.locale.prefix.error + plugin.locale.map.none)
+                return
+            }
 
             spectator = status != Status.LOBBY
             if (spectator) {

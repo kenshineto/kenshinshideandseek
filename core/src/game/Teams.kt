@@ -20,7 +20,7 @@ class Teams {
 
     fun put(uuid: UUID, team: Team) {
         synchronized(lock) {
-            removeMapping(uuid)
+            remove(uuid)
             mappings[uuid] = team
             when (team) {
                 Team.HIDER -> hiders.add(uuid)
@@ -32,15 +32,11 @@ class Teams {
 
     fun remove(uuid: UUID) {
         synchronized(lock) {
-            removeMapping(uuid)
+            mappings.remove(uuid)
+            hiders.remove(uuid)
+            seekers.remove(uuid)
+            spectators.remove(uuid)
         }
-    }
-
-    private fun removeMapping(uuid: UUID) {
-        mappings.remove(uuid)
-        hiders.remove(uuid)
-        seekers.remove(uuid)
-        spectators.remove(uuid)
     }
 
     fun get(uuid: UUID): Team? {
@@ -59,7 +55,7 @@ class Teams {
         synchronized(lock) {
             val uuids = mappings.keys.toSet()
             for (uuid in uuids) {
-                removeMapping(uuid)
+                remove(uuid)
                 mappings[uuid] = Team.HIDER
                 hiders.add(uuid)
             }
