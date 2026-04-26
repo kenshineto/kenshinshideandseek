@@ -4,8 +4,88 @@ import cat.freya.khs.world.AbstractWorld
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Position
 import cat.freya.khs.world.World
+import com.mojang.serialization.MapCodec
+import com.mojang.serialization.codecs.RecordCodecBuilder
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Holder
+import net.minecraft.core.registries.Registries
+import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.WorldGenRegion
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.LevelHeightAccessor
+import net.minecraft.world.level.NoiseColumn
+import net.minecraft.world.level.StructureManager
+import net.minecraft.world.level.biome.BiomeManager
+import net.minecraft.world.level.biome.BiomeSource
+import net.minecraft.world.level.biome.Biomes
+import net.minecraft.world.level.biome.FixedBiomeSource
+import net.minecraft.world.level.chunk.ChunkAccess
+import net.minecraft.world.level.chunk.ChunkGenerator
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes
+import net.minecraft.world.level.dimension.DimensionType
+import net.minecraft.world.level.dimension.LevelStem
+import net.minecraft.world.level.levelgen.FlatLevelSource
+import net.minecraft.world.level.levelgen.Heightmap
+import net.minecraft.world.level.levelgen.RandomState
+import net.minecraft.world.level.levelgen.blending.Blender
+import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings
+import net.minecraft.world.level.storage.DerivedLevelData
+import net.minecraft.world.level.storage.LevelStorageSource
+import java.util.concurrent.CompletableFuture
+
+class VoidGenerator(biomeSource: BiomeSource) : ChunkGenerator(biomeSource) {
+    override fun codec(): MapCodec<ChunkGenerator> {
+        val biomeCodec = BiomeSource.CODEC.fieldOf("biome_source")
+
+        return RecordCodecBuilder.mapCodec {
+            it
+                .group(biomeCodec.forGetter { it.biomeSource })
+                .apply(it) { VoidGenerator(it) }
+        }
+    }
+
+    override fun applyCarvers(region: WorldGenRegion, seed: Long, randomState: RandomState, biomeManager: BiomeManager, structureManager: StructureManager, chunk: ChunkAccess) {
+        // no carving
+    }
+
+    override fun buildSurface(level: WorldGenRegion, structureManager: StructureManager, randomState: RandomState, protoChunk: ChunkAccess) {
+        // no surface
+    }
+
+    override fun spawnOriginalMobs(worldGenRegion: WorldGenRegion) {
+        // no mobs
+    }
+
+    override fun getGenDepth(): Int {
+        return 384
+    }
+
+    override fun fillFromNoise(blender: Blender, randomState: RandomState, structureManager: StructureManager, centerChunk: ChunkAccess): CompletableFuture<ChunkAccess> {
+        return CompletableFuture.completedFuture(centerChunk)
+    }
+
+    override fun getSeaLevel(): Int {
+        return 0
+    }
+
+    override fun getMinY(): Int {
+        return -64
+    }
+
+    override fun getBaseHeight(x: Int, z: Int, type: Heightmap.Types, heightAccessor: LevelHeightAccessor, randomState: RandomState): Int {
+        return heightAccessor.minY
+    }
+
+    override fun getBaseColumn(x: Int, z: Int, heightAccessor: LevelHeightAccessor, randomState: RandomState): NoiseColumn {
+        return NoiseColumn(heightAccessor.minY, emptyArray())
+    }
+
+    override fun addDebugScreenInfo(result: MutableList<String>, randomState: RandomState, feetPos: BlockPos) {
+        // no debug info needed
+    }
+}
 
 class ModWorldBorder(val level: ServerLevel) : World.Border {
     private val border = level.worldBorder
@@ -68,5 +148,88 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim
 
     override fun playSound(position: Position, sound: String, volume: Double, pitch: Double) {
         // TODO:
+    }
+
+    companion object {
+        fun createLevel(mod: KhsMod, worldName: String, type: World.Type): ServerLevel? {
+            val server = mod.server.inner
+
+            val key = getKey(worldName) ?: return null
+            val generator = getGenerator(mod, type) ?: return null
+            val dimension = getDimension(mod, type)
+
+            // get world "session"
+            val levelStorage = LevelStorageSource.createDefault(mod.server.getWorldContainer())
+            val session = levelStorage.createAccess(worldName)
+
+            val levelStem = LevelStem(dimension, generator)
+
+            val levelData = DerivedLevelData(server.worldData, server.worldData.overworldData())
+
+            val level =
+                ServerLevel(
+                    server,
+                    server, // executor
+                    session,
+                    levelData,
+                    key, // dimension
+                    levelStem,
+                    false, // isDebug
+                    server.overworld().seed,
+                    listOf(),
+                    false,
+                )
+
+            // TODO: insert into minecraft server
+
+            return level
+        }
+
+        private fun getGenerator(mod: KhsMod, type: World.Type): ChunkGenerator? {
+            val server = mod.server.inner
+            return when (type) {
+                World.Type.NORMAL -> server.overworld().chunkSource.generator
+                World.Type.NETHER -> server.getLevel(Level.NETHER)?.chunkSource?.generator
+                World.Type.END -> server.getLevel(Level.END)?.chunkSource?.generator
+                World.Type.FLAT -> flatGenerator(mod)
+                else -> null
+            }
+        }
+
+        private fun getDimension(mod: KhsMod, type: World.Type): Holder<DimensionType> {
+            val dimensionType =
+                when (type) {
+                    World.Type.NETHER -> BuiltinDimensionTypes.NETHER
+                    World.Type.END -> BuiltinDimensionTypes.END
+                    else -> BuiltinDimensionTypes.OVERWORLD
+                }
+
+            return mod.server.inner
+                .registryAccess()
+                .lookupOrThrow(Registries.DIMENSION_TYPE)
+                .getOrThrow(dimensionType)
+        }
+
+        private fun flatGenerator(mod: KhsMod): ChunkGenerator {
+            val registries = mod.server.inner.registryAccess()
+            val biomes = registries.lookupOrThrow(Registries.BIOME)
+            val structureSets = registries.lookupOrThrow(Registries.STRUCTURE_SET)
+            val placedFeatures = registries.lookupOrThrow(Registries.PLACED_FEATURE)
+            val settings = FlatLevelGeneratorSettings.getDefault(biomes, structureSets, placedFeatures)
+            return FlatLevelSource(settings)
+        }
+
+        private fun voidGenerator(mod: KhsMod): ChunkGenerator {
+            val registries = mod.server.inner.registryAccess()
+            val biomes = registries.lookupOrThrow(Registries.BIOME)
+            val biome = biomes.getOrThrow(Biomes.THE_VOID)
+            return VoidGenerator(FixedBiomeSource(biome))
+        }
+
+        fun getKey(worldName: String): ResourceKey<Level>? =
+            runCatching {
+                val id = Identifier.fromNamespaceAndPath(KhsMod.ID, worldName)
+                ResourceKey.create(Registries.DIMENSION, id)
+            }.getOrDefault(null)
     }
 }
