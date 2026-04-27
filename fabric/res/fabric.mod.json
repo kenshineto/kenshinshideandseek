@@ -20,6 +20,9 @@
 			}
 		]
 	},
+    "mixins": [
+        "khs.mixins.json"
+    ],
 	"depends": {
 		"fabricloader": ">=0.18.6",
 		"minecraft": "~26.1",

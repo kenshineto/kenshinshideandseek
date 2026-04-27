@@ -11,6 +11,9 @@ authors = "KenshinEto"
 description = "Minecrafts Best Hide and Seek and Block Hunt Mod"
 logoFile = "assets/logo.png"
 
+[[mixins]]
+config = "khs.mixins.json"
+
 [[dependencies.khs]]
 modId = "neoforge"
 type = "required"

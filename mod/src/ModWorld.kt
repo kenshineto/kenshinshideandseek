@@ -1,5 +1,6 @@
 package cat.freya.khs.mod
 
+import cat.freya.khs.mod.mixin.MixinMinecraftServer
 import cat.freya.khs.world.AbstractWorld
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Position
@@ -180,7 +181,9 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim
                     false,
                 )
 
-            // TODO: insert into minecraft server
+            // insert into minecraft server
+            val mixinServer = server as MixinMinecraftServer
+            mixinServer.getLevels().put(key, level)
 
             return level
         }
