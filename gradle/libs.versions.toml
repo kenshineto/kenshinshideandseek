@@ -38,7 +38,7 @@ architectury-plugin = "3.5-SNAPSHOT"
 fabric-loader = "0.19.2"
 
 # neoforge
-neoforge = "26.1.2.29-beta"
+neoforge = "26.1.2.30-beta"
 
 [libraries]
 # kotlin
