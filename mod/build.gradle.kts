@@ -1,7 +1,10 @@
 plugins {
-    // this is only used to get
-    // net.minecraft bindings
-    alias(libs.plugins.fabric.loom)
+    alias(libs.plugins.architectury.loom)
+    alias(libs.plugins.architectury.plugin)
+}
+
+architectury {
+    common(listOf("fabric", "neoforge"))
 }
 
 dependencies {

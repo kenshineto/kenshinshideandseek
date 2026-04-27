@@ -128,6 +128,7 @@ subprojects {
         configurations = listOf(project.configurations.named("shadow").get())
 
         // load in image assets
+        from(tasks.jar)
         from("../img") { into("assets") }
 
         // relocate shaded deps

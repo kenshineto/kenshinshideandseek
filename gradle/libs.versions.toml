@@ -29,16 +29,16 @@ xseries = "13.6.0+26.1"
 placeholderapi = "2.12.2"
 
 # modding
-minecraft = "26.1"
+minecraft = "26.1.2"
 architectury = "19.0.1"
+architectury-loom = "1.14-SNAPSHOT"
+architectury-plugin = "3.5-SNAPSHOT"
 
 # fabric
-fabric-loom = "1.15-SNAPSHOT"
 fabric-loader = "0.19.2"
 
 # neoforge
-neoforge = "26.1.2.23-beta"
-neogradle = "7.1.25"
+neoforge = "26.1.2.29-beta"
 
 [libraries]
 # kotlin
@@ -85,5 +85,5 @@ kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }
-fabric-loom = { id = "net.fabricmc.fabric-loom", version.ref = "fabric-loom" }
-neogradle-userdev = { id = "net.neoforged.gradle.userdev", version.ref = "neogradle" }
+architectury-loom = { id = "dev.architectury.loom-no-remap", version.ref = "architectury-loom" }
+architectury-plugin = { id = "architectury-plugin", version.ref = "architectury-plugin" }
