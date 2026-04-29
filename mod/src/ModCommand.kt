@@ -34,8 +34,7 @@ class ModCommand<T : CommandSourceStack>(val mod: KhsMod, val command: CommandGr
     override fun run(ctx: CommandContext<T>): Int {
         val player = ctx.source.player ?: return 0
         val khsPlayer = ModPlayer(mod, player)
-        mod.shim.logger.info(ctx.input)
-        val args = ctx.input.split("")
+        val args = ctx.input.split(" ").drop(1)
         command.handleCommand(khsPlayer, args)
         return 1
     }
@@ -47,11 +46,16 @@ class ModCommand<T : CommandSourceStack>(val mod: KhsMod, val command: CommandGr
         }
 
         val khsPlayer = ModPlayer(mod, player)
-        val args = ctx.input.split("")
+        val args = ctx.input.split(" ").drop(1)
+
+        val lastSpace = ctx.input.lastIndexOf(' ')
+        val offset = if (lastSpace == -1) 0 else lastSpace + 1
+        val withArgsBuilder = builder.createOffset(offset)
+
         command.handleTabComplete(khsPlayer, args).forEach {
-            builder.suggest(it)
+            withArgsBuilder.suggest(it)
         }
 
-        return builder.buildFuture()
+        return withArgsBuilder.buildFuture()
     }
 }
