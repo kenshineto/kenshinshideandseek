@@ -9,3 +9,6 @@ updates:
       # hikari 5.x and later requires java 11
       - dependency-name: "com.zaxxer:HikariCP"
         versions: [">=5.0.0"]
+        # allow SNAPSHOT for architectury
+      - dependency-name: "architectury-plugin"
+      - dependency-name: "dev.architectury.loom-no-remap"
