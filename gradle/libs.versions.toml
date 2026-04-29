@@ -20,7 +20,7 @@ exposed = "1.2.0"
 # database
 sqlite = "3.53.0.0"
 mysql = "9.7.0"
-postgres = "42.7.10"
+postgres = "42.7.11"
 hikari = "4.0.3"
 
 # bukkit
