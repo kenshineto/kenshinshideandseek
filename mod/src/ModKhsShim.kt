@@ -11,7 +11,6 @@ import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerPlayer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.File
 import java.nio.file.Path
 import java.util.UUID
 
@@ -102,21 +101,14 @@ class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.info.platform) {
     }
 
     override fun getWorldNames(): List<String> {
-        return mod.server
-            .getWorldContainer()
-            .toFile()
-            .listFiles()
+        val container = mod.server.getWorldContainer()
+        val namespaces = container.toFile().listFiles() ?: emptyArray()
+        return namespaces
             .map { namespace ->
-                namespace
-                    .listFiles()
-                    .filter {
-                        if (!it.isDirectory) return@filter false
-
-                        val session = File(it, "session.lock")
-                        val level = File(it, "level.dat")
-
-                        session.exists() && level.exists()
-                    }.map { "${namespace.name}:${it.name}" }
+                val dirs = namespace.listFiles() ?: emptyArray()
+                dirs
+                    .filter { it.isDirectory }
+                    .map { "${namespace.name}:${it.name}" }
             }.flatten()
     }
 
@@ -129,8 +121,8 @@ class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.info.platform) {
     }
 
     override fun createWorld(worldName: String, type: World.Type): ModWorld? {
-        // TODO:
-        return null
+        val level = ModWorld.createLevel(mod, worldName, type) ?: return null
+        return ModWorld(mod, level)
     }
 
     override fun createInventory(title: String, size: UInt): ModInventory {

@@ -92,7 +92,7 @@ class ModServer(val mod: KhsMod) {
     }
 
     fun getWorldContainer(): Path {
-        return inner.getWorldPath(LevelResource.ROOT)
+        return inner.getWorldPath(LevelResource("dimensions"))
     }
 
     private fun getDefaultObjective(): Objective? {

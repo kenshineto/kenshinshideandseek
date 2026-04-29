@@ -1,5 +1,6 @@
 package cat.freya.khs.mod
 
+import cat.freya.khs.mod.ModWorld
 import cat.freya.khs.mod.mixin.MixinMinecraftServer
 import cat.freya.khs.world.AbstractWorld
 import cat.freya.khs.world.Location
@@ -9,11 +10,13 @@ import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Holder
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.Identifier
 import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.WorldGenRegion
+import net.minecraft.sounds.SoundSource
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.LevelHeightAccessor
 import net.minecraft.world.level.NoiseColumn
@@ -112,12 +115,18 @@ class ModWorldBorder(val level: ServerLevel) : World.Border {
 
 class ModWorldLoader(val mod: KhsMod, override val name: String) : World.AbstractLoader(name, name, mod.server.getWorldContainer()) {
     override fun load(): ModWorld? {
-        // TODO:
-        return null
+        val key = ModWorld.parseKey(name) ?: return null
+        val level =
+            mod.server.inner.getLevel(key)
+                ?: ModWorld.createLevel(mod, name, World.Type.NORMAL)
+                ?: return null
+        return ModWorld(mod, level)
     }
 
     override fun unload() {
-        // TODO:
+        val key = ModWorld.parseKey(name) ?: return
+        val mixinServer = (mod.server.inner) as MixinMinecraftServer
+        mixinServer.removeLevel(key, !isMapSave)
     }
 }
 
@@ -148,15 +157,27 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim
     }
 
     override fun playSound(position: Position, sound: String, volume: Double, pitch: Double) {
-        // TODO:
+        val id = Identifier.tryParse(sound) ?: return
+        val holder = BuiltInRegistries.SOUND_EVENT.get(id).orElse(null) ?: return
+
+        inner.playSound(null, position.x, position.y, position.z, holder, SoundSource.AMBIENT, volume.toFloat(), pitch.toFloat())
     }
 
     companion object {
         fun createLevel(mod: KhsMod, worldName: String, type: World.Type): ServerLevel? {
             val server = mod.server.inner
+            val loader = ModWorldLoader(mod, worldName)
 
-            val key = getKey(worldName) ?: return null
-            val generator = getGenerator(mod, type) ?: return null
+            val key = parseKey(worldName) ?: return null
+            if (key.identifier().namespace != KhsMod.ID) return null
+
+            val generator =
+                if (loader.isMapSave) {
+                    voidGenerator(mod)
+                } else {
+                    getGenerator(mod, type) ?: return null
+                }
+
             val dimension = getDimension(mod, type)
 
             // get world "session"
@@ -183,7 +204,7 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim
 
             // insert into minecraft server
             val mixinServer = server as MixinMinecraftServer
-            mixinServer.getLevels().put(key, level)
+            mixinServer.initLevel(level)
 
             return level
         }
@@ -229,10 +250,9 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim
             return VoidGenerator(FixedBiomeSource(biome))
         }
 
-        fun getKey(worldName: String): ResourceKey<Level>? =
-            runCatching {
-                val id = Identifier.fromNamespaceAndPath(KhsMod.ID, worldName)
-                ResourceKey.create(Registries.DIMENSION, id)
-            }.getOrDefault(null)
+        fun parseKey(worldName: String): ResourceKey<Level>? {
+            val id = Identifier.tryParse(worldName) ?: return null
+            return ResourceKey.create(Registries.DIMENSION, id)
+        }
     }
 }
