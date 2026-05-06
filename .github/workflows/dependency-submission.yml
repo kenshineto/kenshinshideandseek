@@ -1,13 +1,14 @@
-name: Lint
+name: Dependency Submission
 
 on:
-  pull_request:
-    branches: [main]
   push:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
-  lint:
+  dependency-submission:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,5 +24,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Lint
-        run: ./gradlew lint
+      - name: Generate and submit dependency graph
+        uses: gradle/actions/dependency-submission@v6
+
