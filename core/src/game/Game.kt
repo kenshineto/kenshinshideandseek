@@ -784,16 +784,23 @@ class Game(val plugin: Khs) {
 
     fun giveHiderItems(hider: Player) {
         val inventory = hider.getInventory()
-        val items = plugin.itemsConfig.hiderItems.mapNotNull { plugin.parseItem(it) }
         val effects = plugin.itemsConfig.hiderEffects.mapNotNull { plugin.parseEffect(it) }
 
         inventory.clearAll()
-        items.withIndex().forEach { (i, item) -> inventory.set(i.toUInt(), item) }
+
+        var nextSlot = 0u
+        for (itemConfig in plugin.itemsConfig.hiderItems) {
+            val item = plugin.parseItem(itemConfig) ?: continue
+            val slot = itemConfig.slot ?: nextSlot
+            inventory.set(slot, item)
+            nextSlot = maxOf(nextSlot, slot) + 1u
+        }
 
         // glow power-up
         if (!plugin.config.alwaysGlow && plugin.config.glow.enabled) {
             val item = plugin.parseItem(plugin.config.glow.item)
-            item?.let { hider.getInventory().set(items.size.toUInt(), it) }
+            val slot = plugin.config.glow.item.slot ?: nextSlot
+            item?.let { hider.getInventory().set(slot, it) }
         }
 
         val helmet = plugin.parseItem(plugin.itemsConfig.hiderHelmet)
@@ -818,11 +825,17 @@ class Game(val plugin: Khs) {
 
     fun giveSeekerItems(seeker: Player) {
         val inventory = seeker.getInventory()
-        val items = plugin.itemsConfig.seekerItems.mapNotNull { plugin.parseItem(it) }
         val effects = plugin.itemsConfig.seekerEffects.mapNotNull { plugin.parseEffect(it) }
 
         inventory.clearAll()
-        items.withIndex().forEach { (i, item) -> inventory.set(i.toUInt(), item) }
+
+        var nextSlot = 0u
+        for (itemConfig in plugin.itemsConfig.seekerItems) {
+            val item = plugin.parseItem(itemConfig) ?: continue
+            val slot = itemConfig.slot ?: nextSlot
+            inventory.set(slot, item)
+            nextSlot = maxOf(nextSlot, slot) + 1u
+        }
 
         val helmet = plugin.parseItem(plugin.itemsConfig.seekerHelmet)
         val chestplate = plugin.parseItem(plugin.itemsConfig.seekerChestplate)
@@ -848,8 +861,8 @@ class Game(val plugin: Khs) {
         val teleportItem = plugin.parseItem(plugin.config.spectatorItems.teleport)
         val flightItem = plugin.parseItem(plugin.config.spectatorItems.flight)
 
-        inventory.set(3u, teleportItem)
-        inventory.set(6u, flightItem)
+        teleportItem?.let { inventory.set(plugin.config.spectatorItems.teleport.slot ?: 3u, it) }
+        flightItem?.let { inventory.set(plugin.config.spectatorItems.flight.slot ?: 6u, it) }
 
         setPlayerHidden(spectator, true)
     }
@@ -862,9 +875,9 @@ class Game(val plugin: Khs) {
         val leaveItem = plugin.parseItem(plugin.config.lobby.leaveItem)
         val startItem = plugin.parseItem(plugin.config.lobby.startItem)
 
-        inventory.set(0u, leaveItem)
+        leaveItem?.let { inventory.set(plugin.config.lobby.leaveItem.slot ?: 0u, it) }
         if (player.hasPermission("hs.start")) {
-            inventory.set(8u, startItem)
+            startItem?.let { inventory.set(plugin.config.lobby.startItem.slot ?: 8u, it) }
         }
     }
 }
