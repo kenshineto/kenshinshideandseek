@@ -5,6 +5,8 @@ data class Location(
     var y: Double = 0.0,
     var z: Double = 0.0,
     var worldName: String = "world",
+    var yaw: Float = 0f,
+    var pitch: Float = 0f,
 ) {
     /**
      * @return the distance between the two locations, returning null of they are in difference
@@ -17,10 +19,10 @@ data class Location(
 
     /** Convert to a [Position] */
     fun toPosition(): Position {
-        return Position(x, y, z)
+        return Position(x, y, z, yaw, pitch)
     }
 
     fun clone(): Location {
-        return Location(x, y, z, worldName)
+        return Location(x, y, z, worldName, yaw, pitch)
     }
 }

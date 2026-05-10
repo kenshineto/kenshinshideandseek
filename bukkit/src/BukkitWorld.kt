@@ -152,7 +152,7 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : Abstra
 
     override fun getSpawn(): Location {
         val loc = inner.spawnLocation
-        return Location(loc.x, loc.y, loc.z, name)
+        return Location(loc.x, loc.y, loc.z, name, loc.yaw, loc.pitch)
     }
 
     @Suppress("UnstableApiUsage")

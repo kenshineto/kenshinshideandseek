@@ -48,7 +48,7 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
 
     override fun getLocation(): Location {
         val loc = inner.location
-        return Location(loc.x, loc.y, loc.z, inner.world.name)
+        return Location(loc.x, loc.y, loc.z, inner.world.name, loc.yaw, loc.pitch)
     }
 
     override fun getPitch(): Float {
@@ -80,7 +80,7 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
         val world = loader.load() ?: return
         val bukkitWorld = (world as? BukkitWorld)?.inner ?: return
 
-        inner.teleport(org.bukkit.Location(bukkitWorld, location.x, location.y, location.z))
+        inner.teleport(org.bukkit.Location(bukkitWorld, location.x, location.y, location.z, location.yaw, location.pitch))
     }
 
     private fun getCollidesTeam(): Team? {

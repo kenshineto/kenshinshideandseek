@@ -137,7 +137,7 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
 
     override fun getEyePosition(): Location {
         val loc = inner.eyeLocation
-        return Location(loc.x, loc.y, loc.z, inner.world.name)
+        return Location(loc.x, loc.y, loc.z, inner.world.name, loc.yaw, loc.pitch)
     }
 
     override fun getEyeDirection(): Vector {
