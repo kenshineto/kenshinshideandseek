@@ -66,6 +66,7 @@ data class ItemConfig(
     @Omittable var unbreakable: Boolean? = null,
     @Omittable var modelData: UInt? = null,
     @Omittable var owner: String? = null,
+    @Omittable var slot: UInt? = null,
 )
 
 data class EffectConfig(
@@ -115,9 +116,10 @@ data class LobbyConfig(
             name = "&c Leave Lobby",
             material = "BED",
             lore = listOf("Go back to server hub"),
+            slot = 0u,
         ),
     @Comment("Item for admins to use to force start the game")
-    var startItem: ItemConfig = ItemConfig(name = "&bStart Game", material = "CLOCK"),
+    var startItem: ItemConfig = ItemConfig(name = "&bStart Game", material = "CLOCK", slot = 8u),
 )
 
 data class SpectatorItemsConfig(
@@ -127,6 +129,7 @@ data class SpectatorItemsConfig(
             name = "&bToggle Flight",
             material = "FEATHER",
             lore = listOf("Turns flying on and off"),
+            slot = 6u,
         ),
     /** Item for spectators to teleport to other players */
     var teleport: ItemConfig =
@@ -134,6 +137,7 @@ data class SpectatorItemsConfig(
             name = "&bTeleport to Others",
             material = "COMPASS",
             lore = listOf("Allows you to teleport to all other players in game"),
+            slot = 3u,
         ),
 )
 
@@ -271,4 +275,11 @@ data class KhsConfig(
     @Section("Auto Generated")
     @Comment("Location where players are teleported to when they run (/hs leave).")
     var exit: Location? = null,
-)
+) {
+    fun migrate() {
+        if (lobby.leaveItem.slot == null) lobby.leaveItem.slot = 0u
+        if (lobby.startItem.slot == null) lobby.startItem.slot = 8u
+        if (spectatorItems.flight.slot == null) spectatorItems.flight.slot = 6u
+        if (spectatorItems.teleport.slot == null) spectatorItems.teleport.slot = 3u
+    }
+}
