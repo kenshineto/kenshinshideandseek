@@ -8,12 +8,21 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityBreakDoorEvent
 import org.bukkit.event.hanging.HangingBreakByEntityEvent
 
 class BreakListener(val plugin: KhsPlugin) : Listener {
     init {
         plugin.server.pluginManager.registerEvents(this, plugin)
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun onBlockPlace(event: BlockPlaceEvent) {
+        val game = plugin.khs.game
+        if (game.teams.contains(event.player.uniqueId)) {
+            event.isCancelled = true
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
