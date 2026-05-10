@@ -156,7 +156,7 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) :
 
     override fun getEyePosition(): Location {
         val v = inner.eyePosition
-        return Location(v.x, v.y, v.z, getWorld().name)
+        return Location(v.x, v.y, v.z, getWorld().name, inner.yRot, inner.xRot)
     }
 
     override fun getEyeDirection(): Vector {

@@ -17,13 +17,12 @@ import kotlin.text.buildString
 fun typeInline(value: Any?): Boolean {
     if (value == null) return true
 
-    return when (value) {
-        is List<*> -> value.all { typeInline(it) }
-        is Map<*, *> -> value.isEmpty()
-        is Boolean -> true
-        value::class.isData -> false
-        else -> true
-    }
+    if (value is List<*>) return value.all { typeInline(it) }
+    if (value is Map<*, *>) return value.isEmpty()
+    if (value is Boolean) return true
+    if (value::class.isData) return false
+
+    return true
 }
 
 fun serializeSection(section: Section): String {

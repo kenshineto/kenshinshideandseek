@@ -353,12 +353,16 @@ class Game(val plugin: Khs) {
     }
 
     fun leave(uuid: UUID) {
-        val player = plugin.shim.getPlayer(uuid) ?: return
-
         synchronized(lock) {
             if (!teams.contains(uuid)) return
+            if (teams.isHider(uuid)) hiderLeft = true
             teams.remove(uuid)
         }
+
+        val savedInv = savedInventories.remove(uuid)
+        val savedBoard = savedScoreBoards.remove(uuid)
+
+        val player = plugin.shim.getPlayer(uuid) ?: return
 
         resetPlayer(player)
 
@@ -371,14 +375,14 @@ class Game(val plugin: Khs) {
         // restore inventory
 
         if (plugin.config.saveInventory) {
-            savedInventories[uuid]?.let { player.getInventory().setContents(it) }
+            savedInv?.let { player.getInventory().setContents(it) }
         }
 
         // reset score board
 
         val board =
             if (plugin.config.saveScoreBoard) {
-                savedScoreBoards[uuid]
+                savedBoard
             } else {
                 null
             }

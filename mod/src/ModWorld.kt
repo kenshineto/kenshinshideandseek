@@ -153,7 +153,7 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim
 
     override fun getSpawn(): Location {
         val pos = inner.respawnData.pos()
-        return Location(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), name)
+        return Location(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), name, 0f, 0f)
     }
 
     override fun playSound(position: Position, sound: String, volume: Double, pitch: Double) {

@@ -28,7 +28,7 @@ open class ModEntity(val mod: KhsMod, private val inner: net.minecraft.world.ent
 
     override fun getLocation(): Location {
         val worldName = getWorld().name
-        return Location(inner.x, inner.y, inner.z, worldName)
+        return Location(inner.x, inner.y, inner.z, worldName, inner.yRot, inner.xRot)
     }
 
     override fun getPitch(): Float {
@@ -59,8 +59,8 @@ open class ModEntity(val mod: KhsMod, private val inner: net.minecraft.world.ent
         val loader = mod.shim.getWorldLoader(location.worldName)
         val world = loader.load() ?: return
 
-        val relative = Relative.union(Relative.DELTA, Relative.ROTATION)
-        inner.teleportTo(world.inner, location.x, location.y, location.z, relative, 0f, 0f, false)
+        val relative = Relative.DELTA
+        inner.teleportTo(world.inner, location.x, location.y, location.z, relative, location.yaw, location.pitch, false)
     }
 
     private fun getCollidesTeam(): PlayerTeam {

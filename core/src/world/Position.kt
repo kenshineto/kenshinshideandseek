@@ -5,7 +5,7 @@ import cat.freya.khs.math.Vector
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-data class Position(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0) {
+data class Position(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0, var yaw: Float = 0f, var pitch: Float = 0f) {
     /** @return the 3d distance between this and other */
     fun distance(other: Position): Double {
         val dx = this.x - other.x
@@ -17,7 +17,7 @@ data class Position(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.
 
     /** Convert to a [Location] given a world name */
     fun toLocation(worldName: String): Location {
-        return Location(this.x, this.y, this.z, worldName)
+        return Location(this.x, this.y, this.z, worldName, this.yaw, this.pitch)
     }
 
     /** Convert to a [LegacyPosition] used for deprecated config values */
@@ -30,6 +30,6 @@ data class Position(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.
     }
 
     fun clone(): Position {
-        return Position(x, y, z)
+        return Position(x, y, z, yaw, pitch)
     }
 }
