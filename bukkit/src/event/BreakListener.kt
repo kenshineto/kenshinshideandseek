@@ -3,17 +3,32 @@ package cat.freya.khs.bukkit.event
 import cat.freya.khs.bukkit.BukkitPlayer
 import cat.freya.khs.bukkit.KhsPlugin
 import cat.freya.khs.event.BreakEvent
+import cat.freya.khs.event.PlaceEvent
 import cat.freya.khs.event.onBreak
+import cat.freya.khs.event.onPlace
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityBreakDoorEvent
 import org.bukkit.event.hanging.HangingBreakByEntityEvent
 
 class BreakListener(val plugin: KhsPlugin) : Listener {
     init {
         plugin.server.pluginManager.registerEvents(this, plugin)
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun onBlockPlace(event: BlockPlaceEvent) {
+        val bukkitPlayer = event.player
+        val block = event.block.type.name
+
+        val khsPlayer = BukkitPlayer(plugin, bukkitPlayer)
+        val khsEvent = PlaceEvent(plugin.khs, khsPlayer, block)
+        onPlace(khsEvent)
+
+        if (khsEvent.cancelled) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
