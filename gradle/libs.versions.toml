@@ -12,7 +12,7 @@ detekt = "2.0.0-alpha.3"
 snakeyaml = "2.6"
 packetevents = "2.12.1"
 luckperms = "5.5"
-slf4j = "2.0.17"
+slf4j = "2.0.18"
 
 # orm
 exposed = "1.2.0"
