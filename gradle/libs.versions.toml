@@ -4,7 +4,7 @@ kotlin = "2.3.21"
 kotlinx-coroutines = "1.11.0"
 
 # gradle
-shadow = "9.4.1"
+shadow = "9.4.2"
 ktlint = "14.2.0"
 detekt = "2.0.0-alpha.3"
 
