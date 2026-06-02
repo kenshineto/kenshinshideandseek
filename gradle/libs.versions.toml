@@ -10,7 +10,7 @@ detekt = "2.0.0-alpha.3"
 
 # libs
 snakeyaml = "2.6"
-packetevents = "2.12.1"
+packetevents = "2.12.2"
 luckperms = "5.5"
 slf4j = "2.0.18"
 
