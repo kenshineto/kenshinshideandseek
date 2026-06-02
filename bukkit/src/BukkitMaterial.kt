@@ -31,7 +31,7 @@ class BukkitMaterial(val inner: org.bukkit.Material) : Material {
                 val type = SpigotConversionUtil.fromBukkitItemMaterial(inner)
                 return type.name.toString()
             }
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             return runCatching {
                 inner.keyOrThrow.toString()
             }.getOrElse {
