@@ -23,12 +23,20 @@ class BukkitMaterial(val inner: org.bukkit.Material) : Material {
     private fun getMinecraftKey(): String? {
         if (!XMaterial.supports(1, 13)) return null
 
-        if (isBlock) {
-            val blockData = inner.createBlockData()
-            return SpigotConversionUtil.fromBukkitBlockData(blockData).type.toString()
-        } else {
-            val type = SpigotConversionUtil.fromBukkitItemMaterial(inner)
-            return type.name.toString()
+        try {
+            if (isBlock) {
+                val blockData = inner.createBlockData()
+                return SpigotConversionUtil.fromBukkitBlockData(blockData).type.toString()
+            } else {
+                val type = SpigotConversionUtil.fromBukkitItemMaterial(inner)
+                return type.name.toString()
+            }
+        } catch (e: IllegalArgumentException) {
+            return runCatching {
+                inner.keyOrThrow.toString()
+            }.getOrElse {
+                inner.toString()
+            }
         }
     }
 
