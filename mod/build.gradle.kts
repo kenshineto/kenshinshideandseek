@@ -20,7 +20,7 @@ dependencies {
     compileOnly(libs.packetevents.api)
 
     // compileOnly(libs.architectury)
-    compileOnly(files("libs/architectury.jar"))
+    compileOnly(libs.architectury)
 
     // fabric or forge do not shade sqlite
     // or snakeyml
