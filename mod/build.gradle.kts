@@ -23,7 +23,5 @@ dependencies {
     compileOnly(libs.architectury)
 
     // fabric or forge do not shade sqlite
-    // or snakeyml
     implementation(libs.sqlite)
-    implementation(libs.snakeyaml)
 }

@@ -66,7 +66,7 @@ data class ItemConfig(
     @Omittable var unbreakable: Boolean? = null,
     @Omittable var modelData: UInt? = null,
     @Omittable var owner: String? = null,
-    @Omittable var slot: UInt? = null,
+    var slot: UInt? = null,
 )
 
 data class EffectConfig(

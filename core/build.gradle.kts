@@ -12,8 +12,9 @@ dependencies {
     compileOnly(libs.kotlin.reflect)
 
     // libs
-    compileOnly(libs.snakeyaml)
     compileOnly(libs.packetevents.api)
+    implementation(libs.jackson.kotlin, excludeKotlin)
+    implementation(libs.jackson.dataformat.yaml, excludeKotlin)
 
     // orm
     implementation(libs.exposed.core, excludeKotlin)

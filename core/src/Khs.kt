@@ -15,8 +15,8 @@ import cat.freya.khs.config.KhsConfig
 import cat.freya.khs.config.KhsItemsConfig
 import cat.freya.khs.config.KhsLocale
 import cat.freya.khs.config.KhsMapsConfig
-import cat.freya.khs.config.util.deserialize
-import cat.freya.khs.config.util.serialize
+import cat.freya.khs.config.deserialize
+import cat.freya.khs.config.serialize
 import cat.freya.khs.db.Database
 import cat.freya.khs.disguise.Disguiser
 import cat.freya.khs.disguise.EntityHider
@@ -239,7 +239,7 @@ class Khs(val shim: KhsShim) {
             newMaps.forEach { maps[it.key] = it.value }
         }.onFailure {
             shim.logger.error("failed to reload config: ${it.message}")
-            for (line in it.stackTraceToString().lines()) shim.logger.error(line)
+            // for (line in it.stackTraceToString().lines()) shim.logger.error(line)
         }
     }
 

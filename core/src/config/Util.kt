@@ -1,4 +1,4 @@
-package cat.freya.khs.config.util
+package cat.freya.khs.config
 
 import cat.freya.khs.config.Comment
 import cat.freya.khs.config.KhsDeprecated
@@ -7,17 +7,35 @@ import cat.freya.khs.config.LocaleString2
 import cat.freya.khs.config.LocaleString3
 import cat.freya.khs.config.Omittable
 import cat.freya.khs.config.Section
-import org.yaml.snakeyaml.DumperOptions
-import org.yaml.snakeyaml.Yaml
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.io.Reader
+import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.text.buildString
 
-fun typeInline(value: Any?): Boolean {
-    if (value == null) return true
+private val mapper =
+    ObjectMapper(
+        YAMLFactory
+            .builder()
+            .disable(YAMLGenerator.Feature.SPLIT_LINES)
+            .build(),
+    ).registerKotlinModule()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-    if (value is List<*>) return value.all { typeInline(it) }
+private fun isValueInline(value: Any?): Boolean {
+    if (value == null) return true
+    if (value is List<*>) return value.all { isValueInline(it) }
     if (value is Map<*, *>) return value.isEmpty()
     if (value is Boolean) return true
     if (value::class.isData) return false
@@ -25,7 +43,7 @@ fun typeInline(value: Any?): Boolean {
     return true
 }
 
-fun serializeSection(section: Section): String {
+private fun serializeSection(section: Section): String {
     val width = 100
     val prefixWidth = 3
     val headerWidth = section.text.length
@@ -51,7 +69,7 @@ fun serializeSection(section: Section): String {
     }
 }
 
-fun serializeComment(comment: Comment): String {
+private fun serializeComment(comment: Comment): String {
     return buildString {
         for (line in comment.text.lines()) {
             appendLine("# $line")
@@ -59,11 +77,11 @@ fun serializeComment(comment: Comment): String {
     }
 }
 
-fun serializeDeprecated(deprecated: KhsDeprecated): String {
+private fun serializeDeprecated(deprecated: KhsDeprecated): String {
     return "Warning: This field has been DEPRECATED since ${deprecated.since}"
 }
 
-fun <T : Any> serializeClass(instance: T): String {
+private fun <T : Any> serializeClass(instance: T): String {
     val type = instance::class
     require(type.isData) { "$type is not a data class" }
 
@@ -92,7 +110,7 @@ fun <T : Any> serializeClass(instance: T): String {
             if (lines.isEmpty()) continue
 
             // no indentation if only a single item
-            if (lines.size == 1 && typeInline(value)) {
+            if (lines.size == 1 && isValueInline(value)) {
                 appendLine("${prop.name}: ${lines[0]}")
                 continue
             }
@@ -105,10 +123,10 @@ fun <T : Any> serializeClass(instance: T): String {
     }
 }
 
-fun <T> serializeList(list: List<T>): String {
+private fun <T> serializeList(list: List<T>): String {
     if (list.isEmpty()) return "[]"
 
-    if (list.size == 1 && typeInline(list)) {
+    if (list.size == 1 && isValueInline(list)) {
         val text = serialize(list[0])
         return "[$text]"
     }
@@ -124,7 +142,7 @@ fun <T> serializeList(list: List<T>): String {
     }
 }
 
-fun <K, V> serializeMap(map: Map<K, V>): String {
+private fun <K, V> serializeMap(map: Map<K, V>): String {
     if (map.isEmpty()) return "{}"
 
     return buildString {
@@ -135,7 +153,7 @@ fun <K, V> serializeMap(map: Map<K, V>): String {
 
             if (lines.isEmpty()) continue
 
-            if (lines.size == 1 && typeInline(value)) {
+            if (lines.size == 1 && isValueInline(value)) {
                 appendLine("$keyString: ${lines[0]}")
                 continue
             }
@@ -149,29 +167,18 @@ fun <K, V> serializeMap(map: Map<K, V>): String {
     }
 }
 
-fun <T : Any> serializePrimitive(value: T): String {
-    val stringYaml =
-        Yaml(
-            DumperOptions().apply {
-                defaultScalarStyle = DumperOptions.ScalarStyle.SINGLE_QUOTED
-                splitLines = false
-            },
-        )
-    val yaml = Yaml()
-    return when (value) {
-        is String -> stringYaml.dump(value)
-        is LocaleString1 -> stringYaml.dump(value.inner)
-        is LocaleString2 -> stringYaml.dump(value.inner)
-        is LocaleString3 -> stringYaml.dump(value.inner)
-        is Int -> yaml.dump(value)
-        is UInt -> yaml.dump(value.toInt())
-        is Long -> yaml.dump(value)
-        is ULong -> yaml.dump(value.toLong())
-        is Boolean -> yaml.dump(value)
-        is Float -> yaml.dump(value)
-        is Double -> yaml.dump(value)
-        else -> error("cannot serialize '$value'")
-    }.trim()
+private fun <T : Any> serializePrimitive(value: T): String {
+    val normalized: Any =
+        when (value) {
+            is LocaleString1 -> value.inner
+            is LocaleString2 -> value.inner
+            is LocaleString3 -> value.inner
+            is UInt -> value.toInt()
+            is ULong -> value.toLong()
+            else -> value
+        }
+
+    return mapper.writeValueAsString(normalized).removePrefix("---").trim()
 }
 
 fun <T : Any> serialize(value: T?): String {
@@ -185,4 +192,32 @@ fun <T : Any> serialize(value: T?): String {
         type.isSubclassOf(Map::class) -> serializeMap(value as Map<*, *>)
         else -> serializePrimitive(value)
     }
+}
+
+private fun merge(target: ObjectNode, source: ObjectNode): ObjectNode {
+    source.properties().forEach { (key, value) ->
+        val existing = target.get(key)
+        if (existing is ObjectNode && value is ObjectNode) {
+            merge(existing, value)
+        } else {
+            target.set<JsonNode>(key, value)
+        }
+    }
+    return target
+}
+
+fun <T : Any> deserialize(type: KClass<T>, ins: InputStream?): T {
+    val reader = ins?.let { InputStreamReader(it) }
+    return deserialize(type, reader)
+}
+
+fun <T : Any> deserialize(type: KClass<T>, ins: Reader?): T {
+    val defaults = type.createInstance()
+    if (ins == null) return defaults
+
+    val defaultsNode = mapper.valueToTree<ObjectNode>(defaults)
+    val loadedNode = mapper.readTree(ins)
+    merge(defaultsNode, loadedNode as ObjectNode)
+
+    return mapper.treeToValue(defaultsNode, type.java)
 }
