@@ -25,12 +25,12 @@ hikari = "4.0.3"
 
 # bukkit
 spigot = "26.1.2-R0.1-SNAPSHOT"
-xseries = "13.6.0+26.1"
+xseries = "13.7.0"
 placeholderapi = "2.12.2"
 
 # modding
 minecraft = "26.1.2"
-architectury = "19.0.1"
+architectury = "20.0.4"
 architectury-loom = "1.14-SNAPSHOT"
 architectury-plugin = "3.5-SNAPSHOT"
 
@@ -67,7 +67,7 @@ hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 
 # bukkit
 spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
-xseries = { module = "io.github.almighty-satan:XSeries", version.ref = "xseries" }
+xseries = { module = "com.github.cryptomorin:XSeries", version.ref = "xseries" }
 placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
 
 # modding
