@@ -27,6 +27,7 @@ hikari = "4.0.3"
 spigot = "26.1.2-R0.1-SNAPSHOT"
 xseries = "13.7.+"
 placeholderapi = "2.+"
+bstats = "3.+"
 
 # modding
 minecraft = "26.1.2"
@@ -70,6 +71,7 @@ hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
 xseries = { module = "com.github.cryptomorin:XSeries", version.ref = "xseries" }
 placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
+bstats-bukkit = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
 
 # modding
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }

@@ -138,6 +138,7 @@ subprojects {
                 "org.jetbrains.exposed",
                 "com.zaxxer.hikari",
                 "com.fasterxml.jackson",
+                "org.bstats",
                 // bukkit
                 "com.cryptomorin.xseries",
             )
