@@ -4,7 +4,12 @@ import cat.freya.khs.Khs
 import cat.freya.khs.PlaceholderRequest
 import cat.freya.khs.bukkit.event.*
 import cat.freya.khs.handlePlaceholder
+import cat.freya.khs.math.toInt
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
+import org.bstats.bukkit.Metrics
+import org.bstats.charts.SimpleBarChart
+import org.bstats.charts.SimplePie
+import org.bstats.charts.SingleLineChart
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -37,6 +42,7 @@ class KhsPlugin : JavaPlugin() {
 
         registerListeners()
         registerPAPI()
+        registerMetrics()
     }
 
     override fun onDisable() {
@@ -83,6 +89,46 @@ class KhsPlugin : JavaPlugin() {
                 return handlePlaceholder(req)
             }
         }.register()
+    }
+
+    private fun registerMetrics() {
+        // hook into bstats
+        val metrics = Metrics(this, 31_824)
+
+        // track server locale
+        metrics.addCustomChart(
+            SimplePie("locale") {
+                khs.locale.locale
+            },
+        )
+
+        // players in game
+        metrics.addCustomChart(
+            SingleLineChart("in_game_players") {
+                khs.game.teams
+                    .size()
+                    .toInt()
+            },
+        )
+
+        // track some config values
+        metrics.addCustomChart(
+            SimpleBarChart("features") {
+                mapOf(
+                    "PVP" to khs.config.pvp.toInt(),
+                    "Taunt" to
+                        khs.config.taunt.enabled
+                            .toInt(),
+                    "Glow" to
+                        khs.config.glow.enabled
+                            .toInt(),
+                    "Block Hunt" to
+                        khs.maps.values
+                            .any { it.config.blockHunt.enabled }
+                            .toInt(),
+                )
+            },
+        )
     }
 
     fun scheduleTask(fn: () -> Unit) {
