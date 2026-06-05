@@ -133,21 +133,20 @@ subprojects {
 
         // relocate shaded deps
         val relocations =
-            listOf(
+            setOf(
                 // core
                 "org.jetbrains.exposed",
                 "com.zaxxer.hikari",
+                "com.fasterxml.jackson",
                 // bukkit
                 "com.cryptomorin.xseries",
             )
-        relocations.forEach { dep ->
-            val module = dep.split('.').last()
-            val hasDep =
-                project.configurations
-                    .flatMap { it.dependencies }
-                    .any { it.group == group }
-            if (hasDep) {
-                relocate(dep, "cat.freya.depend.$module")
+
+        relocations.forEach { pkg ->
+            runCatching {
+                // try to relocate and ignore on failure
+                val module = pkg.split('.').last()
+                relocate(pkg, "cat.freya.depend.$module")
             }
         }
 
