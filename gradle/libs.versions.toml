@@ -1,44 +1,44 @@
 [versions]
 # kotlin
-kotlin = "2.4.0"
-kotlinx-coroutines = "1.11.0"
+kotlin = "2.4.+"
+kotlinx-coroutines = "1.+"
 
 # gradle
-shadow = "9.4.2"
-ktlint = "14.2.0"
+shadow = "9.4.+"
+ktlint = "14.+"
 detekt = "2.0.0-alpha.3"
 
 # libs
-packetevents = "2.12.2"
-luckperms = "5.5"
-slf4j = "2.0.18"
-jackson = "2.21.4"
+packetevents = "2.+"
+luckperms = "5.+"
+slf4j = "2.0.+"
+jackson = "2.22.+"
 
 # orm
-exposed = "1.3.0"
+exposed = "1.+"
 
 # database
-sqlite = "3.53.2.0"
-mysql = "9.7.0"
-postgres = "42.7.11"
+sqlite = "3.+"
+mysql = "9.+"
+postgres = "42.+"
 hikari = "4.0.3"
 
 # bukkit
 spigot = "26.1.2-R0.1-SNAPSHOT"
-xseries = "13.7.0"
-placeholderapi = "2.12.2"
+xseries = "13.7.+"
+placeholderapi = "2.+"
 
 # modding
 minecraft = "26.1.2"
-architectury = "20.0.4"
+architectury = "20.+"
 architectury-loom = "1.14-SNAPSHOT"
 architectury-plugin = "3.5-SNAPSHOT"
 
 # fabric
-fabric-loader = "0.19.2"
+fabric-loader = "0.19.+"
 
 # neoforge
-neoforge = "26.1.2.43-beta"
+neoforge = "26.1.2.73"
 
 [libraries]
 # kotlin
