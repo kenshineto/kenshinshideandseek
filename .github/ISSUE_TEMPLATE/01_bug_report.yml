@@ -45,6 +45,17 @@ body:
       default: 0
     validations:
       required: true
+  - type: "input"
+    id: "javaversion"
+    attributes:
+      label: "Java Version"
+      description: |
+        Enter the java version the Minecraft server is running on
+
+        You can get this information from running `java --version`
+      placeholder: openjdk 25.0.4 2026-07-21
+    validations:
+      required: true
   - type: "checkboxes"
     id: "checklist"
     attributes:
