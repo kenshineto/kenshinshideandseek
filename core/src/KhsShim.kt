@@ -14,9 +14,6 @@ import java.util.UUID
 
 /** Root interface that allows the core mod/plugin interface with the underlying platform */
 interface KhsShim {
-    /** Friendly string of the mod/plugin version */
-    val pluginVersion: String
-
     /** Friendly string of the minecraft server version */
     val serverVersion: String
 

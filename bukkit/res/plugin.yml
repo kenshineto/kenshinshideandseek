@@ -1,7 +1,7 @@
-name: ${name}
+name: ${id}
 main: cat.freya.khs.bukkit.KhsPlugin
 version: ${version}
-author: KenshinEto
+author: ${author}
 website: freya.cat
 load: STARTUP
 api-version: 1.13

@@ -22,10 +22,10 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
     }
 
     private fun messageAbout(player: Player) {
-        val version = plugin.shim.pluginVersion
+        val info = plugin.buildInfo
         player.message(
-            "&b&lKenshin's Hide and Seek &7(&f$version&7)\n" +
-                "&7Author: &f[KenshinEto]\n" +
+            "&b&l${info.name} &7(&f${info.version}&7)\n" +
+                "&7Author: &f[${info.author}]\n" +
                 "&7Help Command: &b/hs &fhelp",
         )
     }

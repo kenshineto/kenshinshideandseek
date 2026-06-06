@@ -28,3 +28,24 @@ dependencies {
         exclude(group = "org.slf4j")
     }
 }
+
+val generateBuildInfo by tasks.registering {
+    val output = layout.buildDirectory.file("generated/res/buildInfo.yml")
+
+    outputs.file(output)
+
+    doLast {
+        output.get().asFile.apply {
+            parentFile.mkdirs()
+            writeText(rootProject.buildInfo.toYaml())
+        }
+    }
+}
+
+sourceSets.main {
+    resources.srcDir(layout.buildDirectory.dir("generated/res"))
+}
+
+tasks.processResources {
+    dependsOn(generateBuildInfo)
+}

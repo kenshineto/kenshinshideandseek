@@ -8,12 +8,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import java.util.concurrent.atomic.AtomicBoolean
 
-class KhsMod(val info: Info) {
-    data class Info(
-        val pluginVersion: String,
-        val platform: String,
-    )
-
+class KhsMod(val platform: String) {
     val enabled = AtomicBoolean(true)
     val server = ModServer(this)
     val shim = ModKhsShim(this)

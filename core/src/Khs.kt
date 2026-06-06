@@ -8,6 +8,7 @@ import cat.freya.khs.command.map.set.*
 import cat.freya.khs.command.map.unset.*
 import cat.freya.khs.command.util.CommandGroup
 import cat.freya.khs.command.world.*
+import cat.freya.khs.config.BuildInfo
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.config.KhsBoardConfig
@@ -55,6 +56,10 @@ class Khs(val shim: KhsShim) {
 
     /** Stores localized plugin messages */
     var locale: KhsLocale = KhsLocale()
+        private set
+
+    /** Stores information from gradle */
+    var buildInfo: BuildInfo = BuildInfo()
         private set
 
     /**
@@ -111,6 +116,7 @@ class Khs(val shim: KhsShim) {
     private val effectCache: MutableMap<EffectConfig, Effect?> = mutableMapOf()
 
     fun init() {
+        loadBuildInfo()
         printBanner()
         reloadConfig()
             .onFailure {
@@ -130,6 +136,10 @@ class Khs(val shim: KhsShim) {
         disguiser.cleanup()
     }
 
+    private fun loadBuildInfo() {
+        buildInfo = deserialize(BuildInfo::class, Khs::class.java.classLoader.getResourceAsStream("buildInfo.yml"))
+    }
+
     private fun printBanner() {
         val ansiReset = "\u001B[0m"
         val ansiBlue = "\u001B[94m"
@@ -137,7 +147,7 @@ class Khs(val shim: KhsShim) {
         val ansiGray = "\u001B[90m"
 
         val fullMcVersion = "${ansiGray}Running on ${shim.serverVersion}-${shim.platform}"
-        val fullPluginVersion = "${ansiGreen}Version ${shim.pluginVersion}"
+        val fullPluginVersion = "${ansiGreen}Version ${buildInfo.version}"
 
         shim.logger.info("$ansiBlue _  ___   _ ____$ansiReset")
         shim.logger.info("$ansiBlue| |/ / | | / ___|    $fullPluginVersion$ansiReset")

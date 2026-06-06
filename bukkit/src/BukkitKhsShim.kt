@@ -22,8 +22,6 @@ class BukkitLogger(val plugin: KhsPlugin) : KhsShim.Logger {
 }
 
 class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
-    override val pluginVersion: String = plugin.description.version
-
     override val serverVersion: String =
         Regex("""MC:\s*([\d.]+)""").find(plugin.server.version)?.groupValues?.get(1)
             ?: error("failed to parse mc version")

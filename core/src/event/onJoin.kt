@@ -20,7 +20,7 @@ fun onJoin(event: JoinEvent) {
 
     // send update message
     if (plugin.updateChecker.updateExists && player.hasPermission("hs.admin")) {
-        player.message(plugin.locale.prefix.default + "An update is available: &c${plugin.shim.pluginVersion} &f-> &a${plugin.updateChecker.latestVersion}")
+        player.message(plugin.locale.prefix.default + "An update is available: &c${plugin.buildInfo.version} &f-> &a${plugin.updateChecker.latestVersion}")
     }
 
     if (plugin.config.autoJoin) {

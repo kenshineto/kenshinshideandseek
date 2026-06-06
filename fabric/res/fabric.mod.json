@@ -4,7 +4,7 @@
 	"version": "${version}",
 	"name": "${name}",
 	"description": "The Best Hide and Seek and Block Hunt mod for Minecraft",
-	"authors": ["KenshinEto"],
+	"authors": ["${author}"],
 	"contact": {
 		"homepage": "https://freya.cat/",
 		"sources": "https://github.com/kenshineto/kenshinshideandseek2"

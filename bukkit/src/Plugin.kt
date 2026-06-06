@@ -77,7 +77,7 @@ class KhsPlugin : JavaPlugin() {
         object : PlaceholderExpansion() {
             override fun getIdentifier() = "hs"
 
-            override fun getAuthor() = "KenshinEto"
+            override fun getAuthor() = khs.buildInfo.author
 
             override fun getVersion() = me.description.version
 

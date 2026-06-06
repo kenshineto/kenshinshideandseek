@@ -28,7 +28,7 @@ class UpdateChecker(val plugin: Khs) {
         return runCatching {
             val connection = URI(endpoint).toURL().openConnection()
             connection.setRequestProperty("Accept", "application/vnd.github+json")
-            connection.setRequestProperty("User-Agent", "Kenshins Hide and Seek")
+            connection.setRequestProperty("User-Agent", plugin.buildInfo.id)
 
             val response = connection.inputStream.bufferedReader().use { it.readText() }
             val mapper = jacksonObjectMapper()
@@ -61,7 +61,7 @@ class UpdateChecker(val plugin: Khs) {
     fun check() {
         val release = getLatestGitHubRelease() ?: return
 
-        val currentVersion = plugin.shim.pluginVersion
+        val currentVersion = plugin.buildInfo.version
         val latestVersion = release.tagName.removePrefix("v")
         plugin.shim.logger.info("Latest plugin version: $latestVersion")
 

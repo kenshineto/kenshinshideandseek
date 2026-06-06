@@ -94,17 +94,11 @@ subprojects {
     }
 
     tasks.processResources {
-        val props =
-            mapOf(
-                "version" to providers.provider { rootProject.version.toString() },
-                "name" to providers.provider { rootProject.name },
-            )
-
-        inputs.properties(props.mapValues { it.value.get() })
+        inputs.properties(rootProject.buildInfo)
 
         val templates = listOf("**.yml", "**/*.json", "**/*.toml")
         templates.forEach { resource ->
-            filesMatching(resource) { expand(props.mapValues { it.value.get() }) }
+            filesMatching(resource) { expand(rootProject.buildInfo) }
         }
     }
 
