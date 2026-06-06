@@ -167,6 +167,8 @@ data class SeekerPingConfig(
 data class KhsConfig(
     // General
     @Section("General")
+    @Comment("Notify plugin admins of new updates")
+    var checkForUpdates: Boolean = true,
     @Comment("Allow players to drop their items in game")
     var dropItems: Boolean = false,
     @Comment("When the game is starting, the plugin will state there is x seconds left to hide.")

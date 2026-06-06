@@ -18,6 +18,11 @@ fun onJoin(event: JoinEvent) {
     // add to team cache
     game.teams.cachePut(player)
 
+    // send update message
+    if (plugin.updateChecker.updateExists && player.hasPermission("hs.admin")) {
+        player.message(plugin.locale.prefix.default + "An update is available: &c${plugin.shim.pluginVersion} &f-> &a${plugin.updateChecker.latestVersion}")
+    }
+
     if (plugin.config.autoJoin) {
         game.join(player.uuid)
         return

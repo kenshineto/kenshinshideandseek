@@ -98,6 +98,9 @@ class Khs(val shim: KhsShim) {
     /** If a map save is currently in progress */
     val saving: AtomicBoolean = AtomicBoolean(false)
 
+    /** checks for plugin updates */
+    val updateChecker: UpdateChecker = UpdateChecker(this)
+
     /** Caches parseMaterial requests */
     private val materialCache: MutableMap<String, Material?> = mutableMapOf()
 
@@ -114,6 +117,7 @@ class Khs(val shim: KhsShim) {
                 shim.logger.warning("Plugin loaded with errors :(")
                 shim.disable()
             }.onSuccess {
+                updateChecker.check()
                 shim.logger.info("Plugin loaded successfully!")
                 saveConfig()
             }

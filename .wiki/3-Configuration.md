@@ -5,6 +5,7 @@ The config.yml file contains all the general settings for the plugin, ranging fr
 
 | Name | Default | Type | Description |
 | ------------- | ------------- |------------- | ------------- |
+| checkForUpdates | true | bool | Check for updates on server startup, and notify players with the `hs.admin` permission |
 | dropItems | false | bool | Allows players to drop items from their inventory. |
 | countdownDisplay | CHAT | enum | Where countdown messages are displayed. |
 | nametagsVisible | false | bool | Allow Hiders to see their own teams nametags as well as seekers. Seekers can never see nametags |

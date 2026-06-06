@@ -13,6 +13,8 @@ commands:
     usage: /hideandseek [command]
     aliases: hs
 permissions:
+  hs.admin:
+    default: op
   hs.confirm:
     default: op
   hs.debug:
