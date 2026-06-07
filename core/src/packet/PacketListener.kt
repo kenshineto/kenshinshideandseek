@@ -1,6 +1,8 @@
 package cat.freya.khs.packet
 
 import cat.freya.khs.Khs
+import cat.freya.khs.world.Player
+import cat.freya.khs.world.toPosition
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.event.PacketListener
 import com.github.retrooper.packetevents.event.PacketListenerPriority
@@ -45,13 +47,38 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
     // dont allow spectators to make sounds
     // sadly this does not include the punch sound
     private fun handleSpectatorSound(event: PacketSendEvent): Boolean {
-        if (event.packetType != ENTITY_SOUND_EFFECT) return false
+        val player = plugin.shim.wrapPlayer(event.getPlayer()) ?: return false
+        val cause: Player? =
+            when (event.packetType) {
+                ENTITY_SOUND_EFFECT -> {
+                    val packet = WrapperPlayServerEntitySoundEffect(event)
+                    plugin.shim.getPlayers().firstOrNull { it.entityId == packet.entityId }
+                }
+                SOUND_EFFECT -> {
+                    val packet = WrapperPlayServerSoundEffect(event)
+                    val sound = packet.sound.toString().lowercase()
 
-        val packet = WrapperPlayServerEntitySoundEffect(event)
-        val entityId = packet.entityId
-        val player =
-            plugin.shim.getPlayers().firstOrNull { it.entityId == entityId } ?: return false
-        return plugin.game.teams.isSpectator(player.uuid)
+                    val blockedSounds = setOf("step", "ladder", "fall", "swim", "splash")
+                    if (blockedSounds.none { sound.contains(it) }) {
+                        return false
+                    }
+
+                    plugin.shim
+                        .getPlayers()
+                        .filter {
+                            player.uuid != it.uuid
+                        }.minByOrNull {
+                            val pos1 = packet.position.toPosition()
+                            val pos2 = player.getLocation().toPosition()
+                            pos1.distance(pos2)
+                        }
+                }
+                else -> return false
+            }
+
+        if (cause == null) return false
+
+        return plugin.game.teams.isSpectator(cause.uuid)
     }
 
     private fun debugEntityMetadata(event: PacketSendEvent) {

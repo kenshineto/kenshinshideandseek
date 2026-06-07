@@ -2,6 +2,8 @@ package cat.freya.khs.world
 
 import cat.freya.khs.config.LegacyPosition
 import cat.freya.khs.math.Vector
+import com.github.retrooper.packetevents.util.Vector3d
+import com.github.retrooper.packetevents.util.Vector3i
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -33,3 +35,7 @@ data class Position(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.
         return Position(x, y, z, yaw, pitch)
     }
 }
+
+fun Vector3d.toPosition() = Position(x, y, z)
+
+fun Vector3i.toPosition() = Position(x.toDouble(), y.toDouble(), z.toDouble())
