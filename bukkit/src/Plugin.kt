@@ -104,7 +104,7 @@ class KhsPlugin : JavaPlugin() {
 
         // players in game
         metrics.addCustomChart(
-            SingleLineChart("in_game_players") {
+            SingleLineChart("inGamePlayers") {
                 khs.game.teams
                     .size()
                     .toInt()
