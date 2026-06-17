@@ -24,7 +24,7 @@ postgres = "42.+"
 hikari = "4.0.3"
 
 # bukkit
-spigot = "26.1.2-R0.1-SNAPSHOT"
+spigot = "26.2-R0.1-SNAPSHOT"
 xseries = "13.7.+"
 placeholderapi = "2.+"
 bstats = "3.+"
