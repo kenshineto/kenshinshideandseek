@@ -6,6 +6,7 @@ import dev.architectury.event.events.common.CommandRegistrationEvent
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
+import net.minecraft.network.chat.TextColor
 import java.util.concurrent.atomic.AtomicBoolean
 
 class KhsMod(val platform: String) {
@@ -83,16 +84,13 @@ class KhsMod(val platform: String) {
                 }
 
                 val code = input[i++].lowercaseChar()
-                val format = ChatFormatting.getByCode(code)
-
-                if (format == null) {
-                    continue
-                }
+                val format = ChatFormatting.getByCode(code) ?: continue
+                val asColor = TextColor.fromLegacyFormat(format)
 
                 style =
                     when {
                         format == ChatFormatting.RESET -> Style.EMPTY
-                        format.isColor -> Style.EMPTY.withColor(format)
+                        asColor != null -> Style.EMPTY.withColor(format)
                         else -> style.applyFormat(format)
                     }
             }

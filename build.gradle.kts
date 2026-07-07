@@ -129,10 +129,11 @@ subprojects {
         val relocations =
             setOf(
                 // core
-                "org.jetbrains.exposed",
-                "com.zaxxer.hikari",
-                "com.fasterxml.jackson",
                 "org.bstats",
+                "com.fasterxml.jackson",
+                "org.jetbrains.exposed",
+                "org.yaml.snakeyaml",
+                "com.zaxxer.hikari",
                 // bukkit
                 "com.cryptomorin.xseries",
             )

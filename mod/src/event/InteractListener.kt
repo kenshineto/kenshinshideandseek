@@ -12,7 +12,6 @@ import dev.architectury.event.events.common.InteractionEvent
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResult
 
 class InteractListener(val mod: KhsMod) {
     init {
@@ -25,10 +24,7 @@ class InteractListener(val mod: KhsMod) {
         }
 
         InteractionEvent.INTERACT_ENTITY.register { player, _, _ ->
-            when (handleInteract(player as ServerPlayer, null)) {
-                InteractionResult.PASS -> EventResult.pass()
-                else -> EventResult.interruptFalse()
-            }
+            handleInteract(player as ServerPlayer, null)
         }
 
         InteractionEvent.RIGHT_CLICK_ITEM.register { player, hand ->
@@ -36,24 +32,24 @@ class InteractListener(val mod: KhsMod) {
         }
     }
 
-    private fun handleInteract(player: ServerPlayer, pos: BlockPos?): InteractionResult {
+    private fun handleInteract(player: ServerPlayer, pos: BlockPos?): EventResult {
         val block = pos?.let { player.level().getBlockState(it) }
 
         val khsPlayer = ModPlayer(mod, player)
         val khsEvent = InteractEvent(mod.khs, khsPlayer, block?.block?.name?.string)
         onInteract(khsEvent)
 
-        return if (khsEvent.cancelled) InteractionResult.FAIL else InteractionResult.PASS
+        return if (khsEvent.cancelled) EventResult.interruptFalse() else EventResult.pass()
     }
 
-    private fun handleUse(player: ServerPlayer, hand: InteractionHand): InteractionResult {
+    private fun handleUse(player: ServerPlayer, hand: InteractionHand): EventResult {
         val item = player.getItemInHand(hand)
 
         val khsPlayer = ModPlayer(mod, player)
-        val khsItem = ModItem.wrap(item) ?: return InteractionResult.PASS
+        val khsItem = ModItem.wrap(item) ?: return EventResult.pass()
         val khsEvent = UseEvent(mod.khs, khsPlayer, khsItem)
         onUse(khsEvent)
 
-        return if (khsEvent.cancelled) InteractionResult.FAIL else InteractionResult.PASS
+        return if (khsEvent.cancelled) EventResult.interruptFalse() else EventResult.pass()
     }
 }

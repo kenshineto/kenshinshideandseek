@@ -9,7 +9,7 @@ ktlint = "14.+"
 detekt = "2.0.0-alpha.4"
 
 # libs
-packetevents = "2.+"
+packetevents = "2.13.+"
 luckperms = "5.+"
 slf4j = "2.0.+"
 jackson = "2.22.+"
@@ -24,22 +24,22 @@ postgres = "42.+"
 hikari = "4.0.3"
 
 # bukkit
-spigot = "26.1.2-R0.1-SNAPSHOT"
+spigot = "26.2-R0.1-SNAPSHOT"
 xseries = "13.7.+"
 placeholderapi = "2.+"
 bstats = "3.+"
 
 # modding
-minecraft = "26.1.2"
-architectury = "20.+"
-architectury-loom = "1.14-SNAPSHOT"
+minecraft = "26.2"
+architectury = "21.+"
+architectury-loom = "1.17-SNAPSHOT"
 architectury-plugin = "3.5-SNAPSHOT"
 
 # fabric
 fabric-loader = "0.19.+"
 
 # neoforge
-neoforge = "26.1.2.73"
+neoforge = "26.2.0.8-beta"
 
 [libraries]
 # kotlin
