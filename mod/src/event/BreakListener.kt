@@ -12,7 +12,7 @@ import net.minecraft.world.entity.EntityType
 
 class BreakListener(val mod: KhsMod) {
     init {
-        BlockEvent.BREAK.register { _, _, state, player, _ ->
+        BlockEvent.BREAK.register { _, _, state, player ->
             handleBreak(player as ServerPlayer, state.block.name.string)
         }
 

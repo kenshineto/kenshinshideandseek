@@ -23,7 +23,10 @@ class InventoryListener(val plugin: KhsPlugin) : Listener {
 
     private fun getInventory(event: InventoryEvent): Pair<Inventory, String?> {
         if (plugin.shim.supports(14)) {
-            val inv = event.view.topInventory
+            val view = event.view
+            val getTopInventory = view::class.java.getMethod("getTopInventory")
+            getTopInventory.setAccessible(true)
+            val inv = getTopInventory.invoke(view) as Inventory
             return inv to event.view.title
         } else {
             val inv = event.inventory
