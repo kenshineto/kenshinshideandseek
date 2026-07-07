@@ -13,7 +13,7 @@ body:
         If you are using an older version, please update to the latest version and check if the issue persists before continuing this bug report
       options:
         - "Please select a version"
-        - "2.1.2"
+        - "2.2.0"
         - "main branch (latest commit)"
       default: 0
     validations:
@@ -25,8 +25,8 @@ body:
       description: |
         Enter the Minecraft version you are running on your server
 
-        The currently supported versions are 1.8.x-26.1.x
-      placeholder: 26.1.2
+        The currently supported versions are 1.8.x-26.2.x
+      placeholder: 26.2
     validations:
       required: true
   - type: "dropdown"

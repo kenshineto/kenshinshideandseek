@@ -7,7 +7,7 @@
 - Block hunt with custom disguises
 - Multiple maps per server
 
-**Supported Versions: 1.8.x - 26.1.x**
+**Supported Versions: 1.8.x - 26.2.x**
 
 **Installation**
 1. Make sure to be running a Spigot/Paper server
