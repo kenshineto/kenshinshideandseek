@@ -42,7 +42,10 @@ class KhsPlugin : JavaPlugin() {
 
         registerListeners()
         registerPAPI()
-        registerMetrics()
+
+        if (khs.buildInfo.telemetry) {
+            registerMetrics()
+        }
     }
 
     override fun onDisable() {
@@ -93,7 +96,7 @@ class KhsPlugin : JavaPlugin() {
 
     private fun registerMetrics() {
         // hook into bstats
-        val metrics = Metrics(this, 31_824)
+        val metrics = Metrics(this, khs.buildInfo.bstatsId)
 
         // track server locale
         metrics.addCustomChart(
