@@ -8,3 +8,4 @@ build
 bukkit/build
 core/build
 neoforge/runs
+gradle.properties
