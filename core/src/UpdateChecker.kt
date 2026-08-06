@@ -21,7 +21,7 @@ class UpdateChecker(val plugin: Khs) {
         private set
 
     private fun getLatestGitHubRelease(): GitHubRelease? {
-        if (!plugin.config.checkForUpdates) {
+        if (!(plugin.config.checkForUpdates && plugin.buildInfo.telemetry)) {
             return null
         }
 
