@@ -37,7 +37,7 @@ val generateBuildInfo by tasks.registering {
     doLast {
         output.get().asFile.apply {
             parentFile.mkdirs()
-            writeText(rootProject.buildInfo.toYaml())
+            writeText(rootProject.getBuildInfoYaml())
         }
     }
 }
