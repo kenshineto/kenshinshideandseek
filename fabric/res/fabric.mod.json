@@ -24,11 +24,11 @@
         "khs.mixins.json"
     ],
 	"depends": {
-		"fabricloader": ">=0.18.6",
-		"minecraft": "~26.1",
+		"fabricloader": ">=${fabricloader}",
+		"minecraft": "~${minecraft}",
 		"java": ">=25",
-		"architectury": ">=18.0.6",
-		"packetevents": ">=2.12",
+		"architectury": ">=${architectury}",
+		"packetevents": ">=${packetevents}",
 		"fabric-language-kotlin": "*"
 	}
 }

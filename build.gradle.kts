@@ -94,11 +94,11 @@ subprojects {
     }
 
     tasks.processResources {
-        inputs.properties(rootProject.buildInfo)
+        inputs.properties(rootProject.getBuildInfo())
 
         val templates = listOf("**.yml", "**/*.json", "**/*.toml")
         templates.forEach { resource ->
-            filesMatching(resource) { expand(rootProject.buildInfo) }
+            filesMatching(resource) { expand(rootProject.getBuildInfo()) }
         }
     }
 
