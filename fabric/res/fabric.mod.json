@@ -7,7 +7,7 @@
 	"authors": ["${author}"],
 	"contact": {
 		"homepage": "https://freya.cat/",
-		"sources": "https://github.com/kenshineto/kenshinshideandseek2"
+		"sources": "https://github.com/kenshineto/kenshinshideandseek"
 	},
 	"license": "GPL3",
 	"icon": "assets/logo.png",

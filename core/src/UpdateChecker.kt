@@ -11,7 +11,7 @@ private data class GitHubRelease(
 )
 
 class UpdateChecker(val plugin: Khs) {
-    private val repo = "kenshineto/kenshinshideandseek2"
+    private val repo = "kenshineto/kenshinshideandseek"
     private val endpoint = "https://api.github.com/repos/$repo/releases/latest"
 
     var latestVersion: String? = null

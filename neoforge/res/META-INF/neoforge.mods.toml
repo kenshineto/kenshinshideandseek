@@ -1,7 +1,7 @@
 modLoader = "kotlinforforge"
 loaderVersion="[5.10,)"
 license = "GPLv3"
-issueTrackerURL = "https://github.com/kenshineto/kenshinshideandseek2/issues"
+issueTrackerURL = "https://github.com/kenshineto/kenshinshideandseek/issues"
 
 [[mods]]
 modId = "khs"

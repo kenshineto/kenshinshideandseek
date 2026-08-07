@@ -1,14 +1,14 @@
-![](https://github.com/kenshineto/kenshinshideandseek2/blob/main/img/banner.png?raw=true)
+![](https://github.com/kenshineto/kenshinshideandseek/blob/main/img/banner.png?raw=true)
 
 # Kenshins Hide and Seek
 
-[![Latest Release](https://img.shields.io/github/v/release/kenshineto/kenshinshideandseek2)](https://github.com/kenshineto/kenshinshideandseek2)
-[![Build Status](https://github.com/kenshineto/kenshinshideandseek2/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/kenshineto/kenshinshideandseek2/actions)
-[![License](https://img.shields.io/github/license/kenshineto/kenshinshideandseek2)](https://github.com/kenshineto/kenshinshideandseek2/blob/main/LICENSE)
+[![Latest Release](https://img.shields.io/github/v/release/kenshineto/kenshinshideandseek)](https://github.com/kenshineto/kenshinshideandseek)
+[![Build Status](https://github.com/kenshineto/kenshinshideandseek/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/kenshineto/kenshinshideandseek/actions)
+[![License](https://img.shields.io/github/license/kenshineto/kenshinshideandseek)](https://github.com/kenshineto/kenshinshideandseek/blob/main/LICENSE)
 
 ## Installation
 
-For general plugin information and resources, view the [description](https://github.com/kenshineto/kenshinshideandseek2/blob/main/DESCRIPTION.md)
+For general plugin information and resources, view the [description](https://github.com/kenshineto/kenshinshideandseek/blob/main/DESCRIPTION.md)
 
 ## Building
 
@@ -25,7 +25,7 @@ Note, PacketEvents currently does not have a NeoForge version so that module can
 
 Contributions are always welcome. GitHub is used to make contributing as easy as possible.
 
-For instructions please view [CONTRIBUTING.md](https://github.com/kenshineto/kenshinshideandseek2/blob/main/CONTRIBUTING.md)
+For instructions please view [CONTRIBUTING.md](https://github.com/kenshineto/kenshinshideandseek/blob/main/CONTRIBUTING.md)
 
 ## Official Pages
 
