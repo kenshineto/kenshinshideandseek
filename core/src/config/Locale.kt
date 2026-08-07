@@ -300,6 +300,12 @@ data class LocaleConfirmConfig(
     var confirm: String = "Run /hs confirm within 10s to confirm",
 )
 
+data class LocaleMiscConfig(
+    @Comment("{1} - The current plugin version")
+    @Comment("{2} - The available pluging version to update to")
+    val updateAvailable: LocaleString2 = LocaleString2("An update is available: &c{1} &f-> &a{2}"),
+)
+
 data class KhsLocale(
     @Section("Language") @Comment("What language is this for?") var locale: String = "en_US",
     @Section("Message prefixes")
@@ -319,4 +325,5 @@ data class KhsLocale(
     @Section("World") var world: LocaleWorldConfig = LocaleWorldConfig(),
     @Section("Database") var database: LocaleDatabaseConfig = LocaleDatabaseConfig(),
     @Section("Confirm") var confirm: LocaleConfirmConfig = LocaleConfirmConfig(),
+    @Section("Misc") var misc: LocaleMiscConfig = LocaleMiscConfig(),
 )

@@ -20,7 +20,14 @@ fun onJoin(event: JoinEvent) {
 
     // send update message
     if (plugin.updateChecker.updateExists && player.hasPermission("hs.admin")) {
-        player.message(plugin.locale.prefix.default + "An update is available: &c${plugin.buildInfo.version} &f-> &a${plugin.updateChecker.latestVersion}")
+        val currentVersion = plugin.buildInfo.version
+        val latestVersion = plugin.updateChecker.latestVersion ?: ""
+
+        player.message(
+            plugin.locale.prefix.default +
+                plugin.locale.misc.updateAvailable
+                    .with(currentVersion, latestVersion),
+        )
     }
 
     if (plugin.config.autoJoin) {

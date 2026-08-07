@@ -21,10 +21,6 @@ class UpdateChecker(val plugin: Khs) {
         private set
 
     private fun getLatestGitHubRelease(): GitHubRelease? {
-        if (!(plugin.config.checkForUpdates && plugin.buildInfo.telemetry)) {
-            return null
-        }
-
         return runCatching {
             val connection = URI(endpoint).toURL().openConnection()
             connection.setRequestProperty("Accept", "application/vnd.github+json")
@@ -59,6 +55,10 @@ class UpdateChecker(val plugin: Khs) {
     }
 
     fun check() {
+        // both must be set for update checking to work
+        if (!plugin.config.checkForUpdates || !plugin.buildInfo.telemetry)
+            return
+
         val release = getLatestGitHubRelease() ?: return
 
         val currentVersion = plugin.buildInfo.version
