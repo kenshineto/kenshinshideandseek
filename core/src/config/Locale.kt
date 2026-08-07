@@ -211,7 +211,8 @@ data class LocaleMapConfig(
     var none: String = "There are no maps known to the plugin (/hs map add <name> <world>)",
     var noneSetup: String = "There are no maps setup and ready to play",
     var invalidName: String = "A map name can only contain ascii numbers and letters",
-    var wrongWorld: String = "Please run this command in the game world",
+    @Comment("{1} - The name of the world to run the command in")
+    var wrongWorld: LocaleString1 = LocaleString1("Please run this command in the map's world: {1}"),
     var exists: String = "A map with this name already exists!",
     var unknown: String = "That map does not exist",
     @Comment("{1} - the name of the new map")
@@ -302,8 +303,13 @@ data class LocaleConfirmConfig(
 
 data class LocaleMiscConfig(
     @Comment("{1} - The current plugin version")
-    @Comment("{2} - The available pluging version to update to")
-    val updateAvailable: LocaleString2 = LocaleString2("An update is available: &c{1} &f-> &a{2}"),
+    @Comment("{2} - The available plugin version to update to")
+    var updateAvailable: LocaleString2 = LocaleString2("An update is available: &c{1} &f-> &a{2}"),
+)
+
+data class LocaleMetaConfig(
+    @Comment("This marks the revision of your locale.yml file, DO NOT EDIT THIS!!")
+    var revision: UInt? = null,
 )
 
 data class KhsLocale(
@@ -326,4 +332,20 @@ data class KhsLocale(
     @Section("Database") var database: LocaleDatabaseConfig = LocaleDatabaseConfig(),
     @Section("Confirm") var confirm: LocaleConfirmConfig = LocaleConfirmConfig(),
     @Section("Misc") var misc: LocaleMiscConfig = LocaleMiscConfig(),
-)
+    @Section("Metadata") var meta: LocaleMetaConfig = LocaleMetaConfig(),
+) {
+    fun migrate() {
+        // migrate locale revisions
+        var revision = meta.revision ?: 0u
+        val default = KhsLocale()
+
+        // Up to 2.2.0
+        if (revision == 0u) {
+            game.join = default.game.join
+            map.wrongWorld = default.map.wrongWorld
+            revision++
+        }
+
+        meta.revision = revision
+    }
+}

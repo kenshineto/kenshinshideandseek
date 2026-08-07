@@ -68,7 +68,13 @@ class Checks(val plugin: Khs, val player: Player) {
 
     /** cheks that the player is in the game world */
     fun inMapWorld(map: KhsMap?) {
-        if (map?.worldName != player.getLocation().worldName) error(plugin.locale.map.wrongWorld)
+        val worldName = map?.worldName ?: "null"
+        if (worldName != player.getLocation().worldName) {
+            error(
+                plugin.locale.map.wrongWorld
+                    .with(worldName),
+            )
+        }
     }
 
     /** Checks that the map exists and is set up */

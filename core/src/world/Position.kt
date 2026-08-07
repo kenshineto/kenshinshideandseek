@@ -1,6 +1,5 @@
 package cat.freya.khs.world
 
-import cat.freya.khs.config.LegacyPosition
 import cat.freya.khs.math.Vector
 import com.github.retrooper.packetevents.util.Vector3d
 import com.github.retrooper.packetevents.util.Vector3i
@@ -20,11 +19,6 @@ data class Position(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.
     /** Convert to a [Location] given a world name */
     fun toLocation(worldName: String): Location {
         return Location(this.x, this.y, this.z, worldName, this.yaw, this.pitch)
-    }
-
-    /** Convert to a [LegacyPosition] used for deprecated config values */
-    fun toLegacy(): LegacyPosition {
-        return LegacyPosition(x, y, z)
     }
 
     fun toVector(): Vector {

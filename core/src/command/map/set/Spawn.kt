@@ -23,7 +23,7 @@ class KhsMapSetSpawn : Command {
 
         runChecks(plugin, player) { spawnInRange(map, pos) }
 
-        map.config.spawns.game = pos.toLegacy()
+        map.config.spawns.game = pos
         map.reloadConfig()
 
         plugin.saveConfig()
