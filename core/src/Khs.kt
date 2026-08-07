@@ -28,8 +28,10 @@ import cat.freya.khs.packet.KhsPacketListener
 import cat.freya.khs.type.Effect
 import cat.freya.khs.type.Item
 import cat.freya.khs.type.Material
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.File
 import java.io.InputStream
+import java.net.URI
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
@@ -295,5 +297,19 @@ class Khs(val shim: KhsShim) {
     fun parseEffect(effectConfig: EffectConfig?): Effect? {
         if (effectConfig == null) return null
         return effectCache.getOrPut(effectConfig) { shim.parseEffect(effectConfig) }
+    }
+
+    inline fun <reified T : Any> fetchJson(url: String): T? {
+        return runCatching {
+            val connection = URI(url).toURL().openConnection()
+            connection.setRequestProperty("Accept", "application/json")
+            connection.setRequestProperty("User-Agent", "${buildInfo.id} ${buildInfo.version}")
+
+            val response = connection.inputStream.bufferedReader().use { it.readText() }
+            val mapper = jacksonObjectMapper()
+            return mapper.readValue(response, T::class.java)
+        }.onFailure {
+            shim.logger.warning("Failed to fetch '$url': ${it.message}")
+        }.getOrDefault(null)
     }
 }

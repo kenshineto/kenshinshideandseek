@@ -1,8 +1,6 @@
 package cat.freya.khs
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import java.net.URI
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 private data class GitHubRelease(
@@ -11,61 +9,33 @@ private data class GitHubRelease(
 )
 
 class UpdateChecker(val plugin: Khs) {
-    private val repo = "kenshineto/kenshinshideandseek"
-    private val endpoint = "https://api.github.com/repos/$repo/releases/latest"
+    var updateExists: Boolean = false
+        private set
 
     var latestVersion: String? = null
         private set
 
-    var updateExists: Boolean = false
-        private set
-
-    private fun getLatestGitHubRelease(): GitHubRelease? {
-        return runCatching {
-            val connection = URI(endpoint).toURL().openConnection()
-            connection.setRequestProperty("Accept", "application/vnd.github+json")
-            connection.setRequestProperty("User-Agent", plugin.buildInfo.id)
-
-            val response = connection.inputStream.bufferedReader().use { it.readText() }
-            val mapper = jacksonObjectMapper()
-            return mapper.readValue(response, GitHubRelease::class.java)
-        }.onFailure {
-            plugin.shim.logger.warning("Failed to fetch latest github release: ${it.message}")
-        }.getOrDefault(null)
-    }
-
-    private fun parseVersionString(version: String): List<UInt> {
-        return version.split(".").map { it.toUInt() }
-    }
-
-    private fun doesUpdateExist(latestString: String, currentString: String): Boolean {
-        val latest = parseVersionString(latestString)
-        val current = parseVersionString(currentString)
-        val count = minOf(current.size, latest.size)
-
-        for (i in 0 until count) {
-            val c = current[i]
-            val l = latest[i]
-
-            if (c < l) return true
-            if (c > l) return false
-        }
-
-        return latest.size > current.size
-    }
-
     fun check() {
         // both must be set for update checking to work
-        if (!plugin.config.checkForUpdates || !plugin.buildInfo.telemetry)
+        if (!plugin.config.checkForUpdates || !plugin.buildInfo.telemetry) {
             return
+        }
 
-        val release = getLatestGitHubRelease() ?: return
+        val endpoint = "https://api.github.com/repos/kenshineto/kenshinshideandseek/releases/latest"
+        val release: GitHubRelease = plugin.fetchJson(endpoint) ?: return
 
         val currentVersion = plugin.buildInfo.version
         val latestVersion = release.tagName.removePrefix("v")
         plugin.shim.logger.info("Latest plugin version: $latestVersion")
 
+        val currentParts = currentVersion.split(".").map(String::toUInt)
+        val latestParts = latestVersion.split(".").map(String::toUInt)
+
         this.latestVersion = latestVersion
-        this.updateExists = doesUpdateExist(latestVersion, currentVersion)
+        this.updateExists = currentParts
+            .zip(latestParts)
+            .firstOrNull { (c, l) -> c != l }
+            ?.let { (c, l) -> c < l }
+            ?: (latestParts.size > currentParts.size)
     }
 }
