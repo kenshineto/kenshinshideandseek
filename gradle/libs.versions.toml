@@ -4,9 +4,9 @@ kotlin = "2.4.+"
 kotlinx-coroutines = "1.+"
 
 # gradle
-shadow = "9.4.+"
+shadow = "9.6.+"
 ktlint = "14.+"
-detekt = "2.0.0-alpha.4"
+detekt = "2.0.0-alpha.6"
 
 # libs
 packetevents = "2.13.+"

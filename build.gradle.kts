@@ -147,6 +147,7 @@ subprojects {
         }
 
         // multiple database drivers may collide here
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
         mergeServiceFiles { include("META-INF/services/java.sql.Driver") }
 
         // remove META-INF crap
