@@ -10,6 +10,10 @@ Also make sure to use the PR template. If you remove the template and don't have
 
 If your PR was closed for not being a necessary feature, please do not resubmit the PR.
 
+### AI Policy
+
+Code generated in part or full with AI will not be approved in a PR.
+
 ### Style Guide
 
 This project uses [ktlint](https://pinterest.github.io/ktlint/latest/) for formatting and [detekt](https://detekt.dev/) for static code analysis.
