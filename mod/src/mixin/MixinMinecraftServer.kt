@@ -9,14 +9,14 @@ import org.spongepowered.asm.mixin.Mixin
 import org.spongepowered.asm.mixin.Shadow
 import java.util.concurrent.Executor
 
-interface MixinInitLevel {
+interface KhsMinecraftServerExt {
     fun initLevel(level: ServerLevel)
 
     fun removeLevel(key: ResourceKey<Level>, save: Boolean)
 }
 
 @Mixin(MinecraftServer::class)
-abstract class MixinMinecraftServer : MixinInitLevel {
+abstract class MixinMinecraftServer : KhsMinecraftServerExt {
     @Shadow
     lateinit var levels: MutableMap<ResourceKey<Level>, ServerLevel>
 

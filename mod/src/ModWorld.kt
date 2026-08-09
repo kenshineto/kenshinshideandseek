@@ -1,7 +1,7 @@
 package cat.freya.khs.mod
 
 import cat.freya.khs.mod.ModWorld
-import cat.freya.khs.mod.mixin.MixinMinecraftServer
+import cat.freya.khs.mod.mixin.KhsMinecraftServerExt
 import cat.freya.khs.world.AbstractWorld
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Position
@@ -125,7 +125,7 @@ class ModWorldLoader(val mod: KhsMod, override val name: String) : World.Abstrac
 
     override fun unload() {
         val key = ModWorld.parseKey(name) ?: return
-        val mixinServer = (mod.server.inner) as MixinMinecraftServer
+        val mixinServer = (mod.server.inner) as KhsMinecraftServerExt
         mixinServer.removeLevel(key, !isMapSave)
     }
 }
@@ -203,7 +203,7 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim
                 )
 
             // insert into minecraft server
-            val mixinServer = server as MixinMinecraftServer
+            val mixinServer = server as KhsMinecraftServerExt
             mixinServer.initLevel(level)
 
             return level
