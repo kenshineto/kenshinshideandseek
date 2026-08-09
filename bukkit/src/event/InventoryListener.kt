@@ -23,11 +23,16 @@ class InventoryListener(val plugin: KhsPlugin) : Listener {
 
     private fun getInventory(event: InventoryEvent): Pair<Inventory, String?> {
         if (plugin.shim.supports(14)) {
+            // modern versions of spiggot changed this from an interface to a class
+            // which will throw an exception and fail if we dont use reflection
             val view = event.view
             val getTopInventory = view::class.java.getMethod("getTopInventory")
             getTopInventory.setAccessible(true)
             val inv = getTopInventory.invoke(view) as Inventory
-            return inv to event.view.title
+            val getTitle = view::class.java.getMethod("getTitle")
+            getTitle.setAccessible(true)
+            val title = getTitle.invoke(view) as String
+            return inv to title
         } else {
             val inv = event.inventory
             val title = inv::class.java.getMethod("getName").invoke(inv) as String
