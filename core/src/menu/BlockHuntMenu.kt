@@ -3,6 +3,8 @@ package cat.freya.khs.menu
 import cat.freya.khs.Khs
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.game.KhsMap
+import cat.freya.khs.type.Item
+import cat.freya.khs.world.Player
 
 object BlockHuntMenu {
     const val PREFIX = "Select a Block: "
@@ -22,5 +24,12 @@ object BlockHuntMenu {
             .forEach { (i, item) -> inv.set(i.toUInt(), item) }
 
         return inv
+    }
+
+    fun onClick(plugin: Khs, player: Player, item: Item) {
+        if (!plugin.game.teams.contains(player.uuid)) return
+
+        plugin.disguiser.disguise(player, item.material)
+        player.closeInventory()
     }
 }

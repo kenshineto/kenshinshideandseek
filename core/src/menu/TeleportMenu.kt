@@ -8,9 +8,10 @@ import cat.freya.khs.world.Player
 
 object TeleportMenu {
     const val TITLE = "Teleport to players"
+    private const val PAGE_PREFIX = "Page "
 
     private fun createPageItem(plugin: Khs, page: UInt): Item? {
-        val config = ItemConfig("Page ${page + 1u}", "ENCHANTED_BOOK")
+        val config = ItemConfig("${PAGE_PREFIX}${page + 1u}", "ENCHANTED_BOOK")
         return plugin.parseItem(config)
     }
 
@@ -59,5 +60,25 @@ object TeleportMenu {
         if (next != null) inv.set(8u, next)
 
         return inv
+    }
+
+    fun onClick(plugin: Khs, player: Player, item: Item) {
+        val name = item.name ?: return
+
+        // how did you get access to this menu???
+        if (!plugin.game.teams.isSpectator(player.uuid)) return
+
+        if (item.similar("PLAYER_HEAD")) {
+            player.closeInventory()
+
+            val target = plugin.shim.getPlayer(name) ?: return
+            player.teleport(target.getLocation())
+        } else if (item.similar("ENCHANTED_BOOK") && name.startsWith(PAGE_PREFIX)) {
+            player.closeInventory()
+
+            val page = name.substring(PAGE_PREFIX.length).toUIntOrNull() ?: return
+            val inv = TeleportMenu.create(plugin, page - 1u) ?: return
+            player.showInventory(inv)
+        }
     }
 }
