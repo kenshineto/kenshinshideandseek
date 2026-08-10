@@ -7,15 +7,14 @@ import cat.freya.khs.type.Item
 import cat.freya.khs.world.Player
 
 object BlockHuntMenu {
-    const val PREFIX = "Select a Block: "
-
     fun create(plugin: Khs, map: KhsMap): Inventory? {
         val blocks = map.config.blockHunt.blocks
 
         // make inv
         val rows = (blocks.size.toUInt() + 8u) / 9u
         val size = minOf(rows * 9u, 9u)
-        val inv = plugin.shim.createInventory("$PREFIX${map.name}", size) ?: return null
+        val prefix = plugin.locale.menu.blockHuntPrefix
+        val inv = plugin.shim.createInventory("${prefix}${map.name}", size) ?: return null
 
         // add items
         blocks

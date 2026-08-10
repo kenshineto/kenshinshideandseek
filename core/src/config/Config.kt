@@ -197,7 +197,7 @@ data class KhsConfig(
     var spectatorItems: SpectatorItemsConfig = SpectatorItemsConfig(),
     @Comment("Configure the sounds that plays when a seeker is near")
     var seekerPing: SeekerPingConfig = SeekerPingConfig(),
-    @Comment("If to notify a seeker if they undisguised a player in block hunt")
+    @Comment("If to notify a seeker if they revealed a player in block hunt")
     val blockHuntNotify: Boolean = true,
     @Comment("For developers") var debug: Boolean = false,
     // Timing

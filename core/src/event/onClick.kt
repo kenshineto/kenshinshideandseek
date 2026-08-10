@@ -26,11 +26,11 @@ fun onClick(event: ClickEvent) {
         event.cancel()
     }
 
-    if (inv.title == TeleportMenu.TITLE) {
+    if (inv.title == plugin.locale.menu.teleportTitle) {
         TeleportMenu.onClick(plugin, player, item)
-    } else if (inv.title == DebugMenu.TITLE) {
+    } else if (inv.title == plugin.locale.menu.debugTitle) {
         DebugMenu.onClick(plugin, player, item)
-    } else if (inv.title?.startsWith(BlockHuntMenu.PREFIX) == true) {
+    } else if (inv.title?.startsWith(plugin.locale.menu.blockHuntPrefix) == true) {
         BlockHuntMenu.onClick(plugin, player, item)
     } else {
         // dont cancel the event

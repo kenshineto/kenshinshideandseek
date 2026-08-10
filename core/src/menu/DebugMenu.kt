@@ -7,8 +7,6 @@ import cat.freya.khs.type.Item
 import cat.freya.khs.world.Player
 
 object DebugMenu {
-    const val TITLE = "Debug Menu"
-
     private val BECOME_HIDER = ItemConfig("&6Become a &lHider", "LEATHER_CHESTPLATE")
     private val BECOME_SEEKER = ItemConfig("&cBecome a &lSEEKER", "GOLDEN_CHESTPLATE")
     private val BECOME_SPECTATOR = ItemConfig("&8Become a &lSPECTATOR", "IRON_CHESTPLATE")
@@ -65,7 +63,8 @@ object DebugMenu {
     }
 
     fun create(plugin: Khs): Inventory? {
-        val inv = plugin.shim.createInventory(TITLE, 9u) ?: return null
+        val title = plugin.locale.menu.debugTitle
+        val inv = plugin.shim.createInventory(title, 9u) ?: return null
         ACTIONS.keys
             .mapNotNull { plugin.parseItem(it) }
             .withIndex()

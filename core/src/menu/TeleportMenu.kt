@@ -7,11 +7,9 @@ import cat.freya.khs.type.Item
 import cat.freya.khs.world.Player
 
 object TeleportMenu {
-    const val TITLE = "Teleport to players"
-    private const val PAGE_PREFIX = "Page "
-
     private fun createPageItem(plugin: Khs, page: UInt): Item? {
-        val config = ItemConfig("${PAGE_PREFIX}${page + 1u}", "ENCHANTED_BOOK")
+        val prefix = plugin.locale.menu.teleportPrefix
+        val config = ItemConfig("${prefix}${page + 1u}", "ENCHANTED_BOOK")
         return plugin.parseItem(config)
     }
 
@@ -52,7 +50,8 @@ object TeleportMenu {
             }
 
         // create inv
-        val inv = plugin.shim.createInventory(TITLE, 9u) ?: return null
+        val title = plugin.locale.menu.teleportTitle
+        val inv = plugin.shim.createInventory(title, 9u) ?: return null
         for ((i, item) in items.withIndex()) {
             inv.set(i.toUInt() + 1u, item)
         }
@@ -64,6 +63,7 @@ object TeleportMenu {
 
     fun onClick(plugin: Khs, player: Player, item: Item) {
         val name = item.name ?: return
+        val prefix = plugin.locale.menu.teleportPrefix
 
         // how did you get access to this menu???
         if (!plugin.game.teams.isSpectator(player.uuid)) return
@@ -73,10 +73,10 @@ object TeleportMenu {
 
             val target = plugin.shim.getPlayer(name) ?: return
             player.teleport(target.getLocation())
-        } else if (item.similar("ENCHANTED_BOOK") && name.startsWith(PAGE_PREFIX)) {
+        } else if (item.similar("ENCHANTED_BOOK") && name.startsWith(prefix)) {
             player.closeInventory()
 
-            val page = name.substring(PAGE_PREFIX.length).toUIntOrNull() ?: return
+            val page = name.substring(prefix.length).toUIntOrNull() ?: return
             val inv = TeleportMenu.create(plugin, page - 1u) ?: return
             player.showInventory(inv)
         }

@@ -263,8 +263,8 @@ data class LocaleBlockHuntConfig(
     var enabled: String = "Block hunt has been enabled",
     var disabled: String = "Block hunt has been disabled",
     var block: LocaleBlockHuntBlockConfig = LocaleBlockHuntBlockConfig(),
-    @Comment("{1} - The player that was undisguised in block hunt")
-    val notify: LocaleString1 = LocaleString1("&oYou have undisguised {1}!"),
+    @Comment("{1} - The player that was revealed in block hunt")
+    val notify: LocaleString1 = LocaleString1("&oYou have revealed {1}!"),
 )
 
 data class LocaleWorldConfig(
@@ -303,6 +303,13 @@ data class LocaleConfirmConfig(
     var confirm: String = "Run /hs confirm within 10s to confirm",
 )
 
+data class LocaleMenuConfig(
+    var blockHuntPrefix: String = "Select a Block: ",
+    var teleportTitle: String = "Teleport to players",
+    var teleportPrefix: String = "Page ",
+    var debugTitle: String = "Debug Menu",
+)
+
 data class LocaleMiscConfig(
     @Comment("{1} - The current plugin version")
     @Comment("{2} - The available plugin version to update to")
@@ -333,6 +340,7 @@ data class KhsLocale(
     @Section("World") var world: LocaleWorldConfig = LocaleWorldConfig(),
     @Section("Database") var database: LocaleDatabaseConfig = LocaleDatabaseConfig(),
     @Section("Confirm") var confirm: LocaleConfirmConfig = LocaleConfirmConfig(),
+    @Section("Menu") var menu: LocaleMenuConfig = LocaleMenuConfig(),
     @Section("Misc") var misc: LocaleMiscConfig = LocaleMiscConfig(),
     @Section("Metadata") var meta: LocaleMetaConfig = LocaleMetaConfig(),
 ) {

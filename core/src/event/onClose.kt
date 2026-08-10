@@ -1,7 +1,6 @@
 package cat.freya.khs.event
 
 import cat.freya.khs.Khs
-import cat.freya.khs.menu.BlockHuntMenu
 import cat.freya.khs.menu.Inventory
 import cat.freya.khs.world.Player
 import kotlin.text.startsWith
@@ -13,7 +12,7 @@ fun onClose(event: CloseEvent) {
     val game = plugin.game
 
     // only block hunt matters here
-    if (inv.title?.startsWith(BlockHuntMenu.PREFIX) != true) return
+    if (inv.title?.startsWith(plugin.locale.menu.blockHuntPrefix) != true) return
 
     val blocks =
         game.map
