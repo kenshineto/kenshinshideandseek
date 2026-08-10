@@ -6,6 +6,7 @@ import cat.freya.khs.math.AABB
 import cat.freya.khs.math.Vector
 import cat.freya.khs.world.Player
 import java.util.UUID
+import kotlin.math.min
 
 private const val BLOCKHUNT_MAX_REACH: Double = 5.0
 
@@ -38,7 +39,7 @@ private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
         player.knockBack(direction)
         player
             .getWorld()
-            ?.playSound(player.getLocation().toPosition(), "ENTITY_PLAYER_HURT", 1.0, 1.0)
+            ?.playSound(player.getPosition(), "ENTITY_PLAYER_HURT", 1.0, 1.0)
     }
 
     // set and soon turn off debounce

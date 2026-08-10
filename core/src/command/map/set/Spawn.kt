@@ -19,7 +19,7 @@ class KhsMapSetSpawn : Command {
         }
 
         val map = plugin.maps[name] ?: return
-        val pos = player.getLocation().toPosition()
+        val pos = player.getPosition()
 
         runChecks(plugin, player) { spawnInRange(map, pos) }
 

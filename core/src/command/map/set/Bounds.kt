@@ -22,7 +22,7 @@ class KhsMapSetBounds : Command {
         val map = plugin.maps[name] ?: return
         val config = map.config.bounds
 
-        val pos = player.getLocation().toPosition()
+        val pos = player.getPosition()
         val num: Int
 
         if (config.min == null || config.max != null) {

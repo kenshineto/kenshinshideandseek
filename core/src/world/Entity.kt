@@ -21,6 +21,11 @@ interface Entity {
     /** @return the location of the entity */
     fun getLocation(): Location
 
+    /** @return the position of the entity */
+    fun getPosition(): Position {
+        return getLocation().toPosition()
+    }
+
     /** @return the pitch of the entity */
     fun getPitch(): Float
 

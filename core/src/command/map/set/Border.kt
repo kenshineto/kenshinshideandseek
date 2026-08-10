@@ -35,7 +35,7 @@ class KhsMapSetBorder : Command {
         val map = plugin.maps[name] ?: return
         val config = map.config.worldBorder
         config.enabled = true
-        config.pos = player.getLocation().toPosition()
+        config.pos = player.getPosition()
         config.size = size
         config.delay = delay
         config.move = move
@@ -54,7 +54,7 @@ class KhsMapSetBorder : Command {
                     .with(size, delay, move),
         )
 
-        val loc = player.getLocation().toPosition()
+        val loc = player.getPosition()
         map.getWorld()?.border?.move(loc.x, loc.z, size, 0UL)
     }
 
