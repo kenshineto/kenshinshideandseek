@@ -19,7 +19,7 @@ fun onJoin(event: JoinEvent) {
     game.teams.cachePut(player)
 
     // send update message
-    if (plugin.updateChecker.updateExists && player.hasPermission("hs.admin")) {
+    if (plugin.updateChecker.updateExists && player.hasPermission("hs.debug")) {
         val currentVersion = plugin.buildInfo.version
         val latestVersion = plugin.updateChecker.latestVersion ?: ""
 
