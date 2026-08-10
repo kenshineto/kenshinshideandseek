@@ -263,6 +263,8 @@ data class LocaleBlockHuntConfig(
     var enabled: String = "Block hunt has been enabled",
     var disabled: String = "Block hunt has been disabled",
     var block: LocaleBlockHuntBlockConfig = LocaleBlockHuntBlockConfig(),
+    @Comment("{1} - The player that was undisguised in block hunt")
+    val notify: LocaleString1 = LocaleString1("&oYou have undisguised {1}!"),
 )
 
 data class LocaleWorldConfig(

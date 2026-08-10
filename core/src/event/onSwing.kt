@@ -33,6 +33,13 @@ private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
     // emulate the attacker attacking the
     // player
     if (!khsEvent.cancelled) {
+        if (plugin.config.blockHuntNotify && disguise.shouldBeSolid) {
+            attacker.message(
+                plugin.locale.blockHunt.notify
+                    .with(player.name),
+            )
+        }
+
         val direction = attacker.getEyeDirection().normalize()
         direction.y = min(0.4, direction.y)
         disguise.shouldBeSolid = false

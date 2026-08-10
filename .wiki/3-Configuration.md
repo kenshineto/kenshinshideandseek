@@ -24,6 +24,7 @@ The config.yml file contains all the general settings for the plugin, ranging fr
 | seekerPing.sounds.leadingVolume | 0.5 | float | The first notes volume in the seeker ping cycle |
 | seekerPing.sounds.volume | 0.3 | float | The rest of the notes volumes in the seeker ping cycle |
 | seekerPing.sounds.pitch | 1 | float | The pitch of the seeker ping notes |
+| blockHuntNotify | true | bool | If to notify a seeker if they undisguised a player in block hunt. |
 | gameLength  | 1200 | int | How long in seconds will the game last, set it < 1 to disable |
 | hidingLength | 30 | int | How long do hiders have to hide before seekers are released |
 | endGameDelay | 5 | int | How long after the game ends till the next map is loaded |
