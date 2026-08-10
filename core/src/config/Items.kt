@@ -102,4 +102,9 @@ data class KhsItemsConfig(
                 particles = false,
             ),
         ),
-)
+) {
+    fun migrate() {
+        hiderItems.forEach(ItemConfig::migrate)
+        seekerItems.forEach(ItemConfig::migrate)
+    }
+}

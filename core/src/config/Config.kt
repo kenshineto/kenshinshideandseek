@@ -66,8 +66,20 @@ data class ItemConfig(
     @Omittable var unbreakable: Boolean? = null,
     @Omittable var modelData: UInt? = null,
     @Omittable var owner: String? = null,
+    @Omittable var effect: String? = null,
     var slot: UInt? = null,
-)
+) {
+    fun migrate() {
+        val parts = material.uppercase().split(":")
+        if (parts.size != 2) return
+
+        // migrate effect field
+        if (parts[0].endsWith("POTION") && effect == null) {
+            material = parts[0]
+            effect = parts[1]
+        }
+    }
+}
 
 data class EffectConfig(
     var type: String = "NONE",
@@ -279,4 +291,12 @@ data class KhsConfig(
     @Section("Auto Generated")
     @Comment("Location where players are teleported to when they run (/hs leave).")
     var exit: Location? = null,
-)
+) {
+    fun migrate() {
+        glow.item.migrate()
+        lobby.leaveItem.migrate()
+        lobby.startItem.migrate()
+        spectatorItems.flight.migrate()
+        spectatorItems.teleport.migrate()
+    }
+}

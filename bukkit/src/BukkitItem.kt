@@ -26,8 +26,7 @@ class BukkitItem(val inner: ItemStack, override val config: ItemConfig) : Item {
     companion object {
         fun parse(itemConfig: ItemConfig): BukkitItem? {
             val config = YamlConfiguration()
-            val materialParts = itemConfig.material.uppercase().split(":")
-            val material = materialParts.first()
+            val material = itemConfig.material.uppercase()
 
             // set name and material
             config.set("name", itemConfig.name?.let { formatText(it) })
@@ -56,7 +55,7 @@ class BukkitItem(val inner: ItemStack, override val config: ItemConfig) : Item {
 
             // set potion data
             if (material.endsWith("POTION")) {
-                val potionType = materialParts.getOrNull(1) ?: "AWKWARD"
+                val potionType = itemConfig.effect ?: "AWKWARD"
                 config.set("base-type", potionType)
             }
 

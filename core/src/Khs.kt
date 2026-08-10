@@ -240,7 +240,9 @@ class Khs(val shim: KhsShim) {
             locale = deserialize(KhsLocale::class, readConfigFile("locale.yml"))
             shim.logger.info("Loading database...")
 
-            // migrate the locale.yml file for changes
+            // migrate configs
+            config.migrate()
+            itemsConfig.migrate()
             locale.migrate()
 
             // database config could have changed so we need to
