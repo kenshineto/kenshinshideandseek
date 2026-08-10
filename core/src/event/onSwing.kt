@@ -34,6 +34,7 @@ private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
     // player
     if (!khsEvent.cancelled) {
         val direction = attacker.getEyeDirection().normalize()
+        direction.y = min(0.4, direction.y)
         disguise.shouldBeSolid = false
         player.damage(damage)
         player.knockBack(direction)
