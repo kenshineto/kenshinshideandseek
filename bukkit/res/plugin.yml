@@ -21,6 +21,8 @@ permissions:
     default: true
   hs.join:
     default: true
+  hs.lastGame:
+    default: op
   hs.leave:
     default: true
   hs.reload:

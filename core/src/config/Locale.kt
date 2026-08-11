@@ -296,6 +296,7 @@ data class LocaleDatabaseConfig(
     var noInfo: String = "No gameplay info",
     @Comment("{1} - the player associated with the following win information")
     var infoFor: LocaleString1 = LocaleString1("Win information for {1}:"),
+    val lastWinners: String = "The following players have won the last game:",
 )
 
 data class LocaleConfirmConfig(

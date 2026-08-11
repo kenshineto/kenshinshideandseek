@@ -166,6 +166,7 @@ class Khs(val shim: KhsShim) {
             KhsDebug(),
             KhsHelp(),
             KhsJoin(),
+            KhsLastGame(),
             KhsLeave(),
             KhsReload(),
             KhsSend(),

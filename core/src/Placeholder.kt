@@ -1,6 +1,7 @@
 package cat.freya.khs
 
 import cat.freya.khs.db.PlayerStat
+import cat.freya.khs.world.Player
 import java.util.UUID
 import kotlin.text.toULong
 
@@ -56,6 +57,24 @@ private fun handlePlayerStat(req: PlaceholderRequest): String {
     return stat.getValue(player).toString()
 }
 
+private fun handleLastWinners(req: PlaceholderRequest): String {
+    val index = req.args.getOrNull(1)?.toUIntOrNull()
+    val lastWinners =
+        req.plugin.game
+            .getLastWinners()
+            .mapNotNull { req.plugin.shim.getPlayer(it) }
+
+    if (lastWinners.isEmpty()) return req.noData
+
+    if (index != null) {
+        // display a given winner
+        return lastWinners.getOrNull(index.toInt())?.let(Player::name) ?: req.noData
+    } else {
+        // display all winners
+        return lastWinners.map(Player::name).joinToString(" ")
+    }
+}
+
 fun handlePlaceholder(req: PlaceholderRequest): String {
     val arg0 = req.arg0 ?: return req.invalid
     return when (arg0) {
@@ -98,6 +117,11 @@ fun handlePlaceholder(req: PlaceholderRequest): String {
 
         "stat" -> {
             handlePlayerStat(req)
+        }
+
+        // last winners
+        "lastGame" -> {
+            handleLastWinners(req)
         }
 
         // else

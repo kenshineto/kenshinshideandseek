@@ -69,8 +69,11 @@ class Game(val plugin: Khs) {
     /** the current game round */
     private var round: UInt = 0u
 
-    // what round was the uuid last picked to be seeker
+    /** what round was the uuid last picked to be seeker */
     private val lastPicked: MutableMap<UUID, UInt> = ConcurrentHashMap()
+
+    /** what uuid's won last game */
+    private val lastWinners: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
 
     /** teams at the start of the game */
     private var initialTeams: Map<UUID, Team> = emptyMap()
@@ -277,19 +280,29 @@ class Game(val plugin: Khs) {
         }
     }
 
+    fun getLastWinners(): Set<UUID> {
+        return lastWinners.toSet()
+    }
+
     private fun updatePlayerInfo(uuid: UUID, reason: WinType) {
         val team = initialTeams[uuid] ?: return
         val data = plugin.database?.getPlayer(uuid) ?: return
 
         when (reason) {
             WinType.SEEKER_WIN -> {
-                if (team == Team.SEEKER) data.seekerWins++
+                if (team == Team.SEEKER) {
+                    data.seekerWins++
+                    lastWinners.add(uuid)
+                }
                 if (team == Team.HIDER) data.hiderLosses++
             }
 
             WinType.HIDER_WIN -> {
                 if (team == Team.SEEKER) data.seekerLosses++
-                if (team == Team.HIDER) data.hiderWins++
+                if (team == Team.HIDER) {
+                    data.hiderWins++
+                    lastWinners.add(uuid)
+                }
             }
 
             WinType.NONE -> {}
@@ -314,6 +327,7 @@ class Game(val plugin: Khs) {
         }
 
         // update database
+        lastWinners.clear()
         uuids.forEach { updatePlayerInfo(it, reason) }
 
         if (plugin.config.leaveOnEnd) {

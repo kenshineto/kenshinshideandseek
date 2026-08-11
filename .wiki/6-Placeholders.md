@@ -22,7 +22,7 @@ The valid player statistics are:
 
 **To get the RANK of a statistic for a target use:**
 
-`%hs_rank_<stat>_<target>`
+`%hs_rank_<stat>_<target>%`
 
 - When target is not set, it returns the subject players integer rank
 - When target is a player name/uuid, it returns the targets integer rank
@@ -37,7 +37,7 @@ The valid player statistics are:
 
 **To get the VALUE of a statistic for a target use:**
 
-`%hs_stat_<stat>_<target>`
+`%hs_stat_<stat>_<target>%`
 
 - When target is not set, it returns the subject players stat value
 - When target is a player name/uuid, it returns the stat value for that player
@@ -47,3 +47,14 @@ The valid player statistics are:
 - %hs_stat_wins%
 - %hs_stat_deaths_KenshinEto$
 - %hs_stat_games_1%
+
+#### Last Winners
+
+Get a list or a single entry into the games last winners. Note that the index for this placeholder starts at zero.
+
+`%hs_lastGame%` - Returns the list of all winners last game
+`%hs_lastGame_<index>%` - Returns a given player at a given index of the list of the winners last game
+
+**Examples:**
+- %hs_lastGame%
+- %hs_lastGame_2%
