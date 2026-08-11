@@ -41,7 +41,7 @@ class Tag(override val game: Game) : GameMode {
 
     override fun getWinCondition(): Game.WinType? {
         // dont reward quits (if enabled)
-        val playerLeft = game.getPlayerLeft() && plugin.config.dontRewardQuit
+        val playerLeft = game.hasPlayerLeft() && plugin.config.dontRewardQuit
 
         if (game.timer == 0UL) {
             return Game.WinType.HIDERS_WIN

@@ -127,7 +127,6 @@ class Game(val plugin: Khs) {
             gameTick++
             gameTick = (gameTick % 20u).toUByte()
             isSecond = gameTick == 0u.toUByte()
-            playerLeft = false
         }
     }
 
@@ -300,7 +299,7 @@ class Game(val plugin: Khs) {
         return lastWinners.toSet()
     }
 
-    fun getPlayerLeft(): Boolean {
+    fun hasPlayerLeft(): Boolean {
         return playerLeft
     }
 
@@ -537,7 +536,10 @@ class Game(val plugin: Khs) {
         if (!isSecond) return
 
         if (timer != 0UL) {
-            gameMode.getWinCondition()?.let(this::stop)
+            synchronized(lock) {
+                gameMode.getWinCondition()?.let(this::stop)
+                playerLeft = false
+            }
         }
 
         if (isSecond) reloadGameBoards()
@@ -663,7 +665,10 @@ class Game(val plugin: Khs) {
         // (the toggle they have only changed allowed flight)
         teams.getSpectatorPlayers().forEach { it.setFlying(it.getAllowedFlight()) }
 
-        gameMode.getWinCondition()?.let(this::stop)
+        synchronized(lock) {
+            gameMode.getWinCondition()?.let(this::stop)
+            playerLeft = false
+        }
     }
 
     /** during Status.FINISHED */

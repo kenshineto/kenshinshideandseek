@@ -52,7 +52,7 @@ class HideAndSeek(override val game: Game) : GameMode {
         lastHiderName = null
 
         // dont reward quits (if enabled)
-        val playerLeft = game.getPlayerLeft() && plugin.config.dontRewardQuit
+        val playerLeft = game.hasPlayerLeft() && plugin.config.dontRewardQuit
 
         if (game.timer == 0UL) {
             return Game.WinType.HIDERS_WIN
