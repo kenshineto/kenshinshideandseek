@@ -763,7 +763,7 @@ class Game(val plugin: Khs) {
         player.clearEffects()
         player.satiate()
         player.heal()
-        if (revealDisguise || status != Status.SEEKING) {
+        if (revealDisguise) {
             plugin.disguiser.reveal(player.uuid)
             setPlayerHidden(player, false)
         }
@@ -792,7 +792,7 @@ class Game(val plugin: Khs) {
             hider.teleport(map?.gameSpawn)
         }
 
-        resetPlayer(hider, false)
+        resetPlayer(hider, status != Status.SEEKING)
 
         if (status == Status.HIDING) {
             hider.setSpeed(5u)
