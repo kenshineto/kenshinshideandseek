@@ -87,7 +87,7 @@ data class LocaleGameTitleConfig(
     @Comment("{1} - the name of the hider who won") var singleHiderWin: LocaleString1 = LocaleString1("&a{1} Wins!"),
     var seekersWin: String = "&cSeekers Win!",
     var noWin: String = "&bGame Over",
-    var tag: String = "Times up!",
+    var tag: String = "&bTimes up!",
 )
 
 data class LocaleGameCountdownConfig(
