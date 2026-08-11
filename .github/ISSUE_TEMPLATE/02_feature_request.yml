@@ -1,7 +1,8 @@
 name: "Feature request"
 description: "You would like a new feature added to the plugin"
 title: "feature: FEATURE REQUEST NAME"
-labels: ["feature"]
+labels:
+  - "feature"
 body:
   - type: "checkboxes"
     id: "checklist"
@@ -9,10 +10,10 @@ body:
       label: "Acknowledgements"
       description: "Mark all that apply"
       options:
-        - label: This is not a duplicate feature request
-        - label: This feature is not already in the plugin
-        - label: I checked the latest version of the plugin
-        - label: I am willing to submit a PR to implement this feature
+        - label: "This is not a duplicate feature request"
+        - label: "This feature is not already in the plugin"
+        - label: "I checked the latest version of the plugin"
+        - label: "I am willing to submit a PR to implement this feature"
     validations:
       required: true
   - type: "textarea"

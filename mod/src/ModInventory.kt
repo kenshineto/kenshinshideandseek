@@ -64,10 +64,16 @@ class ModContainer(val size: UInt, val title: String) : Container {
 
 typealias ClickEvent = (ServerPlayer, ModInventory, Int) -> Boolean
 
-class ModMenu(val player: ServerPlayer, val inv: ModInventory) : ChestMenu(inv.getMenuType(), -1, player.inventory, inv.container, inv.container.containerSize / 9) {
+class ModMenu(val player: ServerPlayer, val inv: ModInventory) :
+    ChestMenu(inv.getMenuType(), -1, player.inventory, inv.container, inv.container.containerSize / 9) {
     val listeners: MutableList<ClickEvent> = mutableListOf()
 
-    override fun clicked(slotId: Int, button: Int, input: ContainerInput, _player: net.minecraft.world.entity.player.Player) {
+    override fun clicked(
+        slotId: Int,
+        button: Int,
+        input: ContainerInput,
+        _player: net.minecraft.world.entity.player.Player,
+    ) {
         listeners.forEach { fn ->
             if (fn(player, inv, slotId)) {
                 return
@@ -143,8 +149,7 @@ open class ModInventory(open val shim: ModKhsShim, val container: Container) : I
 }
 
 class ModPlayerInventory(override val shim: ModKhsShim, val player: ServerPlayer) :
-    ModInventory(shim, player.inventory),
-    PlayerInventory {
+    ModInventory(shim, player.inventory), PlayerInventory {
     override fun getHelmet(): Item? {
         return ModItem.wrap(player.getItemBySlot(EquipmentSlot.HEAD))
     }

@@ -32,10 +32,11 @@ class KhsPlugin : JavaPlugin() {
         // make sure onTick is run
         onTickTask =
             object : BukkitRunnable() {
-                override fun run() {
-                    onTick()
+                    override fun run() {
+                        onTick()
+                    }
                 }
-            }.runTaskTimer(this, 0, 1)
+                .runTaskTimer(this, 0, 1)
 
         // register bungee cord
         server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
@@ -78,20 +79,21 @@ class KhsPlugin : JavaPlugin() {
 
         val me = this
         object : PlaceholderExpansion() {
-            override fun getIdentifier() = "hs"
+                override fun getIdentifier() = "hs"
 
-            override fun getAuthor() = khs.buildInfo.author
+                override fun getAuthor() = khs.buildInfo.author
 
-            override fun getVersion() = me.description.version
+                override fun getVersion() = me.description.version
 
-            override fun persist() = true
+                override fun persist() = true
 
-            override fun onRequest(player: OfflinePlayer?, params: String): String? {
-                val uuid = player?.uniqueId ?: return null
-                val req = PlaceholderRequest(me.khs, uuid, params)
-                return handlePlaceholder(req)
+                override fun onRequest(player: OfflinePlayer?, params: String): String? {
+                    val uuid = player?.uniqueId ?: return null
+                    val req = PlaceholderRequest(me.khs, uuid, params)
+                    return handlePlaceholder(req)
+                }
             }
-        }.register()
+            .register()
     }
 
     private fun registerMetrics() {
@@ -102,16 +104,14 @@ class KhsPlugin : JavaPlugin() {
         metrics.addCustomChart(
             SimplePie("locale") {
                 khs.locale.locale
-            },
+            }
         )
 
         // players in game
         metrics.addCustomChart(
             SingleLineChart("inGamePlayers") {
-                khs.game.teams
-                    .size()
-                    .toInt()
-            },
+                khs.game.teams.size().toInt()
+            }
         )
 
         // track some config values
@@ -119,18 +119,11 @@ class KhsPlugin : JavaPlugin() {
             SimpleBarChart("features") {
                 mapOf(
                     "PVP" to khs.config.pvp.toInt(),
-                    "Taunt" to
-                        khs.config.taunt.enabled
-                            .toInt(),
-                    "Glow" to
-                        khs.config.glow.enabled
-                            .toInt(),
-                    "Block Hunt" to
-                        khs.maps.values
-                            .any { it.config.blockHunt.enabled }
-                            .toInt(),
+                    "Taunt" to khs.config.taunt.enabled.toInt(),
+                    "Glow" to khs.config.glow.enabled.toInt(),
+                    "Block Hunt" to khs.maps.values.any { it.config.blockHunt.enabled }.toInt(),
                 )
-            },
+            }
         )
     }
 

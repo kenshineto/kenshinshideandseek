@@ -24,9 +24,7 @@ fun onJoin(event: JoinEvent) {
         val latestVersion = plugin.updateChecker.latestVersion ?: ""
 
         player.message(
-            plugin.locale.prefix.default +
-                plugin.locale.misc.updateAvailable
-                    .with(currentVersion, latestVersion),
+            plugin.locale.prefix.default + plugin.locale.misc.updateAvailable.with(currentVersion, latestVersion)
         )
     }
 
@@ -42,10 +40,7 @@ fun onJoin(event: JoinEvent) {
         return
     }
 
-    if (
-        (worldName == game.map?.worldName) ||
-        (worldName == game.map?.gameWorldName)
-    ) {
+    if ((worldName == game.map?.worldName) || (worldName == game.map?.gameWorldName)) {
         // teleport to exit if inside game world(s)
         plugin.config.exit?.let {
             player.teleport(it)

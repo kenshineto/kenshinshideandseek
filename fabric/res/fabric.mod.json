@@ -1,34 +1,28 @@
 {
-	"schemaVersion": 1,
-	"id": "khs",
-	"version": "${version}",
-	"name": "${name}",
-	"description": "The Best Hide and Seek and Block Hunt mod for Minecraft",
-	"authors": ["${author}"],
-	"contact": {
-		"homepage": "https://freya.cat/",
-		"sources": "https://github.com/kenshineto/kenshinshideandseek"
-	},
-	"license": "GPL3",
-	"icon": "assets/logo.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			{
-				"value": "cat.freya.khs.fabric.KhsModFabric",
-				"adapter": "kotlin"
-			}
-		]
-	},
-    "mixins": [
-        "khs.mixins.json"
-    ],
-	"depends": {
-		"fabricloader": ">=${fabricloader}",
-		"minecraft": "~${minecraft}",
-		"java": ">=25",
-		"architectury": ">=${architectury}",
-		"packetevents": ">=${packetevents}",
-		"fabric-language-kotlin": "*"
-	}
+    "schemaVersion": 1,
+    "depends": {
+        "minecraft": "~${minecraft}",
+        "java": ">=25",
+        "packetevents": ">=${packetevents}",
+        "fabricloader": ">=${fabricloader}",
+        "fabric-language-kotlin": "*",
+        "architectury": ">=${architectury}"
+    },
+    "icon": "assets/logo.png",
+    "description": "The Best Hide and Seek and Block Hunt mod for Minecraft",
+    "version": "${version}",
+    "license": "GPL3",
+    "environment": "*",
+    "mixins": ["khs.mixins.json"],
+    "contact": {
+        "sources": "https://github.com/kenshineto/kenshinshideandseek",
+        "homepage": "https://freya.cat/"
+    },
+    "name": "${name}",
+    "entrypoints": {"main": [{
+        "adapter": "kotlin",
+        "value": "cat.freya.khs.fabric.KhsModFabric"
+    }]},
+    "id": "khs",
+    "authors": ["${author}"]
 }

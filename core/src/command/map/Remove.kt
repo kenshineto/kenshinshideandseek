@@ -21,11 +21,7 @@ class KhsMapRemove : Command {
         plugin.maps.remove(name)
         plugin.saveConfig()
 
-        player.message(
-            plugin.locale.prefix.default +
-                plugin.locale.map.deleted
-                    .with(name),
-        )
+        player.message(plugin.locale.prefix.default + plugin.locale.map.deleted.with(name))
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =

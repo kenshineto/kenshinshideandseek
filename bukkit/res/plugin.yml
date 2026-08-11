@@ -1,87 +1,89 @@
-name: ${id}
-main: cat.freya.khs.bukkit.KhsPlugin
-version: ${version}
-author: ${author}
-website: freya.cat
-load: STARTUP
+name: "${id}"
+main: "cat.freya.khs.bukkit.KhsPlugin"
+version: "${version}"
+author: "${author}"
+website: "freya.cat"
+load: "STARTUP"
 api-version: 1.13
-depend: [packetevents]
-softdepend: [PlaceholderAPI]
+depend:
+  - "packetevents"
+softdepend:
+  - "PlaceholderAPI"
 commands:
   hideandseek:
-    description: Hide and Seek command
-    usage: /hideandseek [command]
-    aliases: hs
+    description: "Hide and Seek command"
+    usage: "/hideandseek [command]"
+    aliases: "hs"
 permissions:
   hs.confirm:
-    default: op
+    default: "op"
   hs.debug:
-    default: op
+    default: "op"
   hs.help:
     default: true
   hs.join:
     default: true
   hs.lastGame:
-    default: op
+    default: "op"
   hs.leave:
     default: true
   hs.reload:
-    default: op
+    default: "op"
   hs.send:
-    default: op
+    default: "op"
   hs.setexit:
-    default: op
+    default: "op"
   hs.start:
-    default: op
+    default: "op"
   hs.stop:
-    default: op
+    default: "op"
   hs.top:
     default: true
   hs.wins:
     default: true
   hs.map.add:
-    default: op
+    default: "op"
   hs.map.goto:
-    default: op
+    default: "op"
   hs.map.list:
-    default: op
+    default: "op"
   hs.map.remove:
-    default: op
+    default: "op"
   hs.map.save:
-    default: op
+    default: "op"
   hs.map.status:
-    default: op
+    default: "op"
   hs.map.blockhunt.debug:
-    default: op
+    default: "op"
   hs.map.blockhunt.disguise:
-    default: op
+    default: "op"
   hs.map.blockhunt.enabled:
-    default: op
+    default: "op"
   hs.map.blockhunt.block.add:
-    default: op
+    default: "op"
   hs.map.blockhunt.block.list:
-    default: op
+    default: "op"
   hs.map.blockhunt.block.remove:
-    default: op
+    default: "op"
   hs.map.set.border:
-    default: op
+    default: "op"
   hs.map.set.bounds:
-    default: op
+    default: "op"
   hs.map.set.lobby:
-    default: op
+    default: "op"
   hs.map.set.seekerlobby:
-    default: op
+    default: "op"
   hs.map.set.spawn:
-    default: op
+    default: "op"
   hs.map.unset.border:
-    default: op
+    default: "op"
   hs.world.create:
-    default: op
+    default: "op"
   hs.world.delete:
-    default: op
+    default: "op"
   hs.world.list:
-    default: op
+    default: "op"
   hs.world.tp:
-    default: op
+    default: "op"
   hs.leavebounds:
     default: false

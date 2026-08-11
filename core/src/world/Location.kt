@@ -8,10 +8,7 @@ data class Location(
     var yaw: Float = 0f,
     var pitch: Float = 0f,
 ) {
-    /**
-     * @return the distance between the two locations, returning null of they are in difference
-     *   worlds
-     */
+    /** @return the distance between the two locations, returning null of they are in difference worlds */
     fun distance(other: Location): Double? {
         if (worldName != other.worldName) return null
         return toPosition().distance(other.toPosition())

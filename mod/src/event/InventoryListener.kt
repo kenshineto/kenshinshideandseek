@@ -1,4 +1,3 @@
-
 package cat.freya.khs.mod.event
 
 import cat.freya.khs.event.ClickEvent
@@ -29,7 +28,6 @@ class InventoryListener(val mod: KhsMod) {
     private fun handleOpen(menu: AbstractContainerMenu) {
         val modMenu = menu as? ModMenu ?: return
         modMenu.listeners.add { player, khsInventory, slot ->
-
             val khsPlayer = ModPlayer(mod, player)
             val khsItem = khsInventory.get(slot.toUInt()) ?: return@add false
             val khsEvent = ClickEvent(mod.khs, khsPlayer, khsInventory, khsItem)

@@ -66,8 +66,7 @@ open class ModEntity(val mod: KhsMod, private val inner: net.minecraft.world.ent
     private fun getCollidesTeam(): PlayerTeam {
         val scoreboard = mod.server.inner.scoreboard
         val team =
-            scoreboard.getPlayerTeam(KHS_COLLISION_TEAM_NAME)
-                ?: scoreboard.addPlayerTeam(KHS_COLLISION_TEAM_NAME)
+            scoreboard.getPlayerTeam(KHS_COLLISION_TEAM_NAME) ?: scoreboard.addPlayerTeam(KHS_COLLISION_TEAM_NAME)
 
         team.collisionRule = Team.CollisionRule.NEVER
         team.setSeeFriendlyInvisibles(false)

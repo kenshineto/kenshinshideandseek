@@ -10,8 +10,7 @@ class Checks(val plugin: Khs, val player: Player) {
     /** checks if there exists a map that is set up */
     fun gameMapExists() {
         if (plugin.game.selectMap() == null) {
-            val msg =
-                if (plugin.maps.isEmpty()) plugin.locale.map.none else plugin.locale.map.noneSetup
+            val msg = if (plugin.maps.isEmpty()) plugin.locale.map.none else plugin.locale.map.noneSetup
             error(msg)
         }
     }
@@ -47,10 +46,7 @@ class Checks(val plugin: Khs, val player: Player) {
     /** check if the lobby has enough players to start */
     fun lobbyHasEnoughPlayers() {
         if (plugin.game.teams.size() < plugin.config.minPlayers) {
-            error(
-                plugin.locale.lobby.notEnoughPlayers
-                    .with(plugin.config.minPlayers),
-            )
+            error(plugin.locale.lobby.notEnoughPlayers.with(plugin.config.minPlayers))
         }
     }
 
@@ -70,10 +66,7 @@ class Checks(val plugin: Khs, val player: Player) {
     fun inMapWorld(map: KhsMap?) {
         val worldName = map?.worldName ?: "null"
         if (worldName != player.getLocation().worldName) {
-            error(
-                plugin.locale.map.wrongWorld
-                    .with(worldName),
-            )
+            error(plugin.locale.map.wrongWorld.with(worldName))
         }
     }
 
@@ -81,10 +74,7 @@ class Checks(val plugin: Khs, val player: Player) {
     fun mapSetup(map: KhsMap?) {
         if (map == null) error(plugin.locale.map.unknown)
         if (!map.isSetup()) {
-            error(
-                plugin.locale.map.setup.not
-                    .with(map.name),
-            )
+            error(plugin.locale.map.setup.not.with(map.name))
         }
     }
 
@@ -113,20 +103,14 @@ class Checks(val plugin: Khs, val player: Player) {
     /** Checks if a world exists */
     fun worldExists(worldName: String) {
         if (!plugin.shim.getWorldNames().contains(worldName)) {
-            error(
-                plugin.locale.world.doesntExist
-                    .with(worldName),
-            )
+            error(plugin.locale.world.doesntExist.with(worldName))
         }
     }
 
     /** Checks if a world doesnt exists */
     fun worldDoesNotExist(worldName: String) {
         if (plugin.shim.getWorldNames().contains(worldName)) {
-            error(
-                plugin.locale.world.exists
-                    .with(worldName),
-            )
+            error(plugin.locale.world.exists.with(worldName))
         }
     }
 
@@ -134,28 +118,18 @@ class Checks(val plugin: Khs, val player: Player) {
     fun worldValid(worldName: String) {
         worldExists(worldName)
         if (worldName.startsWith(MAP_SAVE_PREFIX)) {
-            error(
-                plugin.locale.world.doesntExist
-                    .with(worldName),
-            )
+            error(plugin.locale.world.doesntExist.with(worldName))
         }
     }
 
     /** Checks that a world is not in use */
     fun worldNotInUse(worldName: String) {
-        val map =
-            plugin.maps.values.find { it.worldName == worldName || it.gameWorldName == worldName }
+        val map = plugin.maps.values.find { it.worldName == worldName || it.gameWorldName == worldName }
         if (map != null) {
-            error(
-                plugin.locale.world.inUseBy
-                    .with(worldName, map.name),
-            )
+            error(plugin.locale.world.inUseBy.with(worldName, map.name))
         }
         if (plugin.config.exit?.worldName == worldName) {
-            error(
-                plugin.locale.world.inUse
-                    .with(worldName),
-            )
+            error(plugin.locale.world.inUse.with(worldName))
         }
     }
 

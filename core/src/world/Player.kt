@@ -14,10 +14,7 @@ import com.github.retrooper.packetevents.wrapper.PacketWrapper
 interface Player : Entity {
     val name: String
 
-    /**
-     * @return the internal type of this player Can be turned back into a [Player] with wrapPlayer
-     *   on the shim
-     */
+    /** @return the internal type of this player Can be turned back into a [Player] with wrapPlayer on the shim */
     fun getHandle(): Any
 
     /** @return the client version */
@@ -122,9 +119,7 @@ interface Player : Entity {
     /** Change the players active score board When given null, it should set the main score board */
     fun setScoreBoard(board: Board?)
 
-    /**
-     * Spawn a taunt (usually a firework), at the location of the player to give away their location
-     */
+    /** Spawn a taunt (usually a firework), at the location of the player to give away their location */
     fun taunt()
 
     /** Send the player a custom nms packet */

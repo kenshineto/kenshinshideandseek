@@ -10,20 +10,24 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.SuggestionProvider
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import net.minecraft.commands.CommandSourceStack
 import java.util.concurrent.CompletableFuture
 import java.util.function.Predicate
+import net.minecraft.commands.CommandSourceStack
 
-class ModCommand<T : CommandSourceStack>(val mod: KhsMod, val command: CommandGroup, val dispatcher: CommandDispatcher<T>) :
-    Command<T>,
-    Predicate<T>,
-    SuggestionProvider<T> {
+class ModCommand<T : CommandSourceStack>(
+    val mod: KhsMod,
+    val command: CommandGroup,
+    val dispatcher: CommandDispatcher<T>,
+) : Command<T>, Predicate<T>, SuggestionProvider<T> {
     init {
         dispatcher.register(
-            LiteralArgumentBuilder
-                .literal<T>(command.label)
+            LiteralArgumentBuilder.literal<T>(command.label)
                 .executes(this)
-                .then(RequiredArgumentBuilder.argument<T, String>("args", StringArgumentType.greedyString()).suggests(this).executes(this)),
+                .then(
+                    RequiredArgumentBuilder.argument<T, String>("args", StringArgumentType.greedyString())
+                        .suggests(this)
+                        .executes(this)
+                )
         )
     }
 

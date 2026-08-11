@@ -1,12 +1,9 @@
 package cat.freya.khs
+
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-private data class GitHubRelease(
-    @JsonAlias("tag_name")
-    val tagName: String,
-)
+@JsonIgnoreProperties(ignoreUnknown = true) private data class GitHubRelease(@JsonAlias("tag_name") val tagName: String)
 
 class UpdateChecker(val plugin: Khs) {
     var updateExists: Boolean = false
@@ -32,10 +29,8 @@ class UpdateChecker(val plugin: Khs) {
         val latestParts = latestVersion.split(".").map(String::toUInt)
 
         this.latestVersion = latestVersion
-        this.updateExists = currentParts
-            .zip(latestParts)
-            .firstOrNull { (c, l) -> c != l }
-            ?.let { (c, l) -> c < l }
-            ?: (latestParts.size > currentParts.size)
+        this.updateExists =
+            currentParts.zip(latestParts).firstOrNull { (c, l) -> c != l }?.let { (c, l) -> c < l }
+                ?: (latestParts.size > currentParts.size)
     }
 }

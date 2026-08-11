@@ -3,10 +3,10 @@ package cat.freya.khs.mod
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.type.Effect
 import cat.freya.khs.type.ResourceKey
+import kotlin.jvm.optionals.getOrNull
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.Identifier
 import net.minecraft.world.effect.MobEffectInstance
-import kotlin.jvm.optionals.getOrNull
 
 class ModEffect(val inner: MobEffectInstance, override val config: EffectConfig) : Effect {
     private val effect = inner.effect.value()

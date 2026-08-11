@@ -24,13 +24,12 @@ class KhsMapBlockHuntBlockList : Command {
             return
         }
 
-        val message =
-            buildString {
-                appendLine(plugin.locale.blockHunt.block.list)
-                for (block in blocks) {
-                    appendLine("&e- &f$block")
-                }
+        val message = buildString {
+            appendLine(plugin.locale.blockHunt.block.list)
+            for (block in blocks) {
+                appendLine("&e- &f$block")
             }
+        }
 
         player.message(message)
     }
@@ -38,10 +37,7 @@ class KhsMapBlockHuntBlockList : Command {
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =
         when (parameter) {
             "map" -> {
-                plugin.maps
-                    .filter { it.value.config.blockHunt.enabled }
-                    .map { it.key }
-                    .filter { it.startsWith(typed) }
+                plugin.maps.filter { it.value.config.blockHunt.enabled }.map { it.key }.filter { it.startsWith(typed) }
             }
 
             else -> {

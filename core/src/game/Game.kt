@@ -22,8 +22,7 @@ class Game(val plugin: Khs) {
         LOBBY,
         HIDING,
         SEEKING,
-        FINISHED,
-        ;
+        FINISHED;
 
         fun inProgress(): Boolean {
             return when (this) {
@@ -49,23 +48,17 @@ class Game(val plugin: Khs) {
         PLAYERS_LEFT,
         SEEKERS_WIN,
         HIDERS_WIN,
-        LAST_HIDER_WIN,
-        ;
+        LAST_HIDER_WIN;
 
         fun getTitle(game: Game): String {
             val plugin = game.plugin
             val lastHiderName =
-                game.gameMode
-                    .getLastHider()
-                    ?.let { plugin.shim.getPlayer(it) }
-                    ?.let(Player::name) ?: "null"
+                game.gameMode.getLastHider()?.let { plugin.shim.getPlayer(it) }?.let(Player::name) ?: "null"
 
             return when (this) {
                 SEEKERS_WIN -> plugin.locale.game.title.seekersWin
                 HIDERS_WIN -> plugin.locale.game.title.hidersWin
-                LAST_HIDER_WIN ->
-                    plugin.locale.game.title.singleHiderWin
-                        .with(lastHiderName)
+                LAST_HIDER_WIN -> plugin.locale.game.title.singleHiderWin.with(lastHiderName)
                 else -> plugin.locale.game.title.noWin
             }
         }
@@ -73,10 +66,7 @@ class Game(val plugin: Khs) {
         fun getMessage(game: Game, withPrefix: Boolean): String {
             val plugin = game.plugin
             val lastHiderName =
-                game.gameMode
-                    .getLastHider()
-                    ?.let { plugin.shim.getPlayer(it) }
-                    ?.let(Player::name) ?: "null"
+                game.gameMode.getLastHider()?.let { plugin.shim.getPlayer(it) }?.let(Player::name) ?: "null"
 
             val message =
                 when (this) {
@@ -84,16 +74,15 @@ class Game(val plugin: Khs) {
                     PLAYERS_LEFT -> plugin.locale.game.gameOver.playersQuit
                     SEEKERS_WIN -> plugin.locale.game.gameOver.hidersFound
                     HIDERS_WIN -> plugin.locale.game.gameOver.time
-                    LAST_HIDER_WIN ->
-                        plugin.locale.game.gameOver.lastHider
-                            .with(lastHiderName)
+                    LAST_HIDER_WIN -> plugin.locale.game.gameOver.lastHider.with(lastHiderName)
                 }
 
             if (!withPrefix) return message
 
             val prefix =
                 when (this) {
-                    STOPPED, PLAYERS_LEFT -> plugin.locale.prefix.abort
+                    STOPPED,
+                    PLAYERS_LEFT -> plugin.locale.prefix.abort
                     else -> plugin.locale.prefix.gameOver
                 }
 
@@ -182,9 +171,7 @@ class Game(val plugin: Khs) {
     /** If a map is not set, select a new map */
     fun selectMap(): KhsMap? {
         synchronized(lock) {
-            map = map ?: plugin.maps.values
-                .filter { it.isSetup() }
-                .randomOrNull()
+            map = map ?: plugin.maps.values.filter { it.isSetup() }.randomOrNull()
             return map
         }
     }
@@ -273,8 +260,8 @@ class Game(val plugin: Khs) {
 
         while (
             pool.isNotEmpty() &&
-            seekers.size.toUInt() < plugin.config.startingSeekerCount &&
-            seekers.size.toUInt() + 1u < teams.size()
+                seekers.size.toUInt() < plugin.config.startingSeekerCount &&
+                seekers.size.toUInt() + 1u < teams.size()
         ) {
             val uuid = randomSeeker(pool)
             pool.remove(uuid)
@@ -455,11 +442,7 @@ class Game(val plugin: Khs) {
         loadPlayerIntoLobby(player)
         reloadLobbyBoards()
 
-        broadcast(
-            plugin.locale.prefix.default +
-                plugin.locale.lobby.join
-                    .with(player.name),
-        )
+        broadcast(plugin.locale.prefix.default + plugin.locale.lobby.join.with(player.name))
     }
 
     fun leave(uuid: UUID) {
@@ -475,11 +458,7 @@ class Game(val plugin: Khs) {
 
         resetPlayer(player)
 
-        broadcast(
-            plugin.locale.prefix.default +
-                plugin.locale.game.leave
-                    .with(player.name),
-        )
+        broadcast(plugin.locale.prefix.default + plugin.locale.game.leave.with(player.name))
 
         // restore inventory
         if (plugin.config.saveInventory) {
@@ -505,11 +484,7 @@ class Game(val plugin: Khs) {
             val server = plugin.config.leaveServer
             val successful = plugin.shim.sendPlayerToServer(uuid, server)
             if (!successful) {
-                player.message(
-                    plugin.locale.prefix.error +
-                        plugin.locale.command.sendToServerFailed
-                            .with(server),
-                )
+                player.message(plugin.locale.prefix.error + plugin.locale.command.sendToServerFailed.with(server))
                 player.teleport(plugin.config.exit)
             }
         } else {
@@ -609,9 +584,7 @@ class Game(val plugin: Khs) {
                 }
 
                 else -> {
-                    message =
-                        plugin.locale.game.countdown.notify
-                            .with(time)
+                    message = plugin.locale.game.countdown.notify.with(time)
                 }
             }
 
@@ -838,9 +811,7 @@ class Game(val plugin: Khs) {
         inventory.setLeggings(plugin.parseItem(plugin.itemsConfig.hiderLeggings))
         inventory.setBoots(plugin.parseItem(plugin.itemsConfig.hiderBoots))
 
-        plugin.itemsConfig.hiderEffects
-            .mapNotNull { plugin.parseEffect(it) }
-            .forEach { hider.giveEffect(it) }
+        plugin.itemsConfig.hiderEffects.mapNotNull { plugin.parseEffect(it) }.forEach { hider.giveEffect(it) }
     }
 
     fun loadSeeker(seeker: Player, onDeath: Boolean = false) {
@@ -858,11 +829,7 @@ class Game(val plugin: Khs) {
                 val time = plugin.config.delayedRespawn.delay
                 val currentRound = round
                 seeker.teleport(map?.seekerLobbySpawn)
-                seeker.message(
-                    plugin.locale.prefix.default +
-                        plugin.locale.game.respawn
-                            .with(time),
-                )
+                seeker.message(plugin.locale.prefix.default + plugin.locale.game.respawn.with(time))
                 plugin.shim.scheduleEvent(time * 20UL) {
                     if (status == Status.SEEKING && round == currentRound) {
                         seeker.teleport(map?.gameSpawn)
@@ -890,14 +857,15 @@ class Game(val plugin: Khs) {
         inventory.setLeggings(plugin.parseItem(plugin.itemsConfig.seekerLeggings))
         inventory.setBoots(plugin.parseItem(plugin.itemsConfig.seekerBoots))
 
-        plugin.itemsConfig.seekerEffects
-            .mapNotNull { plugin.parseEffect(it) }
-            .forEach { seeker.giveEffect(it) }
+        plugin.itemsConfig.seekerEffects.mapNotNull { plugin.parseEffect(it) }.forEach { seeker.giveEffect(it) }
     }
 
     fun loadSpectator(spectator: Player) {
         if (teams.get(spectator.uuid) != Team.SPECTATOR) {
-            spectator.title(plugin.locale.game.team.spectator, plugin.locale.game.team.spectatorSubtitle)
+            spectator.title(
+                plugin.locale.game.team.spectator,
+                plugin.locale.game.team.spectatorSubtitle,
+            )
         }
 
         teams.put(spectator.uuid, Team.SPECTATOR)

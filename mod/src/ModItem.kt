@@ -1,8 +1,8 @@
 package cat.freya.khs.mod
 
 import cat.freya.khs.config.ItemConfig
-import cat.freya.khs.mod.KhsMod
 import cat.freya.khs.type.Item
+import kotlin.collections.emptyMap
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
@@ -12,7 +12,6 @@ import net.minecraft.util.Unit
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.alchemy.PotionContents
 import net.minecraft.world.item.component.ItemLore
-import kotlin.collections.emptyMap
 
 class ModItem(
     val inner: ItemStack,

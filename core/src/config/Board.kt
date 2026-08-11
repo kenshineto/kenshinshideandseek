@@ -85,10 +85,7 @@ data class KhsBoardConfig(
     @Section("Templates")
     @Comment("Locale strings for the {COUNTDOWN} display")
     var countdown: CountdownBoardConfig = CountdownBoardConfig(),
-    @Comment("Locale strings for the {TAUNT} placeholder")
-    var taunt: TauntBoardConfig = TauntBoardConfig(),
-    @Comment("Locale strings for the {GLOW} placeholder")
-    var glow: GlowBoardConfig = GlowBoardConfig(),
-    @Comment("Locale strings for the {BORDER} placeholder")
-    var border: BorderBoardConfig = BorderBoardConfig(),
+    @Comment("Locale strings for the {TAUNT} placeholder") var taunt: TauntBoardConfig = TauntBoardConfig(),
+    @Comment("Locale strings for the {GLOW} placeholder") var glow: GlowBoardConfig = GlowBoardConfig(),
+    @Comment("Locale strings for the {BORDER} placeholder") var border: BorderBoardConfig = BorderBoardConfig(),
 )

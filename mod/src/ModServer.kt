@@ -1,8 +1,9 @@
 package cat.freya.khs.mod
 
-import cat.freya.khs.mod.KhsMod
 import dev.architectury.event.events.common.LifecycleEvent
 import dev.architectury.event.events.common.TickEvent
+import java.nio.file.Path
+import java.util.UUID
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.Identifier
 import net.minecraft.resources.ResourceKey
@@ -12,8 +13,6 @@ import net.minecraft.world.level.storage.LevelResource
 import net.minecraft.world.scores.DisplaySlot
 import net.minecraft.world.scores.Objective
 import net.minecraft.world.scores.criteria.ObjectiveCriteria
-import java.nio.file.Path
-import java.util.UUID
 
 class ModServer(val mod: KhsMod) {
     private var server: MinecraftServer? = null

@@ -1,8 +1,8 @@
 package cat.freya.khs.db
 
+import java.util.UUID
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.core.statements.UpdateBuilder
-import java.util.UUID
 
 object Players : Table("hs_players") {
     val uuid = varchar("uuid", 36)
@@ -75,12 +75,10 @@ enum class PlayerStat(val arg: String) {
     SEEKER_KILLS("seekerKills"),
     TOTAL_DEATHS("deaths"),
     HIDER_DEATHS("hiderDeaths"),
-    SEEKER_DEATHS("seekerDeaths"),
-    ;
+    SEEKER_DEATHS("seekerDeaths");
 
     companion object {
-        fun fromArg(arg: String): PlayerStat? =
-            PlayerStat.entries.firstOrNull { it.arg.equals(arg, ignoreCase = true) }
+        fun fromArg(arg: String): PlayerStat? = PlayerStat.entries.firstOrNull { it.arg.equals(arg, ignoreCase = true) }
     }
 
     fun getValue(player: Player): UInt =

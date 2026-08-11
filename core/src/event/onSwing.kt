@@ -11,8 +11,8 @@ import kotlin.math.min
 private const val BLOCKHUNT_MAX_REACH: Double = 5.0
 
 /**
- * Don't let people spam attack disguised players. Since we are emulating the attacks ourselves, we
- * have to emulate this too
+ * Don't let people spam attack disguised players. Since we are emulating the attacks ourselves, we have to emulate this
+ * too
  */
 private val debounce: MutableSet<UUID> = mutableSetOf()
 
@@ -34,10 +34,7 @@ private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
     // player
     if (!khsEvent.cancelled) {
         if (plugin.config.blockHuntNotify && disguise.shouldBeSolid) {
-            attacker.message(
-                plugin.locale.blockHunt.notify
-                    .with(player.name),
-            )
+            attacker.message(plugin.locale.blockHunt.notify.with(player.name))
         }
 
         val direction = attacker.getEyeDirection().normalize()
@@ -45,9 +42,7 @@ private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
         disguise.shouldBeSolid = false
         player.damage(damage)
         player.knockBack(direction)
-        player
-            .getWorld()
-            ?.playSound(player.getPosition(), "ENTITY_PLAYER_HURT", 1.0, 1.0)
+        player.getWorld()?.playSound(player.getPosition(), "ENTITY_PLAYER_HURT", 1.0, 1.0)
     }
 
     // set and soon turn off debounce
@@ -79,7 +74,8 @@ fun onSwing(event: SwingEvent) {
                 // ray cast to aabb
                 val distance = aabb.rayIntersects(eye, direction) ?: return@mapDisguises null
                 disguise to distance
-            }.filter { (_, distance) -> distance <= reach }
+            }
+            .filter { (_, distance) -> distance <= reach }
             .minByOrNull { it.second }
             ?.first ?: return
 

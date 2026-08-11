@@ -67,7 +67,8 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
                         .getPlayers()
                         .filter {
                             player.uuid != it.uuid
-                        }.minByOrNull {
+                        }
+                        .minByOrNull {
                             val pos1 = packet.position.toPosition()
                             val pos2 = player.getPosition()
                             pos1.distance(pos2)

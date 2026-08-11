@@ -20,14 +20,11 @@ class HideAndSeek(override val game: Game) : GameMode {
     private fun broadcastDeath(player: Player, attacker: Player?) {
         val msg =
             if (game.teams.isSeeker(player.uuid)) {
-                plugin.locale.game.player.death
-                    .with(player.name)
+                plugin.locale.game.player.death.with(player.name)
             } else if (attacker == null) {
-                plugin.locale.game.player.found
-                    .with(player.name)
+                plugin.locale.game.player.found.with(player.name)
             } else {
-                plugin.locale.game.player.foundBy
-                    .with(player.name, attacker.name)
+                plugin.locale.game.player.foundBy.with(player.name, attacker.name)
             }
 
         game.broadcast(msg)

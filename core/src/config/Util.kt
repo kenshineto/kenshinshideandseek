@@ -1,12 +1,5 @@
 package cat.freya.khs.config
 
-import cat.freya.khs.config.Comment
-import cat.freya.khs.config.KhsDeprecated
-import cat.freya.khs.config.LocaleString1
-import cat.freya.khs.config.LocaleString2
-import cat.freya.khs.config.LocaleString3
-import cat.freya.khs.config.Omittable
-import cat.freya.khs.config.Section
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -25,12 +18,8 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.text.buildString
 
 private val mapper =
-    ObjectMapper(
-        YAMLFactory
-            .builder()
-            .disable(YAMLGenerator.Feature.SPLIT_LINES)
-            .build(),
-    ).registerKotlinModule()
+    ObjectMapper(YAMLFactory.builder().disable(YAMLGenerator.Feature.SPLIT_LINES).build())
+        .registerKotlinModule()
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
 private fun isValueInline(value: Any?): Boolean {

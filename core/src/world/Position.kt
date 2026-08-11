@@ -6,7 +6,13 @@ import com.github.retrooper.packetevents.util.Vector3i
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-data class Position(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0, var yaw: Float = 0f, var pitch: Float = 0f) {
+data class Position(
+    var x: Double = 0.0,
+    var y: Double = 0.0,
+    var z: Double = 0.0,
+    var yaw: Float = 0f,
+    var pitch: Float = 0f,
+) {
     /** @return the 3d distance between this and other */
     fun distance(other: Position): Double {
         val dx = this.x - other.x

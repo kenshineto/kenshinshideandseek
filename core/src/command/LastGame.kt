@@ -17,13 +17,12 @@ class KhsLastGame : Command {
             return
         }
 
-        val message =
-            buildString {
-                appendLine(plugin.locale.database.lastWinners)
-                for (player in lastWinners) {
-                    appendLine("- ${player.name}")
-                }
+        val message = buildString {
+            appendLine(plugin.locale.database.lastWinners)
+            for (player in lastWinners) {
+                appendLine("- ${player.name}")
             }
+        }
 
         player.message(message)
     }

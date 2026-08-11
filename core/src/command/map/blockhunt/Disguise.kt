@@ -26,10 +26,7 @@ class KhsMapBlockHuntDisguise : Command {
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =
         when (parameter) {
             "block" -> {
-                plugin.shim
-                    .getBlocks()
-                    .map { it.key.platformKey }
-                    .filter { it.startsWith(typed) }
+                plugin.shim.getBlocks().map { it.key.platformKey }.filter { it.startsWith(typed) }
             }
 
             else -> {

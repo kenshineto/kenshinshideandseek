@@ -18,9 +18,7 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Firework
 import org.bukkit.util.BlockIterator
 
-class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
-    BukkitEntity(plugin, inner),
-    Player {
+class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) : BukkitEntity(plugin, inner), Player {
     override val name = inner.name
     override val uuid = inner.uniqueId
 
@@ -129,8 +127,7 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
         // attributes are 1.9+ only...
         if (!plugin.shim.supports(9)) return 0.0
 
-        val attributeName =
-            if (plugin.shim.supports(21)) "ATTACK_DAMAGE" else "GENERIC_ATTACK_DAMAGE"
+        val attributeName = if (plugin.shim.supports(21)) "ATTACK_DAMAGE" else "GENERIC_ATTACK_DAMAGE"
         val attribute = inner.getAttribute(Attribute.valueOf(attributeName))
         return attribute?.value ?: return 0.0
     }
@@ -146,9 +143,7 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
     }
 
     private fun modernRayTrace(maxReach: Double): Double? {
-        val result =
-            inner.world.rayTraceBlocks(inner.eyeLocation, inner.eyeLocation.direction, maxReach)
-                ?: return null
+        val result = inner.world.rayTraceBlocks(inner.eyeLocation, inner.eyeLocation.direction, maxReach) ?: return null
         return result.hitPosition.distance(inner.eyeLocation.toVector())
     }
 
@@ -156,8 +151,7 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
         val eye = inner.eyeLocation
         val direction = eye.direction
 
-        val iterator =
-            BlockIterator(inner.world, inner.location.toVector(), direction, 0.0, maxReach.toInt())
+        val iterator = BlockIterator(inner.world, inner.location.toVector(), direction, 0.0, maxReach.toInt())
 
         var distance = 0.0
 
@@ -234,8 +228,7 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
         val meta = firework.fireworkMeta
         meta.power = 4
         meta.addEffect(
-            FireworkEffect
-                .builder()
+            FireworkEffect.builder()
                 .withColor(Color.BLUE)
                 .withColor(Color.RED)
                 .withColor(Color.YELLOW)
@@ -244,7 +237,7 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) :
                 .with(FireworkEffect.Type.BALL_LARGE)
                 .flicker(true)
                 .withTrail()
-                .build(),
+                .build()
         )
         firework.fireworkMeta = meta
     }

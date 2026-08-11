@@ -80,14 +80,14 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
         val world = loader.load() ?: return
         val bukkitWorld = (world as? BukkitWorld)?.inner ?: return
 
-        inner.teleport(org.bukkit.Location(bukkitWorld, location.x, location.y, location.z, location.yaw, location.pitch))
+        inner.teleport(
+            org.bukkit.Location(bukkitWorld, location.x, location.y, location.z, location.yaw, location.pitch)
+        )
     }
 
     private fun getCollidesTeam(): Team? {
         val scoreboard = plugin.server.scoreboardManager?.mainScoreboard ?: return null
-        val team =
-            scoreboard.getTeam(KHS_COLLISION_TEAM_NAME)
-                ?: scoreboard.registerNewTeam(KHS_COLLISION_TEAM_NAME)
+        val team = scoreboard.getTeam(KHS_COLLISION_TEAM_NAME) ?: scoreboard.registerNewTeam(KHS_COLLISION_TEAM_NAME)
         team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
         team.setCanSeeFriendlyInvisibles(false)
         return team

@@ -5,18 +5,13 @@ import kotlin.UInt
 import kotlin.annotation.AnnotationTarget
 import kotlin.math.max
 
-@Target(AnnotationTarget.PROPERTY)
-annotation class Section(val text: String)
+@Target(AnnotationTarget.PROPERTY) annotation class Section(val text: String)
 
-@Repeatable
-@Target(AnnotationTarget.PROPERTY)
-annotation class Comment(val text: String)
+@Repeatable @Target(AnnotationTarget.PROPERTY) annotation class Comment(val text: String)
 
-@Target(AnnotationTarget.PROPERTY)
-annotation class Omittable
+@Target(AnnotationTarget.PROPERTY) annotation class Omittable
 
-@Target(AnnotationTarget.PROPERTY)
-annotation class KhsDeprecated(val since: String)
+@Target(AnnotationTarget.PROPERTY) annotation class KhsDeprecated(val since: String)
 
 enum class ConfigCountdownDisplay {
     CHAT,
@@ -51,8 +46,7 @@ data class DatabaseConfig(
     @Comment("MYSQL - remote sql server running mysql")
     @Comment("POSTGRES - remote sql server running postgresql")
     var type: DatabaseType = DatabaseType.SQLITE,
-    @Comment("The following options are only required for mysql or postgres")
-    var host: String = "localhost",
+    @Comment("The following options are only required for mysql or postgres") var host: String = "localhost",
     var port: ULong? = null,
     var username: String = "postgres",
     var password: String = "postgres",
@@ -121,10 +115,8 @@ data class GlowConfig(
 )
 
 data class LobbyConfig(
-    @Comment("Time in seconds the lobby waits until the game starts. Set to 0 to disable")
-    var countdown: ULong = 60u,
-    @Comment("Player threshold to speed up the countdown. Set to 0 to disable")
-    var changeCountdown: UInt = 5u,
+    @Comment("Time in seconds the lobby waits until the game starts. Set to 0 to disable") var countdown: ULong = 60u,
+    @Comment("Player threshold to speed up the countdown. Set to 0 to disable") var changeCountdown: UInt = 5u,
     @Comment("Minimum amount of players required to start the countdown") var min: UInt = 3u,
     @Comment("Maximum amount of players allowed in a lobby") var max: UInt = 10u,
     @Comment("Item to leave the lobby")
@@ -165,8 +157,7 @@ data class SeekerPingDistancesConfig(
 )
 
 data class SeekerPingConfigSounds(
-    @Comment("The noise for the heartbeat")
-    var heartbeatNoise: String = "BLOCK_NOTE_BLOCK_BASEDRUM",
+    @Comment("The noise for the heartbeat") var heartbeatNoise: String = "BLOCK_NOTE_BLOCK_BASEDRUM",
     @Comment("The noise for the ringing") var ringingNoise: String = "BLOCK_NOTE_BLOCK_PLING",
     var leadingVolume: Double = 0.5,
     var volume: Double = 0.3,
@@ -177,8 +168,7 @@ data class SeekerPingConfig(
     var enabled: Boolean = true,
     @Comment("The distances for the volume to change")
     var distances: SeekerPingDistancesConfig = SeekerPingDistancesConfig(),
-    @Comment("The sounds that players will hear")
-    var sounds: SeekerPingConfigSounds = SeekerPingConfigSounds(),
+    @Comment("The sounds that players will hear") var sounds: SeekerPingConfigSounds = SeekerPingConfigSounds(),
 )
 
 data class KhsConfig(
@@ -186,29 +176,22 @@ data class KhsConfig(
     @Section("General")
     @Comment("Notify plugin admins of new updates (requires hs.debug permission)")
     var checkForUpdates: Boolean = true,
-    @Comment("Allow players to drop their items mid-game")
-    var dropItems: Boolean = false,
+    @Comment("Allow players to drop their items mid-game") var dropItems: Boolean = false,
     @Comment("Where the plugin will state the length of time in seconds left to hide.")
     @Comment("Below you can set CHAT, ACTIONBAR, or TITLE. Any invalid option will revert to CHAT.")
     var countdownDisplay: ConfigCountdownDisplay = ConfigCountdownDisplay.CHAT,
     @Comment("Allow Hiders to see everyone's nametags. Seeker can never see nametags.")
     var nametagsVisible: Boolean = false,
-    @Comment("Require players to have permissions to run commands")
-    var permissionsRequired: Boolean = true,
-    @Comment("Minimum amount of players to start the game. Cannot go lower than 2.")
-    var minPlayers: UInt = 2u,
-    @Comment("Amount of initial seekers when the game starts, minimum of 1")
-    var startingSeekerCount: UInt = 1u,
+    @Comment("Require players to have permissions to run commands") var permissionsRequired: Boolean = true,
+    @Comment("Minimum amount of players to start the game. Cannot go lower than 2.") var minPlayers: UInt = 2u,
+    @Comment("Amount of initial seekers when the game starts, minimum of 1") var startingSeekerCount: UInt = 1u,
     @Comment("If enabled, a HIDER will join the SPECTATOR team on death instead of the SEEKER team.")
     var respawnAsSpectator: Boolean = false,
-    @Comment("Along with a chat message, display a title describing the game over")
-    var gameOverTitle: Boolean = true,
-    @Comment("Configure items given to spectators")
-    var spectatorItems: SpectatorItemsConfig = SpectatorItemsConfig(),
+    @Comment("Along with a chat message, display a title describing the game over") var gameOverTitle: Boolean = true,
+    @Comment("Configure items given to spectators") var spectatorItems: SpectatorItemsConfig = SpectatorItemsConfig(),
     @Comment("Configure the sounds that plays when a seeker is near")
     var seekerPing: SeekerPingConfig = SeekerPingConfig(),
-    @Comment("If to notify a seeker if they revealed a player in block hunt")
-    val blockHuntNotify: Boolean = true,
+    @Comment("If to notify a seeker if they revealed a player in block hunt") val blockHuntNotify: Boolean = true,
     @Comment("For developers") var debug: Boolean = false,
     // Timing
     @Section("Timing")
@@ -238,48 +221,50 @@ data class KhsConfig(
     @Comment("Items for pvp may be configured in the items.yml file")
     var pvp: Boolean = true,
     @Comment("Allow players to regen health") var regenHealth: Boolean = false,
-    @Comment("If pvp is disabled, Hiders and Seekers can no longer take damage from natural causes unless this option is enabled.")
+    @Comment(
+        "If pvp is disabled, Hiders and Seekers can no longer take damage from natural causes unless this option is enabled."
+    )
     @Comment("Such natural causes could be fall damage or projectiles.")
     var allowNaturalCauses: Boolean = false,
     // Lobby
     @Section("Lobby")
     @Comment("Players that join the server will automatically be added into a game lobby")
     var autoJoin: Boolean = false,
-    @Comment("When players join the world containing the lobby, teleport them to the designated exit position so that they don't spawn in the lobby while not in the queue.")
+    @Comment(
+        "When players join the world containing the lobby, teleport them to the designated exit position so that they don't spawn in the lobby while not in the queue."
+    )
     @Comment("This setting is ignored when autoJoin is set to true.")
     var teleportStraysToExit: Boolean = false,
     @Comment("How to handle players leaving a game lobby.")
     @Comment("EXIT - Teleport the player to the designated exit location")
     @Comment("PROXY - Teleport the player to another server in a bungeecord/velocity network")
     var leaveType: ConfigLeaveType = ConfigLeaveType.EXIT,
-    @Comment("The server to teleport to when leaveType is set to PROXY")
-    var leaveServer: String = "lobby",
-    @Comment("If to leave the game lobby after a game ends")
-    var leaveOnEnd: Boolean = false,
-    @Comment("Configure the \"waiting for players\" per map lobby")
-    var lobby: LobbyConfig = LobbyConfig(),
+    @Comment("The server to teleport to when leaveType is set to PROXY") var leaveServer: String = "lobby",
+    @Comment("If to leave the game lobby after a game ends") var leaveOnEnd: Boolean = false,
+    @Comment("Configure the \"waiting for players\" per map lobby") var lobby: LobbyConfig = LobbyConfig(),
     @Comment("Restore the players previously cleared inventory after leaving the game lobby")
     var saveInventory: Boolean = false,
     @Comment("Restore the players previously active score board after leaving the game lobby")
     var saveScoreBoard: Boolean = true,
     // Events
-    @Section("Events") @Comment("Taunt event")
-    var taunt: TauntConfig = TauntConfig(),
+    @Section("Events") @Comment("Taunt event") var taunt: TauntConfig = TauntConfig(),
     // Power-ups
-    @Section("Power-ups") @Comment("Glow power-up")
-    var glow: GlowConfig = GlowConfig(),
+    @Section("Power-ups") @Comment("Glow power-up") var glow: GlowConfig = GlowConfig(),
     @Comment("Instead of having a glow power-up, always make seekers' position's known to hiders at all times.")
     var alwaysGlow: Boolean = false,
     // Protections
     @Section("Protections")
-    @Comment("When enabled, the plugin will duplicate the hide and seek map to protect the original from changes during a game.")
-    @Comment("It is highly recommended that you keep this set to true unless you have other means of protecting your hide-and-seek map.")
+    @Comment(
+        "When enabled, the plugin will duplicate the hide and seek map to protect the original from changes during a game."
+    )
+    @Comment(
+        "It is highly recommended that you keep this set to true unless you have other means of protecting your hide-and-seek map."
+    )
     var mapSaveEnabled: Boolean = true,
     @Comment("Block these commands for players in a game. Good for blocking communication")
     var blockedCommands: List<String> = listOf("msg", "reply", "me", "kill"),
     @Comment("Don't allow players to interact with these blocks")
-    var blockedInteracts: List<String> =
-        listOf("FURNACE", "CRAFTING_TABLE", "ANVIL", "CHEST", "BARREL"),
+    var blockedInteracts: List<String> = listOf("FURNACE", "CRAFTING_TABLE", "ANVIL", "CHEST", "BARREL"),
     // Auto Generated
     @Section("Auto Generated")
     @Comment("Location where players are teleported to when they run (/hs leave).")

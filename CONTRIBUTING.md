@@ -16,7 +16,7 @@ Code generated in part or full with AI will not be approved in a PR.
 
 ### Style Guide
 
-This project uses [ktlint](https://pinterest.github.io/ktlint/latest/) for formatting and [detekt](https://detekt.dev/) for static code analysis.
+This project uses gradle plugins for code formatting and static code analysis.
 
 Run `gradle lint` to check for formatting errors and run static code analysis.
 

@@ -1,13 +1,10 @@
 config:
   validation: true
   warningsAsErrors: true
-
 processors:
   active: false
-
 console-reports:
   active: true
-
 complexity:
   active: true
   CognitiveComplexMethod:
@@ -43,10 +40,8 @@ complexity:
     active: false
   TooManyFunctions:
     active: false
-
 coroutines:
   active: false
-
 empty-blocks:
   active: true
   EmptyCatchBlock:
@@ -79,7 +74,6 @@ empty-blocks:
     active: true
   EmptyWhileBlock:
     active: true
-
 exceptions:
   active: true
   ErrorUsageWithThrowable:
@@ -112,7 +106,6 @@ exceptions:
     active: true
   TooGenericExceptionThrown:
     active: true
-
 naming:
   active: true
   ClassNaming:
@@ -155,7 +148,6 @@ naming:
     active: false
   VariableNaming:
     active: true
-
 performance:
   active: true
   ArrayPrimitive:
@@ -174,7 +166,6 @@ performance:
     active: true
   UnnecessaryTypeCasting:
     active: true
-
 potential-bugs:
   active: true
   AvoidReferentialEquality:
@@ -221,7 +212,8 @@ potential-bugs:
     active: true
   MissingPackageDeclaration:
     active: true
-    excludes: ['**/*.kts']
+    excludes:
+      - "**/*.kts"
   MissingSuperCall:
     active: true
   MissingUseCall:
@@ -256,7 +248,6 @@ potential-bugs:
     active: true
   WrongEqualsTypeParameter:
     active: true
-
 style:
   active: true
   AbstractClassCanBeConcreteClass:
@@ -336,7 +327,8 @@ style:
     active: true
   UnusedParameter:
     active: true
-    aliases: ["UNUSED"]
+    aliases:
+      - "UNUSED"
   UnusedPrivateClass:
     active: true
   UnusedPrivateFunction:

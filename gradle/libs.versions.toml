@@ -5,7 +5,7 @@ kotlinx-coroutines = "1.+"
 
 # gradle
 shadow = "9.6.+"
-ktlint = "14.+"
+spotless = "8.+"
 detekt = "2.0.0-alpha.6"
 
 # libs
@@ -86,7 +86,7 @@ neoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }
 architectury-loom = { id = "dev.architectury.loom-no-remap", version.ref = "architectury-loom" }
 architectury-plugin = { id = "architectury-plugin", version.ref = "architectury-plugin" }

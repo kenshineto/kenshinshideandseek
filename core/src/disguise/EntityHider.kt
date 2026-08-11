@@ -11,9 +11,7 @@ import com.github.retrooper.packetevents.protocol.player.ClientVersion
 import java.util.UUID
 
 class EntityHider(val plugin: Khs) {
-    /**
-     * Entities in this map are INVISIBLE to everyone but their provided OWNER (which can be null)
-     */
+    /** Entities in this map are INVISIBLE to everyone but their provided OWNER (which can be null) */
     private val map: MutableMap<Int, UUID?> = HashMap()
 
     // is entity visible for the observer

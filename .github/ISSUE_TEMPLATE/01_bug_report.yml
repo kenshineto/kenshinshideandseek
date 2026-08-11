@@ -1,7 +1,8 @@
 name: "Bug report"
 description: "You found an issue with the plugin"
 title: "bug: BUG TITLE"
-labels: ["bug"]
+labels:
+  - "bug"
 body:
   - type: "dropdown"
     id: "version"
@@ -26,7 +27,7 @@ body:
         Enter the Minecraft version you are running on your server
 
         The currently supported versions are 1.8.x-26.2.x
-      placeholder: "26.2"
+      placeholder: 26.2
     validations:
       required: true
   - type: "dropdown"
@@ -53,7 +54,7 @@ body:
         Enter the java version the Minecraft server is running on
 
         You can get this information from running `java --version`
-      placeholder: openjdk 25.0.4 2026-07-21
+      placeholder: "openjdk 25.0.4 2026-07-21"
     validations:
       required: true
   - type: "checkboxes"
@@ -62,9 +63,9 @@ body:
       label: "Acknowledgements"
       description: "Mark all that apply"
       options:
-        - label: This is not a duplicate issue
-        - label: I am using the correct version of Packet Events for my mc version
-        - label: I am willing to submit a PR to fix this issue
+        - label: "This is not a duplicate issue"
+        - label: "I am using the correct version of Packet Events for my mc version"
+        - label: "I am willing to submit a PR to fix this issue"
   - type: "textarea"
     id: "description"
     attributes:

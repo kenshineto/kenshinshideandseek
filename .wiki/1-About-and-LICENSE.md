@@ -1,7 +1,7 @@
 ## Kenshin's Hide and Seek
 This plugin brings hide and seek to Minecraft servers running Spigot software or one of its derivatives such as PaperMC. Its focus is to bring a full hide and seek experience with lots of customization options.
 
-## License 
+## License
 ```
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007

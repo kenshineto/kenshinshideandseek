@@ -5,7 +5,7 @@ import dev.detekt.gradle.Detekt
 
 plugins {
     alias(libs.plugins.kotlin)
-    alias(libs.plugins.ktlint)
+    alias(libs.plugins.spotless)
     alias(libs.plugins.detekt)
     alias(libs.plugins.shadow) apply false
 }
@@ -27,18 +27,60 @@ allprojects {
 
     // only run when explicitly requested
     // i.e. dont lint on builds
-    tasks.matching { it.name.contains("ktlint", ignoreCase = true) }.configureEach {
-        onlyIf {
-            project.gradle.startParameter.taskNames
-                .any { it == "lint" || it == "format" }
+    tasks
+        .matching { it.name.contains("spotless", ignoreCase = true) }
+        .configureEach {
+            onlyIf {
+                project.gradle.startParameter.taskNames.any { it == "lint" || it == "format" }
+            }
         }
-    }
 
     // only run detekt during lint
-    tasks.matching { it.name == "detekt" }.configureEach {
-        onlyIf {
-            project.gradle.startParameter.taskNames
-                .contains("lint")
+    tasks
+        .matching { it.name == "detekt" }
+        .configureEach { onlyIf { project.gradle.startParameter.taskNames.contains("lint") } }
+
+    // linting
+    apply(plugin = "com.diffplug.spotless")
+    apply(plugin = "dev.detekt")
+
+    detekt {
+        config.setFrom("$rootDir/detekt.yml")
+        source.setFrom("src")
+    }
+
+    spotless {
+        kotlin {
+            ktfmt().kotlinlangStyle().configure {
+                it.setMaxWidth(120)
+                it.setBlockIndent(4)
+                it.setContinuationIndent(4)
+                it.setRemoveUnusedImports(true)
+            }
+        }
+        kotlinGradle {
+            ktfmt().kotlinlangStyle().configure {
+                it.setMaxWidth(120)
+                it.setBlockIndent(4)
+                it.setContinuationIndent(4)
+                it.setRemoveUnusedImports(true)
+            }
+        }
+        yaml {
+            target("**/*.yml")
+            jackson()
+                .yamlFeature("WRITE_DOC_START_MARKER", false)
+                .yamlFeature("INDENT_ARRAYS_WITH_INDICATOR", true)
+                .yamlFeature("LITERAL_BLOCK_STYLE", true)
+        }
+        json {
+            target("**/*.json")
+            simple().indentWithSpaces(4)
+        }
+        freshmark {
+            target("**/*.md")
+            trimTrailingWhitespace()
+            endWithNewline()
         }
     }
 }
@@ -48,10 +90,6 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "java-library")
 
-    // linting
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
-    apply(plugin = "dev.detekt")
-
     // make projects like cat.freya.khs.bukkit to be in
     // the .bukkit package
     if (project.name != "core") {
@@ -59,7 +97,6 @@ subprojects {
     }
 
     // we need to support java 8 so that we can support old
-    // minecraft versions such as 1.8
     val jvmVersion =
         when (project.name) {
             "neoforge" -> 25
@@ -78,11 +115,6 @@ subprojects {
     }
 
     java { toolchain { languageVersion.set(JavaLanguageVersion.of(jvmVersion)) } }
-
-    detekt {
-        config.setFrom("$rootDir/detekt.yml")
-        source.setFrom("src")
-    }
 
     tasks.withType<Detekt>().configureEach {
         reports {
@@ -159,20 +191,18 @@ subprojects {
         }
     }
 
-    tasks.withType<ShadowJar>().all {
-        tasks.findByName("assemble")?.dependsOn(this)
-    }
+    tasks.withType<ShadowJar>().all { tasks.findByName("assemble")?.dependsOn(this) }
 }
 
 tasks.named<Jar>("jar") { enabled = false }
 
 tasks.register("lint") {
-    dependsOn(subprojects.map { it.tasks.named("ktlintCheck") })
-    dependsOn(tasks.named("ktlintCheck"))
+    dependsOn(subprojects.map { it.tasks.named("spotlessCheck") })
+    dependsOn(tasks.named("spotlessCheck"))
     dependsOn(subprojects.map { it.tasks.named("detekt") })
 }
 
 tasks.register("format") {
-    dependsOn(subprojects.map { it.tasks.named("ktlintFormat") })
-    dependsOn(tasks.named("ktlintFormat"))
+    dependsOn(subprojects.map { it.tasks.named("spotlessApply") })
+    dependsOn(tasks.named("spotlessApply"))
 }

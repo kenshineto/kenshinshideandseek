@@ -6,8 +6,7 @@ import java.nio.file.Path
 /**
  * The prefix of all world names that are to be treated as map saves
  *
- * hs_ (map save v1) was named after the world name, not the map name, not allowing multiple names
- * per map
+ * hs_ (map save v1) was named after the world name, not the map name, not allowing multiple names per map
  *
  * hs2_ (map save v2) is named after the map name
  */
@@ -30,8 +29,8 @@ interface World {
     val type: Type
 
     /**
-     * The minimum Y position that a block can be placed in this world (inclusive). This also marks
-     * the start of the void
+     * The minimum Y position that a block can be placed in this world (inclusive). This also marks the start of the
+     * void
      */
     val minY: Int
 

@@ -3,8 +3,8 @@ package cat.freya.khs.bukkit
 import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
-import org.bukkit.entity.FallingBlock
 import java.util.UUID
+import org.bukkit.entity.FallingBlock
 
 class BukkitDisguise(
     private val bukkitPlugin: KhsPlugin,
@@ -20,8 +20,7 @@ class BukkitDisguise(
 
         @Suppress("DEPRECATION")
         val block: FallingBlock? =
-            runCatching { world.spawnFallingBlock(loc, bukkitMaterial.inner, 0x0) }
-                .getOrElse { null }
+            runCatching { world.spawnFallingBlock(loc, bukkitMaterial.inner, 0x0) }.getOrElse { null }
         if (block == null) return null
 
         if (plugin.shim.supports(10)) block.setGravity(false)

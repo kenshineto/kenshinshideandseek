@@ -32,13 +32,10 @@ class KhsMapStatus : Command {
                 if (plugin.config.mapSaveEnabled && !map.hasMapSave()) {
                     appendLine(plugin.locale.map.setup.saveMap)
                 }
-                if (map.config.blockHunt.enabled &&
-                    map.config.blockHunt.blocks
-                        .isEmpty()
-                ) {
+                if (map.config.blockHunt.enabled && map.config.blockHunt.blocks.isEmpty()) {
                     appendLine(plugin.locale.map.setup.blockHunt)
                 }
-            },
+            }
         )
     }
 

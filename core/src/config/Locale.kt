@@ -41,10 +41,8 @@ data class LocalePrefixConfig(
 )
 
 data class LocalePlaceholderConfig(
-    @Comment("Displayed if the requested placeholder is invalid")
-    var invalid: String = "{Error}",
-    @Comment("Displayed if the requested placeholder has no value")
-    var noData: String = "-",
+    @Comment("Displayed if the requested placeholder is invalid") var invalid: String = "{Error}",
+    @Comment("Displayed if the requested placeholder has no value") var noData: String = "-",
 )
 
 data class LocaleCommandConfig(
@@ -55,10 +53,8 @@ data class LocaleCommandConfig(
     @Comment("{1} - position of invalid argument")
     var invalidArgument: LocaleString1 = LocaleString1("Invalid argument: {1}"),
     var notEnoughArguments: String = "This command requires more arguments to run",
-    @Comment("{1} - the invalid integer")
-    var invalidInteger: LocaleString1 = LocaleString1("Invalid integer: {1}"),
-    @Comment("{1} - the invalid player name")
-    var invalidPlayer: LocaleString1 = LocaleString1("Invalid player: {1}"),
+    @Comment("{1} - the invalid integer") var invalidInteger: LocaleString1 = LocaleString1("Invalid integer: {1}"),
+    @Comment("{1} - the invalid player name") var invalidPlayer: LocaleString1 = LocaleString1("Invalid player: {1}"),
     var reloading: String = "Reloading the config...",
     var reloaded: String = "Reloaded the config",
     var errorReloading: String = "Error reloading config, please check the server logs!",
@@ -67,10 +63,8 @@ data class LocaleCommandConfig(
 )
 
 data class LocaleGamePlayerConfig(
-    @Comment("{1} - name of the player who died")
-    var death: LocaleString1 = LocaleString1("&c{1}&f was killed"),
-    @Comment("{1} - name of the hider who was found")
-    var found: LocaleString1 = LocaleString1("&e{1}&f was found"),
+    @Comment("{1} - name of the player who died") var death: LocaleString1 = LocaleString1("&c{1}&f was killed"),
+    @Comment("{1} - name of the hider who was found") var found: LocaleString1 = LocaleString1("&e{1}&f was found"),
     @Comment("{1} - name of the hider who was found")
     @Comment("{2} - name of the seeker who found the hider")
     var foundBy: LocaleString2 = LocaleString2("&e{1}&f was found by &c{2}&f"),
@@ -86,8 +80,7 @@ data class LocaleGameGameOverConfig(
 
 data class LocaleGameTitleConfig(
     var hidersWin: String = "&aHiders Win!",
-    @Comment("{1} - the name of the hider who won")
-    var singleHiderWin: LocaleString1 = LocaleString1("&a{1} Wins!"),
+    @Comment("{1} - the name of the hider who won") var singleHiderWin: LocaleString1 = LocaleString1("&a{1} Wins!"),
     var seekersWin: String = "&cSeekers Win!",
     var noWin: String = "&bGame Over",
 )
@@ -113,8 +106,7 @@ data class LocaleGameConfig(
     var title: LocaleGameTitleConfig = LocaleGameTitleConfig(),
     var countdown: LocaleGameCountdownConfig = LocaleGameCountdownConfig(),
     var team: LocaleGameTeamConfig = LocaleGameTeamConfig(),
-    var setup: String =
-        "There are no maps setup! Run /hs map status on a map to see what you need to do",
+    var setup: String = "There are no maps setup! Run /hs map status on a map to see what you need to do",
     var inGame: String = "You are already in the lobby/game",
     var notInGame: String = "You are not in a lobby/game",
     var inProgress: String = "There is currently a game in progress",
@@ -141,14 +133,12 @@ data class LocaleLobbyConfig(
     var inUse: String = "Can't modify the lobby while players are in it",
     var full: String = "You cannot join the lobby since it is full",
     @Comment("{1} - the minimum number of players required to start the game")
-    var notEnoughPlayers: LocaleString1 =
-        LocaleString1("You must have at least {1} players to start"),
+    var notEnoughPlayers: LocaleString1 = LocaleString1("You must have at least {1} players to start"),
 )
 
 data class LocaleMapSaveConfig(
     var start: String = "Starting map save",
-    var warning: String =
-        "All commands will be disabled when the save is in progress. Do not turn of the server.",
+    var warning: String = "All commands will be disabled when the save is in progress. Do not turn of the server.",
     var inProgress: String = "Map save is currently in progress! Try again later.",
     var finished: String = "Map save complete",
     @Comment("{1} - the error message")
@@ -166,8 +156,7 @@ data class LocaleMapSetupConfig(
     var header: String = "&f&lThe following is needed for setup...",
     var game: String = "&c&l- &fGame spawn isn't setup, /hs map set spawn <map>",
     var lobby: String = "&c&l- &fLobby spawn isn't setup, /hs map set lobby <map>",
-    var seekerLobby: String =
-        "&c&l- &fSeeker Lobby spawn isn't setup, /hs map set seekerLobby <map>",
+    var seekerLobby: String = "&c&l- &fSeeker Lobby spawn isn't setup, /hs map set seekerLobby <map>",
     var exit: String = "&c&l- &fQuit/exit teleport location isn't set, /hs setexit",
     var saveMap: String = "&c&l- &FMap isn't saved, /hs map save <map>",
     var bounds: String =
@@ -178,8 +167,7 @@ data class LocaleMapSetupConfig(
 )
 
 data class LocaleMapErrorConfig(
-    var locationNotSet: String =
-        "This location is not set (run /hs map status <map> for more info)",
+    var locationNotSet: String = "This location is not set (run /hs map status <map> for more info)",
     var notInRange: String = "This position is out of range (check bounds or world border)",
     var bounds: String = "Please set map bounds first",
 )
@@ -196,8 +184,7 @@ data class LocaleMapSetConfig(
     var lobby: String = "Set lobby position to your current position",
     var exit: String = "Set exit position to your current position",
     @Comment("{1} - if the 1st or 2nd bound position was set")
-    var bounds: LocaleString1 =
-        LocaleString1("Successfully set bounds at your current position ({1}/2)"),
+    var bounds: LocaleString1 = LocaleString1("Successfully set bounds at your current position ({1}/2)"),
 )
 
 data class LocaleMapConfig(
@@ -214,10 +201,8 @@ data class LocaleMapConfig(
     var wrongWorld: LocaleString1 = LocaleString1("Please run this command in the map's world: {1}"),
     var exists: String = "A map with this name already exists!",
     var unknown: String = "That map does not exist",
-    @Comment("{1} - the name of the new map")
-    var created: LocaleString1 = LocaleString1("Created map: {1}"),
-    @Comment("{1} - the name of the deleted map")
-    var deleted: LocaleString1 = LocaleString1("Deleted map: {1}"),
+    @Comment("{1} - the name of the new map") var created: LocaleString1 = LocaleString1("Created map: {1}"),
+    @Comment("{1} - the name of the deleted map") var deleted: LocaleString1 = LocaleString1("Deleted map: {1}"),
 )
 
 data class LocaleWorldBorderConfig(
@@ -229,9 +214,7 @@ data class LocaleWorldBorderConfig(
     @Comment("{2} - the new delay of the world border")
     @Comment("{3} - how much the border changes at a time")
     var enable: LocaleString3 =
-        LocaleString3(
-            "Set border center to current location, size to {1}, delay to {2}, and steps by {3} blocks",
-        ),
+        LocaleString3("Set border center to current location, size to {1}, delay to {2}, and steps by {3} blocks"),
     var warn: String = "World border will shrink in the next 30s!",
     var shrinking: String = "&c&oWorld border is shrinking!",
 )
@@ -267,24 +250,18 @@ data class LocaleBlockHuntConfig(
 )
 
 data class LocaleWorldConfig(
-    @Comment("{1} - the world name")
-    var exists: LocaleString1 = LocaleString1("A world named {1} already exists"),
-    @Comment("{1} - the world name")
-    var doesntExist: LocaleString1 = LocaleString1("There is not world named {1}"),
-    @Comment("{1} - the world name")
-    var added: LocaleString1 = LocaleString1("Created a world named {1}"),
+    @Comment("{1} - the world name") var exists: LocaleString1 = LocaleString1("A world named {1} already exists"),
+    @Comment("{1} - the world name") var doesntExist: LocaleString1 = LocaleString1("There is not world named {1}"),
+    @Comment("{1} - the world name") var added: LocaleString1 = LocaleString1("Created a world named {1}"),
     var addedFailed: LocaleString1 = LocaleString1("Failed to create a world named {1}"),
-    @Comment("{1} - the world name")
-    var removed: LocaleString1 = LocaleString1("Removed the world named {1}"),
+    @Comment("{1} - the world name") var removed: LocaleString1 = LocaleString1("Removed the world named {1}"),
     var removedFailed: LocaleString1 = LocaleString1("Failed to remove the world named {1}"),
     @Comment("{1} - the world name")
     @Comment("{2} - the map using the world")
     var inUseBy: LocaleString2 = LocaleString2("The world {1} is in use by map {2}"),
     var inUse: LocaleString1 = LocaleString1("The world {1} is in use by the plugin"),
-    @Comment("{1} - the world name")
-    var loadFailed: LocaleString1 = LocaleString1("Failed to load: {1}"),
-    @Comment("{1} - the given world type")
-    var invalidType: LocaleString1 = LocaleString1("Invalid world type: {1}"),
+    @Comment("{1} - the world name") var loadFailed: LocaleString1 = LocaleString1("Failed to load: {1}"),
+    @Comment("{1} - the given world type") var invalidType: LocaleString1 = LocaleString1("Invalid world type: {1}"),
     var notEmpty: String = "World must be empty to be deleted",
     var list: String = "The following worlds are",
     var none: String = "Failed to fetch any worlds",
@@ -326,12 +303,11 @@ data class LocaleMenuConfig(
 data class LocaleMiscConfig(
     @Comment("{1} - The current plugin version")
     @Comment("{2} - The available plugin version to update to")
-    var updateAvailable: LocaleString2 = LocaleString2("An update is available: &c{1} &f-> &a{2}"),
+    var updateAvailable: LocaleString2 = LocaleString2("An update is available: &c{1} &f-> &a{2}")
 )
 
 data class LocaleMetaConfig(
-    @Comment("This marks the revision of your locale.yml file, DO NOT EDIT THIS!!")
-    var revision: UInt? = null,
+    @Comment("This marks the revision of your locale.yml file, DO NOT EDIT THIS!!") var revision: UInt? = null
 )
 
 data class KhsLocale(

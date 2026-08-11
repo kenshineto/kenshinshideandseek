@@ -23,11 +23,7 @@ class KhsMapAdd : Command {
         plugin.maps[name] = KhsMap(name, MapConfig(world), plugin)
         plugin.saveConfig()
 
-        player.message(
-            plugin.locale.prefix.default +
-                plugin.locale.map.created
-                    .with(name),
-        )
+        player.message(plugin.locale.prefix.default + plugin.locale.map.created.with(name))
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =

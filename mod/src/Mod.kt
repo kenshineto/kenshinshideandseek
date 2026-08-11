@@ -3,11 +3,11 @@ package cat.freya.khs.mod
 import cat.freya.khs.Khs
 import cat.freya.khs.mod.event.*
 import dev.architectury.event.events.common.CommandRegistrationEvent
+import java.util.concurrent.atomic.AtomicBoolean
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
-import java.util.concurrent.atomic.AtomicBoolean
 
 class KhsMod(val platform: String) {
     val enabled = AtomicBoolean(true)

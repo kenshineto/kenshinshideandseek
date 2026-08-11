@@ -26,7 +26,7 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
         player.message(
             "&b&l${info.name} &7(&f${info.version}&7)\n" +
                 "&7Author: &f[${info.author}]\n" +
-                "&7Help Command: &b/hs &fhelp",
+                "&7Help Command: &b/hs &fhelp"
         )
     }
 
@@ -51,9 +51,7 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
 
         runCatching { data.command.execute(plugin, player, data.args) }
             .onFailure {
-                player.message(
-                    plugin.locale.prefix.error + (it.message ?: plugin.locale.command.unknownError),
-                )
+                player.message(plugin.locale.prefix.error + (it.message ?: plugin.locale.command.unknownError))
 
                 if (plugin.config.debug) {
                     plugin.shim.logger.warning("=== KHS BEGIN DEBUG TRACE ===")
@@ -72,10 +70,7 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
         val command = registry[invoke]
         return when {
             command is Command -> {
-                if (
-                    plugin.config.permissionsRequired &&
-                    !player.hasPermission("$permission.$invoke")
-                ) {
+                if (plugin.config.permissionsRequired && !player.hasPermission("$permission.$invoke")) {
                     return listOf()
                 }
 
@@ -83,10 +78,7 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
                 val typed = args.getOrNull(index) ?: return listOf()
 
                 // handle last argument of usage being a varadic (...)
-                if (
-                    index >= command.usage.size &&
-                    command.usage.lastOrNull()?.endsWith("...") == true
-                ) {
+                if (index >= command.usage.size && command.usage.lastOrNull()?.endsWith("...") == true) {
                     index = command.usage.size
                 }
 
@@ -122,10 +114,7 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
         for ((invoke, command) in registry) {
             when (command) {
                 is Command -> {
-                    if (
-                        plugin.config.permissionsRequired &&
-                        !player.hasPermission("$permission.$invoke")
-                    ) {
+                    if (plugin.config.permissionsRequired && !player.hasPermission("$permission.$invoke")) {
                         continue
                     }
                     res.add("$label $invoke" to command)

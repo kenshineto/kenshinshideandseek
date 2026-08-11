@@ -11,8 +11,7 @@ interface GameMode {
     val plugin: Khs
         get() = game.plugin
 
-    /** check if a player is allowed to attack another player
-     * in the game */
+    /** check if a player is allowed to attack another player in the game */
     fun isDamageAllowed(player: Player, attacker: Player?): Boolean {
         if (!game.teams.contains(player.uuid)) return false
 

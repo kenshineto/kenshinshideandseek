@@ -60,10 +60,7 @@ object DebugMenu {
     fun create(plugin: Khs): Inventory? {
         val title = plugin.locale.menu.debugTitle
         val inv = plugin.shim.createInventory(title, 9u) ?: return null
-        ACTIONS.keys
-            .mapNotNull { plugin.parseItem(it) }
-            .withIndex()
-            .forEach { (i, item) -> inv.set(i.toUInt(), item) }
+        ACTIONS.keys.mapNotNull { plugin.parseItem(it) }.withIndex().forEach { (i, item) -> inv.set(i.toUInt(), item) }
         return inv
     }
 

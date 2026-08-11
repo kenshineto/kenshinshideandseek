@@ -1,5 +1,6 @@
 package cat.freya.khs.mod.mixin
 
+import java.util.concurrent.Executor
 import net.minecraft.resources.ResourceKey
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
@@ -7,7 +8,6 @@ import net.minecraft.server.players.PlayerList
 import net.minecraft.world.level.Level
 import org.spongepowered.asm.mixin.Mixin
 import org.spongepowered.asm.mixin.Shadow
-import java.util.concurrent.Executor
 
 interface KhsMinecraftServerExt {
     fun initLevel(level: ServerLevel)
@@ -17,17 +17,13 @@ interface KhsMinecraftServerExt {
 
 @Mixin(MinecraftServer::class)
 abstract class MixinMinecraftServer : KhsMinecraftServerExt {
-    @Shadow
-    lateinit var levels: MutableMap<ResourceKey<Level>, ServerLevel>
+    @Shadow lateinit var levels: MutableMap<ResourceKey<Level>, ServerLevel>
 
-    @Shadow
-    lateinit var executor: Executor
+    @Shadow lateinit var executor: Executor
 
-    @Shadow
-    abstract fun getAbsoluteMaxWorldSize(): Int
+    @Shadow abstract fun getAbsoluteMaxWorldSize(): Int
 
-    @Shadow
-    abstract fun getPlayerList(): PlayerList
+    @Shadow abstract fun getPlayerList(): PlayerList
 
     override fun initLevel(level: ServerLevel) {
         val key = level.dimension()

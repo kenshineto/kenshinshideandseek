@@ -1,6 +1,5 @@
 package cat.freya.khs.mod
 
-import cat.freya.khs.mod.ModWorld
 import cat.freya.khs.mod.mixin.KhsMinecraftServerExt
 import cat.freya.khs.world.AbstractWorld
 import cat.freya.khs.world.Location
@@ -8,6 +7,7 @@ import cat.freya.khs.world.Position
 import cat.freya.khs.world.World
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
+import java.util.concurrent.CompletableFuture
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Holder
 import net.minecraft.core.registries.BuiltInRegistries
@@ -37,24 +37,33 @@ import net.minecraft.world.level.levelgen.blending.Blender
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings
 import net.minecraft.world.level.storage.DerivedLevelData
 import net.minecraft.world.level.storage.LevelStorageSource
-import java.util.concurrent.CompletableFuture
 
 class VoidGenerator(biomeSource: BiomeSource) : ChunkGenerator(biomeSource) {
     override fun codec(): MapCodec<ChunkGenerator> {
         val biomeCodec = BiomeSource.CODEC.fieldOf("biome_source")
 
         return RecordCodecBuilder.mapCodec {
-            it
-                .group(biomeCodec.forGetter { it.biomeSource })
-                .apply(it) { VoidGenerator(it) }
+            it.group(biomeCodec.forGetter { it.biomeSource }).apply(it) { VoidGenerator(it) }
         }
     }
 
-    override fun applyCarvers(region: WorldGenRegion, seed: Long, randomState: RandomState, biomeManager: BiomeManager, structureManager: StructureManager, chunk: ChunkAccess) {
+    override fun applyCarvers(
+        region: WorldGenRegion,
+        seed: Long,
+        randomState: RandomState,
+        biomeManager: BiomeManager,
+        structureManager: StructureManager,
+        chunk: ChunkAccess,
+    ) {
         // no carving
     }
 
-    override fun buildSurface(level: WorldGenRegion, structureManager: StructureManager, randomState: RandomState, protoChunk: ChunkAccess) {
+    override fun buildSurface(
+        level: WorldGenRegion,
+        structureManager: StructureManager,
+        randomState: RandomState,
+        protoChunk: ChunkAccess,
+    ) {
         // no surface
     }
 
@@ -66,7 +75,12 @@ class VoidGenerator(biomeSource: BiomeSource) : ChunkGenerator(biomeSource) {
         return 384
     }
 
-    override fun fillFromNoise(blender: Blender, randomState: RandomState, structureManager: StructureManager, centerChunk: ChunkAccess): CompletableFuture<ChunkAccess> {
+    override fun fillFromNoise(
+        blender: Blender,
+        randomState: RandomState,
+        structureManager: StructureManager,
+        centerChunk: ChunkAccess,
+    ): CompletableFuture<ChunkAccess> {
         return CompletableFuture.completedFuture(centerChunk)
     }
 
@@ -78,11 +92,22 @@ class VoidGenerator(biomeSource: BiomeSource) : ChunkGenerator(biomeSource) {
         return -64
     }
 
-    override fun getBaseHeight(x: Int, z: Int, type: Heightmap.Types, heightAccessor: LevelHeightAccessor, randomState: RandomState): Int {
+    override fun getBaseHeight(
+        x: Int,
+        z: Int,
+        type: Heightmap.Types,
+        heightAccessor: LevelHeightAccessor,
+        randomState: RandomState,
+    ): Int {
         return heightAccessor.minY
     }
 
-    override fun getBaseColumn(x: Int, z: Int, heightAccessor: LevelHeightAccessor, randomState: RandomState): NoiseColumn {
+    override fun getBaseColumn(
+        x: Int,
+        z: Int,
+        heightAccessor: LevelHeightAccessor,
+        randomState: RandomState,
+    ): NoiseColumn {
         return NoiseColumn(heightAccessor.minY, emptyArray())
     }
 
@@ -113,13 +138,11 @@ class ModWorldBorder(val level: ServerLevel) : World.Border {
     }
 }
 
-class ModWorldLoader(val mod: KhsMod, override val name: String) : World.AbstractLoader(name, name, mod.server.getWorldContainer()) {
+class ModWorldLoader(val mod: KhsMod, override val name: String) :
+    World.AbstractLoader(name, name, mod.server.getWorldContainer()) {
     override fun load(): ModWorld? {
         val key = ModWorld.parseKey(name) ?: return null
-        val level =
-            mod.server.inner.getLevel(key)
-                ?: ModWorld.createLevel(mod, name, World.Type.NORMAL)
-                ?: return null
+        val level = mod.server.inner.getLevel(key) ?: ModWorld.createLevel(mod, name, World.Type.NORMAL) ?: return null
         return ModWorld(mod, level)
     }
 
@@ -160,7 +183,16 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim
         val id = Identifier.tryParse(sound) ?: return
         val holder = BuiltInRegistries.SOUND_EVENT.get(id).orElse(null) ?: return
 
-        inner.playSound(null, position.x, position.y, position.z, holder, SoundSource.AMBIENT, volume.toFloat(), pitch.toFloat())
+        inner.playSound(
+            null,
+            position.x,
+            position.y,
+            position.z,
+            holder,
+            SoundSource.AMBIENT,
+            volume.toFloat(),
+            pitch.toFloat(),
+        )
     }
 
     companion object {
@@ -228,10 +260,7 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim
                     else -> BuiltinDimensionTypes.OVERWORLD
                 }
 
-            return mod.server.inner
-                .registryAccess()
-                .lookupOrThrow(Registries.DIMENSION_TYPE)
-                .getOrThrow(dimensionType)
+            return mod.server.inner.registryAccess().lookupOrThrow(Registries.DIMENSION_TYPE).getOrThrow(dimensionType)
         }
 
         private fun flatGenerator(mod: KhsMod): ChunkGenerator {

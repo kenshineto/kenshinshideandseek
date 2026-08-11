@@ -1,13 +1,12 @@
 package cat.freya.khs.mod
 
 import cat.freya.khs.game.Board
-import cat.freya.khs.mod.KhsMod
+import java.util.UUID
 import net.minecraft.world.scores.Objective
 import net.minecraft.world.scores.PlayerTeam
 import net.minecraft.world.scores.ScoreHolder
 import net.minecraft.world.scores.Scoreboard
 import net.minecraft.world.scores.Team
-import java.util.UUID
 
 class ModTeam(val inner: PlayerTeam) : Board.Team {
     override fun setPrefix(prefix: String) {

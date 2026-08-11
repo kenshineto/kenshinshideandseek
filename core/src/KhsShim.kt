@@ -71,8 +71,8 @@ interface KhsShim {
     fun getPlayer(name: String): Player?
 
     /**
-     * Wraps a retrieved platform player type into the wrapped player type. Packet events likes to
-     * give us an "Object" that is a BukkitPlayer (bukkit) or MinecraftServerPlayer (fabric)
+     * Wraps a retrieved platform player type into the wrapped player type. Packet events likes to give us an "Object"
+     * that is a BukkitPlayer (bukkit) or MinecraftServerPlayer (fabric)
      */
     fun wrapPlayer(inner: Any?): Player?
 

@@ -1,7 +1,8 @@
 name: "Requesting help"
 description: "You are confused on how to use the plugin"
 title: "help: HELP TITLE"
-labels: ["help"]
+labels:
+  - "help"
 body:
   - type: "dropdown"
     id: "version"
@@ -26,7 +27,7 @@ body:
         Enter the Minecraft version you are running on your server
 
         The currently supported versions are 1.8.x-26.2.x
-      placeholder: "26.2"
+      placeholder: 26.2
     validations:
       required: true
   - type: "dropdown"
@@ -51,8 +52,8 @@ body:
       label: "Acknowledgements"
       description: "Mark all that apply"
       options:
-        - label: This is not a duplicate help request
-        - label: I am using the correct version of Packet Events for my mc version
+        - label: "This is not a duplicate help request"
+        - label: "I am using the correct version of Packet Events for my mc version"
   - type: "textarea"
     id: "description"
     attributes:

@@ -4,12 +4,12 @@ import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.game.Board
 import cat.freya.khs.math.Vector
 import cat.freya.khs.menu.Inventory
-import cat.freya.khs.mod.KhsMod
 import cat.freya.khs.type.Material
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Player
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.wrapper.PacketWrapper
+import kotlin.runCatching
 import net.luckperms.api.LuckPermsProvider
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
@@ -25,11 +25,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.level.GameType
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.scores.DisplaySlot
-import kotlin.runCatching
 
-class ModPlayer(mod: KhsMod, val inner: ServerPlayer) :
-    ModEntity(mod, inner),
-    Player {
+class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), Player {
     override val name: String = inner.name.string
 
     override fun getHandle(): Any {
@@ -190,13 +187,12 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) :
                 Player.GameMode.CREATIVE -> GameType.CREATIVE
                 Player.GameMode.ADVENTURE -> GameType.ADVENTURE
                 Player.GameMode.SPECTATOR -> GameType.SPECTATOR
-            },
+            }
         )
     }
 
     private fun isOperator(): Boolean {
-        return mod.server.inner.playerList
-            .isOp(inner.nameAndId())
+        return mod.server.inner.playerList.isOp(inner.nameAndId())
     }
 
     override fun hasPermission(permission: String): Boolean {
@@ -204,12 +200,7 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) :
         val default = isOperator()
 
         val user = api?.userManager?.getUser(inner.getUUID())
-        val hasPerm =
-            user
-                ?.cachedData
-                ?.permissionData
-                ?.checkPermission(permission)
-                ?.asBoolean()
+        val hasPerm = user?.cachedData?.permissionData?.checkPermission(permission)?.asBoolean()
 
         return hasPerm ?: default
     }

@@ -5,14 +5,14 @@ import cat.freya.khs.KhsShim
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.world.World
+import java.nio.file.Path
+import java.util.UUID
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerPlayer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.nio.file.Path
-import java.util.UUID
 
 object ModLogger : KhsShim.Logger {
     private val logger: Logger? = LoggerFactory.getLogger(KhsMod.ID)
@@ -37,10 +37,7 @@ class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform) {
     override val logger: KhsShim.Logger = ModLogger
 
     override val dataDirectory: Path
-        get() =
-            mod.server.inner.serverDirectory
-                .resolve("config")
-                .resolve(KhsMod.ID)
+        get() = mod.server.inner.serverDirectory.resolve("config").resolve(KhsMod.ID)
 
     override fun getMaterials(): List<ModMaterial> {
         return getBlocks() + getItems()
@@ -104,10 +101,9 @@ class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform) {
         return namespaces
             .map { namespace ->
                 val dirs = namespace.listFiles() ?: emptyArray()
-                dirs
-                    .filter { it.isDirectory }
-                    .map { "${namespace.name}:${it.name}" }
-            }.flatten()
+                dirs.filter { it.isDirectory }.map { "${namespace.name}:${it.name}" }
+            }
+            .flatten()
     }
 
     override fun getWorld(worldName: String): ModWorld? {

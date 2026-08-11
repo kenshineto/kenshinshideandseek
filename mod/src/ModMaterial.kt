@@ -6,9 +6,9 @@ import net.minecraft.core.Holder
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceKey as McResourceKey
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
-import net.minecraft.resources.ResourceKey as McResourceKey
 
 class ModBlockMaterial(val block: Holder<Block>, key: McResourceKey<Block>) : ModMaterial(key) {
     override val isItem = false

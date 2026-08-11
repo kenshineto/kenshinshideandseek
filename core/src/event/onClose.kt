@@ -14,11 +14,7 @@ fun onClose(event: CloseEvent) {
     // only block hunt matters here
     if (inv.title?.startsWith(plugin.locale.menu.blockHuntPrefix) != true) return
 
-    val blocks =
-        game.map
-            ?.config
-            ?.blockHunt
-            ?.blocks ?: return
+    val blocks = game.map?.config?.blockHunt?.blocks ?: return
     val defaultBlock = blocks.firstOrNull() ?: return
     val material = plugin.parseMaterial(defaultBlock) ?: return
     plugin.disguiser.disguiseIfNot(player, material)

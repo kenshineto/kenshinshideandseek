@@ -5,10 +5,10 @@ import cat.freya.khs.config.DatabaseConfig
 import cat.freya.khs.config.DatabaseType
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import org.sqlite.SQLiteConfig
-import org.sqlite.SQLiteDataSource
 import java.io.File
 import javax.sql.DataSource
+import org.sqlite.SQLiteConfig
+import org.sqlite.SQLiteDataSource
 
 abstract class Driver {
     abstract fun connect(): DataSource

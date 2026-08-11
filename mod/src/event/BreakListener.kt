@@ -18,8 +18,7 @@ class BreakListener(val mod: KhsMod) {
 
         InteractionEvent.INTERACT_ENTITY.register { player, entity, _ ->
             val type =
-                runCatching { EntityType.getKey(entity.type) }.getOrDefault(null)
-                    ?: return@register EventResult.pass()
+                runCatching { EntityType.getKey(entity.type) }.getOrDefault(null) ?: return@register EventResult.pass()
 
             handleBreak(player as ServerPlayer, type.toString())
         }

@@ -12,10 +12,7 @@ class KhsMap(val name: String, var config: MapConfig, var plugin: Khs) {
     lateinit var worldName: String
         private set
 
-    /**
-     * The name of the world where the game takes place. If map saves are enabled, the name is
-     * prefixed with hs_
-     */
+    /** The name of the world where the game takes place. If map saves are enabled, the name is prefixed with hs_ */
     lateinit var gameWorldName: String
         private set
 
@@ -52,8 +49,7 @@ class KhsMap(val name: String, var config: MapConfig, var plugin: Khs) {
     }
 
     data class Bounds(val minX: Double, val minZ: Double, val maxX: Double, val maxZ: Double) {
-        fun inBounds(x: Double, z: Double): Boolean =
-            (x >= minX) || (x >= minZ) || (z <= maxX) || (z <= maxZ)
+        fun inBounds(x: Double, z: Double): Boolean = (x >= minX) || (x >= minZ) || (z <= maxX) || (z <= maxZ)
 
         fun inBounds(pos: Position): Boolean = inBounds(pos.x, pos.y)
     }

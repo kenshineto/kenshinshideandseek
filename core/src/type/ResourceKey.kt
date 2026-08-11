@@ -5,19 +5,13 @@ import com.github.retrooper.packetevents.protocol.entity.type.EntityType
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes
 
-/**
- * Represents a key name for a block/item/potion effect Stores both the native minecraft and
- * platform names
- */
+/** Represents a key name for a block/item/potion effect Stores both the native minecraft and platform names */
 data class ResourceKey(
     /** The namespaced key used 1.13+ */
     val minecraftKey: String?,
     /** The id used pre 1.13 */
     val minecraftId: UInt?,
-    /**
-     * A custom identifier used within the platform. On some platforms, this will be the same as
-     * [minecraftKey]
-     */
+    /** A custom identifier used within the platform. On some platforms, this will be the same as [minecraftKey] */
     val platformKey: String,
 ) {
     // this is properly cached since the

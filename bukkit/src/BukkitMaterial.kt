@@ -33,10 +33,11 @@ class BukkitMaterial(val inner: org.bukkit.Material) : Material {
             }
         } catch (_: IllegalArgumentException) {
             return runCatching {
-                inner.keyOrThrow.toString()
-            }.getOrElse {
-                inner.toString()
-            }
+                    inner.keyOrThrow.toString()
+                }
+                .getOrElse {
+                    inner.toString()
+                }
         }
     }
 

@@ -59,10 +59,7 @@ private fun handlePlayerStat(req: PlaceholderRequest): String {
 
 private fun handleLastWinners(req: PlaceholderRequest): String {
     val index = req.args.getOrNull(1)?.toUIntOrNull()
-    val lastWinners =
-        req.plugin.game
-            .getLastWinners()
-            .mapNotNull { req.plugin.shim.getPlayer(it) }
+    val lastWinners = req.plugin.game.getLastWinners().mapNotNull { req.plugin.shim.getPlayer(it) }
 
     if (lastWinners.isEmpty()) return req.noData
 
@@ -80,34 +77,24 @@ fun handlePlaceholder(req: PlaceholderRequest): String {
     return when (arg0) {
         // game info
         "hiders" -> {
-            req.plugin.game.teams
-                .hiderCount()
-                .toString()
+            req.plugin.game.teams.hiderCount().toString()
         }
 
         "seekers" -> {
-            req.plugin.game.teams
-                .seekerCount()
-                .toString()
+            req.plugin.game.teams.seekerCount().toString()
         }
 
         "spectators" -> {
-            req.plugin.game.teams
-                .spectatorCount()
-                .toString()
+            req.plugin.game.teams.spectatorCount().toString()
         }
 
         "map" -> {
-            req.plugin.game.map
-                ?.name ?: req.noData
+            req.plugin.game.map?.name ?: req.noData
         }
 
         // player team
         "team" -> {
-            req.plugin.game
-                .teams
-                .get(req.uuid)
-                ?.toString() ?: req.noData
+            req.plugin.game.teams.get(req.uuid)?.toString() ?: req.noData
         }
 
         // database

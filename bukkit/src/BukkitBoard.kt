@@ -3,11 +3,11 @@
 package cat.freya.khs.bukkit
 
 import cat.freya.khs.game.Board
+import java.util.UUID
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.NameTagVisibility
 import org.bukkit.scoreboard.Objective
 import org.bukkit.scoreboard.Scoreboard
-import java.util.UUID
 
 class BukkitTeam(val shim: BukkitKhsShim, val inner: org.bukkit.scoreboard.Team) : Board.Team {
     override fun setPrefix(prefix: String) {

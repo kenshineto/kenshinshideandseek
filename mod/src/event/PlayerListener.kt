@@ -12,9 +12,9 @@ import cat.freya.khs.mod.ModPlayer
 import dev.architectury.event.EventResult
 import dev.architectury.event.events.common.PlayerEvent
 import dev.architectury.event.events.common.TickEvent
+import java.util.UUID
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.item.ItemEntity
-import java.util.UUID
 
 class PlayerListener(val mod: KhsMod) {
     private val savedPrevHealth: MutableMap<UUID, Double> = mutableMapOf()

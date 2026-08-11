@@ -3,11 +3,11 @@ package cat.freya.khs.bukkit
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.type.Item
 import com.cryptomorin.xseries.XItemStack
+import kotlin.collections.emptyMap
 import org.bukkit.configuration.MemoryConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
-import kotlin.collections.emptyMap
 
 class BukkitItem(val inner: ItemStack, override val config: ItemConfig) : Item {
     override val name = inner.itemMeta?.displayName
@@ -59,20 +59,19 @@ class BukkitItem(val inner: ItemStack, override val config: ItemConfig) : Item {
                 config.set("base-type", potionType)
             }
 
-            val item =
-                runCatching {
-                    val item = XItemStack.deserializer().fromConfig(config).deserialize() ?: return null
+            val item = runCatching {
+                val item = XItemStack.deserializer().fromConfig(config).deserialize() ?: return null
 
-                    // set player head owner (if skull)
-                    if (itemConfig.owner != null && itemConfig.material == "PLAYER_HEAD") {
-                        val meta = item.itemMeta as SkullMeta
-                        @Suppress("DEPRECATION")
-                        meta.owner = itemConfig.owner
-                        item.itemMeta = meta
-                    }
-
-                    BukkitItem(item, itemConfig)
+                // set player head owner (if skull)
+                if (itemConfig.owner != null && itemConfig.material == "PLAYER_HEAD") {
+                    val meta = item.itemMeta as SkullMeta
+                    @Suppress("DEPRECATION")
+                    meta.owner = itemConfig.owner
+                    item.itemMeta = meta
                 }
+
+                BukkitItem(item, itemConfig)
+            }
 
             return item.getOrDefault(null)
         }
@@ -81,11 +80,7 @@ class BukkitItem(val inner: ItemStack, override val config: ItemConfig) : Item {
             if (inner == null) return null
 
             val bukkitConfig = MemoryConfiguration()
-            XItemStack
-                .serializer()
-                .fromItem(inner)
-                .toConfig(bukkitConfig)
-                .serialize()
+            XItemStack.serializer().fromItem(inner).toConfig(bukkitConfig).serialize()
 
             val config = ItemConfig()
             config.name = bukkitConfig.getString("name")

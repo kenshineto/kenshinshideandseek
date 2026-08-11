@@ -7,10 +7,7 @@ import kotlin.math.roundToInt
 
 const val DISABLED_IDENT = "KHS_DISABLED_FILTER_ME_OUT"
 
-/**
- * Wrapper for minecraft's scoreboard system it's called a Board since it doesn't really track
- * scores for us
- */
+/** Wrapper for minecraft's scoreboard system it's called a Board since it doesn't really track scores for us */
 interface Board {
     interface Team {
         fun setPrefix(prefix: String)
@@ -53,8 +50,7 @@ fun reloadLobbyBoard(plugin: Khs, player: Player) {
     val countdown =
         when {
             timer != null -> {
-                plugin.boardConfig.countdown.startingIn
-                    .with(timer)
+                plugin.boardConfig.countdown.startingIn.with(timer)
             }
 
             else -> {
@@ -73,8 +69,7 @@ fun reloadLobbyBoard(plugin: Khs, player: Player) {
     board.setText(
         title,
         plugin.boardConfig.lobby.content.map {
-            it
-                .replace("{COUNTDOWN}", countdown)
+            it.replace("{COUNTDOWN}", countdown)
                 .replace("{COUNT}", count.toString())
                 .replace("{SEEKER%}", seekerPercent.toString())
                 .replace("{HIDER%}", hiderPercent.toString())
@@ -90,10 +85,7 @@ fun getGameBoard(plugin: Khs, uuid: UUID): Board? {
 }
 
 private fun getBorderLocale(plugin: Khs): String {
-    val config =
-        plugin.game.map
-            ?.config
-            ?.worldBorder
+    val config = plugin.game.map?.config?.worldBorder
     val border = plugin.game.border
 
     if (config?.enabled != true || border.expired) return DISABLED_IDENT
@@ -102,8 +94,7 @@ private fun getBorderLocale(plugin: Khs): String {
 
     val m = border.timer / 60UL
     val s = border.timer % 60UL
-    return plugin.boardConfig.border.timer
-        .with(m, s)
+    return plugin.boardConfig.border.timer.with(m, s)
 }
 
 private fun getTauntLocale(plugin: Khs): String {
@@ -116,8 +107,7 @@ private fun getTauntLocale(plugin: Khs): String {
 
     val m = taunt.timer / 60UL
     val s = taunt.timer % 60UL
-    return plugin.boardConfig.taunt.timer
-        .with(m, s)
+    return plugin.boardConfig.taunt.timer.with(m, s)
 }
 
 private fun getGlowLocale(plugin: Khs): String {
@@ -133,9 +123,7 @@ private fun getGlowLocale(plugin: Khs): String {
 fun reloadGameBoard(plugin: Khs, player: Player) {
     val timer = plugin.game.timer
 
-    val time =
-        plugin.boardConfig.countdown.timer
-            .with((timer ?: 0UL) / 60UL, (timer ?: 0UL) % 60UL)
+    val time = plugin.boardConfig.countdown.timer.with((timer ?: 0UL) / 60UL, (timer ?: 0UL) % 60UL)
     val team =
         when (plugin.game.teams.get(player.uuid)) {
             Game.Team.HIDER -> plugin.locale.game.team.hider
@@ -160,8 +148,7 @@ fun reloadGameBoard(plugin: Khs, player: Player) {
         title,
         plugin.boardConfig.game.content
             .map {
-                it
-                    .replace("{TIME}", time)
+                it.replace("{TIME}", time)
                     .replace("{TEAM}", team)
                     .replace("{BORDER}", border)
                     .replace("{TAUNT}", taunt)
@@ -169,7 +156,8 @@ fun reloadGameBoard(plugin: Khs, player: Player) {
                     .replace("{#SEEKER}", numSeeker.toString())
                     .replace("{#HIDER}", numHider.toString())
                     .replace("{MAP}", map)
-            }.filter { !it.contains(DISABLED_IDENT) },
+            }
+            .filter { !it.contains(DISABLED_IDENT) },
     )
 
     player.setScoreBoard(board)
