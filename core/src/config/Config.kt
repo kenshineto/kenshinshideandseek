@@ -24,9 +24,9 @@ enum class ConfigCountdownDisplay {
     TITLE,
 }
 
-enum class ConfigScoringMode {
-    ALL_HIDERS_FOUND,
-    LAST_HIDER_WINS,
+enum class ConfigScoringMode(val minHiders: UInt) {
+    ALL_HIDERS_FOUND(2u),
+    LAST_HIDER_WINS(1u),
 }
 
 enum class ConfigLeaveType {

@@ -18,7 +18,7 @@ class KhsStop : Command {
         }
 
         plugin.game.broadcast(plugin.locale.prefix.abort + plugin.locale.game.stop)
-        plugin.game.stop(Game.WinType.NONE)
+        plugin.game.stop(Game.WinType.STOPPED)
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> {

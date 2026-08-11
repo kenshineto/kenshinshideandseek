@@ -3,8 +3,9 @@ package cat.freya.khs.game
 import cat.freya.khs.Khs
 import cat.freya.khs.config.ConfigCountdownDisplay
 import cat.freya.khs.config.ConfigLeaveType
-import cat.freya.khs.config.ConfigScoringMode
 import cat.freya.khs.config.ItemConfig
+import cat.freya.khs.game.gamemode.GameMode
+import cat.freya.khs.game.gamemode.HideAndSeek
 import cat.freya.khs.menu.BlockHuntMenu
 import cat.freya.khs.type.Item
 import cat.freya.khs.world.Player
@@ -44,9 +45,60 @@ class Game(val plugin: Khs) {
 
     /** why was the game stopped? */
     enum class WinType {
-        NONE,
-        SEEKER_WIN,
-        HIDER_WIN,
+        STOPPED,
+        PLAYERS_LEFT,
+        SEEKERS_WIN,
+        HIDERS_WIN,
+        LAST_HIDER_WIN,
+        ;
+
+        fun getTitle(game: Game): String {
+            val plugin = game.plugin
+            val lastHiderName =
+                game.gameMode
+                    .getLastHider()
+                    ?.let { plugin.shim.getPlayer(it) }
+                    ?.let(Player::name) ?: "null"
+
+            return when (this) {
+                SEEKERS_WIN -> plugin.locale.game.title.seekersWin
+                HIDERS_WIN -> plugin.locale.game.title.hidersWin
+                LAST_HIDER_WIN ->
+                    plugin.locale.game.title.singleHiderWin
+                        .with(lastHiderName)
+                else -> plugin.locale.game.title.noWin
+            }
+        }
+
+        fun getMessage(game: Game, withPrefix: Boolean): String {
+            val plugin = game.plugin
+            val lastHiderName =
+                game.gameMode
+                    .getLastHider()
+                    ?.let { plugin.shim.getPlayer(it) }
+                    ?.let(Player::name) ?: "null"
+
+            val message =
+                when (this) {
+                    STOPPED -> plugin.locale.game.stop
+                    PLAYERS_LEFT -> plugin.locale.game.gameOver.playersQuit
+                    SEEKERS_WIN -> plugin.locale.game.gameOver.hidersFound
+                    HIDERS_WIN -> plugin.locale.game.gameOver.time
+                    LAST_HIDER_WIN ->
+                        plugin.locale.game.gameOver.lastHider
+                            .with(lastHiderName)
+                }
+
+            if (!withPrefix) return message
+
+            val prefix =
+                when (this) {
+                    STOPPED, PLAYERS_LEFT -> plugin.locale.prefix.abort
+                    else -> plugin.locale.prefix.gameOver
+                }
+
+            return prefix + message
+        }
     }
 
     /** the state the game is in */
@@ -59,12 +111,16 @@ class Game(val plugin: Khs) {
     var timer: ULong? = null
         private set
 
+    /** the active gamemode */
+    var gameMode: GameMode = HideAndSeek(this)
+        private set
+
     /** keep track till next second */
     private var gameTick: UByte = 0u
     private var isSecond: Boolean = false
 
     /** if the last event was a hider leaving the game */
-    private var hiderLeft: Boolean = false
+    private var playerLeft: Boolean = false
 
     /** the current game round */
     private var round: UInt = 0u
@@ -119,6 +175,7 @@ class Game(val plugin: Khs) {
             gameTick++
             gameTick = (gameTick % 20u).toUByte()
             isSecond = gameTick == 0u.toUByte()
+            playerLeft = false
         }
     }
 
@@ -280,16 +337,24 @@ class Game(val plugin: Khs) {
         }
     }
 
+    fun getInitialTeams(): Map<UUID, Team> {
+        return initialTeams.toMap()
+    }
+
     fun getLastWinners(): Set<UUID> {
         return lastWinners.toSet()
     }
 
+    fun getPlayerLeft(): Boolean {
+        return playerLeft
+    }
+
     private fun updatePlayerInfo(uuid: UUID, reason: WinType) {
-        val team = initialTeams[uuid] ?: return
+        val team = gameMode.getEffectiveTeam(uuid) ?: return
         val data = plugin.database?.getPlayer(uuid) ?: return
 
         when (reason) {
-            WinType.SEEKER_WIN -> {
+            WinType.SEEKERS_WIN -> {
                 if (team == Team.SEEKER) {
                     data.seekerWins++
                     lastWinners.add(uuid)
@@ -297,7 +362,7 @@ class Game(val plugin: Khs) {
                 if (team == Team.HIDER) data.hiderLosses++
             }
 
-            WinType.HIDER_WIN -> {
+            WinType.HIDERS_WIN -> {
                 if (team == Team.SEEKER) data.seekerLosses++
                 if (team == Team.HIDER) {
                     data.hiderWins++
@@ -305,7 +370,20 @@ class Game(val plugin: Khs) {
                 }
             }
 
-            WinType.NONE -> {}
+            WinType.LAST_HIDER_WIN -> {
+                if (team == Team.SEEKER) data.seekerLosses++
+                if (team == Team.HIDER) {
+                    val lastHider = gameMode.getLastHider()
+                    if (uuid == lastHider) {
+                        data.hiderWins++
+                        lastWinners.add(uuid)
+                    } else {
+                        data.hiderLosses++
+                    }
+                }
+            }
+
+            else -> {}
         }
 
         data.seekerKills += seekerKills.getOrDefault(uuid, 0u)
@@ -324,6 +402,11 @@ class Game(val plugin: Khs) {
             round++
             status = Status.FINISHED
             timer = null
+        }
+
+        broadcast(reason.getMessage(this, true))
+        if (plugin.config.gameOverTitle) {
+            broadcastTitle(reason.getTitle(this), reason.getMessage(this, false))
         }
 
         // update database
@@ -382,13 +465,12 @@ class Game(val plugin: Khs) {
     fun leave(uuid: UUID) {
         synchronized(lock) {
             if (!teams.contains(uuid)) return
-            if (teams.isHider(uuid)) hiderLeft = true
+            if (teams.isHider(uuid) || teams.isSeeker(uuid)) playerLeft = true
             teams.remove(uuid)
         }
 
         val savedInv = savedInventories.remove(uuid)
         val savedBoard = savedScoreBoards.remove(uuid)
-
         val player = plugin.shim.getPlayer(uuid) ?: return
 
         resetPlayer(player)
@@ -400,24 +482,18 @@ class Game(val plugin: Khs) {
         )
 
         // restore inventory
-
         if (plugin.config.saveInventory) {
             savedInv?.let { player.getInventory().setContents(it) }
         }
 
         // reset score board
-
-        val board =
-            if (plugin.config.saveScoreBoard) {
-                savedBoard
-            } else {
-                null
-            }
-
-        player.setScoreBoard(board)
+        if (plugin.config.saveScoreBoard) {
+            player.setScoreBoard(savedBoard)
+        } else {
+            player.setScoreBoard(null)
+        }
 
         // reload sidebar
-
         if (status.inProgress()) {
             reloadGameBoards()
         } else {
@@ -425,7 +501,6 @@ class Game(val plugin: Khs) {
         }
 
         // teleport away player
-
         if (plugin.config.leaveType == ConfigLeaveType.PROXY) {
             val server = plugin.config.leaveServer
             val successful = plugin.shim.sendPlayerToServer(uuid, server)
@@ -509,7 +584,9 @@ class Game(val plugin: Khs) {
     private fun whileHiding() {
         if (!isSecond) return
 
-        if (timer != 0UL) checkWinConditions()
+        if (timer != 0UL) {
+            gameMode.getWinCondition()?.let(this::stop)
+        }
 
         if (isSecond) reloadGameBoards()
 
@@ -611,91 +688,6 @@ class Game(val plugin: Khs) {
         }
     }
 
-    private fun checkWinConditions() {
-        var stopReason: WinType? = null
-
-        val scoreMode = plugin.config.scoringMode
-        val notEnoughHiders =
-            when (scoreMode) {
-                ConfigScoringMode.ALL_HIDERS_FOUND -> teams.hiderCount() == 0u
-                ConfigScoringMode.LAST_HIDER_WINS -> teams.hiderCount() == 1u
-            }
-        val lastHider = teams.getHiderPlayers().firstOrNull()
-
-        val doTitle = plugin.config.gameOverTitle
-        val prefix = plugin.locale.prefix
-
-        when {
-            // time ran out
-            timer == 0UL -> {
-                broadcast(prefix.gameOver + plugin.locale.game.gameOver.time)
-                if (doTitle) {
-                    broadcastTitle(
-                        plugin.locale.game.title.hidersWin,
-                        plugin.locale.game.gameOver.time,
-                    )
-                }
-                stopReason = WinType.HIDER_WIN
-            }
-
-            // all seekers quit
-            teams.seekerCount() < 1u -> {
-                broadcast(prefix.abort + plugin.locale.game.gameOver.seekerQuit)
-                if (doTitle) {
-                    broadcastTitle(
-                        plugin.locale.game.title.noWin,
-                        plugin.locale.game.gameOver.seekerQuit,
-                    )
-                }
-                stopReason = if (plugin.config.dontRewardQuit) WinType.NONE else WinType.HIDER_WIN
-            }
-
-            // hiders quit
-            notEnoughHiders && hiderLeft -> {
-                broadcast(prefix.abort + plugin.locale.game.gameOver.hiderQuit)
-                if (doTitle) {
-                    broadcastTitle(
-                        plugin.locale.game.title.noWin,
-                        plugin.locale.game.gameOver.hiderQuit,
-                    )
-                }
-                stopReason = if (plugin.config.dontRewardQuit) WinType.NONE else WinType.SEEKER_WIN
-            }
-
-            // all hiders found
-            notEnoughHiders && lastHider == null -> {
-                broadcast(prefix.gameOver + plugin.locale.game.gameOver.hidersFound)
-                if (doTitle) {
-                    broadcastTitle(
-                        plugin.locale.game.title.seekersWin,
-                        plugin.locale.game.gameOver.hidersFound,
-                    )
-                }
-                stopReason = WinType.SEEKER_WIN
-            }
-
-            // last hider wins (depends on scoring more)
-            notEnoughHiders && lastHider != null -> {
-                val msg =
-                    plugin.locale.game.gameOver.lastHider
-                        .with(lastHider.name)
-                broadcast(prefix.gameOver + msg)
-                if (doTitle) {
-                    broadcastTitle(
-                        plugin.locale.game.title.singleHiderWin
-                            .with(lastHider.name),
-                        msg,
-                    )
-                }
-                stopReason = WinType.HIDER_WIN
-            }
-        }
-
-        if (stopReason != null) stop(stopReason)
-
-        hiderLeft = false
-    }
-
     /** during Status.SEEKING */
     private fun whileSeeking() {
         if (plugin.config.seekerPing.enabled) teams.getHiderPlayers().forEach { playSeekerPing(it) }
@@ -721,7 +713,7 @@ class Game(val plugin: Khs) {
         // (the toggle they have only changed allowed flight)
         teams.getSpectatorPlayers().forEach { it.setFlying(it.getAllowedFlight()) }
 
-        checkWinConditions()
+        gameMode.getWinCondition()?.let(this::stop)
     }
 
     /** during Status.FINISHED */
@@ -823,7 +815,13 @@ class Game(val plugin: Khs) {
             return
         }
 
-        val nextSlot = givePlayerItems(hider, plugin.itemsConfig.hiderItems)
+        val nextSlot =
+            if (plugin.config.pvp) {
+                givePlayerItems(hider, plugin.itemsConfig.hiderItems)
+            } else {
+                // only give the glow power-up if pvp is disabled
+                0u
+            }
 
         // glow power-up
         if (!plugin.config.alwaysGlow && plugin.config.glow.enabled) {
@@ -831,6 +829,8 @@ class Game(val plugin: Khs) {
             val slot = plugin.config.glow.item.slot ?: nextSlot
             item?.let { hider.getInventory().set(slot, it) }
         }
+
+        if (!plugin.config.pvp) return
 
         val inventory = hider.getInventory()
         inventory.setHelmet(plugin.parseItem(plugin.itemsConfig.hiderHelmet))
@@ -876,7 +876,7 @@ class Game(val plugin: Khs) {
 
         resetPlayer(seeker)
 
-        if (status == Status.HIDING) {
+        if (status == Status.HIDING || !plugin.config.pvp) {
             // dont give players items in the
             // hiding phase
             return

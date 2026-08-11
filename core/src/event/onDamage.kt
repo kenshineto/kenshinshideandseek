@@ -1,7 +1,6 @@
 package cat.freya.khs.event
 
 import cat.freya.khs.Khs
-import cat.freya.khs.game.Game
 import cat.freya.khs.world.Player
 
 data class DamageEvent(
@@ -23,101 +22,14 @@ private fun eventHasJurisdiction(event: DamageEvent): Boolean {
     return false
 }
 
-/** Checks if the attacker (if exists) is allowed to attack the player */
-private fun isDamageAllowed(event: DamageEvent): Boolean {
-    val (plugin, player, attacker, _) = event
-    val game = plugin.game
-
-    if (!game.teams.contains(player.uuid)) return false
-
-    if (game.status != Game.Status.SEEKING) return false
-
-    if (game.teams.isSpectator(player.uuid)) return false
-    if (game.teams.isUnassigned(player.uuid)) return false
-
-    if (attacker == null) {
-        // assume natural causes
-        if (!plugin.config.pvp && !plugin.config.allowNaturalCauses) return false
-
-        return true
-    }
-
-    // attackers must be in the game to attack the player
-    if (!game.teams.contains(attacker.uuid)) return false
-
-    // spectators cannot attack
-    if (game.teams.isSpectator(attacker.uuid)) return false
-    if (game.teams.isUnassigned(attacker.uuid)) return false
-
-    // players cannot attack their team-mates
-    if (game.teams.get(player.uuid) == game.teams.get(attacker.uuid)) return false
-
-    // ignore if pvp is disabled, and a hider is trying to attack a seeker
-    if (!plugin.config.pvp && game.teams.isHider(attacker.uuid) && game.teams.isSeeker(player.uuid)) return false
-
-    return true
-}
-
-private fun respawnPlayer(event: DamageEvent) {
-    val (plugin, player, _, _) = event
-    val game = plugin.game
-
-    if (game.teams.isHider(player.uuid) && plugin.config.respawnAsSpectator) {
-        game.loadSpectator(player)
-        return
-    }
-
-    // respawn as a seeker
-    game.loadSeeker(player, true)
-}
-
-private fun broadcastDeath(event: DamageEvent) {
-    val (plugin, player, attacker, _) = event
-    val game = plugin.game
-
-    val msg =
-        if (game.teams.isSeeker(player.uuid)) {
-            plugin.locale.game.player.death
-                .with(player.name)
-        } else if (attacker == null) {
-            plugin.locale.game.player.found
-                .with(player.name)
-        } else {
-            plugin.locale.game.player.foundBy
-                .with(player.name, attacker.name)
-        }
-
-    game.broadcast(msg)
-}
-
-/** the attack is valid, handle it */
-private fun handleDeath(event: DamageEvent) {
-    val (plugin, player, attacker, _) = event
-    val game = plugin.game
-
-    // play death sound
-    val soundName = if (plugin.shim.supports(9)) "ENTITY_PLAYER_DEATH" else "ENTITY_PLAYER_HURT"
-    player.getWorld()?.playSound(player.getPosition(), soundName, 1.0, 1.0)
-
-    // un solidify a player if their disguised
-    plugin.disguiser.reveal(player.uuid)
-
-    // update leaderboard
-    game.addDeath(player.uuid)
-    if (attacker != null) game.addKill(attacker.uuid)
-
-    broadcastDeath(event)
-    respawnPlayer(event)
-}
-
 /** handles when a player in the game is damaged */
 fun onDamage(event: DamageEvent) {
-    val (plugin, player, _, damage) = event
+    val (plugin, player, attacker, damage) = event
     val game = plugin.game
 
     if (!eventHasJurisdiction(event)) return
 
-    if (!isDamageAllowed(event)) {
+    if (!game.gameMode.isDamageAllowed(player, attacker)) {
         event.cancel()
 
         // handle spectator taking damage
@@ -138,5 +50,5 @@ fun onDamage(event: DamageEvent) {
 
     // handle death event (player was tagged or killed in pvp)
     event.cancel()
-    handleDeath(event)
+    game.gameMode.handleDeath(player, attacker)
 }

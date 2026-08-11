@@ -79,9 +79,8 @@ data class LocaleGamePlayerConfig(
 data class LocaleGameGameOverConfig(
     var hidersFound: String = "All hiders have been found",
     @Comment("{1} - the name of the last hider")
-    var lastHider: LocaleString1 = LocaleString1("The last hider, &e{1}&f, has won!"),
-    var seekerQuit: String = "All seekers have quit",
-    var hiderQuit: String = "All hiders have quit",
+    var lastHider: LocaleString1 = LocaleString1("{1} is the last hider alive"),
+    val playersQuit: String = "Too many players have quit the game",
     var time: String = "Seekers have run out of time. Hiders win!",
 )
 
@@ -89,7 +88,6 @@ data class LocaleGameTitleConfig(
     var hidersWin: String = "&aHiders Win!",
     @Comment("{1} - the name of the hider who won")
     var singleHiderWin: LocaleString1 = LocaleString1("&a{1} Wins!"),
-    var singleHiderWinSubtitle: LocaleString1 = LocaleString1("{1} is the last hider alive!"),
     var seekersWin: String = "&cSeekers Win!",
     var noWin: String = "&bGame Over",
 )
@@ -371,6 +369,7 @@ data class KhsLocale(
         if (revision == 0u) {
             game.join = default.game.join
             map.wrongWorld = default.map.wrongWorld
+            game.gameOver.lastHider = default.game.gameOver.lastHider
             revision++
         }
 
