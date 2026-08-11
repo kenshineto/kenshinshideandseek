@@ -226,21 +226,44 @@ class Game(val plugin: Khs) {
             return
         }
 
-        startWithSeekers(seekers)
+        if (status != Status.LOBBY) return
+
+        if (plugin.config.mapSaveEnabled) {
+            // roll back the mapsave
+            map?.getGameWorld()?.loader?.rollback()
+            plugin.shim.scheduleEvent(1UL) {
+                // this need to be a 1 tick delay
+                // to stop a possible death loop inside
+                // the minecraft server code
+                startWithSeekers(seekers)
+            }
+        } else {
+            startWithSeekers(seekers)
+        }
     }
 
     private fun startWithSeekers(seekers: Set<UUID>) {
         synchronized(lock) {
             if (status != Status.LOBBY) return
 
-            if (plugin.config.mapSaveEnabled) {
-                // roll back the mapsave
-                map?.getGameWorld()?.loader?.rollback()
-            }
+            status = Status.HIDING
+            timer = null
 
-            // set teams
+            glow.reset()
+            taunt.reset()
+            border.reset()
+
+            val players = teams.getPlayers()
             teams.reset()
-            seekers.forEach { teams.put(it, Team.SEEKER) }
+
+            // load players into teams
+            players.forEach {
+                if (seekers.contains(it.uuid)) {
+                    loadSeeker(it)
+                } else {
+                    loadHider(it)
+                }
+            }
 
             // reset game state
             initialTeams = teams.getMappings()
@@ -251,13 +274,6 @@ class Game(val plugin: Khs) {
 
             // reload sidebar
             reloadGameBoards()
-
-            glow.reset()
-            taunt.reset()
-            border.reset()
-
-            status = Status.HIDING
-            timer = null
         }
     }
 
@@ -487,17 +503,6 @@ class Game(val plugin: Khs) {
         val message: String
         synchronized(lock) {
             time = timer ?: plugin.config.hidingLength
-
-            if (time == plugin.config.hidingLength) {
-                // load players into the game
-                //
-                // this is a 1 tick delay from startWithSeekers
-                //
-                // this stops a possible death loop inside
-                // the minecraft server code
-                loadHiders()
-                loadSeekers()
-            }
 
             when (time) {
                 0UL -> {
