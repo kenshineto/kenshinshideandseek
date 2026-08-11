@@ -27,19 +27,14 @@ object DebugMenu {
         )
 
     private fun handleBecomeHider(plugin: Khs, player: Player) {
-        plugin.game.teams.put(player.uuid, Game.Team.HIDER)
         plugin.game.loadHider(player)
-        if (plugin.game.status == Game.Status.SEEKING) plugin.game.giveHiderItems(player)
     }
 
     private fun handleBecomeSeeker(plugin: Khs, player: Player) {
-        plugin.game.teams.put(player.uuid, Game.Team.SEEKER)
         plugin.game.loadSeeker(player)
-        if (plugin.game.status == Game.Status.SEEKING) plugin.game.giveSeekerItems(player)
     }
 
     private fun handleBecomeSpectator(plugin: Khs, player: Player) {
-        plugin.game.teams.put(player.uuid, Game.Team.SPECTATOR)
         plugin.game.loadSpectator(player)
     }
 

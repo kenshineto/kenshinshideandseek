@@ -4,6 +4,7 @@ import cat.freya.khs.Khs
 import cat.freya.khs.config.ConfigCountdownDisplay
 import cat.freya.khs.config.ConfigLeaveType
 import cat.freya.khs.config.ConfigScoringMode
+import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.menu.BlockHuntMenu
 import cat.freya.khs.type.Item
 import cat.freya.khs.world.Player
@@ -38,6 +39,7 @@ class Game(val plugin: Khs) {
         HIDER,
         SEEKER,
         SPECTATOR,
+        UNASSIGNED,
     }
 
     /** why was the game stopped? */
@@ -155,7 +157,7 @@ class Game(val plugin: Khs) {
         savedScoreBoards.clear()
     }
 
-    fun getSeekerWeight(uuid: UUID): Double {
+    private fun getSeekerWeight(uuid: UUID): Double {
         val maxWeight = 4u
         val lastRoundSeeker = lastPicked[uuid]?.let { minOf(it, round) }
         val roundsSinceSeeker = lastRoundSeeker?.let { round - lastRoundSeeker }
@@ -320,11 +322,6 @@ class Game(val plugin: Khs) {
             }
 
             spectator = status != Status.LOBBY
-            if (spectator) {
-                teams.put(uuid, Team.SPECTATOR)
-            } else {
-                teams.put(uuid, Team.HIDER)
-            }
 
             if (plugin.config.saveInventory) {
                 savedInventories[uuid] = player.getInventory().getContents()
@@ -497,7 +494,7 @@ class Game(val plugin: Khs) {
                 // this is a 1 tick delay from startWithSeekers
                 //
                 // this stops a possible death loop inside
-                // the minecraft serverr code
+                // the minecraft server code
                 loadHiders()
                 loadSeekers()
             }
@@ -507,11 +504,8 @@ class Game(val plugin: Khs) {
                     message = plugin.locale.game.start
                     status = Status.SEEKING
                     timer = null
-                    teams.getSeekerPlayers().forEach {
-                        giveSeekerItems(it)
-                        it.teleport(map?.gameSpawn)
-                    }
-                    teams.getHiderPlayers().forEach { giveHiderItems(it) }
+                    loadHiders()
+                    loadSeekers()
                 }
 
                 1UL -> {
@@ -756,7 +750,7 @@ class Game(val plugin: Khs) {
         }
     }
 
-    fun resetPlayer(player: Player) {
+    private fun resetPlayer(player: Player, revealDisguise: Boolean = true) {
         player.setFlying(false)
         player.setAllowedFlight(false)
         player.setGameMode(Player.GameMode.ADVENTURE)
@@ -764,37 +758,53 @@ class Game(val plugin: Khs) {
         player.clearEffects()
         player.satiate()
         player.heal()
-        plugin.disguiser.reveal(player.uuid)
-        setPlayerHidden(player, false)
-    }
-
-    fun loadHider(hider: Player) {
-        hider.teleport(map?.gameSpawn)
-        resetPlayer(hider)
-        hider.setSpeed(5u)
-        hider.title(plugin.locale.game.team.hider, plugin.locale.game.team.hiderSubtitle)
-
-        // open block hunt picker
-        if (map?.config?.blockHunt?.enabled == true) {
-            val map = map ?: return
-            val inv = BlockHuntMenu.create(plugin, map) ?: return
-            hider.showInventory(inv)
+        if (revealDisguise || status != Status.SEEKING) {
+            plugin.disguiser.reveal(player.uuid)
+            setPlayerHidden(player, false)
         }
     }
 
-    fun giveHiderItems(hider: Player) {
-        val inventory = hider.getInventory()
-        val effects = plugin.itemsConfig.hiderEffects.mapNotNull { plugin.parseEffect(it) }
-
-        inventory.clearAll()
-
+    private fun givePlayerItems(player: Player, items: List<ItemConfig>): UInt {
+        val inventory = player.getInventory()
         var nextSlot = 0u
-        for (itemConfig in plugin.itemsConfig.hiderItems) {
+        for (itemConfig in items) {
             val item = plugin.parseItem(itemConfig) ?: continue
             val slot = itemConfig.slot ?: nextSlot
             inventory.set(slot, item)
             nextSlot = maxOf(nextSlot, slot) + 1u
         }
+        return nextSlot
+    }
+
+    fun loadHider(hider: Player) {
+        if (teams.get(hider.uuid) != Team.HIDER) {
+            hider.title(plugin.locale.game.team.hider, plugin.locale.game.team.hiderSubtitle)
+        }
+
+        teams.put(hider.uuid, Team.HIDER)
+
+        if (status == Status.HIDING) {
+            hider.teleport(map?.gameSpawn)
+        }
+
+        resetPlayer(hider, false)
+
+        if (status == Status.HIDING) {
+            hider.setSpeed(5u)
+
+            // open block hunt picker
+            if (map?.config?.blockHunt?.enabled == true) {
+                val map = map ?: return
+                val inv = BlockHuntMenu.create(plugin, map) ?: return
+                hider.showInventory(inv)
+            }
+
+            // dont give hider items
+            // when in hiding mode
+            return
+        }
+
+        val nextSlot = givePlayerItems(hider, plugin.itemsConfig.hiderItems)
 
         // glow power-up
         if (!plugin.config.alwaysGlow && plugin.config.glow.enabled) {
@@ -803,55 +813,75 @@ class Game(val plugin: Khs) {
             item?.let { hider.getInventory().set(slot, it) }
         }
 
-        val helmet = plugin.parseItem(plugin.itemsConfig.hiderHelmet)
-        val chestplate = plugin.parseItem(plugin.itemsConfig.hiderChestplate)
-        val leggings = plugin.parseItem(plugin.itemsConfig.hiderLeggings)
-        val boots = plugin.parseItem(plugin.itemsConfig.hiderBoots)
+        val inventory = hider.getInventory()
+        inventory.setHelmet(plugin.parseItem(plugin.itemsConfig.hiderHelmet))
+        inventory.setChestplate(plugin.parseItem(plugin.itemsConfig.hiderChestplate))
+        inventory.setLeggings(plugin.parseItem(plugin.itemsConfig.hiderLeggings))
+        inventory.setBoots(plugin.parseItem(plugin.itemsConfig.hiderBoots))
 
-        inventory.setHelmet(helmet)
-        inventory.setChestplate(chestplate)
-        inventory.setLeggings(leggings)
-        inventory.setBoots(boots)
-
-        hider.clearEffects()
-        for (effect in effects) hider.giveEffect(effect)
+        plugin.itemsConfig.hiderEffects
+            .mapNotNull { plugin.parseEffect(it) }
+            .forEach { hider.giveEffect(it) }
     }
 
-    fun loadSeeker(seeker: Player) {
-        seeker.teleport(map?.seekerLobbySpawn)
-        resetPlayer(seeker)
-        seeker.title(plugin.locale.game.team.seeker, plugin.locale.game.team.seekerSubtitle)
-    }
-
-    fun giveSeekerItems(seeker: Player) {
-        val inventory = seeker.getInventory()
-        val effects = plugin.itemsConfig.seekerEffects.mapNotNull { plugin.parseEffect(it) }
-
-        inventory.clearAll()
-
-        var nextSlot = 0u
-        for (itemConfig in plugin.itemsConfig.seekerItems) {
-            val item = plugin.parseItem(itemConfig) ?: continue
-            val slot = itemConfig.slot ?: nextSlot
-            inventory.set(slot, item)
-            nextSlot = maxOf(nextSlot, slot) + 1u
+    fun loadSeeker(seeker: Player, onDeath: Boolean = false) {
+        if (teams.get(seeker.uuid) != Team.SEEKER) {
+            seeker.title(plugin.locale.game.team.seeker, plugin.locale.game.team.seekerSubtitle)
         }
 
-        val helmet = plugin.parseItem(plugin.itemsConfig.seekerHelmet)
-        val chestplate = plugin.parseItem(plugin.itemsConfig.seekerChestplate)
-        val leggings = plugin.parseItem(plugin.itemsConfig.seekerLeggings)
-        val boots = plugin.parseItem(plugin.itemsConfig.seekerBoots)
+        teams.put(seeker.uuid, Team.SEEKER)
 
-        inventory.setHelmet(helmet)
-        inventory.setChestplate(chestplate)
-        inventory.setLeggings(leggings)
-        inventory.setBoots(boots)
+        when (status) {
+            Status.HIDING -> {
+                seeker.teleport(map?.seekerLobbySpawn)
+            }
+            Status.SEEKING if plugin.config.delayedRespawn.enabled && onDeath -> {
+                val time = plugin.config.delayedRespawn.delay
+                val currentRound = round
+                seeker.teleport(map?.seekerLobbySpawn)
+                seeker.message(
+                    plugin.locale.prefix.default +
+                        plugin.locale.game.respawn
+                            .with(time),
+                )
+                plugin.shim.scheduleEvent(time * 20UL) {
+                    if (status == Status.SEEKING && round == currentRound) {
+                        seeker.teleport(map?.gameSpawn)
+                    }
+                }
+            }
+            else -> {
+                seeker.teleport(map?.gameSpawn)
+            }
+        }
 
-        seeker.clearEffects()
-        for (effect in effects) seeker.giveEffect(effect)
+        resetPlayer(seeker)
+
+        if (status == Status.HIDING) {
+            // dont give players items in the
+            // hiding phase
+            return
+        }
+
+        givePlayerItems(seeker, plugin.itemsConfig.seekerItems)
+
+        val inventory = seeker.getInventory()
+        inventory.setHelmet(plugin.parseItem(plugin.itemsConfig.seekerHelmet))
+        inventory.setChestplate(plugin.parseItem(plugin.itemsConfig.seekerChestplate))
+        inventory.setLeggings(plugin.parseItem(plugin.itemsConfig.seekerLeggings))
+        inventory.setBoots(plugin.parseItem(plugin.itemsConfig.seekerBoots))
+
+        plugin.itemsConfig.seekerEffects
+            .mapNotNull { plugin.parseEffect(it) }
+            .forEach { seeker.giveEffect(it) }
     }
 
     fun loadSpectator(spectator: Player) {
+        if (teams.get(spectator.uuid) != Team.SPECTATOR) {
+            spectator.title(plugin.locale.game.team.spectator, plugin.locale.game.team.spectatorSubtitle)
+        }
+
+        teams.put(spectator.uuid, Team.SPECTATOR)
         spectator.teleport(map?.gameSpawn)
         resetPlayer(spectator)
         spectator.setAllowedFlight(true)
@@ -868,6 +898,7 @@ class Game(val plugin: Khs) {
     }
 
     private fun loadPlayerIntoLobby(player: Player) {
+        teams.put(player.uuid, Team.UNASSIGNED)
         player.teleport(map?.lobbySpawn)
         resetPlayer(player)
 

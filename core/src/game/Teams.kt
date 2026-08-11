@@ -12,6 +12,7 @@ class Teams {
     private val hiders: MutableSet<UUID> = mutableSetOf()
     private val seekers: MutableSet<UUID> = mutableSetOf()
     private val spectators: MutableSet<UUID> = mutableSetOf()
+    private val unassigned: MutableSet<UUID> = mutableSetOf()
 
     // cache of online players
     private val playerCache: MutableMap<UUID, Player> = mutableMapOf()
@@ -26,6 +27,7 @@ class Teams {
                 Team.HIDER -> hiders.add(uuid)
                 Team.SEEKER -> seekers.add(uuid)
                 Team.SPECTATOR -> spectators.add(uuid)
+                Team.UNASSIGNED -> unassigned.add(uuid)
             }
         }
     }
@@ -36,6 +38,7 @@ class Teams {
             hiders.remove(uuid)
             seekers.remove(uuid)
             spectators.remove(uuid)
+            unassigned.remove(uuid)
         }
     }
 
@@ -69,6 +72,7 @@ class Teams {
             hiders.clear()
             seekers.clear()
             spectators.clear()
+            unassigned.clear()
             return uuids
         }
     }
@@ -103,6 +107,12 @@ class Teams {
         }
     }
 
+    fun getUnassigned(): Set<UUID> {
+        synchronized(lock) {
+            return unassigned.toSet()
+        }
+    }
+
     fun getHiderPlayers(): List<Player> {
         synchronized(lock) {
             return hiders.mapNotNull { playerCache[it] }
@@ -118,6 +128,12 @@ class Teams {
     fun getSpectatorPlayers(): List<Player> {
         synchronized(lock) {
             return spectators.mapNotNull { playerCache[it] }
+        }
+    }
+
+    fun getUnassignedPlayers(): List<Player> {
+        synchronized(lock) {
+            return unassigned.mapNotNull { playerCache[it] }
         }
     }
 
@@ -145,6 +161,12 @@ class Teams {
         }
     }
 
+    fun isUnassigned(uuid: UUID): Boolean {
+        synchronized(lock) {
+            return unassigned.contains(uuid)
+        }
+    }
+
     fun size(): UInt {
         synchronized(lock) {
             return mappings.size.toUInt()
@@ -166,6 +188,12 @@ class Teams {
     fun spectatorCount(): UInt {
         synchronized(lock) {
             return spectators.size.toUInt()
+        }
+    }
+
+    fun unassignedCount(): UInt {
+        synchronized(lock) {
+            return unassigned.size.toUInt()
         }
     }
 

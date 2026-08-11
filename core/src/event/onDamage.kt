@@ -33,6 +33,7 @@ private fun isDamageAllowed(event: DamageEvent): Boolean {
     if (game.status != Game.Status.SEEKING) return false
 
     if (game.teams.isSpectator(player.uuid)) return false
+    if (game.teams.isUnassigned(player.uuid)) return false
 
     if (attacker == null) {
         // assume natural causes
@@ -46,6 +47,7 @@ private fun isDamageAllowed(event: DamageEvent): Boolean {
 
     // spectators cannot attack
     if (game.teams.isSpectator(attacker.uuid)) return false
+    if (game.teams.isUnassigned(attacker.uuid)) return false
 
     // players cannot attack their team-mates
     if (game.teams.get(player.uuid) == game.teams.get(attacker.uuid)) return false
@@ -61,33 +63,12 @@ private fun respawnPlayer(event: DamageEvent) {
     val game = plugin.game
 
     if (game.teams.isHider(player.uuid) && plugin.config.respawnAsSpectator) {
-        game.teams.put(player.uuid, Game.Team.SPECTATOR)
         game.loadSpectator(player)
         return
     }
 
     // respawn as a seeker
-    game.teams.put(player.uuid, Game.Team.SEEKER)
-    game.resetPlayer(player)
-    game.giveSeekerItems(player)
-
-    // teleport
-    if (plugin.config.delayedRespawn.enabled) {
-        val time = plugin.config.delayedRespawn.delay
-        player.teleport(game.map?.seekerLobbySpawn)
-        player.message(
-            plugin.locale.prefix.default +
-                plugin.locale.game.respawn
-                    .with(time),
-        )
-        plugin.shim.scheduleEvent(time * 20UL) {
-            if (game.status == Game.Status.SEEKING) {
-                player.teleport(game.map?.gameSpawn)
-            }
-        }
-    } else {
-        player.teleport(game.map?.gameSpawn)
-    }
+    game.loadSeeker(player, true)
 }
 
 private fun broadcastDeath(event: DamageEvent) {
