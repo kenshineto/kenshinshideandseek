@@ -26,7 +26,11 @@ object BlockHuntMenu {
     }
 
     fun onClick(plugin: Khs, player: Player, item: Item) {
-        if (!plugin.game.teams.contains(player.uuid)) return
+        if (!plugin.game.teams.contains(player.uuid) &&
+            !player.hasPermission("hs.map.blockhunt.debug")
+        ) {
+            return
+        }
 
         plugin.disguiser.disguise(player, item.material)
         player.closeInventory()
