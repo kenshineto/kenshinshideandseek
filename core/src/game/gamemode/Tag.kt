@@ -25,7 +25,7 @@ class Tag(override val game: Game) : GameMode {
 
     override fun handleDeath(player: Player, attacker: Player?) {
         // tag MUST always have an attacker
-        @Suppress("NAME_SHADOWING") val attacker = attacker ?: game.teams.getSeekerPlayers().firstOrNull() ?: return
+        if (attacker == null) return
         broadcastDeath(player, attacker)
 
         // play death sound
