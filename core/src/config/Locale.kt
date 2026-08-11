@@ -308,7 +308,20 @@ data class LocaleMenuConfig(
     var teleportTitle: String = "Teleport to players",
     var teleportPrefix: String = "Page ",
     var debugTitle: String = "Debug Menu",
-)
+) {
+    fun migrate() {
+        // dont allow empty prefixes
+        val default = LocaleMenuConfig()
+
+        if (blockHuntPrefix.isEmpty()) {
+            blockHuntPrefix = default.blockHuntPrefix
+        }
+
+        if (teleportPrefix.isEmpty()) {
+            teleportPrefix = default.teleportPrefix
+        }
+    }
+}
 
 data class LocaleMiscConfig(
     @Comment("{1} - The current plugin version")
@@ -345,6 +358,9 @@ data class KhsLocale(
     @Section("Metadata") var meta: LocaleMetaConfig = LocaleMetaConfig(),
 ) {
     fun migrate() {
+        // migrate menu locale
+        menu.migrate()
+
         // migrate locale revisions
         var revision = meta.revision ?: 0u
         val default = KhsLocale()
