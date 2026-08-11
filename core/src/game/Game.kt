@@ -50,46 +50,7 @@ class Game(val plugin: Khs) {
         PLAYERS_LEFT,
         SEEKERS_WIN,
         HIDERS_WIN,
-        LAST_HIDER_WIN;
-
-        fun getTitle(game: Game): String {
-            val plugin = game.plugin
-            val lastHiderName =
-                game.gameMode.getLastHider()?.let { plugin.shim.getPlayer(it) }?.let(Player::name) ?: "null"
-
-            return when (this) {
-                SEEKERS_WIN -> plugin.locale.game.title.seekersWin
-                HIDERS_WIN -> plugin.locale.game.title.hidersWin
-                LAST_HIDER_WIN -> plugin.locale.game.title.singleHiderWin.with(lastHiderName)
-                else -> plugin.locale.game.title.noWin
-            }
-        }
-
-        fun getMessage(game: Game, withPrefix: Boolean): String {
-            val plugin = game.plugin
-            val lastHiderName =
-                game.gameMode.getLastHider()?.let { plugin.shim.getPlayer(it) }?.let(Player::name) ?: "null"
-
-            val message =
-                when (this) {
-                    STOPPED -> plugin.locale.game.stop
-                    PLAYERS_LEFT -> plugin.locale.game.gameOver.playersQuit
-                    SEEKERS_WIN -> plugin.locale.game.gameOver.hidersFound
-                    HIDERS_WIN -> plugin.locale.game.gameOver.time
-                    LAST_HIDER_WIN -> plugin.locale.game.gameOver.lastHider.with(lastHiderName)
-                }
-
-            if (!withPrefix) return message
-
-            val prefix =
-                when (this) {
-                    STOPPED,
-                    PLAYERS_LEFT -> plugin.locale.prefix.abort
-                    else -> plugin.locale.prefix.gameOver
-                }
-
-            return prefix + message
-        }
+        LAST_HIDER_WIN,
     }
 
     /** the state the game is in */
@@ -398,9 +359,18 @@ class Game(val plugin: Khs) {
             timer = null
         }
 
-        broadcast(reason.getMessage(this, true))
+        val message = gameMode.gameOverMessage(reason)
+        val title = gameMode.gameOverTitle(reason)
+        val prefix =
+            when (reason) {
+                WinType.STOPPED,
+                WinType.PLAYERS_LEFT -> plugin.locale.prefix.abort
+                else -> plugin.locale.prefix.gameOver
+            }
+
+        broadcast(prefix + message)
         if (plugin.config.gameOverTitle) {
-            broadcastTitle(reason.getTitle(this), reason.getMessage(this, false))
+            broadcastTitle(title, message)
         }
 
         // update database

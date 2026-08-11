@@ -7,19 +7,17 @@ class Tag(override val game: Game) : GameMode {
     private fun respawnPlayer(player: Player) {
         when (game.teams.get(player.uuid)) {
             Game.Team.HIDER -> game.loadSeeker(player)
-            Game.Team.SEEKER -> game.loadSeeker(player)
+            Game.Team.SEEKER -> game.loadHider(player)
             else -> {}
         }
     }
 
-    private fun broadcastDeath(player: Player, attacker: Player?) {
+    private fun broadcastDeath(player: Player, attacker: Player) {
         val msg =
             if (game.teams.isSeeker(player.uuid)) {
                 plugin.locale.game.player.death.with(player.name)
-            } else if (attacker == null) {
-                plugin.locale.game.player.found.with(player.name)
             } else {
-                plugin.locale.game.player.foundBy.with(player.name, attacker.name)
+                plugin.locale.game.player.taggedBy.with(player.name, attacker.name)
             }
 
         game.broadcast(msg)
@@ -64,5 +62,20 @@ class Tag(override val game: Game) : GameMode {
         }
 
         return null
+    }
+
+    override fun gameOverTitle(reason: Game.WinType): String {
+        return when (reason) {
+            Game.WinType.HIDERS_WIN -> plugin.locale.game.title.tag
+            else -> plugin.locale.game.title.noWin
+        }
+    }
+
+    override fun gameOverMessage(reason: Game.WinType): String {
+        return when (reason) {
+            Game.WinType.PLAYERS_LEFT -> plugin.locale.game.gameOver.playersQuit
+            Game.WinType.HIDERS_WIN -> plugin.locale.game.gameOver.tag
+            else -> plugin.locale.game.stop
+        }
     }
 }

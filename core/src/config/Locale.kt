@@ -68,14 +68,18 @@ data class LocaleGamePlayerConfig(
     @Comment("{1} - name of the hider who was found")
     @Comment("{2} - name of the seeker who found the hider")
     var foundBy: LocaleString2 = LocaleString2("&e{1}&f was found by &c{2}&f"),
+    @Comment("{1} - name of the hider who was tagged")
+    @Comment("{2} - name of the seeker who tagged the hider")
+    var taggedBy: LocaleString2 = LocaleString2("&e{1}&f was tagged by &c{2}&f"),
 )
 
 data class LocaleGameGameOverConfig(
     var hidersFound: String = "All hiders have been found",
     @Comment("{1} - the name of the last hider")
     var lastHider: LocaleString1 = LocaleString1("{1} is the last hider alive"),
-    val playersQuit: String = "Too many players have quit the game",
+    var playersQuit: String = "Too many players have quit the game",
     var time: String = "Seekers have run out of time. Hiders win!",
+    var tag: String = "All non-tagged players win!",
 )
 
 data class LocaleGameTitleConfig(
@@ -83,6 +87,7 @@ data class LocaleGameTitleConfig(
     @Comment("{1} - the name of the hider who won") var singleHiderWin: LocaleString1 = LocaleString1("&a{1} Wins!"),
     var seekersWin: String = "&cSeekers Win!",
     var noWin: String = "&bGame Over",
+    var tag: String = "Times up!",
 )
 
 data class LocaleGameCountdownConfig(
@@ -246,7 +251,7 @@ data class LocaleBlockHuntConfig(
     var disabled: String = "Block hunt has been disabled",
     var block: LocaleBlockHuntBlockConfig = LocaleBlockHuntBlockConfig(),
     @Comment("{1} - The player that was revealed in block hunt")
-    val notify: LocaleString1 = LocaleString1("&oYou have revealed {1}!"),
+    var notify: LocaleString1 = LocaleString1("&oYou have revealed {1}!"),
 )
 
 data class LocaleWorldConfig(
@@ -271,7 +276,7 @@ data class LocaleDatabaseConfig(
     var noInfo: String = "No gameplay info",
     @Comment("{1} - the player associated with the following win information")
     var infoFor: LocaleString1 = LocaleString1("Win information for {1}:"),
-    val lastWinners: String = "The following players have won the last game:",
+    var lastWinners: String = "The following players have won the last game:",
 )
 
 data class LocaleConfirmConfig(

@@ -56,4 +56,10 @@ interface GameMode {
     fun getEffectiveTeam(uuid: UUID): Game.Team? {
         return game.teams.get(uuid)
     }
+
+    /** returns a title given a win type */
+    fun gameOverTitle(reason: Game.WinType): String
+
+    /** returns a message given a win type */
+    fun gameOverMessage(reason: Game.WinType): String
 }

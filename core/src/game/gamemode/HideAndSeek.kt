@@ -6,6 +6,7 @@ import java.util.UUID
 
 class HideAndSeek(override val game: Game) : GameMode {
     private var lastHider: UUID? = null
+    private var lastHiderName: String? = null
 
     private fun respawnPlayer(player: Player) {
         if (game.teams.isHider(player.uuid) && plugin.config.respawnAsSpectator) {
@@ -48,6 +49,7 @@ class HideAndSeek(override val game: Game) : GameMode {
 
         // reset last hider field
         lastHider = null
+        lastHiderName = null
 
         // dont reward quits (if enabled)
         val playerLeft = game.getPlayerLeft() && plugin.config.dontRewardQuit
@@ -65,7 +67,9 @@ class HideAndSeek(override val game: Game) : GameMode {
         }
 
         if (game.teams.hiderCount() < minHiders) {
-            lastHider = game.teams.getHiders().firstOrNull()
+            val hider = game.teams.getHiderPlayers().firstOrNull()
+            lastHider = hider?.uuid
+            lastHiderName = hider?.name
             if (playerLeft) {
                 return Game.WinType.PLAYERS_LEFT
             } else if (lastHider != null) {
@@ -84,5 +88,24 @@ class HideAndSeek(override val game: Game) : GameMode {
 
     override fun getEffectiveTeam(uuid: UUID): Game.Team? {
         return game.getInitialTeams().get(uuid)
+    }
+
+    override fun gameOverTitle(reason: Game.WinType): String {
+        return when (reason) {
+            Game.WinType.SEEKERS_WIN -> plugin.locale.game.title.seekersWin
+            Game.WinType.HIDERS_WIN -> plugin.locale.game.title.hidersWin
+            Game.WinType.LAST_HIDER_WIN -> plugin.locale.game.title.singleHiderWin.with(lastHiderName ?: "null")
+            else -> plugin.locale.game.title.noWin
+        }
+    }
+
+    override fun gameOverMessage(reason: Game.WinType): String {
+        return when (reason) {
+            Game.WinType.STOPPED -> plugin.locale.game.stop
+            Game.WinType.PLAYERS_LEFT -> plugin.locale.game.gameOver.playersQuit
+            Game.WinType.SEEKERS_WIN -> plugin.locale.game.gameOver.hidersFound
+            Game.WinType.HIDERS_WIN -> plugin.locale.game.gameOver.time
+            Game.WinType.LAST_HIDER_WIN -> plugin.locale.game.gameOver.lastHider.with(lastHiderName ?: "null")
+        }
     }
 }
