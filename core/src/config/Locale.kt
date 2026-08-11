@@ -41,9 +41,10 @@ data class LocalePrefixConfig(
 )
 
 data class LocalePlaceholderConfig(
-    @Comment("Displayed string if the requested placeholder is invalid")
+    @Comment("Displayed if the requested placeholder is invalid")
     var invalid: String = "{Error}",
-    @Comment("Displayed string if the requested placeholder is empty") var noData: String = "-",
+    @Comment("Displayed if the requested placeholder has no value")
+    var noData: String = "-",
 )
 
 data class LocaleCommandConfig(

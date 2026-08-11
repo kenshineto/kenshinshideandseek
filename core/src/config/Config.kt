@@ -3,6 +3,7 @@ package cat.freya.khs.config
 import cat.freya.khs.world.Location
 import kotlin.UInt
 import kotlin.annotation.AnnotationTarget
+import kotlin.math.max
 
 @Target(AnnotationTarget.PROPERTY)
 annotation class Section(val text: String)
@@ -92,15 +93,19 @@ data class EffectConfig(
 data class TauntConfig(
     var enabled: Boolean = true,
     @Comment("The delay in seconds between taunts, minimum is 60 seconds") var delay: ULong = 360u,
-    @Comment("If to disable the taunt when there is only a single hider left")
+    @Comment("If enabled, taunts will be disabled if there is only a single hider left")
     var disableForLastHider: Boolean = false,
-    @Comment("Show the countdown till next taunt for everyone") var showCountdown: Boolean = true,
-)
+    @Comment("Allow seekers to see the time till next taunt, not just hiders") var showCountdown: Boolean = true,
+) {
+    fun migrate() {
+        delay = max(delay, 60u)
+    }
+}
 
 data class GlowConfig(
     var enabled: Boolean = true,
-    @Comment("How long in seconds does the power up last") var time: ULong = 30u,
-    @Comment("If multiple power-up uses can stack the time left") var stackable: Boolean = true,
+    @Comment("The length in seconds that the power-up lasts") var time: ULong = 30u,
+    @Comment("Allows multiple uses of the power-up to stack the duration") var stackable: Boolean = true,
     @Comment("The config for the power-up item")
     var item: ItemConfig =
         ItemConfig(
@@ -116,13 +121,13 @@ data class GlowConfig(
 )
 
 data class LobbyConfig(
-    @Comment("Time in seconds that the lobby waits until game starts. Set to 0 to disable")
+    @Comment("Time in seconds the lobby waits until the game starts. Set to 0 to disable")
     var countdown: ULong = 60u,
     @Comment("Player threshold to speed up the countdown. Set to 0 to disable")
     var changeCountdown: UInt = 5u,
     @Comment("Minimum amount of players required to start the countdown") var min: UInt = 3u,
     @Comment("Maximum amount of players allowed in a lobby") var max: UInt = 10u,
-    @Comment("Item for players to use to leave the lobby")
+    @Comment("Item to leave the lobby")
     var leaveItem: ItemConfig =
         ItemConfig(
             name = "&c Leave Lobby",
@@ -130,7 +135,7 @@ data class LobbyConfig(
             lore = listOf("Go back to server hub"),
             slot = 0u,
         ),
-    @Comment("Item for admins to use to force start the game")
+    @Comment("Admin item to force start the game")
     var startItem: ItemConfig = ItemConfig(name = "&bStart Game", material = "CLOCK", slot = 8u),
 )
 
@@ -179,29 +184,22 @@ data class SeekerPingConfig(
 data class KhsConfig(
     // General
     @Section("General")
-    @Comment("Notify plugin admins of new updates")
+    @Comment("Notify plugin admins of new updates (requires hs.debug permission)")
     var checkForUpdates: Boolean = true,
-    @Comment("Allow players to drop their items in game")
+    @Comment("Allow players to drop their items mid-game")
     var dropItems: Boolean = false,
-    @Comment("When the game is starting, the plugin will state there is x seconds left to hide.")
-    @Comment("You change where countdown messages are to be displayed: in the chat, action bar, or a title.")
+    @Comment("Where the plugin will state the length of time in seconds left to hide.")
     @Comment("Below you can set CHAT, ACTIONBAR, or TITLE. Any invalid option will revert to CHAT.")
     var countdownDisplay: ConfigCountdownDisplay = ConfigCountdownDisplay.CHAT,
-    @Comment(
-        "Allow Hiders to see their own teams nametags as well as seekers. Seekers can never see nametags regardless",
-    )
+    @Comment("Allow Hiders to see everyone's nametags. Seeker can never see nametags.")
     var nametagsVisible: Boolean = false,
-    @Comment(
-        "Require bukkit permissions though a permission plugin to run commands, or require op, recommended on most servers",
-    )
+    @Comment("Require players to have permissions to run commands")
     var permissionsRequired: Boolean = true,
     @Comment("Minimum amount of players to start the game. Cannot go lower than 2.")
     var minPlayers: UInt = 2u,
     @Comment("Amount of initial seekers when the game starts, minimum of 1")
     var startingSeekerCount: UInt = 1u,
-    @Comment(
-        "By default, when a HIDER dies they will join the SEEKER team. If enabled they will instead become a SPECTATOR.",
-    )
+    @Comment("If enabled, a HIDER will join the SPECTATOR team on death instead of the SEEKER team.")
     var respawnAsSpectator: Boolean = false,
     @Comment("Along with a chat message, display a title describing the game over")
     var gameOverTitle: Boolean = true,
@@ -220,32 +218,27 @@ data class KhsConfig(
     var hidingLength: ULong = 30u,
     @Comment("The amount of seconds the game will wait until the players are teleported to the lobby after a game over")
     var endGameDelay: ULong = 5u,
-    @Comment("If you die in game, you will have to wait [delay] seconds until you respawn, so that if you were a seeker,")
-    @Comment("you cannot instantly go to where the Hider that killed you was. Or if you were a Hider and dies,")
-    @Comment("you can't instantly go to where you know other Hiders are. This can be disabled.")
+    @Comment("When enabled, seekers will have to wait [delay] seconds until they respawn in after death.")
     var delayedRespawn: DelayedRespawnConfig = DelayedRespawnConfig(),
     // Database
     @Section("Database") var database: DatabaseConfig = DatabaseConfig(),
     // Scoring
     @Section("Scoring")
     @Comment("The scoring mode decides the criteria for when the game has finished and who wins.")
-    @Comment("ALL_HIDERS_FOUND - The game will go until no hiders are left. If the timer runs out all hiders left will win.")
-    @Comment("LAST_HIDER_WINS - The game will go until there is only one hider left. If the timer runs out, all hiders left win. If there is only one hider left, all initial seekers win along with the last hider.")
+    @Comment("ALL_HIDERS_FOUND - Any hiders left once the timer runs out wins.")
+    @Comment("LAST_HIDER_WINS - Only the last hider left wins, or if the timer runs out then the remaining hiders win.")
     var scoringMode: ConfigScoringMode = ConfigScoringMode.ALL_HIDERS_FOUND,
-    @Comment("When enabled, if the last hider or seeker quits the game, a wine type of NONE is given, which doesn't mark anyone as winning.")
+    @Comment("If enabled and the last hider or seeker quits the game, a win type of NONE is given.")
     @Comment("This can be used as a way to prevent players from quitting in a loop to get someone else points.")
     var dontRewardQuit: Boolean = true,
     // PVP
     @Section("PVP")
-    @Comment("This plugin by default functions as not tag to catch Hiders, but to pvp. All players are given weapons,")
-    @Comment("and seekers slightly better weapons (this can be changed in items.yml). If you want, you can disable this")
-    @Comment("entire pvp functionality, and make Hiders get found on a single hit. Hiders would also not be able to fight")
-    @Comment("back against Seekers if disabled.")
+    @Comment("If enabled, a seeker must sucessfully kill a hider in pvp to 'find' that hider.")
+    @Comment("If disabled, a single tap by a seeker will mark the hider as found. ")
+    @Comment("Items for pvp may be configured in the items.yml file")
     var pvp: Boolean = true,
     @Comment("Allow players to regen health") var regenHealth: Boolean = false,
-    @Comment(
-        "If pvp is disabled, Hiders and Seekers can no longer take damage from natural causes unless this option is enabled.",
-    )
+    @Comment("If pvp is disabled, Hiders and Seekers can no longer take damage from natural causes unless this option is enabled.")
     @Comment("Such natural causes could be fall damage or projectiles.")
     var allowNaturalCauses: Boolean = false,
     // Lobby
@@ -261,7 +254,8 @@ data class KhsConfig(
     var leaveType: ConfigLeaveType = ConfigLeaveType.EXIT,
     @Comment("The server to teleport to when leaveType is set to PROXY")
     var leaveServer: String = "lobby",
-    @Comment("If to leave the game lobby after a game ends") var leaveOnEnd: Boolean = false,
+    @Comment("If to leave the game lobby after a game ends")
+    var leaveOnEnd: Boolean = false,
     @Comment("Configure the \"waiting for players\" per map lobby")
     var lobby: LobbyConfig = LobbyConfig(),
     @Comment("Restore the players previously cleared inventory after leaving the game lobby")
@@ -269,17 +263,16 @@ data class KhsConfig(
     @Comment("Restore the players previously active score board after leaving the game lobby")
     var saveScoreBoard: Boolean = true,
     // Events
-    @Section("Events") @Comment("Taunt event") var taunt: TauntConfig = TauntConfig(),
+    @Section("Events") @Comment("Taunt event")
+    var taunt: TauntConfig = TauntConfig(),
     // Power-ups
-    @Section("Power-ups") @Comment("Glow power-up") var glow: GlowConfig = GlowConfig(),
-    @Comment("Instead of having a glow power-up, always make seeker position's known the the hider at all times.")
+    @Section("Power-ups") @Comment("Glow power-up")
+    var glow: GlowConfig = GlowConfig(),
+    @Comment("Instead of having a glow power-up, always make seekers' position's known to hiders at all times.")
     var alwaysGlow: Boolean = false,
     // Protections
     @Section("Protections")
-    @Comment("By default, the plugin forces you to use a map save to protect from changes to a map thought a game play though. It copies your")
-    @Comment("hide-and-seek world to a separate world, and loads the game there to contain the game in an isolated and backed up map. This allows you to")
-    @Comment("not worry about your hide-and-seek map from changing, as all changes are made are in a separate world file that doesn't get saved. Once the game")
-    @Comment("ends, it unloads the map and doesn't save. Then reloads the duplicate to the original state, rolling back the map for the next game.")
+    @Comment("When enabled, the plugin will duplicate the hide and seek map to protect the original from changes during a game.")
     @Comment("It is highly recommended that you keep this set to true unless you have other means of protecting your hide-and-seek map.")
     var mapSaveEnabled: Boolean = true,
     @Comment("Block these commands for players in a game. Good for blocking communication")
@@ -293,10 +286,16 @@ data class KhsConfig(
     var exit: Location? = null,
 ) {
     fun migrate() {
+        // migrate items
         glow.item.migrate()
         lobby.leaveItem.migrate()
         lobby.startItem.migrate()
         spectatorItems.flight.migrate()
         spectatorItems.teleport.migrate()
+
+        // migrate minimum values
+        minPlayers = max(minPlayers, 2u)
+        startingSeekerCount = max(startingSeekerCount, 1u)
+        hidingLength = max(hidingLength, 10u)
     }
 }
