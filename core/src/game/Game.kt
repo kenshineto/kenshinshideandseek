@@ -2,10 +2,12 @@ package cat.freya.khs.game
 
 import cat.freya.khs.Khs
 import cat.freya.khs.config.ConfigCountdownDisplay
+import cat.freya.khs.config.ConfigGameMode
 import cat.freya.khs.config.ConfigLeaveType
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.game.gamemode.GameMode
 import cat.freya.khs.game.gamemode.HideAndSeek
+import cat.freya.khs.game.gamemode.Tag
 import cat.freya.khs.menu.BlockHuntMenu
 import cat.freya.khs.type.Item
 import cat.freya.khs.world.Player
@@ -196,6 +198,11 @@ class Game(val plugin: Khs) {
             status = Status.LOBBY
             uuids = teams.clear()
             lastPicked.clear()
+            gameMode =
+                when (plugin.config.gameMode) {
+                    ConfigGameMode.HIDE_AND_SEEK -> HideAndSeek(this)
+                    ConfigGameMode.TAG -> Tag(this)
+                }
         }
 
         uuids.forEach { leave(it) }

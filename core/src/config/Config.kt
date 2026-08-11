@@ -19,9 +19,14 @@ enum class ConfigCountdownDisplay {
     TITLE,
 }
 
+enum class ConfigGameMode {
+    HIDE_AND_SEEK,
+    TAG,
+}
+
 enum class ConfigScoringMode(val minHiders: UInt) {
-    ALL_HIDERS_FOUND(2u),
-    LAST_HIDER_WINS(1u),
+    ALL_HIDERS_FOUND(1u),
+    LAST_HIDER_WINS(2u),
 }
 
 enum class ConfigLeaveType {
@@ -205,14 +210,19 @@ data class KhsConfig(
     var delayedRespawn: DelayedRespawnConfig = DelayedRespawnConfig(),
     // Database
     @Section("Database") var database: DatabaseConfig = DatabaseConfig(),
-    // Scoring
-    @Section("Scoring")
-    @Comment("The scoring mode decides the criteria for when the game has finished and who wins.")
-    @Comment("ALL_HIDERS_FOUND - Any hiders left once the timer runs out wins.")
-    @Comment("LAST_HIDER_WINS - Only the last hider left wins, or if the timer runs out then the remaining hiders win.")
+    // Game Mode
+    @Section("Game Mode")
+    @Comment("Choose the game mode that the plugin will operate under.")
+    @Comment("HIDE_AND_SEEK - Hiders become Seekers when found. See `scoringMode` for win condition.")
+    @Comment("TAG - Seeker swaps with a Hider when they tag someone. Hiders win once the timer runs out.")
+    var gameMode: ConfigGameMode = ConfigGameMode.HIDE_AND_SEEK,
+    @Comment("The scoring mode decides the hider win condition for the HIDE_AND_SEEK game mode.")
+    @Comment("ALL_HIDERS_FOUND - Any hiders left win once the timer runs out wins.")
+    @Comment("LAST_HIDER_WINS - The last hider left wins immediately, or the remaining hiders win when")
+    @Comment("                  the timer runs out.")
     var scoringMode: ConfigScoringMode = ConfigScoringMode.ALL_HIDERS_FOUND,
-    @Comment("If enabled and the last hider or seeker quits the game, a win type of NONE is given.")
-    @Comment("This can be used as a way to prevent players from quitting in a loop to get someone else points.")
+    @Comment("Trigger a win type of NONE if a player leaving the game triggers a win condition.")
+    @Comment("This can be used as a way to prevent players from quitting to get someone else points.")
     var dontRewardQuit: Boolean = true,
     // PVP
     @Section("PVP")
@@ -221,19 +231,16 @@ data class KhsConfig(
     @Comment("Items for pvp may be configured in the items.yml file")
     var pvp: Boolean = true,
     @Comment("Allow players to regen health") var regenHealth: Boolean = false,
-    @Comment(
-        "If pvp is disabled, Hiders and Seekers can no longer take damage from natural causes unless this option is enabled."
-    )
-    @Comment("Such natural causes could be fall damage or projectiles.")
+    @Comment("If pvp is disabled, Hiders and Seekers can no longer take damage from natural causes")
+    @Comment("unless this option is enabled. Such natural causes could be fall damage or projectiles.")
     var allowNaturalCauses: Boolean = false,
     // Lobby
     @Section("Lobby")
     @Comment("Players that join the server will automatically be added into a game lobby")
     var autoJoin: Boolean = false,
-    @Comment(
-        "When players join the world containing the lobby, teleport them to the designated exit position so that they don't spawn in the lobby while not in the queue."
-    )
-    @Comment("This setting is ignored when autoJoin is set to true.")
+    @Comment("When players join the world containing the lobby, teleport them to")
+    @Comment("the designated exit position so that they dont spawn in the loby while")
+    @Comment("not in the queue. This setting is ignored when autoJoin is set to true.")
     var teleportStraysToExit: Boolean = false,
     @Comment("How to handle players leaving a game lobby.")
     @Comment("EXIT - Teleport the player to the designated exit location")
@@ -254,12 +261,9 @@ data class KhsConfig(
     var alwaysGlow: Boolean = false,
     // Protections
     @Section("Protections")
-    @Comment(
-        "When enabled, the plugin will duplicate the hide and seek map to protect the original from changes during a game."
-    )
-    @Comment(
-        "It is highly recommended that you keep this set to true unless you have other means of protecting your hide-and-seek map."
-    )
+    @Comment("When enabled, the plugin will duplicate the hide and seek map to protect the")
+    @Comment("original from changes during a game. It is highly recommended that you keep this")
+    @Comment("to true unless you have other means of protecting your hide-and-seek map.")
     var mapSaveEnabled: Boolean = true,
     @Comment("Block these commands for players in a game. Good for blocking communication")
     var blockedCommands: List<String> = listOf("msg", "reply", "me", "kill"),
