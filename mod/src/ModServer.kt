@@ -32,7 +32,7 @@ class ModServer(val mod: KhsMod) {
         // have access to a MinecraftServer instance yet
         TickEvent.SERVER_POST.register { _ ->
             handleScheduledTasks()
-            mod.onTick()
+            mod.doTick()
         }
 
         LifecycleEvent.SERVER_STOPPING.register { _ ->

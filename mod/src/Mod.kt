@@ -41,9 +41,9 @@ class KhsMod(val platform: String) {
         khs.cleanup()
     }
 
-    fun onTick() {
+    fun doTick() {
         if (!enabled.get()) return
-        khs.onTick()
+        khs.doTick()
     }
 
     private fun registerListeners() {

@@ -9,6 +9,7 @@ import cat.freya.khs.command.map.unset.*
 import cat.freya.khs.command.util.CommandGroup
 import cat.freya.khs.command.world.*
 import cat.freya.khs.config.BuildInfo
+import cat.freya.khs.config.DatabaseType
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.config.KhsBoardConfig
@@ -29,8 +30,6 @@ import cat.freya.khs.type.Effect
 import cat.freya.khs.type.Item
 import cat.freya.khs.type.Material
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import java.io.File
-import java.io.InputStream
 import java.net.URI
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -223,25 +222,18 @@ class Khs(val shim: KhsShim) {
         )
     }
 
-    private fun readConfigFile(fileName: String): InputStream? {
-        val dir = shim.dataDirectory.toFile()
-        if (!dir.exists()) dir.mkdirs() || error("Failed to make plugin config directory")
-        val file = File(dir, fileName)
-        return if (file.exists()) file.inputStream() else null
-    }
-
     fun reloadConfig(): Result<Unit> {
         return runCatching {
                 shim.logger.info("Loading config...")
-                config = deserialize(KhsConfig::class, readConfigFile("config.yml"))
+                config = deserialize(KhsConfig::class, shim.readConfigFile("config.yml"))
                 shim.logger.info("Loading items...")
-                itemsConfig = deserialize(KhsItemsConfig::class, readConfigFile("items.yml"))
+                itemsConfig = deserialize(KhsItemsConfig::class, shim.readConfigFile("items.yml"))
                 shim.logger.info("Loading maps...")
-                mapsConfig = deserialize(KhsMapsConfig::class, readConfigFile("maps.yml"))
+                mapsConfig = deserialize(KhsMapsConfig::class, shim.readConfigFile("maps.yml"))
                 shim.logger.info("Loading board locale...")
-                boardConfig = deserialize(KhsBoardConfig::class, readConfigFile("board.yml"))
+                boardConfig = deserialize(KhsBoardConfig::class, shim.readConfigFile("board.yml"))
                 shim.logger.info("Loading locale...")
-                locale = deserialize(KhsLocale::class, readConfigFile("locale.yml"))
+                locale = deserialize(KhsLocale::class, shim.readConfigFile("locale.yml"))
                 shim.logger.info("Loading database...")
 
                 // migrate configs
@@ -251,7 +243,9 @@ class Khs(val shim: KhsShim) {
 
                 // database config could have changed so we need to
                 // reconnect to the database
-                database = Database(this)
+                if (config.database.type != DatabaseType.DUMMY) {
+                    database = Database(this)
+                }
 
                 // reload maps
                 // we need a separate newMaps, in case one of the maps below fails
@@ -268,26 +262,19 @@ class Khs(val shim: KhsShim) {
             }
     }
 
-    private fun writeConfigFile(fileName: String, content: String) {
-        val dir = shim.dataDirectory.toFile()
-        if (!dir.exists()) dir.mkdirs() || error("Failed to make plugin config directory")
-        val file = File(dir, fileName)
-        file.writeText(content)
-    }
-
     fun saveConfig() {
         runCatching {
                 val newMapsConfig = KhsMapsConfig(maps.mapValues { it.value.config })
-                writeConfigFile("config.yml", serialize(config))
-                writeConfigFile("items.yml", serialize(itemsConfig))
-                writeConfigFile("maps.yml", serialize(newMapsConfig))
-                writeConfigFile("board.yml", serialize(boardConfig))
-                writeConfigFile("locale.yml", serialize(locale))
+                shim.writeConfigFile("config.yml", serialize(config))
+                shim.writeConfigFile("items.yml", serialize(itemsConfig))
+                shim.writeConfigFile("maps.yml", serialize(newMapsConfig))
+                shim.writeConfigFile("board.yml", serialize(boardConfig))
+                shim.writeConfigFile("locale.yml", serialize(locale))
             }
             .onFailure { shim.logger.error("failed to save config: ${it.message}") }
     }
 
-    fun onTick() {
+    fun doTick() {
         game.doTick()
         disguiser.update()
     }

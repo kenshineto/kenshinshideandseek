@@ -46,7 +46,7 @@ allprojects {
 
     detekt {
         config.setFrom("$rootDir/detekt.yml")
-        source.setFrom("src")
+        source.setFrom("src", "test")
     }
 
     spotless {
@@ -99,22 +99,59 @@ subprojects {
     // we need to support java 8 so that we can support old
     val jvmVersion =
         when (project.name) {
-            "neoforge" -> 25
-            "fabric" -> 25
-            "mod" -> 25
+            "neoforge",
+            "fabric",
+            "mod" -> getModernJvmVersion()
             else -> 8
         }
 
     kotlin {
         jvmToolchain(jvmVersion)
 
-        sourceSets.main {
-            kotlin.srcDirs("src")
-            resources.srcDirs("res")
+        sourceSets {
+            main {
+                kotlin.srcDirs("src")
+                resources.srcDirs("res")
+            }
+            test {
+                kotlin.srcDirs("test")
+            }
         }
     }
 
     java { toolchain { languageVersion.set(JavaLanguageVersion.of(jvmVersion)) } }
+
+    tasks.test {
+        useJUnitPlatform()
+        javaLauncher = javaToolchains.launcherFor {
+            languageVersion = JavaLanguageVersion.of(getModernJvmVersion())
+        }
+    }
+
+    configurations
+        .matching {
+            it.name in setOf("testCompileClasspath", "testRuntimeClasspath")
+        }
+        .configureEach {
+            attributes {
+                attribute(
+                    org.gradle.api.attributes.java.TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE,
+                    getModernJvmVersion(),
+                )
+            }
+        }
+
+    dependencies {
+        // deps
+        testImplementation(rootProject.libs.kotlin.stdlib)
+        testImplementation(rootProject.libs.kotlin.reflect)
+        testImplementation(rootProject.libs.junit.jupiter.api)
+
+        // junit
+        testRuntimeOnly(rootProject.libs.junit.jupiter.engine)
+        testRuntimeOnly(rootProject.libs.junit.platform.launcher)
+        testImplementation(rootProject.libs.packetevents.api)
+    }
 
     tasks.withType<Detekt>().configureEach {
         reports {

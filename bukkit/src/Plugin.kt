@@ -21,7 +21,7 @@ class KhsPlugin : JavaPlugin() {
     val shim: BukkitKhsShim = BukkitKhsShim(this)
     val khs: Khs = Khs(shim)
 
-    private var onTickTask: BukkitTask? = null
+    private var doTickTask: BukkitTask? = null
 
     override fun onEnable() {
         khs.init()
@@ -29,11 +29,11 @@ class KhsPlugin : JavaPlugin() {
         // khs.init() may disable us
         if (!isEnabled) return
 
-        // make sure onTick is run
-        onTickTask =
+        // make sure doTick is run
+        doTickTask =
             object : BukkitRunnable() {
                     override fun run() {
-                        onTick()
+                        doTick()
                     }
                 }
                 .runTaskTimer(this, 0, 1)
@@ -50,13 +50,13 @@ class KhsPlugin : JavaPlugin() {
     }
 
     override fun onDisable() {
-        onTickTask?.cancel()
+        doTickTask?.cancel()
         khs.cleanup()
     }
 
-    private fun onTick() {
+    private fun doTick() {
         if (!isEnabled) return
-        khs.onTick()
+        khs.doTick()
     }
 
     private fun registerListeners() {

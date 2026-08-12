@@ -29,6 +29,9 @@ fun Project.getBuildInfo(): Map<String, Any> {
         map["telemetry"] = providers.gradleProperty("khs.telemetry").map(String::toBoolean).getOrElse(false)
         map["bstatsId"] = providers.gradleProperty("khs.bstatsId").map(String::toIntOrNull).getOrElse(0)
 
+        // jvm
+        map["jvm"] = getModernJvmVersion()
+
         return map
 }
 
@@ -42,3 +45,8 @@ fun Project.getBuildInfoYaml(): String = buildString {
                 }
         }
 }
+
+fun Project.getModernJvmVersion(): Int {
+        return providers.gradleProperty("khs.jvm").map(String::toInt).get()
+}
+

@@ -99,4 +99,5 @@ fun getDriver(plugin: Khs): Driver =
         DatabaseType.SQLITE -> SqliteDriver(getSqliteDbPath(plugin))
         DatabaseType.MYSQL -> MysqlDriver(plugin.config.database)
         DatabaseType.POSTGRES -> PostgresDriver(plugin.config.database)
+        DatabaseType.DUMMY -> error("unreachable")
     }

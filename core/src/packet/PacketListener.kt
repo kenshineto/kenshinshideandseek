@@ -19,7 +19,7 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
     private val api = PacketEvents.getAPI()
 
     init {
-        api.eventManager.registerListener(this, PacketListenerPriority.NORMAL)
+        runCatching { api.eventManager.registerListener(this, PacketListenerPriority.NORMAL) }
     }
 
     // intercept entity-related packets of entities that

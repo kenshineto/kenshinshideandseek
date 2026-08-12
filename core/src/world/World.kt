@@ -47,7 +47,9 @@ interface World {
         fun move(newX: Double, newZ: Double, newSize: ULong, delay: ULong)
 
         /** Resize the world border */
-        fun move(newSize: ULong, delay: ULong)
+        fun move(newSize: ULong, delay: ULong) {
+            move(x, z, newSize, delay)
+        }
 
         /** Reset the world border do its original size */
         fun reset() {

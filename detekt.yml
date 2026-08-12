@@ -60,6 +60,7 @@ empty-blocks:
     active: true
   EmptyFunctionBlock:
     active: true
+    ignoreOverridden: true
   EmptyIfBlock:
     active: true
   EmptyInitBlock:

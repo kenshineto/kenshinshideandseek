@@ -9,6 +9,8 @@ import cat.freya.khs.type.Item
 import cat.freya.khs.type.Material
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.World
+import java.io.File
+import java.io.InputStream
 import java.nio.file.Path
 import java.util.UUID
 
@@ -33,6 +35,22 @@ interface KhsShim {
 
     /** Directory where config files and sqlitedb are stored */
     val dataDirectory: Path
+
+    /** Read a config file from the platform */
+    fun readConfigFile(fileName: String): InputStream? {
+        val dir = dataDirectory.toFile()
+        if (!dir.exists()) dir.mkdirs() || error("Failed to make plugin config directory")
+        val file = File(dir, fileName)
+        return if (file.exists()) file.inputStream() else null
+    }
+
+    /** Write a config file to the platform */
+    fun writeConfigFile(fileName: String, content: String) {
+        val dir = dataDirectory.toFile()
+        if (!dir.exists()) dir.mkdirs() || error("Failed to make plugin config directory")
+        val file = File(dir, fileName)
+        file.writeText(content)
+    }
 
     /** @return a list of valid known materials */
     fun getMaterials(): List<Material>

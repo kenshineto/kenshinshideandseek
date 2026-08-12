@@ -43,6 +43,7 @@ enum class DatabaseType {
     SQLITE,
     MYSQL,
     POSTGRES,
+    DUMMY,
 }
 
 data class DatabaseConfig(
