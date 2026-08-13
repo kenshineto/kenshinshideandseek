@@ -7,8 +7,6 @@ import cat.freya.khs.menu.Inventory
 import cat.freya.khs.type.Material
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Player
-import com.github.retrooper.packetevents.PacketEvents
-import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import kotlin.runCatching
 import net.luckperms.api.LuckPermsProvider
 import net.minecraft.core.registries.BuiltInRegistries
@@ -218,9 +216,5 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), P
 
     override fun taunt() {
         // TODO:
-    }
-
-    override fun sendPacket(packet: PacketWrapper<*>) {
-        PacketEvents.getAPI().playerManager.sendPacket(inner, packet)
     }
 }

@@ -27,6 +27,14 @@ dependencies {
     implementation(libs.hikari) {
         exclude(group = "org.slf4j")
     }
+
+    // tests
+    testImplementation(libs.kotlin.stdlib)
+    testImplementation(libs.kotlin.reflect)
+    testImplementation(libs.kotlinx.coroutines.core)
+    testImplementation(libs.packetevents.api)
+    testImplementation(libs.slf4j.api)
+    testImplementation(libs.sqlite)
 }
 
 val generateBuildInfo =

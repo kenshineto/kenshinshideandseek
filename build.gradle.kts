@@ -105,6 +105,8 @@ subprojects {
             else -> 8
         }
 
+    val mockitoAgent = configurations.create("mockitoAgent")
+
     kotlin {
         jvmToolchain(jvmVersion)
 
@@ -123,6 +125,7 @@ subprojects {
 
     tasks.test {
         useJUnitPlatform()
+        jvmArgs.add("-javaagent:${mockitoAgent.asPath}")
         javaLauncher = javaToolchains.launcherFor {
             languageVersion = JavaLanguageVersion.of(getModernJvmVersion())
         }
@@ -142,15 +145,11 @@ subprojects {
         }
 
     dependencies {
-        // deps
-        testImplementation(rootProject.libs.kotlin.stdlib)
-        testImplementation(rootProject.libs.kotlin.reflect)
         testImplementation(rootProject.libs.junit.jupiter.api)
-
-        // junit
         testRuntimeOnly(rootProject.libs.junit.jupiter.engine)
         testRuntimeOnly(rootProject.libs.junit.platform.launcher)
-        testImplementation(rootProject.libs.packetevents.api)
+        testImplementation(rootProject.libs.mockito.core)
+        mockitoAgent(rootProject.libs.mockito.core) { isTransitive = false }
     }
 
     tasks.withType<Detekt>().configureEach {

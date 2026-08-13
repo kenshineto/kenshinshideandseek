@@ -102,7 +102,7 @@ class Game(val plugin: Khs) {
 
     /* what players are in the game and what teams
      * are they on */
-    val teams: Teams = Teams()
+    val teams: Teams = Teams(plugin.shim)
 
     // events and powerups
     val glow: Glow = Glow(this)
@@ -116,6 +116,10 @@ class Game(val plugin: Khs) {
     fun doTick() {
         if (map?.isSetup() != true) return
 
+        synchronized(lock) {
+            isSecond = gameTick == 0u.toUByte()
+        }
+
         when (status) {
             Status.LOBBY -> whileWaiting()
             Status.HIDING -> whileHiding()
@@ -126,7 +130,6 @@ class Game(val plugin: Khs) {
         synchronized(lock) {
             gameTick++
             gameTick = (gameTick % 20u).toUByte()
-            isSecond = gameTick == 0u.toUByte()
         }
     }
 
@@ -224,6 +227,10 @@ class Game(val plugin: Khs) {
             } else {
                 requestedPool.toMutableSet()
             }
+
+        if (teams.size() < plugin.config.minPlayers) {
+            return
+        }
 
         while (
             pool.isNotEmpty() &&
@@ -389,6 +396,7 @@ class Game(val plugin: Khs) {
 
         synchronized(lock) {
             if (teams.contains(uuid)) return
+            if (teams.size() >= plugin.config.lobby.max) return
 
             // try to select a map
             if (map == null && selectMap() == null) {

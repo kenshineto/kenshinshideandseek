@@ -8,13 +8,12 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBl
 import kotlin.math.floor
 
 data class BlockChangePacket(val location: Location, val material: Material) : Packet {
-    override fun send(player: Player) {
-        val blockId = material.key.toBlockId() ?: return
+    override fun create(player: Player): WrapperPlayServerBlockChange? {
+        val blockId = material.key.toBlockId() ?: return null
         val blockX = floor(location.x).toInt()
         val blockY = floor(location.y).toInt()
         val blockZ = floor(location.z).toInt()
         val vector = Vector3i(blockX, blockY, blockZ)
-        val packet = WrapperPlayServerBlockChange(vector, blockId)
-        player.sendPacket(packet)
+        return WrapperPlayServerBlockChange(vector, blockId)
     }
 }

@@ -16,10 +16,10 @@ import com.github.retrooper.packetevents.wrapper.play.client.*
 import com.github.retrooper.packetevents.wrapper.play.server.*
 
 class KhsPacketListener(val plugin: Khs) : PacketListener {
-    private val api = PacketEvents.getAPI()
-
-    init {
-        runCatching { api.eventManager.registerListener(this, PacketListenerPriority.NORMAL) }
+    fun init() {
+        val api = PacketEvents.getAPI() ?: return
+        val eventManager = api.eventManager ?: return
+        eventManager.registerListener(this, PacketListenerPriority.NORMAL)
     }
 
     // intercept entity-related packets of entities that

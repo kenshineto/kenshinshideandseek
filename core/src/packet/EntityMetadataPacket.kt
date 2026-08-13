@@ -35,9 +35,8 @@ data class EntityMetadataPacket(val plugin: Khs, val entity: Entity, val flags: 
         return list
     }
 
-    override fun send(player: Player) {
+    override fun create(player: Player): WrapperPlayServerEntityMetadata {
         val data = getData(player)
-        val packet = WrapperPlayServerEntityMetadata(entity.entityId, data)
-        player.sendPacket(packet)
+        return WrapperPlayServerEntityMetadata(entity.entityId, data)
     }
 }

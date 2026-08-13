@@ -41,9 +41,9 @@ data class DelayedRespawnConfig(
 
 enum class DatabaseType {
     SQLITE,
+    MEMORY,
     MYSQL,
     POSTGRES,
-    DUMMY,
 }
 
 data class DatabaseConfig(
@@ -122,7 +122,8 @@ data class GlowConfig(
 
 data class LobbyConfig(
     @Comment("Time in seconds the lobby waits until the game starts. Set to 0 to disable") var countdown: ULong = 60u,
-    @Comment("Player threshold to speed up the countdown. Set to 0 to disable") var changeCountdown: UInt = 5u,
+    @Comment("Player threshold to speed up the countdown to 10 seconds. Set to 0 to disable")
+    var changeCountdown: UInt = 5u,
     @Comment("Minimum amount of players required to start the countdown") var min: UInt = 3u,
     @Comment("Maximum amount of players allowed in a lobby") var max: UInt = 10u,
     @Comment("Item to leave the lobby")

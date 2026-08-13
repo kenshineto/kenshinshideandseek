@@ -8,7 +8,6 @@ import cat.freya.khs.menu.PlayerInventory
 import cat.freya.khs.type.Material
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.protocol.player.ClientVersion
-import com.github.retrooper.packetevents.wrapper.PacketWrapper
 
 /** Represents a current online player on the minecraft server */
 interface Player : Entity {
@@ -121,7 +120,4 @@ interface Player : Entity {
 
     /** Spawn a taunt (usually a firework), at the location of the player to give away their location */
     fun taunt()
-
-    /** Send the player a custom nms packet */
-    fun sendPacket(packet: PacketWrapper<*>)
 }

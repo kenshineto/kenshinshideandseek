@@ -1,10 +1,11 @@
 package cat.freya.khs.game
 
+import cat.freya.khs.KhsShim
 import cat.freya.khs.game.Game.Team
 import cat.freya.khs.world.Player
 import java.util.UUID
 
-class Teams {
+class Teams(val shim: KhsShim) {
     // mapping of player to their team
     private val mappings: MutableMap<UUID, Team> = mutableMapOf()
 
@@ -59,7 +60,7 @@ class Teams {
             val uuids = mappings.keys.toSet()
             for (uuid in uuids) {
                 remove(uuid)
-                mappings[uuid] = Team.HIDER
+                mappings[uuid] = Team.UNASSIGNED
                 hiders.add(uuid)
             }
         }
@@ -113,33 +114,39 @@ class Teams {
         }
     }
 
+    fun getPlayer(uuid: UUID): Player? {
+        synchronized(lock) {
+            return playerCache[uuid] ?: shim.getPlayer(uuid)
+        }
+    }
+
     fun getHiderPlayers(): List<Player> {
         synchronized(lock) {
-            return hiders.mapNotNull { playerCache[it] }
+            return hiders.mapNotNull(::getPlayer)
         }
     }
 
     fun getSeekerPlayers(): List<Player> {
         synchronized(lock) {
-            return seekers.mapNotNull { playerCache[it] }
+            return seekers.mapNotNull(::getPlayer)
         }
     }
 
     fun getSpectatorPlayers(): List<Player> {
         synchronized(lock) {
-            return spectators.mapNotNull { playerCache[it] }
+            return spectators.mapNotNull(::getPlayer)
         }
     }
 
     fun getUnassignedPlayers(): List<Player> {
         synchronized(lock) {
-            return unassigned.mapNotNull { playerCache[it] }
+            return unassigned.mapNotNull(::getPlayer)
         }
     }
 
     fun getPlayers(): List<Player> {
         synchronized(lock) {
-            return mappings.keys.mapNotNull { playerCache[it] }
+            return mappings.keys.mapNotNull(::getPlayer)
         }
     }
 

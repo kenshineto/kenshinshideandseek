@@ -6,6 +6,7 @@ import cat.freya.khs.config.DatabaseType
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import java.io.File
+import java.sql.Connection
 import javax.sql.DataSource
 import org.sqlite.SQLiteConfig
 import org.sqlite.SQLiteDataSource
@@ -38,9 +39,13 @@ abstract class HikariDriver : Driver() {
     }
 }
 
-class SqliteDriver(path: String) : Driver() {
+class SqliteDriver(val path: String) : Driver() {
     private val driverClass = "org.sqlite.JDBC"
     private val jdbcUrl = "jdbc:sqlite:$path"
+
+    companion object {
+        private var memCon: Connection? = null
+    }
 
     override fun connect(): DataSource {
         Class.forName(driverClass)
@@ -51,6 +56,11 @@ class SqliteDriver(path: String) : Driver() {
 
         val source = SQLiteDataSource(config)
         source.url = jdbcUrl
+
+        // keep in memory database alive
+        if (path.startsWith("file::memory:") && memCon?.isClosed != false) {
+            memCon = source.connection
+        }
 
         return KhsDataSource(source)
     }
@@ -97,7 +107,7 @@ private fun getSqliteDbPath(plugin: Khs): String {
 fun getDriver(plugin: Khs): Driver =
     when (plugin.config.database.type) {
         DatabaseType.SQLITE -> SqliteDriver(getSqliteDbPath(plugin))
+        DatabaseType.MEMORY -> SqliteDriver("file::memory:?cache=shared")
         DatabaseType.MYSQL -> MysqlDriver(plugin.config.database)
         DatabaseType.POSTGRES -> PostgresDriver(plugin.config.database)
-        DatabaseType.DUMMY -> error("unreachable")
     }

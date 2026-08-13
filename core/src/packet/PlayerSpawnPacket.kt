@@ -5,7 +5,7 @@ import com.github.retrooper.packetevents.util.Vector3d
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnPlayer
 
 data class PlayerSpawnPacket(val entity: Player) : Packet {
-    override fun send(player: Player) {
+    override fun create(player: Player): WrapperPlayServerSpawnPlayer {
         val khsPosition = entity.getLocation()
 
         val entityId = entity.entityId
@@ -14,8 +14,6 @@ data class PlayerSpawnPacket(val entity: Player) : Packet {
         val pitch = entity.getPitch()
         val yaw = entity.getYaw()
 
-        val packet = WrapperPlayServerSpawnPlayer(entityId, uuid, position, pitch, yaw, listOf())
-
-        player.sendPacket(packet)
+        return WrapperPlayServerSpawnPlayer(entityId, uuid, position, pitch, yaw, listOf())
     }
 }

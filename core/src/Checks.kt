@@ -57,6 +57,13 @@ class Checks(val plugin: Khs, val player: Player) {
         }
     }
 
+    /** check if the lobby is full */
+    fun lobbyNotFull() {
+        if (plugin.game.teams.size() >= plugin.config.lobby.max) {
+            error(plugin.locale.lobby.full)
+        }
+    }
+
     /** cheks that the player is in the game world */
     fun inMapWorld(mapName: String) {
         inMapWorld(plugin.maps[mapName])

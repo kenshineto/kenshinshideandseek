@@ -9,7 +9,6 @@ import cat.freya.khs.command.map.unset.*
 import cat.freya.khs.command.util.CommandGroup
 import cat.freya.khs.command.world.*
 import cat.freya.khs.config.BuildInfo
-import cat.freya.khs.config.DatabaseType
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.config.KhsBoardConfig
@@ -105,6 +104,9 @@ class Khs(val shim: KhsShim) {
     /** checks for plugin updates */
     val updateChecker: UpdateChecker = UpdateChecker(this)
 
+    /** listens for packets */
+    val packetListener = KhsPacketListener(this)
+
     /** Caches parseMaterial requests */
     private val materialCache: MutableMap<String, Material?> = mutableMapOf()
 
@@ -123,12 +125,11 @@ class Khs(val shim: KhsShim) {
                 shim.disable()
             }
             .onSuccess {
+                packetListener.init()
                 updateChecker.check()
                 shim.logger.info("Plugin loaded successfully!")
                 saveConfig()
             }
-
-        KhsPacketListener(this)
     }
 
     fun cleanup() {
@@ -243,9 +244,7 @@ class Khs(val shim: KhsShim) {
 
                 // database config could have changed so we need to
                 // reconnect to the database
-                if (config.database.type != DatabaseType.DUMMY) {
-                    database = Database(this)
-                }
+                database = Database(this)
 
                 // reload maps
                 // we need a separate newMaps, in case one of the maps below fails

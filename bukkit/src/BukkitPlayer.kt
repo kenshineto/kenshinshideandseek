@@ -9,8 +9,6 @@ import cat.freya.khs.world.Player
 import com.cryptomorin.xseries.XSound
 import com.cryptomorin.xseries.messages.ActionBar
 import com.cryptomorin.xseries.messages.Titles
-import com.github.retrooper.packetevents.PacketEvents
-import com.github.retrooper.packetevents.wrapper.PacketWrapper
 import org.bukkit.Color
 import org.bukkit.FireworkEffect
 import org.bukkit.attribute.Attribute
@@ -240,9 +238,5 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) : Buk
                 .build()
         )
         firework.fireworkMeta = meta
-    }
-
-    override fun sendPacket(packet: PacketWrapper<*>) {
-        PacketEvents.getAPI().playerManager.sendPacket(inner, packet)
     }
 }

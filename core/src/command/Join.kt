@@ -15,6 +15,7 @@ class KhsJoin : Command {
         val map = mapName?.let { plugin.maps[it] }
 
         runChecks(plugin, player) {
+            lobbyNotFull()
             gameMapExists()
             playerNotInGame()
             if (mapName != null) mapSetup(map)
