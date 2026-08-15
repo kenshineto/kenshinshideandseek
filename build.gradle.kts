@@ -2,12 +2,14 @@
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import dev.detekt.gradle.Detekt
+import org.gradle.api.attributes.java.TargetJvmVersion
 
 plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.spotless)
     alias(libs.plugins.detekt)
     alias(libs.plugins.shadow) apply false
+    alias(libs.plugins.kotlinx.kover)
 }
 
 group = "cat.freya.khs"
@@ -25,28 +27,22 @@ allprojects {
         maven("https://repo.extendedclip.com/releases/")
     }
 
-    // only run when explicitly requested
-    // i.e. dont lint on builds
-    tasks
-        .matching { it.name.contains("spotless", ignoreCase = true) }
-        .configureEach {
-            onlyIf {
-                project.gradle.startParameter.taskNames.any { it == "lint" || it == "format" }
-            }
-        }
-
-    // only run detekt during lint
-    tasks
-        .matching { it.name == "detekt" }
-        .configureEach { onlyIf { project.gradle.startParameter.taskNames.contains("lint") } }
-
-    // linting
     apply(plugin = "com.diffplug.spotless")
     apply(plugin = "dev.detekt")
+    apply(plugin = "org.jetbrains.kotlinx.kover")
 
     detekt {
         config.setFrom("$rootDir/detekt.yml")
         source.setFrom("src", "test")
+    }
+
+    tasks.withType<Detekt>().configureEach {
+        reports {
+            html.required.set(false)
+            checkstyle.required.set(false)
+            sarif.required.set(false)
+            markdown.required.set(false)
+        }
     }
 
     spotless {
@@ -83,6 +79,11 @@ allprojects {
             endWithNewline()
         }
     }
+
+    // dont check on builds
+    tasks.named("build") {
+        dependsOn.removeIf { it.toString().contains("check") }
+    }
 }
 
 subprojects {
@@ -96,7 +97,7 @@ subprojects {
         group = "${rootProject.group}.${project.name}"
     }
 
-    // we need to support java 8 so that we can support old
+    // we need to support java 8 so that we can support old bukkit
     val jvmVersion =
         when (project.name) {
             "neoforge",
@@ -104,8 +105,6 @@ subprojects {
             "mod" -> getModernJvmVersion()
             else -> 8
         }
-
-    val mockitoAgent = configurations.create("mockitoAgent")
 
     kotlin {
         jvmToolchain(jvmVersion)
@@ -123,6 +122,7 @@ subprojects {
 
     java { toolchain { languageVersion.set(JavaLanguageVersion.of(jvmVersion)) } }
 
+    val mockitoAgent = configurations.create("mockitoAgent")
     tasks.test {
         useJUnitPlatform()
         jvmArgs.add("-javaagent:${mockitoAgent.asPath}")
@@ -131,17 +131,12 @@ subprojects {
         }
     }
 
+    // use the modern jvm version for tests in the core module
+    // instead of just using java 8
     configurations
-        .matching {
-            it.name in setOf("testCompileClasspath", "testRuntimeClasspath")
-        }
+        .matching { it.name in setOf("testCompileClasspath", "testRuntimeClasspath") }
         .configureEach {
-            attributes {
-                attribute(
-                    org.gradle.api.attributes.java.TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE,
-                    getModernJvmVersion(),
-                )
-            }
+            attributes { attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, getModernJvmVersion()) }
         }
 
     dependencies {
@@ -150,15 +145,6 @@ subprojects {
         testRuntimeOnly(rootProject.libs.junit.platform.launcher)
         testImplementation(rootProject.libs.mockito.core)
         mockitoAgent(rootProject.libs.mockito.core) { isTransitive = false }
-    }
-
-    tasks.withType<Detekt>().configureEach {
-        reports {
-            html.required.set(false)
-            checkstyle.required.set(false)
-            sarif.required.set(false)
-            markdown.required.set(false)
-        }
     }
 
     tasks.processResources {
@@ -230,6 +216,12 @@ subprojects {
     tasks.withType<ShadowJar>().all { tasks.findByName("assemble")?.dependsOn(this) }
 }
 
+dependencies {
+    subprojects.forEach {
+        kover(project(it.path))
+    }
+}
+
 tasks.named<Jar>("jar") { enabled = false }
 
 tasks.register("lint") {
@@ -241,4 +233,8 @@ tasks.register("lint") {
 tasks.register("format") {
     dependsOn(subprojects.map { it.tasks.named("spotlessApply") })
     dependsOn(tasks.named("spotlessApply"))
+}
+
+tasks.register("coverage") {
+    dependsOn(tasks.named("koverHtmlReport"))
 }

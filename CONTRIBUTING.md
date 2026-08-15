@@ -16,11 +16,13 @@ Code generated in part or full with AI will not be approved in a PR.
 
 ### Style Guide
 
-This project uses gradle plugins for code formatting and static code analysis.
+This project uses gradle plugins for code quality.
 
 Run `gradle lint` to check for formatting errors and run static code analysis.
 
 Run `gradle format` to format all the source files.
+
+Run `gradle coverage` to check code coverage
 
 Please make sure there are no formatting or code analysis warnings/errors before making your PR.
 

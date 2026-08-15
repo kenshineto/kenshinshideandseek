@@ -6,6 +6,7 @@ kotlinx-coroutines = "1.+"
 # tests
 junit = "6.+"
 mockito = "5.+"
+kotlinx-kover = "0.9.+"
 
 # gradle
 shadow = "9.6.+"
@@ -100,3 +101,4 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }
 architectury-loom = { id = "dev.architectury.loom-no-remap", version.ref = "architectury-loom" }
 architectury-plugin = { id = "architectury-plugin", version.ref = "architectury-plugin" }
+kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kotlinx-kover" }
