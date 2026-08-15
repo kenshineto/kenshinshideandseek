@@ -13,6 +13,5 @@ dependencies {
     minecraft(libs.minecraft)
     neoForge(libs.neoforge)
 
-    shadow(project(":mod"))
     shadow(project(":mod", configuration = "transformProductionNeoForge"))
 }

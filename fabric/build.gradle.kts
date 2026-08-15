@@ -13,6 +13,5 @@ dependencies {
     minecraft(libs.minecraft)
     compileOnly(libs.fabric.loader)
 
-    shadow(project(":mod"))
     shadow(project(":mod", configuration = "transformProductionFabric"))
 }

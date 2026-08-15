@@ -7,6 +7,16 @@ architectury {
     common(listOf("fabric", "neoforge"))
 }
 
+configurations {
+    named("transformProductionFabric") {
+        extendsFrom(named("implementation").get())
+    }
+
+    named("transformProductionNeoForge") {
+        extendsFrom(named("implementation").get())
+    }
+}
+
 dependencies {
     minecraft(libs.minecraft)
     implementation(project(":core"))
