@@ -18,7 +18,7 @@ Code generated in part or full with AI will not be approved in a PR.
 
 This project uses gradle plugins for code quality.
 
-Run `gradle lint` to check for formatting errors and run static code analysis.
+Run `gradle check` to check for formatting errors and run static code analysis.
 
 Run `gradle format` to format all the source files.
 

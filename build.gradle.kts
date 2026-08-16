@@ -225,12 +225,6 @@ dependencies {
 
 tasks.named<Jar>("jar") { enabled = false }
 
-tasks.register("lint") {
-    dependsOn(subprojects.map { it.tasks.named("spotlessCheck") })
-    dependsOn(tasks.named("spotlessCheck"))
-    dependsOn(subprojects.map { it.tasks.named("detekt") })
-}
-
 tasks.register("format") {
     dependsOn(subprojects.map { it.tasks.named("spotlessApply") })
     dependsOn(tasks.named("spotlessApply"))
