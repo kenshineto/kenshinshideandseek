@@ -1,8 +1,9 @@
 package cat.freya.khs
 
 import cat.freya.khs.game.Game
-import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 
 class GameTest : KhsTest() {
     @Test
@@ -121,5 +122,56 @@ class GameTest : KhsTest() {
         assertEquals(Game.Team.UNASSIGNED, game.teams.get(alice.uuid))
         assertEquals(Game.Team.UNASSIGNED, game.teams.get(bob.uuid))
         assertEquals(Game.Team.UNASSIGNED, game.teams.get(eve.uuid))
+    }
+
+    @Test
+    @DisplayName("Game status is LOBBY on startup")
+    fun gameStatusIsLobbyOnStartup() {
+        assertStatus(Game.Status.LOBBY)
+    }
+
+    @Test
+    @DisplayName("Map is null on startup")
+    fun gameMapIsNullOnStartup() {
+        assertNull(game.map)
+    }
+
+    @Test
+    @DisplayName("Can set map when a game is not in progress")
+    fun gameCanSetMapWhenAGameIsNotInProgress() {
+        val map = setupMap()
+        game.setMap(map)
+        assertEquals(map, game.map)
+    }
+
+    @Test
+    @DisplayName("Can set game map to null")
+    fun gameCanSetGameMapToNull() {
+        gameCanSetMapWhenAGameIsNotInProgress()
+        game.setMap(null)
+        assertNull(game.map)
+    }
+
+    @Test
+    @DisplayName("Cannot set map when a game is in progress")
+    fun gameCannotSetMapWhenAGameIsInProgress() {
+        val map = setupMap()
+        game.join(alice.uuid)
+        game.join(bob.uuid)
+        game.start()
+        assertStatus(Game.Status.HIDING)
+        game.setMap(null)
+        assertNotNull(game.map)
+    }
+
+    @Test
+    @DisplayName("Cannot set map to null when lobby has players")
+    fun gameCannotSetMapToNullWhenLobbyHasPlayers() {
+        val map = setupMap()
+        game.join(alice.uuid)
+        game.join(bob.uuid)
+        assertStatus(Game.Status.LOBBY)
+        game.setMap(null)
+        assertNotNull(game.map)
     }
 }

@@ -110,4 +110,5 @@ fun getDriver(plugin: Khs): Driver =
         DatabaseType.MEMORY -> SqliteDriver("file::memory:?cache=shared")
         DatabaseType.MYSQL -> MysqlDriver(plugin.config.database)
         DatabaseType.POSTGRES -> PostgresDriver(plugin.config.database)
+        DatabaseType.DISABLED -> error("unreachable")
     }

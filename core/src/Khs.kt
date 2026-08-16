@@ -9,6 +9,7 @@ import cat.freya.khs.command.map.unset.*
 import cat.freya.khs.command.util.CommandGroup
 import cat.freya.khs.command.world.*
 import cat.freya.khs.config.BuildInfo
+import cat.freya.khs.config.DatabaseType
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.config.KhsBoardConfig
@@ -244,7 +245,9 @@ class Khs(val shim: KhsShim) {
 
                 // database config could have changed so we need to
                 // reconnect to the database
-                database = Database(this)
+                if (config.database.type != DatabaseType.DISABLED) {
+                    database = Database(this)
+                }
 
                 // reload maps
                 // we need a separate newMaps, in case one of the maps below fails

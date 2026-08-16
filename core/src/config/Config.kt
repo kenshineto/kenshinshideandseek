@@ -44,6 +44,7 @@ enum class DatabaseType {
     MEMORY,
     MYSQL,
     POSTGRES,
+    DISABLED,
 }
 
 data class DatabaseConfig(

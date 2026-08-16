@@ -568,14 +568,14 @@ class Game(val plugin: Khs) {
 
                 1UL -> {
                     message = plugin.locale.game.countdown.last
+                    timer = time - 1UL
                 }
 
                 else -> {
                     message = plugin.locale.game.countdown.notify.with(time)
+                    timer = time - 1UL
                 }
             }
-
-            if (status == Status.HIDING) timer = if (time > 0UL) (time - 1UL) else time
         }
 
         if (time % 5UL == 0UL || time <= 5UL) {

@@ -3,6 +3,7 @@ package cat.freya.khs
 import cat.freya.khs.config.*
 import cat.freya.khs.game.Board
 import cat.freya.khs.game.Game
+import cat.freya.khs.game.KhsMap
 import cat.freya.khs.game.gamemode.GameMode
 import cat.freya.khs.math.Vector
 import cat.freya.khs.menu.Inventory
@@ -354,11 +355,12 @@ abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
     val alice = TestPlayer(this, "alice", UUID(1L, 1L))
     val bob = TestPlayer(this, "bob", UUID(2L, 2L))
     val eve = TestPlayer(this, "eve", UUID(3L, 3L))
+    val mallory = TestPlayer(this, "mallory", UUID(4L, 4L))
     val world = TestWorld(this, "world")
 
     @BeforeEach
     fun setup() {
-        config.database.type = DatabaseType.MEMORY
+        config.database.type = DatabaseType.DISABLED
         config.mapSaveEnabled = false
 
         PacketEvents.setAPI(Mockito.mock(PacketEventsAPI::class.java, Answers.RETURNS_DEEP_STUBS))
@@ -369,7 +371,7 @@ abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
     }
 
     override fun getPlayers(): List<TestPlayer> {
-        return listOf(alice, bob, eve)
+        return listOf(alice, bob, eve, mallory)
     }
 
     override fun readConfigFile(fileName: String): InputStream? {
@@ -387,7 +389,7 @@ abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
         // FIXME: aaaahhhhh
     }
 
-    fun setupMap(): MapConfig {
+    fun setupMap(): KhsMap {
         // setup map
         val gameSpawn = Position(1.0, 1.0, 1.0)
         val lobbySpawn = Position(2.0, 2.0, 2.0)
@@ -399,10 +401,11 @@ abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
         config.exit = Location(worldName = world.name)
 
         plugin.reloadConfig()
+        val map = plugin.maps.get("map")
         assertNotNull(plugin.maps.get("map"))
         assert(isMapSetup())
 
-        return mapConfig
+        return map!!
     }
 
     fun isMapSetup(): Boolean {
