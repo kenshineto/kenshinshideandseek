@@ -141,6 +141,7 @@ subprojects {
 
     dependencies {
         testImplementation(rootProject.libs.junit.jupiter.api)
+        testImplementation(rootProject.libs.junit.jupiter.params)
         testRuntimeOnly(rootProject.libs.junit.jupiter.engine)
         testRuntimeOnly(rootProject.libs.junit.platform.launcher)
         testImplementation(rootProject.libs.mockito.core)
