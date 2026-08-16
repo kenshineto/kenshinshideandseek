@@ -121,6 +121,7 @@ naming:
     active: true
     ignoreAnnotated:
       - "Test"
+      - "ParameterizedTest"
   FunctionNameMinLength:
     active: true
   FunctionNaming:

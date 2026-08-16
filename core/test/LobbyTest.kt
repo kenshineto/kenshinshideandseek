@@ -151,4 +151,14 @@ class LobbyTest : KhsTest() {
         assertEquals(Game.Team.UNASSIGNED, game.teams.get(alice.uuid))
         assertEquals(Game.Team.UNASSIGNED, game.teams.get(bob.uuid))
     }
+
+    @Test
+    @DisplayName("Players are teleported to the lobby upon joining")
+    fun playersAreTeleportedToTheLobbyUponJoining() {
+        val map = setupMap()
+        game.join(alice.uuid)
+        game.join(bob.uuid)
+        assertEquals(map.lobbySpawn, alice.getLocation())
+        assertEquals(map.lobbySpawn, bob.getLocation())
+    }
 }

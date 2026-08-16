@@ -6,6 +6,8 @@ import java.util.UUID
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 abstract class GameModeTest(val gameMode: ConfigGameMode) : KhsTest() {
     protected fun startGame(rewardQuit: Boolean, seeker: UUID? = null) {
@@ -103,21 +105,13 @@ abstract class GameModeTest(val gameMode: ConfigGameMode) : KhsTest() {
         assertFalse(game.gameMode.isDamageAllowed(mallory, bob))
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
     @DisplayName("Hiders can attack seekers if pvp is enabled")
-    fun hidersCanAttackSeekersIfPvpIsEnabled() {
-        config.pvp = true
+    fun hidersCanAttackSeekersIfPvpIsEnabled(pvpEnabled: Boolean) {
+        config.pvp = pvpEnabled
         startGame(true, alice.uuid)
         skipToStatus(Game.Status.SEEKING)
-        assertTrue(game.gameMode.isDamageAllowed(alice, bob))
-    }
-
-    @Test
-    @DisplayName("Hiders cannot attack seekers if pvp is disabled")
-    fun hidersCannotAttackSeekersIfPvpIsDisabled() {
-        config.pvp = false
-        startGame(true, alice.uuid)
-        skipToStatus(Game.Status.SEEKING)
-        assertFalse(game.gameMode.isDamageAllowed(alice, bob))
+        assertEquals(pvpEnabled, game.gameMode.isDamageAllowed(alice, bob))
     }
 }
