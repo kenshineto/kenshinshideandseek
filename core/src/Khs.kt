@@ -129,7 +129,6 @@ class Khs(val shim: KhsShim) {
                 packetListener.init()
                 updateChecker.check()
                 shim.logger.info("Plugin loaded successfully!")
-                saveConfig()
             }
     }
 
@@ -257,6 +256,10 @@ class Khs(val shim: KhsShim) {
                 game.reset()
                 maps.clear()
                 newMaps.forEach { maps[it.key] = it.value }
+            }
+            .onSuccess {
+                // save config on reload
+                saveConfig()
             }
             .onFailure {
                 shim.logger.error("failed to reload config: ${it.message}")
