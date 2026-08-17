@@ -10,12 +10,15 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 abstract class GameModeTest(val gameMode: ConfigGameMode) : KhsTest() {
-    protected fun startGame(rewardQuit: Boolean, seeker: UUID? = null) {
+    protected fun startGame(rewardQuit: Boolean, seeker: UUID? = null, extraHider: UUID? = null) {
         config.gameMode = gameMode
         config.dontRewardQuit = rewardQuit
         setupMap()
         game.join(alice.uuid)
         game.join(bob.uuid)
+        if (extraHider != null) {
+            game.join(mallory.uuid)
+        }
         if (seeker != null) {
             game.start(setOf(seeker))
         } else {

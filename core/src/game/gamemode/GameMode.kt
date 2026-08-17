@@ -57,6 +57,9 @@ interface GameMode {
         return game.teams.get(uuid)
     }
 
+    /** returns the minimum number of players required to start the game */
+    fun getMinPlayers(): UInt = 2u
+
     /** returns a title given a win type */
     fun gameOverTitle(reason: Game.WinType): String
 

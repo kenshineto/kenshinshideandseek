@@ -45,8 +45,8 @@ class Checks(val plugin: Khs, val player: Player) {
 
     /** check if the lobby has enough players to start */
     fun lobbyHasEnoughPlayers() {
-        if (plugin.game.teams.size() < plugin.config.minPlayers) {
-            error(plugin.locale.lobby.notEnoughPlayers.with(plugin.config.minPlayers))
+        if (plugin.game.teams.size() < plugin.game.gameMode.getMinPlayers()) {
+            error(plugin.locale.lobby.notEnoughPlayers.with(plugin.game.gameMode.getMinPlayers()))
         }
     }
 

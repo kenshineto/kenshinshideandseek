@@ -90,6 +90,10 @@ class HideAndSeek(override val game: Game) : GameMode {
         return game.getInitialTeams().get(uuid)
     }
 
+    override fun getMinPlayers(): UInt {
+        return plugin.config.scoringMode.minHiders + 1u
+    }
+
     override fun gameOverTitle(reason: Game.WinType): String {
         return when (reason) {
             Game.WinType.SEEKERS_WIN -> plugin.locale.game.title.seekersWin

@@ -191,7 +191,6 @@ data class KhsConfig(
     @Comment("Allow Hiders to see everyone's nametags. Seeker can never see nametags.")
     var nametagsVisible: Boolean = false,
     @Comment("Require players to have permissions to run commands") var permissionsRequired: Boolean = true,
-    @Comment("Minimum amount of players to start the game. Cannot go lower than 2.") var minPlayers: UInt = 2u,
     @Comment("Amount of initial seekers when the game starts, minimum of 1") var startingSeekerCount: UInt = 1u,
     @Comment("If enabled, a HIDER will join the SPECTATOR team on death instead of the SEEKER team.")
     var respawnAsSpectator: Boolean = false,
@@ -286,7 +285,6 @@ data class KhsConfig(
         spectatorItems.teleport.migrate()
 
         // migrate minimum values
-        minPlayers = max(minPlayers, 2u)
         startingSeekerCount = max(startingSeekerCount, 1u)
         hidingLength = max(hidingLength, 10u)
     }

@@ -228,7 +228,7 @@ class Game(val plugin: Khs) {
                 requestedPool.toMutableSet()
             }
 
-        if (teams.size() < plugin.config.minPlayers) {
+        if (teams.size() < gameMode.getMinPlayers()) {
             return
         }
 

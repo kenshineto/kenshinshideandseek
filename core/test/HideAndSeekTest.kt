@@ -13,6 +13,7 @@ class HideAndSeekTest : GameModeTest(ConfigGameMode.HIDE_AND_SEEK) {
     fun seekersWinWhenNoHiders() {
         startGame(false, alice.uuid)
         game.leave(bob.uuid)
+        game.leave(mallory.uuid)
         assertEquals(Game.WinType.SEEKERS_WIN, game.gameMode.getWinCondition())
     }
 
@@ -20,7 +21,9 @@ class HideAndSeekTest : GameModeTest(ConfigGameMode.HIDE_AND_SEEK) {
     @DisplayName("LAST_HIDER_WIN when last hider left when LAST_HIDER_WINS scoring mode")
     fun lastHiderWins() {
         config.scoringMode = ConfigScoringMode.LAST_HIDER_WINS
-        startGame(true, alice.uuid)
+        startGame(true, alice.uuid, mallory.uuid)
+        assertNull(game.gameMode.getWinCondition())
+        game.loadSeeker(mallory)
         assertEquals(Game.WinType.LAST_HIDER_WIN, game.gameMode.getWinCondition())
         assertEquals(bob.uuid, game.gameMode.getLastHider())
     }

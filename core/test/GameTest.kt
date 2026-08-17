@@ -20,7 +20,6 @@ class GameTest : KhsTest() {
     @Test
     @DisplayName("Game cannot start with less then min players")
     fun gameCannotStartWithoutMinPlayers() {
-        config.minPlayers = 2u
         setupMap()
         game.join(alice.uuid)
         game.start()
@@ -30,7 +29,6 @@ class GameTest : KhsTest() {
     @Test
     @DisplayName("Game can start with atleast min players")
     fun gameCanStartWithMinPlayers() {
-        config.minPlayers = 2u
         setupMap()
         game.join(alice.uuid)
         game.join(bob.uuid)
