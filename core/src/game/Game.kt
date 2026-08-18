@@ -114,20 +114,18 @@ class Game(val plugin: Khs) {
         private set
 
     fun doTick() {
-        if (map?.isSetup() != true) return
-
         synchronized(lock) {
+            if (map?.isSetup() != true) return
+
             isSecond = gameTick == 0u.toUByte()
-        }
 
-        when (status) {
-            Status.LOBBY -> whileWaiting()
-            Status.HIDING -> whileHiding()
-            Status.SEEKING -> whileSeeking()
-            Status.FINISHED -> whileFinished()
-        }
+            when (status) {
+                Status.LOBBY -> whileWaiting()
+                Status.HIDING -> whileHiding()
+                Status.SEEKING -> whileSeeking()
+                Status.FINISHED -> whileFinished()
+            }
 
-        synchronized(lock) {
             gameTick++
             gameTick = (gameTick % 20u).toUByte()
         }
@@ -520,18 +518,16 @@ class Game(val plugin: Khs) {
         if (isSecond) reloadLobbyBoards()
 
         var time: ULong
-        synchronized(lock) {
-            // countdown is disabled when set to at 0s
-            if (countdown == 0UL || teams.size() < plugin.config.lobby.min) {
-                timer = null
-                return
-            }
-
-            time = timer ?: countdown
-            if (teams.size() >= changeCountdown && changeCountdown != 0u) time = min(time, 10UL)
-            if (isSecond && time > 0UL) time--
-            timer = time
+        // countdown is disabled when set to at 0s
+        if (countdown == 0UL || teams.size() < plugin.config.lobby.min) {
+            timer = null
+            return
         }
+
+        time = timer ?: countdown
+        if (teams.size() >= changeCountdown && changeCountdown != 0u) time = min(time, 10UL)
+        if (isSecond && time > 0UL) time--
+        timer = time
 
         if (time == 0UL) {
             start()
@@ -544,37 +540,32 @@ class Game(val plugin: Khs) {
         if (!isSecond) return
 
         if (timer != 0UL) {
-            synchronized(lock) {
-                gameMode.getWinCondition()?.let(this::stop)
-                playerLeft = false
-            }
+            gameMode.getWinCondition()?.let(this::stop)
+            playerLeft = false
         }
 
         if (isSecond) reloadGameBoards()
 
-        val time: ULong
+        val time = timer ?: plugin.config.hidingLength
         val message: String
-        synchronized(lock) {
-            time = timer ?: plugin.config.hidingLength
 
-            when (time) {
-                0UL -> {
-                    message = plugin.locale.game.start
-                    status = Status.SEEKING
-                    timer = null
-                    loadHiders()
-                    loadSeekers()
-                }
+        when (time) {
+            0UL -> {
+                message = plugin.locale.game.start
+                status = Status.SEEKING
+                timer = null
+                loadHiders()
+                loadSeekers()
+            }
 
-                1UL -> {
-                    message = plugin.locale.game.countdown.last
-                    timer = time - 1UL
-                }
+            1UL -> {
+                message = plugin.locale.game.countdown.last
+                timer = time - 1UL
+            }
 
-                else -> {
-                    message = plugin.locale.game.countdown.notify.with(time)
-                    timer = time - 1UL
-                }
+            else -> {
+                message = plugin.locale.game.countdown.notify.with(time)
+                timer = time - 1UL
             }
         }
 
@@ -650,57 +641,60 @@ class Game(val plugin: Khs) {
 
     /** during Status.SEEKING */
     private fun whileSeeking() {
-        if (plugin.config.seekerPing.enabled) teams.getHiderPlayers().forEach { playSeekerPing(it) }
+        var time = timer
 
-        synchronized(lock) {
-            var time = timer
-            if (time == null && plugin.config.gameLength != 0UL) time = plugin.config.gameLength
-
-            if (isSecond) {
-                if (time != null && time > 0UL) time--
-
-                taunt.update()
-                glow.update()
-                border.update()
-            }
-
-            timer = time
+        if (time == null && plugin.config.gameLength != 0UL) {
+            time = plugin.config.gameLength
         }
 
-        if (isSecond) reloadGameBoards()
+        if (isSecond) {
+            if (time != null && time > 0UL) time--
+
+            taunt.update()
+            glow.update()
+            border.update()
+        }
+
+        timer = time
+
+        if (isSecond) {
+            // seperate to have correct up to date time
+            reloadGameBoards()
+        }
+
+        // play seeker ping
+        if (plugin.config.seekerPing.enabled) {
+            teams.getHiderPlayers().forEach { playSeekerPing(it) }
+        }
 
         // update spectator flight
         // (the toggle they have only changed allowed flight)
         teams.getSpectatorPlayers().forEach { it.setFlying(it.getAllowedFlight()) }
 
-        synchronized(lock) {
-            gameMode.getWinCondition()?.let(this::stop)
-            playerLeft = false
-        }
+        gameMode.getWinCondition()?.let(this::stop)
+        playerLeft = false
     }
 
     /** during Status.FINISHED */
     private fun whileFinished() {
-        synchronized(lock) {
-            var time = timer ?: plugin.config.endGameDelay
-            if (isSecond && time > 0UL) time--
+        var time = timer ?: plugin.config.endGameDelay
+        if (isSecond && time > 0UL) time--
 
-            timer = time
+        timer = time
 
-            if (time == 0UL) {
-                timer = null
-                map = null
-                selectMap()
+        if (time == 0UL) {
+            timer = null
+            map = null
+            selectMap()
 
-                if (map == null) {
-                    broadcast(plugin.locale.prefix.warning + plugin.locale.map.none)
-                    return
-                }
-
-                status = Status.LOBBY
-
-                teams.getPlayers().forEach { loadPlayerIntoLobby(it) }
+            if (map == null) {
+                broadcast(plugin.locale.prefix.warning + plugin.locale.map.none)
+                return
             }
+
+            status = Status.LOBBY
+
+            teams.getPlayers().forEach { loadPlayerIntoLobby(it) }
         }
     }
 
