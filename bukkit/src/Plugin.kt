@@ -1,5 +1,6 @@
 package cat.freya.khs.bukkit
 
+import cat.freya.khs.BuildInfo
 import cat.freya.khs.Khs
 import cat.freya.khs.PlaceholderRequest
 import cat.freya.khs.bukkit.event.*
@@ -44,7 +45,7 @@ class KhsPlugin : JavaPlugin() {
         registerListeners()
         registerPAPI()
 
-        if (khs.buildInfo.telemetry) {
+        if (BuildInfo.telemetry) {
             registerMetrics()
         }
     }
@@ -81,7 +82,7 @@ class KhsPlugin : JavaPlugin() {
         object : PlaceholderExpansion() {
                 override fun getIdentifier() = "hs"
 
-                override fun getAuthor() = khs.buildInfo.author
+                override fun getAuthor() = BuildInfo.author
 
                 override fun getVersion() = me.description.version
 
@@ -98,7 +99,7 @@ class KhsPlugin : JavaPlugin() {
 
     private fun registerMetrics() {
         // hook into bstats
-        val metrics = Metrics(this, khs.buildInfo.bstatsId)
+        val metrics = Metrics(this, BuildInfo.bstatsId)
 
         // track server locale
         metrics.addCustomChart(

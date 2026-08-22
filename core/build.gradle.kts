@@ -37,24 +37,6 @@ dependencies {
     testImplementation(libs.sqlite)
 }
 
-val generateBuildInfo =
-    tasks.register("generateBuildInfo") {
-        val output = layout.buildDirectory.file("generated/res/buildInfo.yml")
+val buildInfo = registerBuildInfoTask()
 
-        outputs.file(output)
-
-        doLast {
-            output.get().asFile.apply {
-                parentFile.mkdirs()
-                writeText(rootProject.getBuildInfoYaml())
-            }
-        }
-    }
-
-sourceSets.main {
-    resources.srcDir(layout.buildDirectory.dir("generated/res"))
-}
-
-tasks.processResources {
-    dependsOn(generateBuildInfo)
-}
+kotlin { sourceSets { main { kotlin.srcDir(buildInfo) } } }

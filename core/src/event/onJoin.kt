@@ -1,5 +1,6 @@
 package cat.freya.khs.event
 
+import cat.freya.khs.BuildInfo
 import cat.freya.khs.Khs
 import cat.freya.khs.world.Player
 
@@ -20,7 +21,7 @@ fun onJoin(event: JoinEvent) {
 
     // send update message
     if (plugin.updateChecker.updateExists && player.hasPermission("hs.debug")) {
-        val currentVersion = plugin.buildInfo.version
+        val currentVersion = BuildInfo.version
         val latestVersion = plugin.updateChecker.latestVersion ?: ""
 
         player.message(

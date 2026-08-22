@@ -14,14 +14,14 @@ class UpdateChecker(val plugin: Khs) {
 
     fun check() {
         // both must be set for update checking to work
-        if (!plugin.config.checkForUpdates || !plugin.buildInfo.telemetry) {
+        if (!plugin.config.checkForUpdates || !BuildInfo.telemetry) {
             return
         }
 
         val endpoint = "https://api.github.com/repos/kenshineto/kenshinshideandseek/releases/latest"
         val release: GitHubRelease = plugin.fetchJson(endpoint) ?: return
 
-        val currentVersion = plugin.buildInfo.version
+        val currentVersion = BuildInfo.version
         val latestVersion = release.tagName.removePrefix("v")
         plugin.shim.logger.info("Latest plugin version: $latestVersion")
 

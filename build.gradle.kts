@@ -1,5 +1,3 @@
-@file:Suppress("UNCHECKED_CAST")
-
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import dev.detekt.gradle.Detekt
 import org.gradle.api.attributes.java.TargetJvmVersion
@@ -98,16 +96,16 @@ subprojects {
     }
 
     // we need to support java 8 so that we can support old bukkit
-    val jvmVersion =
+    val srcJvmVersion =
         when (project.name) {
             "neoforge",
             "fabric",
-            "mod" -> getModernJvmVersion()
+            "mod" -> 25
             else -> 8
         }
 
     kotlin {
-        jvmToolchain(jvmVersion)
+        jvmToolchain(srcJvmVersion)
 
         sourceSets {
             main {
@@ -120,14 +118,18 @@ subprojects {
         }
     }
 
-    java { toolchain { languageVersion.set(JavaLanguageVersion.of(jvmVersion)) } }
+    java { toolchain { languageVersion.set(JavaLanguageVersion.of(srcJvmVersion)) } }
 
+    // tests always need to use the latest jvm version so that
+    // junit can function
+    val testJvmVersion = 25
     val mockitoAgent = configurations.create("mockitoAgent")
+
     tasks.test {
         useJUnitPlatform()
         jvmArgs.add("-javaagent:${mockitoAgent.asPath}")
         javaLauncher = javaToolchains.launcherFor {
-            languageVersion = JavaLanguageVersion.of(getModernJvmVersion())
+            languageVersion = JavaLanguageVersion.of(testJvmVersion)
         }
     }
 
@@ -136,7 +138,7 @@ subprojects {
     configurations
         .matching { it.name in setOf("testCompileClasspath", "testRuntimeClasspath") }
         .configureEach {
-            attributes { attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, getModernJvmVersion()) }
+            attributes { attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, testJvmVersion) }
         }
 
     dependencies {
@@ -151,7 +153,7 @@ subprojects {
     tasks.processResources {
         inputs.properties(rootProject.getBuildInfo())
 
-        val templates = listOf("**.yml", "**/*.json", "**/*.toml")
+        val templates = listOf("**/*.yml", "**/*.json", "**/*.toml")
         templates.forEach { resource ->
             filesMatching(resource) { expand(rootProject.getBuildInfo()) }
         }
@@ -184,20 +186,20 @@ subprojects {
         val relocations =
             setOf(
                 // core
-                "org.bstats",
                 "com.fasterxml.jackson",
+                "com.zaxxer.hikari",
                 "org.jetbrains.exposed",
                 "org.yaml.snakeyaml",
-                "com.zaxxer.hikari",
                 // bukkit
                 "com.cryptomorin.xseries",
+                "org.bstats",
             )
 
         relocations.forEach { pkg ->
             runCatching {
                 // try to relocate and ignore on failure
                 val module = pkg.split('.').last()
-                relocate(pkg, "cat.freya.depend.$module")
+                relocate(pkg, "${rootProject.group}.depend.$module")
             }
         }
 

@@ -1,5 +1,6 @@
 package cat.freya.khs.command.util
 
+import cat.freya.khs.BuildInfo
 import cat.freya.khs.Khs
 import cat.freya.khs.world.Player
 
@@ -22,10 +23,9 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
     }
 
     private fun messageAbout(player: Player) {
-        val info = plugin.buildInfo
         player.message(
-            "&b&l${info.name} &7(&f${info.version}&7)\n" +
-                "&7Author: &f[${info.author}]\n" +
+            "&b&l${BuildInfo.name} &7(&f${BuildInfo.version}&7)\n" +
+                "&7Author: &f[${BuildInfo.author}]\n" +
                 "&7Help Command: &b/hs &fhelp"
         )
     }

@@ -341,7 +341,7 @@ abstract class TestShim : AbstractKhsShim("test") {
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
-    override val serverVersion: String = "26.2"
+    override val serverVersion: String = BuildInfo.minecraft
 
     val config = KhsConfig()
     val itemsConfig = KhsItemsConfig()
