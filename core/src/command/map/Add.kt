@@ -9,11 +9,12 @@ import cat.freya.khs.world.Player
 
 class KhsMapAdd : Command {
     override val label = "add"
-    override val usage = listOf("name", "world")
+    override val usage = listOf("name", "*world")
     override val description = "Add a map to the plugin"
 
     override fun execute(plugin: Khs, player: Player, args: List<String>) {
-        val (name, world) = args
+        val name = args[0]
+        val world = args.getOrNull(1) ?: player.getLocation().worldName
         runChecks(plugin, player) {
             mapDoesNotExist(name)
             mapNameValid(name)
@@ -29,7 +30,7 @@ class KhsMapAdd : Command {
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =
         when (parameter) {
             "name" -> listOf("name")
-            "world" -> plugin.shim.getWorldNames().filter { it.startsWith(typed) }
+            "*world" -> plugin.shim.getWorldNames().filter { it.startsWith(typed) }
             else -> listOf()
         }
 }
