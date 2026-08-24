@@ -35,7 +35,7 @@ abstract class GameModeTest(val gameMode: ConfigGameMode) : KhsTest() {
         game.doTick()
         skipSeconds(config.hidingLength)
         skipSeconds(config.gameLength)
-        assertEquals(Game.WinType.HIDERS_WIN, game.gameMode.getWinCondition())
+        assertEquals(Game.WinType.HIDERS_WIN, game.getLastWinType())
     }
 
     @Test

@@ -1,6 +1,7 @@
 package cat.freya.khs
 
 import cat.freya.khs.db.PlayerStat
+import cat.freya.khs.game.Game
 import cat.freya.khs.world.Player
 import java.util.UUID
 import kotlin.text.toULong
@@ -57,18 +58,62 @@ private fun handlePlayerStat(req: PlaceholderRequest): String {
     return stat.getValue(player).toString()
 }
 
-private fun handleLastWinners(req: PlaceholderRequest): String {
-    val index = req.args.getOrNull(1)?.toUIntOrNull()
-    val lastWinners = req.plugin.game.getLastWinners().mapNotNull { req.plugin.shim.getPlayer(it) }
+private fun handleLastGame(req: PlaceholderRequest): String {
+    val arg1 = req.args.getOrNull(1)
+    val arg2 = req.args.getOrNull(2)
+    val arg3 = req.args.getOrNull(3)
 
-    if (lastWinners.isEmpty()) return req.noData
+    val hasWon =
+        when (arg1) {
+            "win" -> true
+            "loose" -> false
+            else -> return req.invalid
+        }
+
+    val teamFilter =
+        when (arg2) {
+            "hider" -> Game.Team.HIDER
+            "seeker" -> Game.Team.SEEKER
+            else -> null
+        }
+
+    if (teamFilter == null && arg3 != null) {
+        // arg2 must be a team filter and its invalid!
+        return req.invalid
+    }
+
+    val indexArg =
+        if (teamFilter == null) {
+            arg2
+        } else {
+            arg3
+        }
+    val index = indexArg?.toUIntOrNull()
+
+    val game = req.plugin.game
+    val map =
+        if (hasWon) {
+            game.getLastWinners()
+        } else {
+            game.getLastLoosers()
+        }
+
+    val players = map.mapNotNull { entry ->
+        val player = req.plugin.shim.getPlayer(entry.key) ?: return@mapNotNull null
+        if (teamFilter != null && entry.value != teamFilter) return@mapNotNull null
+        player
+    }
+
+    if (players.isEmpty()) {
+        return req.noData
+    }
 
     if (index != null) {
         // display a given winner
-        return lastWinners.getOrNull(index.toInt())?.let(Player::name) ?: req.noData
+        return players.getOrNull(index.toInt())?.let(Player::name) ?: req.noData
     } else {
         // display all winners
-        return lastWinners.map(Player::name).joinToString(" ")
+        return players.map(Player::name).joinToString(" ")
     }
 }
 
@@ -106,9 +151,9 @@ fun handlePlaceholder(req: PlaceholderRequest): String {
             handlePlayerStat(req)
         }
 
-        // last winners
-        "lastGame" -> {
-            handleLastWinners(req)
+        // last game
+        "last" -> {
+            handleLastGame(req)
         }
 
         // else

@@ -50,11 +50,18 @@ The valid player statistics are:
 
 #### Last Winners
 
-Get a list or a single entry into the games last winners. Note that the index for this placeholder starts at zero.
+The following placeholders return information about the last game played.
 
-`%hs_lastGame%` - Returns the list of all winners last game
-`%hs_lastGame_<index>%` - Returns a given player at a given index of the list of the winners last game
+`%hs_win_<team>_<index>%` - Returns list of winners
+`%hs_loose_<team>_<index>%` - Returns liust of loosers
+
+- When team is set, it will only return players in that list that are in the given team
+- When index is setm it will return the player at the list at the given index. The index starts at zero.
 
 **Examples:**
-- %hs_lastGame%
-- %hs_lastGame_2%
+- %hs_last_win%
+- %hs_last_win_seeker%
+- %hs_last_win_hider%
+- %hs_last_win_hider_0%
+- %hs_last_loose%
+- %hs_last_loose_hider_2%

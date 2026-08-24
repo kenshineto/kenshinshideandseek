@@ -80,9 +80,6 @@ class Game(val plugin: Khs) {
     /** what round was the uuid last picked to be seeker */
     private val lastPicked: MutableMap<UUID, UInt> = ConcurrentHashMap()
 
-    /** what uuid's won last game */
-    private val lastWinners: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
-
     /** teams at the start of the game */
     private var initialTeams: Map<UUID, Team> = emptyMap()
 
@@ -97,6 +94,11 @@ class Game(val plugin: Khs) {
     private var seekerKills: MutableMap<UUID, UInt> = ConcurrentHashMap()
     private var hiderDeaths: MutableMap<UUID, UInt> = ConcurrentHashMap()
     private var seekerDeaths: MutableMap<UUID, UInt> = ConcurrentHashMap()
+
+    // results of the last game
+    private var lastWinners: MutableMap<UUID, Team> = mutableMapOf()
+    private var lastLoosers: MutableMap<UUID, Team> = mutableMapOf()
+    private var lastWinType: WinType? = null
 
     private var lock = Any()
 
@@ -300,8 +302,16 @@ class Game(val plugin: Khs) {
         return initialTeams.toMap()
     }
 
-    fun getLastWinners(): Set<UUID> {
-        return lastWinners.toSet()
+    fun getLastWinners(): Map<UUID, Team> {
+        return lastWinners.toMap()
+    }
+
+    fun getLastLoosers(): Map<UUID, Team> {
+        return lastLoosers.toMap()
+    }
+
+    fun getLastWinType(): WinType? {
+        return lastWinType
     }
 
     fun hasPlayerLeft(): Boolean {
@@ -310,39 +320,33 @@ class Game(val plugin: Khs) {
 
     private fun updatePlayerInfo(uuid: UUID, reason: WinType) {
         val team = gameMode.getEffectiveTeam(uuid) ?: return
+        if (team != Team.HIDER && team != Team.SEEKER) return
+
+        // check if we have won
+        val lastHider = gameMode.getLastHider()
+        val hasWon =
+            when (reason) {
+                WinType.SEEKERS_WIN -> team == Team.SEEKER
+                WinType.HIDERS_WIN -> team == Team.HIDER
+                WinType.LAST_HIDER_WIN if lastHider == null -> team === Team.HIDER
+                WinType.LAST_HIDER_WIN -> uuid == lastHider
+                else -> false
+            }
+
+        // update last game win info
+        if (hasWon) {
+            lastWinners.put(uuid, team)
+        } else {
+            lastLoosers.put(uuid, team)
+        }
+
+        // update database
         val data = plugin.database?.getPlayer(uuid) ?: return
-
-        when (reason) {
-            WinType.SEEKERS_WIN -> {
-                if (team == Team.SEEKER) {
-                    data.seekerWins++
-                    lastWinners.add(uuid)
-                }
-                if (team == Team.HIDER) data.hiderLosses++
-            }
-
-            WinType.HIDERS_WIN -> {
-                if (team == Team.SEEKER) data.seekerLosses++
-                if (team == Team.HIDER) {
-                    data.hiderWins++
-                    lastWinners.add(uuid)
-                }
-            }
-
-            WinType.LAST_HIDER_WIN -> {
-                if (team == Team.SEEKER) data.seekerLosses++
-                if (team == Team.HIDER) {
-                    val lastHider = gameMode.getLastHider()
-                    if (uuid == lastHider) {
-                        data.hiderWins++
-                        lastWinners.add(uuid)
-                    } else {
-                        data.hiderLosses++
-                    }
-                }
-            }
-
-            else -> {}
+        when (team) {
+            Team.SEEKER if hasWon -> data.seekerWins++
+            Team.SEEKER -> data.seekerLosses++
+            Team.HIDER if hasWon -> data.hiderWins++
+            Team.HIDER -> data.hiderLosses++
         }
 
         data.seekerKills += seekerKills.getOrDefault(uuid, 0u)
@@ -361,6 +365,7 @@ class Game(val plugin: Khs) {
             round++
             status = Status.FINISHED
             timer = null
+            lastWinType = reason
         }
 
         val message = gameMode.gameOverMessage(reason)
@@ -377,15 +382,14 @@ class Game(val plugin: Khs) {
             broadcastTitle(title, message)
         }
 
-        // update database
+        // update database and win info
         lastWinners.clear()
+        lastLoosers.clear()
         uuids.forEach { updatePlayerInfo(it, reason) }
 
         if (plugin.config.leaveOnEnd) {
             uuids.forEach { leave(it) }
         }
-
-        teams.reset()
     }
 
     fun join(uuid: UUID) {

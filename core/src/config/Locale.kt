@@ -276,7 +276,13 @@ data class LocaleDatabaseConfig(
     var noInfo: String = "No gameplay info",
     @Comment("{1} - the player associated with the following win information")
     var infoFor: LocaleString1 = LocaleString1("Win information for {1}:"),
-    var lastWinners: String = "The following players have won the last game:",
+    var totalWins: LocaleString1 = LocaleString1("&bTOTAL WINS: &f{1}"),
+    var hiderWins: LocaleString1 = LocaleString1("&6HIDER WINS: &f{1}"),
+    var seekerWins: LocaleString1 = LocaleString1("&cSEEKER WINS: &f{1}"),
+    var gamesPlayed: LocaleString1 = LocaleString1("GAMES PLAYED: &Vf{1}"),
+    var lastGame: String = "Results of the last game:",
+    var lastWinners: LocaleString1 = LocaleString1("&6WINNERS: &f{1}"),
+    var lastLoosers: LocaleString1 = LocaleString1("&cLOOSERS: &f{1}"),
 )
 
 data class LocaleConfirmConfig(
