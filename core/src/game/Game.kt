@@ -251,7 +251,7 @@ class Game(val plugin: Khs) {
 
         if (plugin.config.mapSaveEnabled) {
             // roll back the mapsave
-            map?.getGameWorld()?.loader?.rollback()
+            map?.reloadGameWorld()
             plugin.shim.scheduleEvent(1UL) {
                 // this need to be a 1 tick delay
                 // to stop a possible death loop inside

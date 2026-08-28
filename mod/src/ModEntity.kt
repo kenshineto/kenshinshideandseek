@@ -56,9 +56,7 @@ open class ModEntity(val mod: KhsMod, private val inner: net.minecraft.world.ent
     override fun teleport(location: Location?) {
         if (location == null) return
 
-        val loader = mod.shim.getWorldLoader(location.worldName)
-        val world = loader.load() ?: return
-
+        val world = mod.khs.loadWorld(location.worldName) as? ModWorld ?: return
         val relative = Relative.DELTA
         inner.teleportTo(world.inner, location.x, location.y, location.z, relative, location.yaw, location.pitch, false)
     }

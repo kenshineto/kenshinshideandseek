@@ -14,8 +14,7 @@ class KhsWorldTp : Command {
         val (name) = args
         runChecks(plugin, player) { worldExists(name) }
 
-        val loader = plugin.shim.getWorldLoader(name)
-        val world = loader.load()
+        val world = plugin.loadWorld(name)
         if (world == null) {
             player.message(plugin.locale.prefix.error + plugin.locale.world.loadFailed.with(name))
             return

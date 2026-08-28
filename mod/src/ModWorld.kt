@@ -1,10 +1,10 @@
 package cat.freya.khs.mod
 
 import cat.freya.khs.mod.mixin.KhsMinecraftServerExt
-import cat.freya.khs.world.AbstractWorld
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Position
 import cat.freya.khs.world.World
+import cat.freya.khs.world.isMapSave
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import java.util.concurrent.CompletableFuture
@@ -138,22 +138,7 @@ class ModWorldBorder(val level: ServerLevel) : World.Border {
     }
 }
 
-class ModWorldLoader(val mod: KhsMod, override val name: String) :
-    World.AbstractLoader(name, name, mod.server.getWorldContainer()) {
-    override fun load(): ModWorld? {
-        val key = ModWorld.parseKey(name) ?: return null
-        val level = mod.server.inner.getLevel(key) ?: ModWorld.createLevel(mod, name, World.Type.NORMAL) ?: return null
-        return ModWorld(mod, level)
-    }
-
-    override fun unload() {
-        val key = ModWorld.parseKey(name) ?: return
-        val mixinServer = (mod.server.inner) as KhsMinecraftServerExt
-        mixinServer.removeLevel(key, !isMapSave)
-    }
-}
-
-class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim) {
+class ModWorld(val mod: KhsMod, val inner: ServerLevel) : World {
     override val name = inner.toString() // toString calls serverLevelData.levelName
 
     override val type: World.Type = getTypeImpl()
@@ -171,8 +156,6 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim
     }
 
     override val border = ModWorldBorder(inner)
-
-    override val loader = ModWorldLoader(mod, name)
 
     override fun getSpawn(): Location {
         val pos = inner.respawnData.pos()
@@ -195,29 +178,27 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim
         )
     }
 
+    override fun unload() {
+        val key = ModWorld.parseKey(name) ?: return
+        val mixinServer = (mod.server.inner) as KhsMinecraftServerExt
+        mixinServer.removeLevel(key, !isMapSave(name))
+    }
+
     companion object {
         fun createLevel(mod: KhsMod, worldName: String, type: World.Type): ServerLevel? {
-            val server = mod.server.inner
-            val loader = ModWorldLoader(mod, worldName)
-
             val key = parseKey(worldName) ?: return null
             if (key.identifier().namespace != KhsMod.ID) return null
-
-            val generator =
-                if (loader.isMapSave) {
-                    voidGenerator(mod)
-                } else {
-                    getGenerator(mod, type) ?: return null
-                }
-
-            val dimension = getDimension(mod, type)
 
             // get world "session"
             val levelStorage = LevelStorageSource.createDefault(mod.server.getWorldContainer())
             val session = levelStorage.createAccess(worldName)
 
+            // get "level stem"
+            val generator = getGenerator(mod, worldName, type)
+            val dimension = getDimension(mod, type)
             val levelStem = LevelStem(dimension, generator)
 
+            val server = mod.server.inner
             val levelData = DerivedLevelData(server.worldData, server.worldData.overworldData())
 
             val level =
@@ -241,15 +222,20 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : AbstractWorld(mod.shim
             return level
         }
 
-        private fun getGenerator(mod: KhsMod, type: World.Type): ChunkGenerator? {
+        private fun getGenerator(mod: KhsMod, worldName: String, type: World.Type): ChunkGenerator {
             val server = mod.server.inner
+            val defaultGen = server.overworld().chunkSource.generator
+
+            if (isMapSave(worldName)) {
+                return voidGenerator(mod)
+            }
+
             return when (type) {
-                World.Type.NORMAL -> server.overworld().chunkSource.generator
                 World.Type.NETHER -> server.getLevel(Level.NETHER)?.chunkSource?.generator
                 World.Type.END -> server.getLevel(Level.END)?.chunkSource?.generator
                 World.Type.FLAT -> flatGenerator(mod)
                 else -> null
-            }
+            } ?: defaultGen
         }
 
         private fun getDimension(mod: KhsMod, type: World.Type): Holder<DimensionType> {

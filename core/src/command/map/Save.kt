@@ -20,7 +20,9 @@ class KhsMapSave : Command {
         }
 
         val map = plugin.maps[name] ?: return
-        MapSaver(plugin, map).save()
+        val dir = map.getWorldInfo()?.dir ?: return
+
+        MapSaver(plugin, map, dir).save()
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =

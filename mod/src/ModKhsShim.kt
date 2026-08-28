@@ -5,6 +5,7 @@ import cat.freya.khs.KhsShim
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.world.World
+import cat.freya.khs.world.WorldInfo
 import java.nio.file.Path
 import java.util.UUID
 import net.minecraft.core.registries.BuiltInRegistries
@@ -95,23 +96,24 @@ class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform) {
         return false
     }
 
-    override fun getWorldNames(): List<String> {
+    override fun getWorlds(): List<WorldInfo> {
         val container = mod.server.getWorldContainer()
         val namespaces = container.toFile().listFiles() ?: emptyArray()
         return namespaces
             .map { namespace ->
                 val dirs = namespace.listFiles() ?: emptyArray()
-                dirs.filter { it.isDirectory }.map { "${namespace.name}:${it.name}" }
+                dirs
+                    .filter { it.isDirectory }
+                    .map { dir ->
+                        val name = "${namespace.name}:${dir.name}"
+                        WorldInfo(name, dir.toPath())
+                    }
             }
             .flatten()
     }
 
     override fun getWorld(worldName: String): ModWorld? {
         return mod.server.getWorld(worldName)
-    }
-
-    override fun getWorldLoader(worldName: String): ModWorldLoader {
-        return ModWorldLoader(mod, worldName)
     }
 
     override fun createWorld(worldName: String, type: World.Type): ModWorld? {

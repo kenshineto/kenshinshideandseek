@@ -76,8 +76,7 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
     override fun teleport(location: Location?) {
         if (location == null) return
 
-        val loader = plugin.shim.getWorldLoader(location.worldName)
-        val world = loader.load() ?: return
+        val world = plugin.khs.loadWorld(location.worldName) ?: return
         val bukkitWorld = (world as? BukkitWorld)?.inner ?: return
 
         inner.teleport(

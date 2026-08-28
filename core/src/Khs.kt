@@ -16,6 +16,7 @@ import cat.freya.khs.config.KhsConfig
 import cat.freya.khs.config.KhsItemsConfig
 import cat.freya.khs.config.KhsLocale
 import cat.freya.khs.config.KhsMapsConfig
+import cat.freya.khs.config.KhsWorldsConfig
 import cat.freya.khs.config.deserialize
 import cat.freya.khs.config.serialize
 import cat.freya.khs.db.Database
@@ -28,6 +29,8 @@ import cat.freya.khs.packet.KhsPacketListener
 import cat.freya.khs.type.Effect
 import cat.freya.khs.type.Item
 import cat.freya.khs.type.Material
+import cat.freya.khs.world.MAP_SAVE_PREFIX
+import cat.freya.khs.world.World
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.net.URI
 import java.util.UUID
@@ -56,6 +59,10 @@ class Khs(val shim: KhsShim) {
 
     /** Stores localized plugin messages */
     var locale: KhsLocale = KhsLocale()
+        private set
+
+    /** Stores saved world metadata */
+    var worldsConfig: KhsWorldsConfig = KhsWorldsConfig()
         private set
 
     /**
@@ -219,6 +226,8 @@ class Khs(val shim: KhsShim) {
                 mapsConfig = deserialize(KhsMapsConfig::class, shim.readConfigFile("maps.yml"))
                 shim.logger.info("Loading board locale...")
                 boardConfig = deserialize(KhsBoardConfig::class, shim.readConfigFile("board.yml"))
+                shim.logger.info("Loading worlds...")
+                worldsConfig = deserialize(KhsWorldsConfig::class, shim.readConfigFile("worlds.yml"))
                 shim.logger.info("Loading locale...")
                 locale = deserialize(KhsLocale::class, shim.readConfigFile("locale.yml"))
                 shim.logger.info("Loading database...")
@@ -260,6 +269,7 @@ class Khs(val shim: KhsShim) {
                 shim.writeConfigFile("items.yml", serialize(itemsConfig))
                 shim.writeConfigFile("maps.yml", serialize(newMapsConfig))
                 shim.writeConfigFile("board.yml", serialize(boardConfig))
+                shim.writeConfigFile("worlds.yml", serialize(worldsConfig))
                 shim.writeConfigFile("locale.yml", serialize(locale))
             }
             .onFailure { shim.logger.error("failed to save config: ${it.message}") }
@@ -285,6 +295,46 @@ class Khs(val shim: KhsShim) {
     fun parseEffect(effectConfig: EffectConfig?): Effect? {
         if (effectConfig == null) return null
         return effectCache.getOrPut(effectConfig) { shim.parseEffect(effectConfig) }
+    }
+
+    private fun getWorldType(worldName: String): World.Type {
+        val worldConfig = worldsConfig.worlds[worldName]
+        if (worldConfig != null) {
+            return worldConfig.type
+        }
+
+        // check for built-in world names
+        when (worldName) {
+            "minecraft:the_nether",
+            "the_nether",
+            "world_nether" -> return World.Type.NETHER
+            "minecraft:the_end",
+            "the_end",
+            "world_the_end" -> return World.Type.END
+            else -> {}
+        }
+
+        // return UNKNOWN which means use the default behavior of the
+        // minecraft server. we used to not track this, so this is done
+        // to not break old servers
+        return World.Type.UNKNOWN
+    }
+
+    fun loadWorld(worldName: String): World? {
+        // if were attempting to teleport to a mapsave, use the world type
+        // from the map's world
+        if (worldName.startsWith(MAP_SAVE_PREFIX)) {
+            val mapName = worldName.removePrefix(MAP_SAVE_PREFIX)
+            val map = maps.get(mapName)
+            if (map == null) {
+                shim.logger.warning("map does not exist for map save: ${worldName}")
+                return null
+            }
+
+            return shim.createWorld(worldName, getWorldType(map.worldName))
+        }
+
+        return shim.createWorld(worldName, getWorldType(worldName))
     }
 
     inline fun <reified T : Any> fetchJson(url: String): T? {

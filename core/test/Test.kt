@@ -12,12 +12,11 @@ import cat.freya.khs.type.Effect
 import cat.freya.khs.type.Item
 import cat.freya.khs.type.Material
 import cat.freya.khs.type.ResourceKey
-import cat.freya.khs.world.AbstractWorld
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.Position
 import cat.freya.khs.world.World
-import cat.freya.khs.world.World.AbstractLoader
+import cat.freya.khs.world.WorldInfo
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.PacketEventsAPI
 import java.io.InputStream
@@ -50,20 +49,14 @@ class TestBorder : World.Border {
     }
 }
 
-class TestWorldLoader(val shim: TestShim, name: String) : World.AbstractLoader(name, name, shim.dataDirectory) {
-    override fun load() = shim.getWorld(name)
-
-    override fun unload() {}
-}
-
-class TestWorld(shim: TestShim, override val name: String) : AbstractWorld(shim) {
-    override val type = World.Type.NORMAL
+class TestWorld(override val name: String, override val type: World.Type) : World {
     override val border = TestBorder()
-    override val loader = shim.getWorldLoader(name)
 
     override fun getSpawn() = Location(worldName = name)
 
     override fun playSound(position: Position, sound: String, volume: Double, pitch: Double) {}
+
+    override fun unload() {}
 }
 
 class TestMaterial(val name: String) : Material {
@@ -304,13 +297,11 @@ abstract class TestShim : AbstractKhsShim("test") {
     override fun wrapPlayer(inner: Any?) = inner as? Player
 
     // world
-    override fun getWorldNames() = emptyList<String>()
+    override fun getWorlds() = emptyList<WorldInfo>()
 
-    override fun getWorld(worldName: String) = TestWorld(this, worldName)
+    override fun getWorld(worldName: String) = createWorld(worldName, World.Type.NORMAL)
 
-    override fun getWorldLoader(worldName: String) = TestWorldLoader(this, worldName)
-
-    override fun createWorld(worldName: String, type: World.Type) = getWorld(worldName)
+    override fun createWorld(worldName: String, type: World.Type) = TestWorld(worldName, type)
 
     // items
     override fun parseItem(itemConfig: ItemConfig) = TestItem(itemConfig)
@@ -356,7 +347,7 @@ abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
     val bob = TestPlayer(this, "bob", UUID(2L, 2L))
     val eve = TestPlayer(this, "eve", UUID(3L, 3L))
     val mallory = TestPlayer(this, "mallory", UUID(4L, 4L))
-    val world = TestWorld(this, "world")
+    val world = TestWorld("world", World.Type.NORMAL)
 
     @BeforeEach
     fun setup() {

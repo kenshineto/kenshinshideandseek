@@ -109,14 +109,14 @@ class Checks(val plugin: Khs, val player: Player) {
 
     /** Checks if a world exists */
     fun worldExists(worldName: String) {
-        if (!plugin.shim.getWorldNames().contains(worldName)) {
+        if (plugin.shim.getWorldInfo(worldName) == null) {
             error(plugin.locale.world.doesntExist.with(worldName))
         }
     }
 
     /** Checks if a world doesnt exists */
     fun worldDoesNotExist(worldName: String) {
-        if (plugin.shim.getWorldNames().contains(worldName)) {
+        if (plugin.shim.getWorldInfo(worldName) != null) {
             error(plugin.locale.world.exists.with(worldName))
         }
     }

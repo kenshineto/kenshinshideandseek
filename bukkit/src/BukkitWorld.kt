@@ -1,9 +1,9 @@
 package cat.freya.khs.bukkit
 
-import cat.freya.khs.world.AbstractWorld
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Position
 import cat.freya.khs.world.World
+import cat.freya.khs.world.isMapSave
 import com.cryptomorin.xseries.XSound
 import java.util.Random
 import org.bukkit.GameRule
@@ -84,52 +84,7 @@ class BukkitWorldBorder(val inner: org.bukkit.WorldBorder) : World.Border {
     }
 }
 
-class BukkitWorldLoader(val plugin: KhsPlugin, name: String) :
-    World.AbstractLoader(
-        name,
-        BukkitWorld.worldNameToFolderName(plugin.shim, name),
-        plugin.shim.getWorldContainer().toPath(),
-    ) {
-    override fun load(): World? {
-        // create/load the world
-        // disable generation if a map save
-        var creator = WorldCreator(name)
-        if (isMapSave) {
-            creator = creator.generator(VoidGenerator())
-        }
-
-        plugin.server.createWorld(creator)
-        val world = plugin.server.getWorld(name)
-        if (world == null) {
-            plugin.shim.logger.error("could not load world: $name")
-            return null
-        }
-
-        if (isMapSave) {
-            world.isAutoSave = false
-        }
-
-        if (plugin.shim.supports(21, 6)) {
-            world.setGameRule(GameRule.LOCATOR_BAR, false)
-        }
-
-        return BukkitWorld(plugin.shim, world)
-    }
-
-    override fun unload() {
-        val world = plugin.server.getWorld(name) ?: return
-        world.players.forEach { bukkitPlayer ->
-            val player = BukkitPlayer(plugin, bukkitPlayer)
-            player.teleport(plugin.khs.config.exit)
-        }
-
-        if (!plugin.server.unloadWorld(name, false)) {
-            plugin.shim.logger.error("could not unload world: $name")
-        }
-    }
-}
-
-class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : AbstractWorld(shim) {
+class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : World {
     override val name = inner.name
     override val type: World.Type = getTypeImpl()
 
@@ -148,8 +103,6 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : Abstra
 
     override val border = BukkitWorldBorder(inner.worldBorder)
 
-    override val loader = shim.getWorldLoader(name)
-
     override fun getSpawn(): Location {
         val loc = inner.spawnLocation
         return Location(loc.x, loc.y, loc.z, name, loc.yaw, loc.pitch)
@@ -160,6 +113,18 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : Abstra
         val location = org.bukkit.Location(inner, position.x, position.y, position.z)
         XSound.REGISTRY.getByName(sound).ifPresent {
             it.play(location, volume.toFloat(), pitch.toFloat())
+        }
+    }
+
+    override fun unload() {
+        val plugin = shim.plugin
+        inner.players.forEach { bukkitPlayer ->
+            val player = BukkitPlayer(plugin, bukkitPlayer)
+            player.teleport(plugin.khs.config.exit)
+        }
+
+        if (!plugin.server.unloadWorld(name, false)) {
+            plugin.shim.logger.error("could not unload world: $name")
         }
     }
 
@@ -184,6 +149,49 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : Abstra
                 "world_the_end" -> "the_end"
                 else -> worldName
             }
+        }
+
+        fun create(plugin: KhsPlugin, worldName: String, type: World.Type): BukkitWorld? {
+            val creator = WorldCreator(worldName)
+
+            if (type != World.Type.UNKNOWN) {
+                // specify superflat or normal
+                if (type == World.Type.FLAT) {
+                    creator.type(WorldType.FLAT)
+                } else {
+                    creator.type(WorldType.NORMAL)
+                }
+
+                // specify level stem
+                when (type) {
+                    World.Type.NETHER -> creator.environment(org.bukkit.World.Environment.NETHER)
+                    World.Type.END -> creator.environment(org.bukkit.World.Environment.THE_END)
+                    else -> creator.environment(org.bukkit.World.Environment.NORMAL)
+                }
+            }
+
+            if (isMapSave(worldName)) {
+                // generate empty chunks on a map save (wont be saved)
+                creator.generator(VoidGenerator())
+            }
+
+            plugin.server.createWorld(creator)
+            val world = plugin.server.getWorld(worldName)
+            if (world == null) {
+                plugin.shim.logger.error("could not create/load world: $worldName")
+                return null
+            }
+
+            if (isMapSave(worldName)) {
+                world.isAutoSave = false
+                if (plugin.shim.supports(21, 6)) {
+                    world.setGameRule(GameRule.LOCATOR_BAR, false)
+                }
+            } else {
+                world.save()
+            }
+
+            return BukkitWorld(plugin.shim, world)
         }
     }
 }

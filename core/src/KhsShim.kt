@@ -9,6 +9,7 @@ import cat.freya.khs.type.Item
 import cat.freya.khs.type.Material
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.World
+import cat.freya.khs.world.WorldInfo
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Path
@@ -101,14 +102,17 @@ interface KhsShim {
      */
     fun sendPlayerToServer(uuid: UUID, server: String): Boolean
 
+    /** @return a list of known worlds */
+    fun getWorlds(): List<WorldInfo>
+
     /** @return a list of known world names */
-    fun getWorldNames(): List<String>
+    fun getWorldNames(): List<String> = getWorlds().map(WorldInfo::name)
+
+    /** @return world information for a given world */
+    fun getWorldInfo(worldName: String): WorldInfo? = getWorlds().firstOrNull { it.name == worldName }
 
     /** @return a loaded world on the server */
     fun getWorld(worldName: String): World?
-
-    /** @return a manager to load/unload a world */
-    fun getWorldLoader(worldName: String): World.Loader
 
     /**
      * Create a new world if it doesn't exist, or load a world if it does.
@@ -116,6 +120,9 @@ interface KhsShim {
      * @return a newly created world or null on failure
      */
     fun createWorld(worldName: String, type: World.Type): World?
+
+    /** @return minimum y position for the server */
+    fun getMinY(): Int = if (supports(18)) -64 else 0
 
     /** @return an empty custom inventory */
     fun createInventory(title: String, size: UInt): Inventory?

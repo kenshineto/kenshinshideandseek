@@ -6,6 +6,7 @@ import cat.freya.khs.world.Location
 import cat.freya.khs.world.MAP_SAVE_PREFIX
 import cat.freya.khs.world.Position
 import cat.freya.khs.world.World
+import cat.freya.khs.world.WorldInfo
 
 class KhsMap(val name: String, var config: MapConfig, var plugin: Khs) {
     /** The world where the map is created and where the lobby is hosted */
@@ -40,12 +41,20 @@ class KhsMap(val name: String, var config: MapConfig, var plugin: Khs) {
         return plugin.shim.getWorld(gameWorldName)
     }
 
-    fun getWorldLoader(): World.Loader {
-        return plugin.shim.getWorldLoader(worldName)
+    fun reloadGameWorld(): World? {
+        // unload world if loaded
+        getGameWorld()?.unload()
+
+        // load the world back in
+        return plugin.loadWorld(gameWorldName)
     }
 
-    fun getGameWorldLoader(): World.Loader {
-        return plugin.shim.getWorldLoader(gameWorldName)
+    fun getWorldInfo(): WorldInfo? {
+        return plugin.shim.getWorldInfo(worldName)
+    }
+
+    fun getGameWorldInfo(): WorldInfo? {
+        return plugin.shim.getWorldInfo(gameWorldName)
     }
 
     data class Bounds(val minX: Double, val minZ: Double, val maxX: Double, val maxZ: Double) {
@@ -64,8 +73,8 @@ class KhsMap(val name: String, var config: MapConfig, var plugin: Khs) {
     }
 
     fun hasMapSave(): Boolean {
-        val loader = getGameWorldLoader()
-        return loader.dir.toFile().exists()
+        val info = getGameWorldInfo() ?: return false
+        return info.dir.toFile().exists()
     }
 
     fun isSetup(): Boolean {

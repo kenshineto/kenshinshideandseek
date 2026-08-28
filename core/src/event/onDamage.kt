@@ -34,7 +34,7 @@ fun onDamage(event: DamageEvent) {
 
         // handle spectator taking damage
         if (game.teams.isSpectator(player.uuid)) {
-            val minY = player.getWorld()?.minY ?: 0
+            val minY = plugin.shim.getMinY()
             if (player.getLocation().y < minY) {
                 // make sure they don't try to kill them self to the void lol
                 player.teleport(game.map?.gameSpawn)

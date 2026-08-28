@@ -5,13 +5,12 @@ import cat.freya.khs.KhsShim
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.world.World
+import cat.freya.khs.world.WorldInfo
 import com.google.common.io.ByteStreams
 import java.io.File
 import java.nio.file.Path
 import java.util.UUID
 import org.bukkit.ChatColor
-import org.bukkit.WorldCreator
-import org.bukkit.WorldType
 
 class BukkitLogger(val plugin: KhsPlugin) : KhsShim.Logger {
     override fun info(message: String) = plugin.logger.info(message)
@@ -136,11 +135,14 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
         return session.exists() && level.exists()
     }
 
-    override fun getWorldNames(): List<String> {
+    override fun getWorlds(): List<WorldInfo> {
         return getWorldContainer()
             .listFiles()
             .filter { isWorldFolderValid(it) }
-            .map { BukkitWorld.folderNameToWorldName(this, it.name) }
+            .map { dir ->
+                val name = BukkitWorld.folderNameToWorldName(this, dir.name)
+                WorldInfo(name, dir.toPath())
+            }
     }
 
     override fun getWorld(worldName: String): BukkitWorld? {
@@ -148,28 +150,8 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
         return BukkitWorld(this, world)
     }
 
-    override fun getWorldLoader(worldName: String): BukkitWorldLoader {
-        return BukkitWorldLoader(plugin, worldName)
-    }
-
     override fun createWorld(worldName: String, type: World.Type): BukkitWorld? {
-        val worldType = if (type == World.Type.FLAT) WorldType.FLAT else WorldType.NORMAL
-        val env =
-            when (type) {
-                World.Type.NETHER -> org.bukkit.World.Environment.NETHER
-                World.Type.END -> org.bukkit.World.Environment.THE_END
-                else -> org.bukkit.World.Environment.NORMAL
-            }
-
-        val creator = WorldCreator(worldName)
-        creator.type(worldType)
-        creator.environment(env)
-        plugin.server.createWorld(creator)
-
-        val world = plugin.server.getWorld(worldName) ?: return null
-        world.save()
-
-        return BukkitWorld(plugin.shim, world)
+        return getWorld(worldName) ?: BukkitWorld.create(plugin, worldName, type)
     }
 
     override fun createInventory(title: String, size: UInt): BukkitInventory {

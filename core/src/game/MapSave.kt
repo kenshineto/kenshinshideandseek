@@ -7,13 +7,10 @@ import java.nio.file.Paths
 import kotlin.error
 import kotlin.io.path.exists
 
-class MapSaver(val plugin: Khs, val map: KhsMap) {
-    private val loader = map.getWorldLoader()
+class MapSaver(val plugin: Khs, val map: KhsMap, val rootSrcDir: Path) {
     private val bounds = map.getBounds()
 
-    private val rootSrcDir = loader.dir
     private val worldContainer = rootSrcDir.parent
-
     private val rootTempDir = worldContainer.resolve("temp_$MAP_SAVE_PREFIX${map.name}")
     private val rootDestDir = worldContainer.resolve("$MAP_SAVE_PREFIX${map.name}")
 
@@ -100,8 +97,7 @@ class MapSaver(val plugin: Khs, val map: KhsMap) {
     }
 
     private fun unloadGameWorld() {
-        val gameWorldLoader = map.getGameWorldLoader()
-        gameWorldLoader.unload()
+        map.getGameWorld()?.unload()
     }
 
     fun save(): Result<Unit> {

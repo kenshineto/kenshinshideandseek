@@ -1,6 +1,5 @@
 package cat.freya.khs.world
 
-import cat.freya.khs.KhsShim
 import java.nio.file.Path
 
 /**
@@ -28,15 +27,6 @@ interface World {
     /** The type of world/dimension that this world is */
     val type: Type
 
-    /**
-     * The minimum Y position that a block can be placed in this world (inclusive). This also marks the start of the
-     * void
-     */
-    val minY: Int
-
-    /** The maximum Y position that a block can be placed in this world (inclusive) */
-    val maxY: Int
-
     /** Represents a minecraft world border */
     interface Border {
         val x: Double
@@ -60,53 +50,27 @@ interface World {
     /** The world's world border */
     val border: Border
 
-    interface Loader {
-        val name: String
-
-        /** If this world should be treated as a "map save" */
-        val isMapSave: Boolean
-
-        /** The directory this world is stayed in */
-        val dir: Path
-
-        /** @return the loaded world. If the world is already loaded, nothing happens. */
-        fun load(): World?
-
-        /** Unload's the world from the server */
-        fun unload()
-
-        /** Roll's back the world to the previous save on disk */
-        fun rollback()
-    }
-
-    abstract class AbstractLoader(
-        /** the name of the world */
-        override val name: String,
-        /** the name of the folder (maybe different) */
-        val folderName: String,
-        /** directory where all worlds/dimensions are stored */
-        val worldContainer: Path,
-    ) : Loader {
-        override val isMapSave = folderName.startsWith(MAP_SAVE_PREFIX)
-        override val dir: Path = worldContainer.resolve(folderName)
-
-        override fun rollback() {
-            load()
-            unload()
-        }
-    }
-
-    // Returns the world loader
-    val loader: Loader
-
     /** Where in this world is the default spawn location */
     fun getSpawn(): Location
 
     /** Play a sound at the given location */
     fun playSound(position: Position, sound: String, volume: Double, pitch: Double)
+
+    /**
+     * Unload this world
+     *
+     * WARNING: The handle to this object may stil exist even if the world is unloaded
+     */
+    fun unload()
 }
 
-abstract class AbstractWorld(shim: KhsShim) : World {
-    override val minY = if (shim.supports(18)) -64 else 0
-    override val maxY = if (shim.supports(18)) 319 else 255
+data class WorldInfo(
+    /** The name of the world */
+    val name: String,
+    /** The directory this world is stayed in */
+    val dir: Path,
+)
+
+fun isMapSave(worldName: String): Boolean {
+    return worldName.startsWith(MAP_SAVE_PREFIX)
 }

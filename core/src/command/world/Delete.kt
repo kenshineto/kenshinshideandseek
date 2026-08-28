@@ -17,20 +17,11 @@ class KhsWorldDelete : Command {
             worldNotInUse(name)
         }
 
-        val loader = plugin.shim.getWorldLoader(name)
+        val world = plugin.shim.getWorld(name)
+        world?.unload()
 
-        // sanity check
-        // for the love of god, make sure were removing a world, not like
-        // some ones home dir ;-;
-        val lock = loader.dir.resolve("session.lock").toFile()
-        val data = loader.dir.resolve("level.dat").toFile()
-        if (!lock.exists() || !data.exists()) {
-            player.message(plugin.locale.prefix.error + plugin.locale.world.doesntExist.with(name))
-            return
-        }
-
-        loader.unload()
-        if (!loader.dir.toFile().deleteRecursively()) {
+        val info = plugin.shim.getWorldInfo(name) ?: return
+        if (!info.dir.toFile().deleteRecursively()) {
             player.message(plugin.locale.prefix.error + plugin.locale.world.removedFailed.with(name))
             return
         }
