@@ -4,6 +4,11 @@ import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.tasks.TaskProvider
 
+fun readPermissionsFile(): String {
+    val ins = object {}.javaClass.getResourceAsStream("/permissions.yml")
+    return ins?.bufferedReader()?.use { it.readText() } ?: error("failed to read permissions")
+}
+
 fun Project.getVersion(name: String): String {
     val libs = extensions
         .getByType(VersionCatalogsExtension::class.java)
@@ -29,6 +34,11 @@ fun Project.getBuildInfo(): Map<String, Any> = mapOf(
     "telemetry" to providers.gradleProperty("khs.telemetry").map(String::toBoolean).getOrElse(false),
     "bstatsId" to providers.gradleProperty("khs.bstatsId").map(String::toIntOrNull).getOrElse(0),
 )
+
+fun Project.getTemplateVars(): Map<String, Any> = mapOf(
+    // permissions
+    "permissions" to readPermissionsFile()
+) + getBuildInfo()
 
 fun Project.registerBuildInfoTask(): TaskProvider<Task> {
     val output = layout.buildDirectory.dir("generated/sources/buildInfo/kotlin")

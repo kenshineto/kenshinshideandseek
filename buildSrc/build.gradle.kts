@@ -10,5 +10,6 @@ repositories {
 sourceSets {
     main {
         kotlin.srcDirs("src")
+        resources.srcDirs("res")
     }
 }

@@ -60,13 +60,6 @@ allprojects {
                 it.setRemoveUnusedImports(true)
             }
         }
-        yaml {
-            target("**/*.yml")
-            jackson()
-                .yamlFeature("WRITE_DOC_START_MARKER", false)
-                .yamlFeature("INDENT_ARRAYS_WITH_INDICATOR", true)
-                .yamlFeature("LITERAL_BLOCK_STYLE", true)
-        }
         json {
             target("**/*.json")
             simple().indentWithSpaces(4)
@@ -151,11 +144,11 @@ subprojects {
     }
 
     tasks.processResources {
-        inputs.properties(rootProject.getBuildInfo())
+        inputs.properties(rootProject.getTemplateVars())
 
         val templates = listOf("**/*.yml", "**/*.json", "**/*.toml")
         templates.forEach { resource ->
-            filesMatching(resource) { expand(rootProject.getBuildInfo()) }
+            filesMatching(resource) { expand(rootProject.getTemplateVars()) }
         }
     }
 
