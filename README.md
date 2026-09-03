@@ -37,9 +37,9 @@ The official pages distributing this plugin are:
 
 ## License
 
-This project is licensed under the [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+This project is licensed under the [GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.htm)
 
 This means you MUST for all copies or derivatives of this project:
-- Maintain the GPLv3 license
+- Maintain the AGPLv3 license or later
 - Maintain and provide the copyright notice and attributions
 - Make source code publically available

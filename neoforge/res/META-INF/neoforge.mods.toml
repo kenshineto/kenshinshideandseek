@@ -1,6 +1,6 @@
 modLoader = "kotlinforforge"
 loaderVersion="[5.10,)"
-license = "GPLv3"
+license = "AGPL-3.0-or-later"
 issueTrackerURL = "https://github.com/kenshineto/kenshinshideandseek/issues"
 
 [[mods]]
