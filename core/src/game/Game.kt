@@ -324,12 +324,14 @@ class Game(val plugin: Khs) {
 
         // check if we have won
         val lastHider = gameMode.getLastHider()
+
         val hasWon =
-            when (reason) {
-                WinType.SEEKERS_WIN -> team == Team.SEEKER
-                WinType.HIDERS_WIN -> team == Team.HIDER
-                WinType.LAST_HIDER_WIN if lastHider == null -> team === Team.HIDER
-                WinType.LAST_HIDER_WIN -> uuid == lastHider
+            when {
+                team != teams.get(uuid) -> false
+                reason == WinType.SEEKERS_WIN -> team == Team.SEEKER
+                reason == WinType.HIDERS_WIN -> team == Team.HIDER
+                reason == WinType.LAST_HIDER_WIN && lastHider == null -> team === Team.HIDER
+                reason == WinType.LAST_HIDER_WIN -> uuid == lastHider
                 else -> false
             }
 

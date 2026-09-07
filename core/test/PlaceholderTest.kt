@@ -82,4 +82,38 @@ class PlaceholderTest : KhsTest() {
         assertPlaceholder("last_win_seeker_1", noData)
         assertPlaceholder("last_loose_hider_1", noData)
     }
+
+    @Test
+    @DisplayName("hs_last is functional (2)")
+    fun lastIsFunctional2() {
+        assertPlaceholder("last", invalid)
+        assertPlaceholder("last_win", noData)
+        assertPlaceholder("last_loose", noData)
+        setupMap()
+        game.join(alice.uuid)
+        game.join(bob.uuid)
+        game.join(eve.uuid)
+        game.start(setOf(alice.uuid))
+        assertStatus(Game.Status.HIDING)
+        assertEquals(3u, game.teams.size())
+        assertEquals(3, game.teams.getUUIDs().size)
+        assertPlaceholder("last_win", noData)
+        assertPlaceholder("last_loose", noData)
+        game.loadSeeker(eve)
+        game.stop(Game.WinType.HIDERS_WIN)
+        assertEquals(3, game.teams.getUUIDs().size)
+        assertPlaceholder("last_win", bob.name)
+        assertPlaceholder("last_loose", "${alice.name} ${eve.name}")
+        assertPlaceholder("last_win_0", bob.name)
+        assertPlaceholder("last_loose_0", alice.name)
+        assertPlaceholder("last_loose_1", eve.name)
+        assertPlaceholder("last_win_1", noData)
+        assertPlaceholder("last_loose_2", noData)
+        assertPlaceholder("last_win_seeker", noData)
+        assertPlaceholder("last_win_hider", bob.name)
+        assertPlaceholder("last_win_seeker_0", noData)
+        assertPlaceholder("last_win_hider_0", bob.name)
+        assertPlaceholder("last_win_seeker_1", noData)
+        assertPlaceholder("last_loose_hider_1", noData)
+    }
 }
