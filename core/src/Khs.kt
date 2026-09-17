@@ -30,6 +30,7 @@ import cat.freya.khs.type.Effect
 import cat.freya.khs.type.Item
 import cat.freya.khs.type.Material
 import cat.freya.khs.world.MAP_SAVE_PREFIX
+import cat.freya.khs.world.Player
 import cat.freya.khs.world.World
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.net.URI
@@ -335,6 +336,23 @@ class Khs(val shim: KhsShim) {
         }
 
         return shim.createWorld(worldName, getWorldType(worldName))
+    }
+
+    fun runCommandsFor(playerId: UUID, commands: List<String>): Unit {
+        val player = shim.getPlayer(playerId)
+
+        if (player == null) {
+            shim.logger.warning("Player $playerId not found when trying to run commands")
+            return
+        }
+
+        runCommandsFor(player, commands)
+    }
+
+    fun runCommandsFor(player: Player, commands: List<String>): Unit {
+        commands.forEach { command ->
+            shim.runInConsole(command.replace("{name}", player.name).replace("{uuid}", player.uuid.toString()))
+        }
     }
 
     inline fun <reified T : Any> fetchJson(url: String): T? {

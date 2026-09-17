@@ -136,4 +136,12 @@ class ModServer(val mod: KhsMod) {
 
         return objective
     }
+
+    fun dispatchCommand(command: String): Boolean =
+        runCatching {
+                val source = inner.createCommandSourceStack()
+                source.dispatcher().execute(command, source)
+                true
+            }
+            .getOrElse { false }
 }

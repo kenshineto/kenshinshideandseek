@@ -178,6 +178,16 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
     override fun scheduleEvent(ticks: ULong, event: () -> Unit) {
         plugin.server.scheduler.scheduleSyncDelayedTask(plugin, event, ticks.toLong())
     }
+
+    override fun runInConsole(command: String): Boolean {
+        return runCatching {
+                plugin.server.dispatchCommand(plugin.server.consoleSender, command)
+            }
+            .getOrElse {
+                logger.warning("Failed to execute command: $command")
+                false
+            }
+    }
 }
 
 /** formats &c like color codes to bukkit's colors */

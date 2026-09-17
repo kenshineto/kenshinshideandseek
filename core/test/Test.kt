@@ -376,6 +376,10 @@ abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
         }?.byteInputStream()
     }
 
+    override fun runInConsole(command: String): Boolean {
+        return true
+    }
+
     override fun scheduleEvent(ticks: ULong, event: () -> Unit) {
         // FIXME: aaaahhhhh
     }

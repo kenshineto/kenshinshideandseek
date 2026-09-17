@@ -141,4 +141,8 @@ class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform) {
     override fun scheduleEvent(ticks: ULong, event: () -> Unit) {
         mod.server.scheduleTask(event, ticks)
     }
+
+    override fun runInConsole(command: String): Boolean {
+        return mod.server.dispatchCommand(command)
+    }
 }

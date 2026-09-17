@@ -284,6 +284,10 @@ class Game(val plugin: Khs) {
                 } else {
                     loadHider(it)
                 }
+
+                if (plugin.config.commandHooks.enable) {
+                    plugin.runCommandsFor(it, plugin.config.commandHooks.onGameStart)
+                }
             }
 
             // reset game state
@@ -338,8 +342,14 @@ class Game(val plugin: Khs) {
         // update last game win info
         if (hasWon) {
             lastWinners.put(uuid, team)
+            if (plugin.config.commandHooks.enable) {
+                plugin.runCommandsFor(uuid, plugin.config.commandHooks.onGameEndWin)
+            }
         } else {
             lastLoosers.put(uuid, team)
+            if (plugin.config.commandHooks.enable) {
+                plugin.runCommandsFor(uuid, plugin.config.commandHooks.onGameEndLose)
+            }
         }
 
         // update database
