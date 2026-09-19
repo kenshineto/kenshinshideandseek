@@ -180,7 +180,6 @@ data class LocaleMapErrorConfig(
 data class LocaleMapWarnConfig(
     var gameSpawnReset: String = "Game spawn has been reset due to being out of range",
     var seekerSpawnReset: String = "Seeker spawn has been reset due to being out of range",
-    var lobbySpawnReset: String = "Lobby spawn has been reset due to being out of range",
 )
 
 data class LocaleMapSetConfig(

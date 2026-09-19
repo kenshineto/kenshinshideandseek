@@ -182,11 +182,6 @@ class Checks(val plugin: Khs, val player: Player) {
             player.message(plugin.locale.prefix.warning + plugin.locale.map.warn.seekerSpawnReset)
             map.seekerLobbySpawn = null
         }
-        // check lobby spawn
-        if (!isSpawnInRange(map, map.lobbySpawn?.toPosition())) {
-            player.message(plugin.locale.prefix.warning + plugin.locale.map.warn.lobbySpawnReset)
-            map.lobbySpawn = null
-        }
     }
 }
 

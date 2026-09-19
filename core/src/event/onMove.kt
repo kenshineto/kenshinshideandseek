@@ -1,6 +1,7 @@
 package cat.freya.khs.event
 
 import cat.freya.khs.Khs
+import cat.freya.khs.game.Game
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.Position
 
@@ -11,6 +12,10 @@ fun onMove(event: MoveEvent) {
     val game = plugin.game
 
     if (!game.teams.contains(player.uuid)) return
+
+    // allow player in lobby to be out of bounds as we dont
+    // require the lobby to be in bounds
+    if (game.status == Game.Status.LOBBY) return
 
     val map = game.map ?: return
     if (player.getLocation().worldName != map.gameWorldName) return
