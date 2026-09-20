@@ -127,6 +127,8 @@ class MapSaver(val plugin: Khs, val map: KhsMap, val rootSrcDir: Path) {
                 saveFolder("dimensions")
                 saveFolder("entities")
                 saveFolder("region")
+                saveFolder("DIM1")
+                saveFolder("DIM-1")
                 saveFile("level.dat")
 
                 if (rootDestDir.exists() && !rootDestDir.toFile().deleteRecursively()) {

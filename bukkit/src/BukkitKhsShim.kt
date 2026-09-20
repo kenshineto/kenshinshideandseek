@@ -129,10 +129,16 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
             return true
         }
 
-        val session = File(folder, "session.lock")
+        // all old worlds have a level.dat file
+        // always
         val level = File(folder, "level.dat")
+        if (!level.exists()) return false
 
-        return session.exists() && level.exists()
+        // make sure that level data exists in the world too
+        val region = File(folder, "region")
+        val oldEnd = File(folder, "DIM1${File.separator}region")
+        val oldNether = File(folder, "DIM-1${File.separator}region")
+        return region.exists() || oldEnd.exists() || oldNether.exists()
     }
 
     override fun getWorlds(): List<WorldInfo> {
