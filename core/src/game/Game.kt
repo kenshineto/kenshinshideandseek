@@ -172,6 +172,8 @@ class Game(val plugin: Khs) {
 
         savedInventories.clear()
         savedScoreBoards.clear()
+
+        plugin.disguiser.cleanup()
     }
 
     private fun getSeekerWeight(uuid: UUID): Double {

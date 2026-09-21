@@ -1,12 +1,14 @@
 package cat.freya.khs.disguise
 
+import cat.freya.khs.Khs
 import cat.freya.khs.type.Material
 import cat.freya.khs.world.Player
 import java.util.UUID
 import kotlin.synchronized
 
-class Disguiser {
+class Disguiser(val plugin: Khs) {
     private val disguises = mutableMapOf<UUID, Disguise>()
+    private val debounce = mutableSetOf<UUID>()
 
     fun getDisguise(uuid: UUID): Disguise? = disguises[uuid]
 
@@ -43,5 +45,27 @@ class Disguiser {
 
     fun cleanup() {
         synchronized(disguises) { for (uuid in disguises.keys) reveal(uuid) }
+        synchronized(debounce) { debounce.clear() }
+    }
+
+    fun isDebounced(uuid: UUID): Boolean {
+        synchronized(debounce) {
+            return debounce.contains(uuid)
+        }
+    }
+
+    fun setDebounce(uuid: UUID) {
+        synchronized(debounce) {
+            debounce.add(uuid)
+        }
+        plugin.shim.scheduleEvent(10UL) {
+            removeDebounce(uuid)
+        }
+    }
+
+    fun removeDebounce(uuid: UUID) {
+        synchronized(debounce) {
+            debounce.remove(uuid)
+        }
     }
 }

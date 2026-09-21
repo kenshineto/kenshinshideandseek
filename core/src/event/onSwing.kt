@@ -23,7 +23,7 @@ private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
     if (player.uuid == attacker.uuid) return
 
     val debounceUUID = player.uuid
-    if (debounce.contains(debounceUUID)) return
+    if (plugin.disguiser.isDebounced(debounceUUID)) return
 
     // trigger an attack event
     val damage = attacker.getAttackDamage()
@@ -46,8 +46,7 @@ private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
     }
 
     // set and soon turn off debounce
-    debounce.add(debounceUUID)
-    plugin.shim.scheduleEvent(10UL) { debounce.remove(debounceUUID) }
+    plugin.disguiser.setDebounce(debounceUUID)
 }
 
 fun onSwing(event: SwingEvent) {

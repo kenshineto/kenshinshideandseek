@@ -91,7 +91,7 @@ class Khs(val shim: KhsShim) {
     val commandGroup: CommandGroup = registerCommands()
 
     /** Holds current disguises for disguised players */
-    val disguiser: Disguiser = Disguiser()
+    val disguiser: Disguiser = Disguiser(this)
 
     /** Allows hiding entities for only some player observers */
     val entityHider: EntityHider = EntityHider(this)
