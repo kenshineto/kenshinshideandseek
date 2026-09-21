@@ -42,6 +42,7 @@ architectury-plugin = "3.5-SNAPSHOT"
 
 # fabric
 fabric-loader = "0.14.+"
+fantasy = "0.8.+"
 
 # neoforge
 neoforge = "26.3.0.6-beta"
@@ -91,6 +92,7 @@ architectury = { module = "dev.architectury:architectury", version.ref = "archit
 
 # fabric
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
+fantasy = { module = "xyz.nucleoid:fantasy", version.ref = "fantasy" }
 
 # neoforge
 neoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }

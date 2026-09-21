@@ -13,6 +13,7 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
@@ -61,7 +62,7 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), P
             0.4,
             direction.z * 0.4,
         )
-        inner.hurtMarked = true
+        inner.connection.send(ClientboundSetEntityMotionPacket(inner))
     }
 
     override fun getAllowedFlight(): Boolean {

@@ -8,6 +8,7 @@ import net.minecraft.core.registries.Registries
 import net.minecraft.resources.Identifier
 import net.minecraft.resources.ResourceKey
 import net.minecraft.server.MinecraftServer
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.storage.LevelResource
 import net.minecraft.world.scores.DisplaySlot
@@ -17,6 +18,8 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria
 class ModServer(val mod: KhsMod) {
     private var server: MinecraftServer? = null
     private val tasks: MutableSet<() -> Boolean> = mutableSetOf()
+
+    private val levels: MutableMap<ResourceKey<Level>, ServerLevel> = mutableMapOf()
 
     private val activeScoreBoards: MutableMap<UUID, String> = mutableMapOf()
 
@@ -52,7 +55,7 @@ class ModServer(val mod: KhsMod) {
         }
     }
 
-    fun scheduleTask(fn: () -> Unit, ticks: ULong) {
+    fun scheduleTask(ticks: ULong, fn: () -> Unit) {
         var ticksLeft = ticks
         tasks.add {
             if (ticksLeft == 0UL) {
@@ -83,11 +86,21 @@ class ModServer(val mod: KhsMod) {
     }
 
     fun getWorld(key: ResourceKey<Level>): ModWorld? {
-        return inner.getLevel(key)?.let { ModWorld(mod, it) }
+        val level = inner.getLevel(key) ?: levels.get(key) ?: return null
+        return ModWorld(mod, level)
     }
 
     fun getWorlds(): List<ModWorld> {
         return inner.allLevels.map { ModWorld(mod, it) }
+    }
+
+    fun registerLevel(level: ServerLevel) {
+        val id = level.dimension()
+        levels[id] = level
+    }
+
+    fun unregisterLevel(id: ResourceKey<Level>) {
+        levels.remove(id)
     }
 
     fun getWorldContainer(): Path {

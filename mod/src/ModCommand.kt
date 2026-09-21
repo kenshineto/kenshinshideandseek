@@ -39,7 +39,9 @@ class ModCommand<T : CommandSourceStack>(
         val player = ctx.source.player ?: return 0
         val khsPlayer = ModPlayer(mod, player)
         val args = ctx.input.split(" ").drop(1)
+
         command.handleCommand(khsPlayer, args)
+
         return 1
     }
 

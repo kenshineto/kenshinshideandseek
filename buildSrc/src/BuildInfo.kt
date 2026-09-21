@@ -24,6 +24,7 @@ fun Project.getBuildInfo(): Map<String, Any> = mapOf(
     "fabricloader" to getVersion("fabric-loader"),
     "packetevents" to getVersion("packetevents"),
     "architectury" to getVersion("architectury"),
+    "fantasy" to getVersion("fantasy"),
 
     // telemetry
     "telemetry" to providers.gradleProperty("khs.telemetry").map(String::toBoolean).getOrElse(false),

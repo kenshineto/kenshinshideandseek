@@ -10,6 +10,7 @@ import java.nio.file.Path
 import java.util.UUID
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
+import net.minecraft.resources.Identifier
 import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerPlayer
 import org.slf4j.Logger
@@ -31,7 +32,7 @@ object ModLogger : KhsShim.Logger {
     }
 }
 
-class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform) {
+class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform.name) {
     override val serverVersion: String
         get() = mod.server.inner.serverVersion
 
@@ -116,7 +117,15 @@ class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform) {
         return mod.server.getWorld(worldName)
     }
 
+    override fun getWorldInfo(worldName: String): WorldInfo? {
+        val id = Identifier.tryParse(worldName) ?: return null
+        return getWorlds().firstOrNull { it.name == id.toString() }
+    }
+
     override fun createWorld(worldName: String, type: World.Type): ModWorld? {
+        val world = getWorld(worldName)
+        if (world != null) return world
+
         val level = ModWorld.createLevel(mod, worldName, type) ?: return null
         return ModWorld(mod, level)
     }
@@ -139,7 +148,7 @@ class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform) {
     }
 
     override fun scheduleEvent(ticks: ULong, event: () -> Unit) {
-        mod.server.scheduleTask(event, ticks)
+        mod.server.scheduleTask(ticks, event)
     }
 
     override fun runInConsole(command: String): Boolean {

@@ -8,8 +8,9 @@ import cat.freya.khs.world.Location
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.Relative
 import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.level.portal.TeleportTransition
+import net.minecraft.world.phys.Vec3
 import net.minecraft.world.scores.PlayerTeam
 import net.minecraft.world.scores.Team
 
@@ -57,8 +58,16 @@ open class ModEntity(val mod: KhsMod, private val inner: net.minecraft.world.ent
         if (location == null) return
 
         val world = mod.khs.loadWorld(location.worldName) as? ModWorld ?: return
-        val relative = Relative.DELTA
-        inner.teleportTo(world.inner, location.x, location.y, location.z, relative, location.yaw, location.pitch, false)
+        val transition =
+            TeleportTransition(
+                world.inner,
+                Vec3(location.x, location.y, location.z),
+                Vec3.ZERO,
+                location.yaw,
+                location.pitch,
+                TeleportTransition.DO_NOTHING,
+            )
+        inner.teleport(transition)
     }
 
     private fun getCollidesTeam(): PlayerTeam {

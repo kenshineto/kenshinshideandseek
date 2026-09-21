@@ -12,6 +12,7 @@ architectury {
 dependencies {
     minecraft(libs.minecraft)
     compileOnly(libs.fabric.loader)
+    compileOnly(libs.fantasy)
 
     shadow(project(":mod", configuration = "transformProductionFabric"))
 }

@@ -1,6 +1,5 @@
 package cat.freya.khs.mod
 
-import cat.freya.khs.mod.mixin.KhsMinecraftServerExt
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Position
 import cat.freya.khs.world.World
@@ -21,6 +20,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.LevelHeightAccessor
 import net.minecraft.world.level.NoiseColumn
 import net.minecraft.world.level.StructureManager
+import net.minecraft.world.level.biome.Biome
 import net.minecraft.world.level.biome.BiomeManager
 import net.minecraft.world.level.biome.BiomeSource
 import net.minecraft.world.level.biome.Biomes
@@ -29,14 +29,12 @@ import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.chunk.ChunkGenerator
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes
 import net.minecraft.world.level.dimension.DimensionType
-import net.minecraft.world.level.dimension.LevelStem
 import net.minecraft.world.level.levelgen.FlatLevelSource
 import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.level.levelgen.RandomState
 import net.minecraft.world.level.levelgen.blending.Blender
+import net.minecraft.world.level.levelgen.densityfunction.SamplerContext
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings
-import net.minecraft.world.level.storage.DerivedLevelData
-import net.minecraft.world.level.storage.LevelStorageSource
 
 class VoidGenerator(biomeSource: BiomeSource) : ChunkGenerator(biomeSource) {
     override fun codec(): MapCodec<ChunkGenerator> {
@@ -47,41 +45,12 @@ class VoidGenerator(biomeSource: BiomeSource) : ChunkGenerator(biomeSource) {
         }
     }
 
-    override fun applyCarvers(
-        region: WorldGenRegion,
-        seed: Long,
-        randomState: RandomState,
-        biomeManager: BiomeManager,
-        structureManager: StructureManager,
-        chunk: ChunkAccess,
-    ) {
-        // no carving
-    }
-
-    override fun buildSurface(
-        level: WorldGenRegion,
-        structureManager: StructureManager,
-        randomState: RandomState,
-        protoChunk: ChunkAccess,
-    ) {
-        // no surface
-    }
-
     override fun spawnOriginalMobs(worldGenRegion: WorldGenRegion) {
         // no mobs
     }
 
     override fun getGenDepth(): Int {
         return 384
-    }
-
-    override fun fillFromNoise(
-        blender: Blender,
-        randomState: RandomState,
-        structureManager: StructureManager,
-        centerChunk: ChunkAccess,
-    ): CompletableFuture<ChunkAccess> {
-        return CompletableFuture.completedFuture(centerChunk)
     }
 
     override fun getSeaLevel(): Int {
@@ -111,8 +80,25 @@ class VoidGenerator(biomeSource: BiomeSource) : ChunkGenerator(biomeSource) {
         return NoiseColumn(heightAccessor.minY, emptyArray())
     }
 
-    override fun addDebugScreenInfo(result: MutableList<String>, randomState: RandomState, feetPos: BlockPos) {
-        // no debug info needed
+    override fun buildTerrain(
+        chunk: ChunkAccess,
+        blender: Blender,
+        randomState: RandomState,
+        structureManager: StructureManager,
+        biomeManager: BiomeManager,
+        carverBiomeRegion: WorldGenRegion?,
+        possibleBiomes: MutableSet<Holder<Biome>>,
+    ): CompletableFuture<ChunkAccess> {
+        return CompletableFuture.completedFuture(chunk)
+    }
+
+    override fun addDebugScreenInfo(
+        result: MutableList<String>,
+        randomState: RandomState,
+        feetPos: BlockPos,
+        samplerContext: SamplerContext,
+    ) {
+        // do nothing
     }
 }
 
@@ -139,18 +125,22 @@ class ModWorldBorder(val level: ServerLevel) : World.Border {
 }
 
 class ModWorld(val mod: KhsMod, val inner: ServerLevel) : World {
-    override val name = inner.toString() // toString calls serverLevelData.levelName
+    override val name = inner.dimension().identifier().toString()
 
-    override val type: World.Type = getTypeImpl()
+    override val type: World.Type = getKhsWorldType()
 
-    private fun getTypeImpl(): World.Type {
+    private fun getDimensionType(): ResourceKey<DimensionType>? {
+        val registry = mod.server.inner.registryAccess().lookupOrThrow(Registries.DIMENSION_TYPE)
+        return registry.getResourceKey(inner.dimensionType()).orElse(null)
+    }
+
+    private fun getKhsWorldType(): World.Type {
         if (inner.isFlat) return World.Type.FLAT
 
-        val dim = inner.dimension()
-        return when (dim) {
-            Level.OVERWORLD -> World.Type.NORMAL
-            Level.NETHER -> World.Type.NETHER
-            Level.END -> World.Type.END
+        return when (getDimensionType()) {
+            BuiltinDimensionTypes.OVERWORLD -> World.Type.NORMAL
+            BuiltinDimensionTypes.NETHER -> World.Type.NETHER
+            BuiltinDimensionTypes.END -> World.Type.END
             else -> World.Type.UNKNOWN
         }
     }
@@ -179,46 +169,35 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : World {
     }
 
     override fun unload() {
-        val key = ModWorld.parseKey(name) ?: return
-        val mixinServer = (mod.server.inner) as KhsMinecraftServerExt
-        mixinServer.removeLevel(key, !isMapSave(name))
+        val key = inner.dimension()
+        mod.server.unregisterLevel(key)
+
+        inner.players().forEach { modPlayer ->
+            val player = ModPlayer(mod, modPlayer)
+            player.teleport(mod.khs.config.exit)
+        }
+
+        mod.platform.unloadLevel(key)
     }
 
     companion object {
         fun createLevel(mod: KhsMod, worldName: String, type: World.Type): ServerLevel? {
-            val key = parseKey(worldName) ?: return null
-            if (key.identifier().namespace != KhsMod.ID) return null
+            val id = Identifier.tryParse(worldName)
+            if (id == null) {
+                mod.shim.logger.warning("invalid world name: ${worldName}")
+                return null
+            }
 
-            // get world "session"
-            val levelStorage = LevelStorageSource.createDefault(mod.server.getWorldContainer())
-            val session = levelStorage.createAccess(worldName)
-
-            // get "level stem"
+            val key = ResourceKey.create(Registries.DIMENSION, id)
+            val dimension = getDimension(type)
             val generator = getGenerator(mod, worldName, type)
-            val dimension = getDimension(mod, type)
-            val levelStem = LevelStem(dimension, generator)
+            val level = mod.platform.createLevel(key, dimension, generator)
+            if (level == null) {
+                mod.shim.logger.warning("failed to load level: ${worldName} as ${type}")
+                return null
+            }
 
-            val server = mod.server.inner
-            val levelData = DerivedLevelData(server.worldData, server.worldData.overworldData())
-
-            val level =
-                ServerLevel(
-                    server,
-                    server, // executor
-                    session,
-                    levelData,
-                    key, // dimension
-                    levelStem,
-                    false, // isDebug
-                    server.overworld().seed,
-                    listOf(),
-                    false,
-                )
-
-            // insert into minecraft server
-            val mixinServer = server as KhsMinecraftServerExt
-            mixinServer.initLevel(level)
-
+            mod.server.registerLevel(level)
             return level
         }
 
@@ -238,15 +217,12 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : World {
             } ?: defaultGen
         }
 
-        private fun getDimension(mod: KhsMod, type: World.Type): Holder<DimensionType> {
-            val dimensionType =
-                when (type) {
-                    World.Type.NETHER -> BuiltinDimensionTypes.NETHER
-                    World.Type.END -> BuiltinDimensionTypes.END
-                    else -> BuiltinDimensionTypes.OVERWORLD
-                }
-
-            return mod.server.inner.registryAccess().lookupOrThrow(Registries.DIMENSION_TYPE).getOrThrow(dimensionType)
+        private fun getDimension(type: World.Type): ResourceKey<DimensionType> {
+            when (type) {
+                World.Type.NETHER -> return BuiltinDimensionTypes.NETHER
+                World.Type.END -> return BuiltinDimensionTypes.END
+                else -> return BuiltinDimensionTypes.OVERWORLD
+            }
         }
 
         private fun flatGenerator(mod: KhsMod): ChunkGenerator {
@@ -263,11 +239,6 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : World {
             val biomes = registries.lookupOrThrow(Registries.BIOME)
             val biome = biomes.getOrThrow(Biomes.THE_VOID)
             return VoidGenerator(FixedBiomeSource(biome))
-        }
-
-        fun parseKey(worldName: String): ResourceKey<Level>? {
-            val id = Identifier.tryParse(worldName) ?: return null
-            return ResourceKey.create(Registries.DIMENSION, id)
         }
     }
 }
