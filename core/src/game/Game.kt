@@ -739,6 +739,7 @@ class Game(val plugin: Khs) {
         player.setAllowedFlight(false)
         player.setGameMode(Player.GameMode.ADVENTURE)
         player.getInventory().clearAll()
+        player.closeInventory()
         player.clearEffects()
         player.satiate()
         player.heal()
