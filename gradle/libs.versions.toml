@@ -24,27 +24,27 @@ exposed = "1.+"
 
 # database
 sqlite = "3.+"
-mysql = "9.+"
+mysql = "26.+"
 postgres = "42.+"
 hikari = "4.0.3"
 
 # bukkit
-spigot = "26.2-R0.1-SNAPSHOT"
+spigot = "26.3-R0.1-SNAPSHOT"
 xseries = "13.7.+"
 placeholderapi = "2.+"
 bstats = "3.+"
 
 # modding
-minecraft = "26.2"
-architectury = "21.+"
+minecraft = "26.3"
+architectury = "22.+"
 architectury-loom = "1.17-SNAPSHOT"
 architectury-plugin = "3.5-SNAPSHOT"
 
 # fabric
-fabric-loader = "0.19.+"
+fabric-loader = "0.14.+"
 
 # neoforge
-neoforge = "26.2.0.8-beta"
+neoforge = "26.3.0.6-beta"
 
 [libraries]
 # kotlin
