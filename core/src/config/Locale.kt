@@ -255,7 +255,7 @@ data class LocaleBlockHuntConfig(
 
 data class LocaleWorldConfig(
     @Comment("{1} - the world name") var exists: LocaleString1 = LocaleString1("A world named {1} already exists"),
-    @Comment("{1} - the world name") var doesntExist: LocaleString1 = LocaleString1("There is not world named {1}"),
+    @Comment("{1} - the world name") var doesntExist: LocaleString1 = LocaleString1("There is no world named {1}"),
     @Comment("{1} - the world name") var added: LocaleString1 = LocaleString1("Created a world named {1}"),
     var addedFailed: LocaleString1 = LocaleString1("Failed to create a world named {1}"),
     @Comment("{1} - the world name") var removed: LocaleString1 = LocaleString1("Removed the world named {1}"),
@@ -351,11 +351,12 @@ data class KhsLocale(
         var revision = meta.revision ?: 0u
         val default = KhsLocale()
 
-        // Up to 2.2.0
+        // 2.3.0
         if (revision == 0u) {
             game.join = default.game.join
             map.wrongWorld = default.map.wrongWorld
             game.gameOver.lastHider = default.game.gameOver.lastHider
+            world.doesntExist = default.world.doesntExist
             revision++
         }
 
