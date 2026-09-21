@@ -40,7 +40,7 @@ class KhsWorldCreate : Command {
             }
 
             "type" -> {
-                World.Type.entries.map { it.name.lowercase() }.filter { it.startsWith(typed) }
+                World.Type.entries.map { it.name.lowercase() }.filter { it.startsWith(typed) && it != "unknown" }
             }
 
             else -> {

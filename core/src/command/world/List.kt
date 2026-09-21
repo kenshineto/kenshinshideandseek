@@ -28,7 +28,8 @@ class KhsWorldList : Command {
                         World.Type.FLAT -> "&aFLAT"
                         World.Type.NETHER -> "&cNETHER"
                         World.Type.END -> "&eEND"
-                        else -> "&7NOT LOADED"
+                        World.Type.UNKNOWN -> "&7UNKNOWN"
+                        null -> "&7NOT LOADED"
                     }
                 appendLine("&e- &f$worldName: $status")
             }
