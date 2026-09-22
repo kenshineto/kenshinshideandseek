@@ -21,6 +21,6 @@ fun onClose(event: CloseEvent) {
 
     val blocks = game.map?.config?.blockHunt?.blocks ?: return
     val defaultBlock = blocks.firstOrNull() ?: return
-    val material = plugin.parseMaterial(defaultBlock) ?: return
-    plugin.disguiser.disguiseIfNot(player, material)
+    val blockType = plugin.parseBlock(defaultBlock) ?: return
+    plugin.disguiser.disguiseIfNot(player, blockType)
 }

@@ -19,23 +19,26 @@ class KhsMapBlockHuntBlockAdd : Command {
             lobbyEmpty()
         }
 
-        val material = plugin.parseMaterial(blockName)
-        if (material == null) {
+        val blockType = plugin.parseBlock(blockName)
+        if (blockType == null) {
             player.message(plugin.locale.prefix.error + plugin.locale.blockHunt.block.unknown)
             return
         }
 
         val map = plugin.maps[name] ?: return
-        if (map.config.blockHunt.blocks.contains(material.key.platformKey)) {
-            player.message(plugin.locale.prefix.error + plugin.locale.blockHunt.block.exists.with(material))
-            return
+        for (block in map.config.blockHunt.blocks) {
+            val inUseBlockType = plugin.parseBlock(block) ?: continue
+            if (inUseBlockType == blockType) {
+                player.message(plugin.locale.prefix.error + plugin.locale.blockHunt.block.exists.with(block))
+                return
+            }
         }
 
-        map.config.blockHunt.blocks += material.key.platformKey
+        map.config.blockHunt.blocks += blockName
         map.reloadConfig()
 
         plugin.saveConfig()
-        player.message(plugin.locale.prefix.default + plugin.locale.blockHunt.block.added.with(material))
+        player.message(plugin.locale.prefix.default + plugin.locale.blockHunt.block.added.with(blockName))
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =
@@ -45,7 +48,7 @@ class KhsMapBlockHuntBlockAdd : Command {
             }
 
             "block" -> {
-                plugin.shim.getBlocks().map { it.key.platformKey }.filter { it.startsWith(typed) }
+                plugin.shim.getBlocks().filter { it.startsWith(typed) }
             }
 
             else -> {

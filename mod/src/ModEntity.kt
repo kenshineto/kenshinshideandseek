@@ -2,7 +2,6 @@ package cat.freya.khs.mod
 
 import cat.freya.khs.math.Vector
 import cat.freya.khs.type.Effect
-import cat.freya.khs.type.ResourceKey
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
 import net.minecraft.server.level.ServerLevel
@@ -20,8 +19,7 @@ open class ModEntity(val mod: KhsMod, private val inner: net.minecraft.world.ent
     override val entityId = inner.id
     override val uuid = inner.uuid
 
-    private val entityType = EntityType.getKey(inner.type)
-    override val type = ResourceKey(entityType.toString(), null, entityType.toString())
+    override val mcType = EntityType.getKey(inner.type).toString()
 
     override fun isAlive(): Boolean {
         return inner.isAlive

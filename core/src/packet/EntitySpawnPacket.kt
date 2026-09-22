@@ -13,7 +13,7 @@ data class EntitySpawnPacket(val entity: Entity) : Packet {
 
         val entityId = entity.entityId
         val uuid = entity.uuid
-        val type = entity.type.toEntityType(player) ?: return null
+        val type = entity.getEntityType(player) ?: return null
         val position = Vector3d(khsPosition.x, khsPosition.y, khsPosition.z)
         val pitch = entity.getPitch()
         val yaw = entity.getYaw()

@@ -26,9 +26,9 @@ import cat.freya.khs.game.Game
 import cat.freya.khs.game.KhsMap
 import cat.freya.khs.packet.ClientSettings
 import cat.freya.khs.packet.KhsPacketListener
+import cat.freya.khs.type.BlockType
 import cat.freya.khs.type.Effect
 import cat.freya.khs.type.Item
-import cat.freya.khs.type.Material
 import cat.freya.khs.world.MAP_SAVE_PREFIX
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.World
@@ -111,8 +111,8 @@ class Khs(val shim: KhsShim) {
     /** listens for packets */
     val packetListener = KhsPacketListener(this)
 
-    /** Caches parseMaterial requests */
-    private val materialCache: MutableMap<String, Material?> = mutableMapOf()
+    /** Caches parseBlock requests */
+    private val blockCache: MutableMap<String, BlockType?> = mutableMapOf()
 
     /** Caches parseItem requests */
     private val itemCache: MutableMap<ItemConfig, Item?> = mutableMapOf()
@@ -282,8 +282,9 @@ class Khs(val shim: KhsShim) {
     }
 
     @Synchronized
-    fun parseMaterial(platformKey: String): Material? {
-        return materialCache.getOrPut(platformKey) { shim.parseMaterial(platformKey) }
+    fun parseBlock(type: String?): BlockType? {
+        if (type == null) return null
+        return blockCache.getOrPut(type) { shim.parseBlock(type) }
     }
 
     @Synchronized

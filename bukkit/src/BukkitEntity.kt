@@ -2,7 +2,6 @@ package cat.freya.khs.bukkit
 
 import cat.freya.khs.math.Vector
 import cat.freya.khs.type.Effect
-import cat.freya.khs.type.ResourceKey
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
 import org.bukkit.entity.LivingEntity
@@ -15,32 +14,9 @@ const val KHS_COLLISION_TEAM_NAME = "KHS_Collision"
 open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.entity.Entity) : Entity {
     override val entityId = inner.entityId
     override val uuid = inner.uniqueId
-    override val type = getResourceKey()
-
-    private fun getResourceKey(): ResourceKey {
-        val minecraftKey = getMinecraftKey()
-        val minecraftId = getMinecraftId()
-        val platformKey = inner.type.name
-        return ResourceKey(minecraftKey, minecraftId, platformKey)
-    }
 
     @Suppress("DEPRECATION")
-    private fun getMinecraftKey(): String? {
-        val keyd = runCatching { inner.type.key.toString() }.getOrElse { null }
-        if (keyd != null) return keyd
-
-        val fallback = runCatching { inner.type.name.lowercase() }.getOrElse { null }
-        if (fallback != null) return fallback
-
-        return null
-    }
-
-    @Suppress("DEPRECATION")
-    private fun getMinecraftId(): UInt? {
-        val id = runCatching { inner.type.getTypeId() }.getOrElse { null }
-        if (id == null || id < 0) return null
-        return id.toUInt()
-    }
+    override val mcType = runCatching { inner.type.key.toString() }.getOrElse { inner.type.name.lowercase() }
 
     override fun isAlive(): Boolean {
         return !inner.isDead

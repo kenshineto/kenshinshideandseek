@@ -2,7 +2,6 @@ package cat.freya.khs.mod
 
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.type.Effect
-import cat.freya.khs.type.ResourceKey
 import kotlin.jvm.optionals.getOrNull
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.Identifier
@@ -13,11 +12,13 @@ class ModEffect(val inner: MobEffectInstance, override val config: EffectConfig)
     private val id = BuiltInRegistries.MOB_EFFECT.getKey(effect) ?: error("could not get effect id")
 
     override val name = id.toString()
-    override val key: ResourceKey = ResourceKey(name, null, name)
+
+    private val mcType = id.toString()
+    override val platformType = mcType
 
     companion object {
         fun parse(config: EffectConfig): ModEffect? {
-            val id = Identifier.parse(config.type)
+            val id = Identifier.tryParse(config.type) ?: return null
             val effect = BuiltInRegistries.MOB_EFFECT.get(id).getOrNull() ?: return null
 
             val ticks = config.duration.toInt() * 20

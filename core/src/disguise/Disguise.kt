@@ -3,7 +3,7 @@ package cat.freya.khs.disguise
 import cat.freya.khs.Khs
 import cat.freya.khs.packet.BlockChangePacket
 import cat.freya.khs.packet.EntityTeleportPacket
-import cat.freya.khs.type.Material
+import cat.freya.khs.type.BlockType
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Player
@@ -16,7 +16,7 @@ const val DISGUISE_SOLIDIFY_TIME = 3u
 /** How much a player can move and won't become unsolid from moving */
 const val DISGUISE_MOVE_THRESHOLD = 0.1
 
-abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material) {
+abstract class Disguise(val plugin: Khs, val uuid: UUID, val blockType: BlockType) {
     // returns the player associated with this disguise
     val player: Player?
         get() = plugin.shim.getPlayer(uuid)
@@ -73,7 +73,7 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
                 isSolid = true
                 solidifiedPosition = player.getLocation().clone()
             }
-            sendBlockUpdate(material)
+            sendBlockUpdate(blockType)
         } else if (isSolid) {
             isSolid = false
             solidifyTimer = 0u
@@ -157,9 +157,9 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val material: Material)
         plugin.shim.getPlayers().forEach { packet.send(it) }
     }
 
-    private fun sendBlockUpdate(wantedMaterial: Material?) {
+    private fun sendBlockUpdate(wantedBlock: BlockType?) {
         val location = solidifiedPosition ?: return
-        val material = wantedMaterial ?: plugin.parseMaterial("AIR") ?: return
+        val material = wantedBlock ?: plugin.parseBlock("AIR") ?: return
         val packet = BlockChangePacket(location, material)
         plugin.shim.getPlayers().forEach {
             if (it.uuid == uuid) return@forEach

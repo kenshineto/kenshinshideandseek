@@ -4,14 +4,13 @@ import cat.freya.khs.AbstractKhsShim
 import cat.freya.khs.KhsShim
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
+import cat.freya.khs.type.BlockType
 import cat.freya.khs.world.World
 import cat.freya.khs.world.WorldInfo
 import java.nio.file.Path
 import java.util.UUID
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.core.registries.Registries
 import net.minecraft.resources.Identifier
-import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerPlayer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -41,30 +40,18 @@ class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform.name) {
     override val dataDirectory: Path
         get() = mod.server.inner.serverDirectory.resolve("config").resolve(KhsMod.ID)
 
-    override fun getMaterials(): List<ModMaterial> {
-        return getBlocks() + getItems()
+    override fun getBlocks(): List<String> {
+        return BuiltInRegistries.BLOCK.keySet().map(Identifier::toString)
     }
 
-    override fun getBlocks(): List<ModBlockMaterial> {
-        return BuiltInRegistries.BLOCK.map { block ->
-            val id = BuiltInRegistries.BLOCK.getKey(block)
-            val key = ResourceKey.create(Registries.BLOCK, id)
-            val holder = BuiltInRegistries.BLOCK.get(key).get()
-            ModBlockMaterial(holder, key)
-        }
+    private fun getItems(): List<String> {
+        return BuiltInRegistries.ITEM.keySet().map(Identifier::toString)
     }
 
-    private fun getItems(): List<ModItemMaterial> {
-        return BuiltInRegistries.ITEM.map { item ->
-            val id = BuiltInRegistries.ITEM.getKey(item)
-            val key = ResourceKey.create(Registries.ITEM, id)
-            val holder = BuiltInRegistries.ITEM.get(key).get()
-            ModItemMaterial(holder, key)
-        }
-    }
-
-    override fun parseMaterial(platformKey: String): ModMaterial? {
-        return ModMaterial.parse(platformKey)
+    override fun parseBlock(platformType: String): BlockType? {
+        val id = Identifier.tryParse(platformType) ?: return null
+        if (!BuiltInRegistries.BLOCK.containsKey(id)) return null
+        return BlockType(id.toString(), id.toString())
     }
 
     override fun parseItem(itemConfig: ItemConfig): ModItem? {

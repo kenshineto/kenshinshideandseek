@@ -3,7 +3,7 @@ package cat.freya.khs.bukkit
 import cat.freya.khs.game.Board
 import cat.freya.khs.math.Vector
 import cat.freya.khs.menu.Inventory
-import cat.freya.khs.type.Material
+import cat.freya.khs.type.BlockType
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Player
 import com.cryptomorin.xseries.XSound
@@ -115,9 +115,8 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) : Buk
         }
     }
 
-    override fun createDisguise(material: Material): BukkitDisguise? {
-        val bukkitMaterial = (material as? BukkitMaterial) ?: return null
-        return BukkitDisguise(plugin, inner.uniqueId, bukkitMaterial)
+    override fun createDisguise(blockType: BlockType): BukkitDisguise? {
+        return BukkitDisguise(plugin, inner.uniqueId, blockType)
     }
 
     @Suppress("DEPRECATION")

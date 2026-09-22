@@ -5,9 +5,7 @@ import cat.freya.khs.type.Item
 import kotlin.collections.emptyMap
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.core.registries.Registries
 import net.minecraft.resources.Identifier
-import net.minecraft.resources.ResourceKey
 import net.minecraft.util.Unit
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.alchemy.PotionContents
@@ -15,18 +13,18 @@ import net.minecraft.world.item.component.ItemLore
 
 class ModItem(
     val inner: ItemStack,
-    override val material: ModItemMaterial,
     override val config: ItemConfig,
 ) : Item {
     override val name: String = inner.displayName.string
 
+    private val mcType = BuiltInRegistries.ITEM.getId(inner.item).toString()
+    override val platformType = mcType
+
     companion object {
         fun parse(server: ModServer, itemConfig: ItemConfig): ModItem? {
-            val materialParts = itemConfig.material.split(":")
-            val materialName = materialParts.first()
-
-            val material = ModMaterial.parse(materialName) as? ModItemMaterial ?: return null
-            val stack = ItemStack(material.item, 1)
+            val id = Identifier.tryParse(itemConfig.material) ?: return null
+            val item = BuiltInRegistries.ITEM.get(id).orElse(null) ?: return null
+            val stack = ItemStack(item, 1)
 
             // name
             val name = itemConfig.name
@@ -47,11 +45,9 @@ class ModItem(
                 stack.set(DataComponents.UNBREAKABLE, Unit.INSTANCE)
             }
 
-            val potionName = materialParts.getOrNull(1)
-            if (materialName.contains("potion", ignoreCase = true) && potionName != null) {
-                val potionId: Identifier? = Identifier.tryParse(potionName)
-                val potionType = potionId?.let { BuiltInRegistries.POTION.get(it) }?.orElse(null)
-
+            val potionId = itemConfig.effect?.let(Identifier::tryParse)
+            if (itemConfig.material.contains("potion", ignoreCase = true) && potionId != null) {
+                val potionType = BuiltInRegistries.POTION.get(potionId).orElse(null)
                 if (potionType != null) {
                     val potion = PotionContents(potionType)
                     stack.set(DataComponents.POTION_CONTENTS, potion)
@@ -60,16 +56,13 @@ class ModItem(
 
             // TODO: player head
 
-            return ModItem(stack, material, itemConfig)
+            return ModItem(stack, itemConfig)
         }
 
         fun wrap(stack: ItemStack?): ModItem? {
             if (stack == null) return null
 
-            val id = BuiltInRegistries.ITEM.getKey(stack.item)
-            val key = ResourceKey.create(Registries.ITEM, id)
-            val holder = BuiltInRegistries.ITEM.get(key).get()
-            val material = ModItemMaterial(holder, key)
+            val id = BuiltInRegistries.ITEM.getKey(stack.item) ?: return null
 
             val config = ItemConfig()
             config.name = stack.displayName.string
@@ -82,7 +75,7 @@ class ModItem(
                     enchant.registeredName to level.toUInt()
                 } ?: emptyMap()
 
-            return ModItem(stack, material, config)
+            return ModItem(stack, config)
         }
     }
 }

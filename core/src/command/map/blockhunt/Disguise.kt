@@ -14,19 +14,19 @@ class KhsMapBlockHuntDisguise : Command {
         val (blockName) = args
         runChecks(plugin, player) { blockHuntSupported() }
 
-        val material = plugin.parseMaterial(blockName)
-        if (material == null) {
+        val blockType = plugin.parseBlock(blockName)
+        if (blockType == null) {
             player.message(plugin.locale.prefix.error + plugin.locale.blockHunt.block.unknown)
             return
         }
 
-        plugin.disguiser.disguise(player, material)
+        plugin.disguiser.disguise(player, blockType)
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =
         when (parameter) {
             "block" -> {
-                plugin.shim.getBlocks().map { it.key.platformKey }.filter { it.startsWith(typed) }
+                plugin.shim.getBlocks().filter { it.startsWith(typed) }
             }
 
             else -> {

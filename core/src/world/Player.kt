@@ -5,7 +5,7 @@ import cat.freya.khs.game.Board
 import cat.freya.khs.math.Vector
 import cat.freya.khs.menu.Inventory
 import cat.freya.khs.menu.PlayerInventory
-import cat.freya.khs.type.Material
+import cat.freya.khs.type.BlockType
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.protocol.player.ClientVersion
 
@@ -78,7 +78,7 @@ interface Player : Entity {
     fun playSound(sound: String, volume: Double, pitch: Double)
 
     /** Disguise the player as a block material */
-    fun createDisguise(material: Material): Disguise?
+    fun createDisguise(blockType: BlockType): Disguise?
 
     /** Get how much damage the player's equipped item can do */
     fun getAttackDamage(): Double

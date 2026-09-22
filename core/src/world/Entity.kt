@@ -2,7 +2,8 @@ package cat.freya.khs.world
 
 import cat.freya.khs.math.Vector
 import cat.freya.khs.type.Effect
-import cat.freya.khs.type.ResourceKey
+import com.github.retrooper.packetevents.protocol.entity.type.EntityType
+import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes
 import java.util.UUID
 
 interface Entity {
@@ -12,8 +13,8 @@ interface Entity {
     /** Every entity has a UUID */
     val uuid: UUID
 
-    /** The minecraft type of this entity */
-    val type: ResourceKey
+    /** The internal minecraft type of this entity */
+    val mcType: String
 
     /** @return if the entity is currently alive */
     fun isAlive(): Boolean
@@ -64,4 +65,16 @@ interface Entity {
 
     /** Kill and remove the entity */
     fun destroy()
+
+    /** @return the PacketEvents representation of the type of this entity */
+    fun getEntityType(client: Player): EntityType? {
+        val clientVersion = client.getClientVersion()
+
+        val id = mcType.toIntOrNull()
+        if (id != null) {
+            return EntityTypes.getByLegacyId(clientVersion, id)
+        }
+
+        return EntityTypes.getByName(mcType)
+    }
 }

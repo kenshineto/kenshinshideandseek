@@ -4,12 +4,16 @@ import cat.freya.khs.AbstractKhsShim
 import cat.freya.khs.KhsShim
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
+import cat.freya.khs.type.BlockType
 import cat.freya.khs.world.World
 import cat.freya.khs.world.WorldInfo
+import com.cryptomorin.xseries.XMaterial
 import com.google.common.io.ByteStreams
+import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import java.io.File
 import java.nio.file.Path
 import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 import org.bukkit.ChatColor
 
 class BukkitLogger(val plugin: KhsPlugin) : KhsShim.Logger {
@@ -29,12 +33,23 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
 
     override val dataDirectory: Path = plugin.dataFolder.toPath()
 
-    override fun getMaterials(): List<BukkitMaterial> {
-        return org.bukkit.Material.entries.map { BukkitMaterial(it) }
+    override fun getBlocks(): List<String> {
+        return org.bukkit.Material.entries.filter { it.isBlock() }.map { it.name }
     }
 
-    override fun parseMaterial(platformKey: String): BukkitMaterial? {
-        return BukkitMaterial.parse(platformKey)
+    override fun parseBlock(platformType: String): BlockType? {
+        val material = XMaterial.matchXMaterial(platformType).getOrNull()?.get() ?: return null
+        if (!material.isBlock()) return null
+
+        val mcType: String
+        if (supports(13)) {
+            mcType = SpigotConversionUtil.fromBukkitBlockData(material.createBlockData()).type.toString()
+        } else {
+            @Suppress("DEPRECATION")
+            mcType = material.id.toString()
+        }
+
+        return BlockType(mcType, platformType)
     }
 
     override fun parseItem(itemConfig: ItemConfig): BukkitItem? {

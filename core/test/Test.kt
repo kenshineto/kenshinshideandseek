@@ -8,10 +8,9 @@ import cat.freya.khs.game.gamemode.GameMode
 import cat.freya.khs.math.Vector
 import cat.freya.khs.menu.Inventory
 import cat.freya.khs.menu.PlayerInventory
+import cat.freya.khs.type.BlockType
 import cat.freya.khs.type.Effect
 import cat.freya.khs.type.Item
-import cat.freya.khs.type.Material
-import cat.freya.khs.type.ResourceKey
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.Position
@@ -59,15 +58,9 @@ class TestWorld(override val name: String, override val type: World.Type) : Worl
     override fun unload() {}
 }
 
-class TestMaterial(val name: String) : Material {
-    override val key = ResourceKey(name, null, name)
-    override val isBlock = true
-    override val isItem = true
-}
-
 class TestItem(override val config: ItemConfig) : Item {
     override val name = config.material
-    override val material = TestMaterial(name)
+    override val platformType = name
 }
 
 open class TestInventory(override val title: String?, val size: UInt) : Inventory {
@@ -161,7 +154,7 @@ object TestBoard : Board {
 class TestPlayer(val shim: TestShim, override val name: String, override val uuid: UUID) : Player {
     override fun getHandle() = this
 
-    override val type = ResourceKey("minecraft:player", null, "minecraft:player")
+    override val mcType = "minecraft:player"
 
     // health
     private var health = 20.0
@@ -243,7 +236,7 @@ class TestPlayer(val shim: TestShim, override val name: String, override val uui
 
     override fun closeInventory() {}
 
-    override fun createDisguise(material: Material) = null
+    override fun createDisguise(blockType: BlockType) = null
 
     override fun destroy() {}
 
@@ -306,7 +299,7 @@ abstract class TestShim : AbstractKhsShim("test") {
     // items
     override fun parseItem(itemConfig: ItemConfig) = TestItem(itemConfig)
 
-    override fun parseMaterial(platformKey: String) = TestMaterial(platformKey)
+    override fun parseBlock(platformType: String) = BlockType(platformType, platformType)
 
     // misc
     override fun createInventory(title: String, size: UInt) = TestInventory(title, size)
@@ -321,7 +314,7 @@ abstract class TestShim : AbstractKhsShim("test") {
     // stub functions
     override fun broadcast(message: String) {}
 
-    override fun getMaterials() = emptyList<TestMaterial>()
+    override fun getBlocks() = emptyList<String>()
 
     override fun parseEffect(effectConfig: EffectConfig) = null
 

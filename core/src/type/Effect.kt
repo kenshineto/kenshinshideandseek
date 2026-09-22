@@ -3,12 +3,18 @@ package cat.freya.khs.type
 import cat.freya.khs.config.EffectConfig
 
 interface Effect {
-    /** The name of the potion effect */
     val name: String?
-
-    /** What type of the effect */
-    val key: ResourceKey
-
-    /** The config used to generate this effect */
     val config: EffectConfig?
+
+    // the internal string used to represent
+    // this effect type in the platform (not minecraft)
+    val platformType: String
+
+    fun similar(config: EffectConfig): Boolean {
+        return this.config == config
+    }
+
+    fun similar(platformType: String): Boolean {
+        return this.platformType == platformType
+    }
 }

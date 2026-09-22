@@ -19,23 +19,33 @@ class KhsMapBlockHuntBlockRemove : Command {
             lobbyEmpty()
         }
 
-        val material = plugin.parseMaterial(blockName)
-        if (material == null) {
+        val blockType = plugin.parseBlock(blockName)
+        if (blockType == null) {
             player.message(plugin.locale.prefix.error + plugin.locale.blockHunt.block.unknown)
             return
         }
 
         val map = plugin.maps[name] ?: return
-        if (!map.config.blockHunt.blocks.contains(material.key.platformKey)) {
-            player.message(plugin.locale.prefix.error + plugin.locale.blockHunt.block.doesntExist.with(material))
+        var toRemove: String? = null
+
+        for (block in map.config.blockHunt.blocks) {
+            val inUseBlockType = plugin.parseBlock(block) ?: continue
+            if (inUseBlockType == blockType) {
+                toRemove = block
+                break
+            }
+        }
+
+        if (toRemove == null) {
+            player.message(plugin.locale.prefix.error + plugin.locale.blockHunt.block.doesntExist.with(blockName))
             return
         }
 
-        map.config.blockHunt.blocks -= material.key.platformKey
+        map.config.blockHunt.blocks -= toRemove
         map.reloadConfig()
 
         plugin.saveConfig()
-        player.message(plugin.locale.prefix.default + plugin.locale.blockHunt.block.removed.with(material))
+        player.message(plugin.locale.prefix.default + plugin.locale.blockHunt.block.removed.with(toRemove))
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =

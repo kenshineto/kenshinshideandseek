@@ -1,10 +1,9 @@
 package cat.freya.khs.mod
 
-import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.game.Board
 import cat.freya.khs.math.Vector
 import cat.freya.khs.menu.Inventory
-import cat.freya.khs.type.Material
+import cat.freya.khs.type.BlockType
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Player
 import kotlin.runCatching
@@ -141,9 +140,8 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), P
         inner.connection.send(packet)
     }
 
-    override fun createDisguise(material: Material): Disguise? {
-        // TODO:
-        return null
+    override fun createDisguise(blockType: BlockType): ModDisguise {
+        return ModDisguise(mod, uuid, blockType)
     }
 
     override fun getAttackDamage(): Double {

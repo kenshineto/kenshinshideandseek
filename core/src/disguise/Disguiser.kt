@@ -1,7 +1,7 @@
 package cat.freya.khs.disguise
 
 import cat.freya.khs.Khs
-import cat.freya.khs.type.Material
+import cat.freya.khs.type.BlockType
 import cat.freya.khs.world.Player
 import java.util.UUID
 import kotlin.synchronized
@@ -18,20 +18,20 @@ class Disguiser(val plugin: Khs) {
         }
     }
 
-    fun disguise(player: Player, material: Material) {
+    fun disguise(player: Player, blockType: BlockType) {
         synchronized(disguises) {
             // remove old disguise (if exists)
             reveal(player.uuid)
 
-            val disguise = player.createDisguise(material) ?: return
+            val disguise = player.createDisguise(blockType) ?: return
             disguises.put(player.uuid, disguise)
         }
     }
 
-    fun disguiseIfNot(player: Player, material: Material) {
+    fun disguiseIfNot(player: Player, blockType: BlockType) {
         synchronized(disguises) {
             if (disguises.containsKey(player.uuid)) return
-            disguise(player, material)
+            disguise(player, blockType)
         }
     }
 

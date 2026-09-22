@@ -4,9 +4,9 @@ import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.game.Board
 import cat.freya.khs.menu.Inventory
+import cat.freya.khs.type.BlockType
 import cat.freya.khs.type.Effect
 import cat.freya.khs.type.Item
-import cat.freya.khs.type.Material
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.World
 import cat.freya.khs.world.WorldInfo
@@ -53,18 +53,19 @@ interface KhsShim {
         file.writeText(content)
     }
 
-    /** @return a list of valid known materials */
-    fun getMaterials(): List<Material>
-
-    /** @return a list of valid block materials */
-    fun getBlocks(): List<Material>
+    /**
+     * @return a list of valid block types
+     *
+     * NOTE: this returns a valid list of names known to the platform, not the internal minecraft block types themselves
+     */
+    fun getBlocks(): List<String>
 
     /**
-     * Get a [Material] by its platform name
+     * Get a [Block] by its platform name
      *
-     * @return the material name for both the platform and current minecraft version
+     * @return the block type
      */
-    fun parseMaterial(platformKey: String): Material?
+    fun parseBlock(platformType: String): BlockType?
 
     /**
      * Parse an [Item] given its specification
@@ -160,10 +161,6 @@ abstract class AbstractKhsShim(override val platform: String) : KhsShim {
             // the 1. in old 1.x.x releases is useless
             .let { seq -> if (seq.firstOrNull() == 1u) seq.drop(1) else seq }
             .toList()
-    }
-
-    override fun getBlocks(): List<Material> {
-        return getMaterials().filter { it.isBlock }
     }
 
     // don't make this vararg over UInt, otherwise kotlin complains

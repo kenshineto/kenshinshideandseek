@@ -30,7 +30,13 @@ object BlockHuntMenu {
             return
         }
 
-        plugin.disguiser.disguise(player, item.material)
+        val blockType = plugin.parseBlock(item.platformType)
+        if (blockType == null) {
+            plugin.shim.logger.warning("invalid block type for disguise: ${item.platformType}")
+            return
+        }
+
+        plugin.disguiser.disguise(player, blockType)
         player.closeInventory()
     }
 }

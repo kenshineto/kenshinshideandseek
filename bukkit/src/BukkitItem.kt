@@ -11,16 +11,12 @@ import org.bukkit.inventory.meta.SkullMeta
 
 class BukkitItem(val inner: ItemStack, override val config: ItemConfig) : Item {
     override val name = inner.itemMeta?.displayName
-    override val material = BukkitMaterial(inner.type)
+
+    override val platformType = inner.type.toString()
 
     override fun similar(config: ItemConfig): Boolean {
         val item = BukkitItem.parse(config) ?: return false
         return inner.isSimilar(item.inner)
-    }
-
-    override fun similar(type: String): Boolean {
-        val material = BukkitMaterial.parse(type) ?: return false
-        return material.key.platformKey == material.key.platformKey
     }
 
     companion object {
