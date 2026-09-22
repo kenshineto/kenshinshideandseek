@@ -8,8 +8,10 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.Identifier
 import net.minecraft.util.Unit
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 import net.minecraft.world.item.alchemy.PotionContents
 import net.minecraft.world.item.component.ItemLore
+import net.minecraft.world.item.component.ResolvableProfile
 
 class ModItem(
     val inner: ItemStack,
@@ -46,7 +48,7 @@ class ModItem(
             }
 
             val potionId = itemConfig.effect?.let(Identifier::tryParse)
-            if (itemConfig.material.contains("potion", ignoreCase = true) && potionId != null) {
+            if (id.path.contains("potion", ignoreCase = true) && potionId != null) {
                 val potionType = BuiltInRegistries.POTION.get(potionId).orElse(null)
                 if (potionType != null) {
                     val potion = PotionContents(potionType)
@@ -54,7 +56,13 @@ class ModItem(
                 }
             }
 
-            // TODO: player head
+            val owner = itemConfig.owner
+            if (item == Items.PLAYER_HEAD && owner != null) {
+                val player = server.getPlayer(owner)
+                if (player != null) {
+                    stack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(player.inner.gameProfile))
+                }
+            }
 
             return ModItem(stack, itemConfig)
         }
