@@ -56,6 +56,8 @@ class TestWorld(override val name: String, override val type: World.Type) : Worl
     override fun playSound(position: Position, sound: String, volume: Double, pitch: Double) {}
 
     override fun unload() {}
+
+    override fun save() {}
 }
 
 class TestItem(override val config: ItemConfig) : Item {
