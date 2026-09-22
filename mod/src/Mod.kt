@@ -13,7 +13,7 @@ class KhsMod(val platform: ModPlatform) {
     val enabled = AtomicBoolean(true)
     val server = ModServer(this)
     val shim = ModKhsShim(this)
-    val khs = Khs(shim)
+    val khs = Khs(shim, modTypes)
 
     init {
         server.init()

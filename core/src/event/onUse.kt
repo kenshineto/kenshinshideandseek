@@ -57,7 +57,7 @@ private fun onUseSpectator(event: UseEvent) {
     if (item.similar(plugin.config.spectatorItems.teleport)) {
         event.cancel()
 
-        val inv = TeleportMenu.create(plugin, 0u) ?: return
+        val inv = TeleportMenu(plugin).create(0u) ?: return
         player.showInventory(inv)
     }
 }

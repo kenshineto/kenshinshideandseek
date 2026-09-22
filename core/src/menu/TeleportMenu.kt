@@ -6,14 +6,14 @@ import cat.freya.khs.game.Game
 import cat.freya.khs.type.Item
 import cat.freya.khs.world.Player
 
-object TeleportMenu {
+class TeleportMenu(val plugin: Khs) {
     private fun createPageItem(plugin: Khs, page: UInt): Item? {
         val prefix = plugin.locale.menu.teleportPrefix
-        val config = ItemConfig("${prefix}${page + 1u}", "ENCHANTED_BOOK")
+        val config = ItemConfig("${prefix}${page + 1u}", plugin.types.enchantedBook)
         return plugin.parseItem(config)
     }
 
-    private fun createPlayerItem(plugin: Khs, player: Player): Item? {
+    private fun createPlayerItem(player: Player): Item? {
         val team = plugin.game.teams.get(player.uuid) ?: return null
         val teamName =
             when (team) {
@@ -24,14 +24,14 @@ object TeleportMenu {
         val config =
             ItemConfig(
                 name = player.name,
-                material = "PLAYER_HEAD",
+                material = plugin.types.playerHead,
                 owner = player.name,
                 lore = listOf(teamName),
             )
         return plugin.parseItem(config)
     }
 
-    fun create(plugin: Khs, page: UInt): Inventory? {
+    fun create(page: UInt): Inventory? {
         val pageSize = 7u
         val offset = pageSize * page
 
@@ -39,7 +39,7 @@ object TeleportMenu {
         val players = (plugin.game.teams.getSeekerPlayers() + plugin.game.teams.getHiderPlayers())
         val items =
             players.drop(offset.toInt()).take(pageSize.toInt()).mapNotNull {
-                createPlayerItem(plugin, it)
+                createPlayerItem(it)
             }
         val prev = if (page > 0u) createPageItem(plugin, page - 1u) else null
         val next =
@@ -61,23 +61,23 @@ object TeleportMenu {
         return inv
     }
 
-    fun onClick(plugin: Khs, player: Player, item: Item) {
+    fun onClick(player: Player, item: Item) {
         val name = item.name ?: return
         val prefix = plugin.locale.menu.teleportPrefix
 
         // how did you get access to this menu???
         if (!plugin.game.teams.isSpectator(player.uuid)) return
 
-        if (item.similar("PLAYER_HEAD")) {
+        if (item.similar(plugin.types.playerHead)) {
             player.closeInventory()
 
             val target = plugin.shim.getPlayer(name) ?: return
             player.teleport(target.getLocation())
-        } else if (item.similar("ENCHANTED_BOOK") && name.startsWith(prefix)) {
+        } else if (item.similar(plugin.types.enchantedBook) && name.startsWith(prefix)) {
             player.closeInventory()
 
             val page = name.substring(prefix.length).toUIntOrNull() ?: return
-            val inv = TeleportMenu.create(plugin, page - 1u) ?: return
+            val inv = this.create(page - 1u) ?: return
             player.showInventory(inv)
         }
     }

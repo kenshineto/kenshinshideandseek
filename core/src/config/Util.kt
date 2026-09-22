@@ -195,13 +195,13 @@ private fun merge(target: ObjectNode, source: ObjectNode): ObjectNode {
     return target
 }
 
-fun <T : Any> deserialize(type: KClass<T>, ins: InputStream?): T {
+fun <T : Any> deserialize(type: KClass<T>, ins: InputStream?, defaults: T? = null): T {
     val reader = ins?.let { InputStreamReader(it) }
-    return deserialize(type, reader)
+    return deserialize(type, reader, defaults)
 }
 
-fun <T : Any> deserialize(type: KClass<T>, ins: Reader?): T {
-    val defaults = type.createInstance()
+fun <T : Any> deserialize(type: KClass<T>, ins: Reader?, possibleDefaults: T? = null): T {
+    val defaults = possibleDefaults ?: type.createInstance()
     if (ins == null) return defaults
 
     val defaultsNode = mapper.valueToTree<ObjectNode>(defaults)

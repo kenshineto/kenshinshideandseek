@@ -70,7 +70,11 @@ class ModItem(
         fun wrap(stack: ItemStack?): ModItem? {
             if (stack == null) return null
 
-            val id = BuiltInRegistries.ITEM.getKey(stack.item) ?: return null
+            val id = BuiltInRegistries.ITEM.getKey(stack.item)
+            if (id == null) {
+                println("failted to get key for ${stack.item}")
+                return null
+            }
 
             val config = ItemConfig()
             config.name = stack.displayName.string

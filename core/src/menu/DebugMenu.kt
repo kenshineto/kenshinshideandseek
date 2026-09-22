@@ -6,68 +6,68 @@ import cat.freya.khs.game.Game
 import cat.freya.khs.type.Item
 import cat.freya.khs.world.Player
 
-object DebugMenu {
-    private val BECOME_HIDER = ItemConfig("&6Become a &lHider", "LEATHER_CHESTPLATE")
-    private val BECOME_SEEKER = ItemConfig("&cBecome a &lSEEKER", "GOLDEN_CHESTPLATE")
-    private val BECOME_SPECTATOR = ItemConfig("&8Become a &lSPECTATOR", "IRON_CHESTPLATE")
-    private val DIE_IN_GAME = ItemConfig("&cDie in game", "SKELETON_SKULL")
-    private val REMOVE_DISGUISE = ItemConfig("&cRemove disguise", "BARRIER")
-    private val HIDE_SELF = ItemConfig("&cHide self", "RED_WOOL")
-    private val SHOW_SELF = ItemConfig("&cShow self", "GREEN_WOOL")
+class DebugMenu(val plugin: Khs) {
+    private val becomeHider = ItemConfig("&6Become a &lHider", plugin.types.leatherChestplate)
+    private val becomeSeeker = ItemConfig("&cBecome a &lSEEKER", plugin.types.goldenChestplate)
+    private val becomeSpectator = ItemConfig("&8Become a &lSPECTATOR", plugin.types.ironChestplate)
+    private val dieInGame = ItemConfig("&cDie in game", plugin.types.skeletonSkull)
+    private val removeDisguise = ItemConfig("&cRemove disguise", plugin.types.barrier)
+    private val hideSelf = ItemConfig("&cHide self", plugin.types.redWool)
+    private val showSelf = ItemConfig("&cShow self", plugin.types.greenWool)
 
-    private val ACTIONS: Map<ItemConfig, (Khs, Player) -> Unit> =
+    private val actions: Map<ItemConfig, (Player) -> Unit> =
         linkedMapOf(
-            BECOME_HIDER to ::handleBecomeHider,
-            BECOME_SEEKER to ::handleBecomeSeeker,
-            BECOME_SPECTATOR to ::handleBecomeSpectator,
-            DIE_IN_GAME to ::handleDieInGame,
-            REMOVE_DISGUISE to ::handleRemoveDisguise,
-            HIDE_SELF to ::handleHideSelf,
-            SHOW_SELF to ::handleShowSelf,
+            becomeHider to ::handleBecomeHider,
+            becomeSeeker to ::handleBecomeSeeker,
+            becomeSpectator to ::handleBecomeSpectator,
+            dieInGame to ::handleDieInGame,
+            removeDisguise to ::handleRemoveDisguise,
+            hideSelf to ::handleHideSelf,
+            showSelf to ::handleShowSelf,
         )
 
-    private fun handleBecomeHider(plugin: Khs, player: Player) {
+    private fun handleBecomeHider(player: Player) {
         plugin.game.loadHider(player)
     }
 
-    private fun handleBecomeSeeker(plugin: Khs, player: Player) {
+    private fun handleBecomeSeeker(player: Player) {
         plugin.game.loadSeeker(player)
     }
 
-    private fun handleBecomeSpectator(plugin: Khs, player: Player) {
+    private fun handleBecomeSpectator(player: Player) {
         plugin.game.loadSpectator(player)
     }
 
-    private fun handleDieInGame(plugin: Khs, player: Player) {
+    private fun handleDieInGame(player: Player) {
         val team = plugin.game.teams.get(player.uuid)
         if (team == null || team == Game.Team.SPECTATOR) return
         if (plugin.game.status != Game.Status.SEEKING) return
         player.setHealth(0.1)
     }
 
-    private fun handleRemoveDisguise(plugin: Khs, player: Player) {
+    private fun handleRemoveDisguise(player: Player) {
         plugin.disguiser.reveal(player.uuid)
     }
 
-    private fun handleHideSelf(plugin: Khs, player: Player) {
+    private fun handleHideSelf(player: Player) {
         plugin.entityHider.hideEntity(player, player.uuid)
     }
 
-    private fun handleShowSelf(plugin: Khs, player: Player) {
+    private fun handleShowSelf(player: Player) {
         plugin.entityHider.showEntity(player)
     }
 
-    fun create(plugin: Khs): Inventory? {
+    fun create(): Inventory? {
         val title = plugin.locale.menu.debugTitle
         val inv = plugin.shim.createInventory(title, 9u) ?: return null
-        ACTIONS.keys.mapNotNull { plugin.parseItem(it) }.withIndex().forEach { (i, item) -> inv.set(i.toUInt(), item) }
+        actions.keys.mapNotNull { plugin.parseItem(it) }.withIndex().forEach { (i, item) -> inv.set(i.toUInt(), item) }
         return inv
     }
 
-    fun onClick(plugin: Khs, player: Player, item: Item) {
+    fun onClick(player: Player, item: Item) {
         if (!player.hasPermission("hs.debug")) return
-        val (_, fn) = ACTIONS.entries.firstOrNull { (config, _) -> item.similar(config) } ?: return
-        fn(plugin, player)
+        val (_, fn) = actions.entries.firstOrNull { (config, _) -> item.similar(config) } ?: return
+        fn(player)
         player.closeInventory()
     }
 }

@@ -6,8 +6,8 @@ import cat.freya.khs.game.KhsMap
 import cat.freya.khs.type.Item
 import cat.freya.khs.world.Player
 
-object BlockHuntMenu {
-    fun create(plugin: Khs, map: KhsMap): Inventory? {
+class BlockHuntMenu(val plugin: Khs) {
+    fun create(map: KhsMap): Inventory? {
         val blocks = map.config.blockHunt.blocks
 
         // make inv
@@ -25,7 +25,7 @@ object BlockHuntMenu {
         return inv
     }
 
-    fun onClick(plugin: Khs, player: Player, item: Item) {
+    fun onClick(player: Player, item: Item) {
         if (!plugin.game.teams.contains(player.uuid) && !player.hasPermission("hs.map.blockhunt.debug")) {
             return
         }

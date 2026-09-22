@@ -146,7 +146,7 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val blockType: BlockTyp
         if (isSecond && seconds >= 1u) {
             val secondsLeft = DISGUISE_SOLIDIFY_TIME - (seconds - 1u)
             player.actionBar("▪".repeat(secondsLeft.toInt()))
-            player.playSound("BLOCK_NOTE_BLOCK_PLING", 0.5, 1.0)
+            player.playSound(plugin.types.noteBlockPling, 0.5, 1.0)
         }
     }
 
@@ -159,7 +159,7 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val blockType: BlockTyp
 
     private fun sendBlockUpdate(wantedBlock: BlockType?) {
         val location = solidifiedPosition ?: return
-        val material = wantedBlock ?: plugin.parseBlock("AIR") ?: return
+        val material = wantedBlock ?: plugin.parseBlock(plugin.types.air) ?: return
         val packet = BlockChangePacket(location, material)
         plugin.shim.getPlayers().forEach {
             if (it.uuid == uuid) return@forEach

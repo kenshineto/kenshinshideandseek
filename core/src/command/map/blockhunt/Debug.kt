@@ -19,7 +19,7 @@ class KhsMapBlockHuntDebug : Command {
         }
 
         val map = plugin.maps[name] ?: return
-        val inv = BlockHuntMenu.create(plugin, map) ?: return
+        val inv = BlockHuntMenu(plugin).create(map) ?: return
         player.showInventory(inv)
     }
 

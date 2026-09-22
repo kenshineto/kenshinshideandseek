@@ -42,7 +42,7 @@ private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
         disguise.shouldBeSolid = false
         player.damage(damage)
         player.knockBack(direction)
-        player.getWorld()?.playSound(player.getPosition(), "ENTITY_PLAYER_HURT", 1.0, 1.0)
+        player.getWorld()?.playSound(player.getPosition(), plugin.types.playerHurt, 1.0, 1.0)
     }
 
     // set and soon turn off debounce

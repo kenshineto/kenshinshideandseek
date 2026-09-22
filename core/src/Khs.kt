@@ -47,13 +47,13 @@ data class Request(val fn: () -> Unit, val lengthSeconds: Long) {
 }
 
 /** Plugin wrapper */
-class Khs(val shim: KhsShim) {
+class Khs(val shim: KhsShim, val types: KhsTypes) {
     /** The main plugin config */
-    var config: KhsConfig = KhsConfig()
+    var config: KhsConfig = KhsConfig.default(types)
         private set
 
     /** Stores seeker/hider items and effects */
-    var itemsConfig: KhsItemsConfig = KhsItemsConfig()
+    var itemsConfig: KhsItemsConfig = KhsItemsConfig.default(types)
         private set
 
     /** Stores format and strings for the game board */
@@ -222,9 +222,10 @@ class Khs(val shim: KhsShim) {
     fun reloadConfig(): Result<Unit> {
         return runCatching {
                 shim.logger.info("Loading config...")
-                config = deserialize(KhsConfig::class, shim.readConfigFile("config.yml"))
+                config = deserialize(KhsConfig::class, shim.readConfigFile("config.yml"), KhsConfig.default(types))
                 shim.logger.info("Loading items...")
-                itemsConfig = deserialize(KhsItemsConfig::class, shim.readConfigFile("items.yml"))
+                itemsConfig =
+                    deserialize(KhsItemsConfig::class, shim.readConfigFile("items.yml"), KhsItemsConfig.default(types))
                 shim.logger.info("Loading maps...")
                 mapsConfig = deserialize(KhsMapsConfig::class, shim.readConfigFile("maps.yml"))
                 shim.logger.info("Loading board locale...")
@@ -236,8 +237,8 @@ class Khs(val shim: KhsShim) {
                 shim.logger.info("Loading database...")
 
                 // migrate configs
-                config.migrate()
-                itemsConfig.migrate()
+                config.migrate(types)
+                itemsConfig.migrate(types)
                 locale.migrate()
 
                 // database config could have changed so we need to

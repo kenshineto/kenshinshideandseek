@@ -29,7 +29,7 @@ class Tag(override val game: Game) : GameMode {
         broadcastDeath(player, attacker)
 
         // play death sound
-        player.getWorld()?.playSound(player.getPosition(), "BLOCK_ANVIL_LAND", 1.0, 1.0)
+        player.getWorld()?.playSound(player.getPosition(), game.plugin.types.anvilLand, 1.0, 1.0)
 
         // update leaderboard
         game.addDeath(player.uuid)

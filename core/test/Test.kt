@@ -325,17 +325,69 @@ abstract class TestShim : AbstractKhsShim("test") {
     override fun writeConfigFile(fileName: String, content: String) {}
 }
 
+private val testTypes =
+    KhsTypes(
+        // Blocks
+        air = "minecraft:air",
+        furnace = "minecraft:furnace",
+        craftingTable = "minecraft:crafting_table",
+        anvil = "minecraft:anvil",
+        chest = "minecraft:chest",
+        barrel = "minecraft:barrel",
+        barrier = "minecraft:barrier",
+        redWool = "minecraft:red_wool",
+        greenWool = "minecraft:green_wool",
+        // Items
+        bed = "minecraft:red_bed",
+        clock = "minecraft:clock",
+        compass = "minecraft:compass",
+        feather = "minecraft:feather",
+        snowball = "minecraft:snowball",
+        stick = "minecraft:stick",
+        stoneSword = "minecraft:stone_sword",
+        diamondSword = "minecraft:diamond_sword",
+        potion = "minecraft:potion",
+        splashPotion = "minecraft:splash_potion",
+        lingeringPotion = "minecraft:lingering_potion",
+        enchantedBook = "minecraft:enchanted_book",
+        playerHead = "minecraft:player_head",
+        skeletonSkull = "minecraft:skeleton_skull",
+        // Armor
+        leatherHelmet = "minecraft:leather_helmet",
+        leatherChestplate = "minecraft:leather_chestplate",
+        leatherLeggings = "minecraft:leather_leggings",
+        leatherBoots = "minecraft:leather_boots",
+        goldenChestplate = "minecraft:golden_chestplate",
+        ironChestplate = "minecraft:iron_chestplate",
+        // Enchantments
+        featherFalling = "minecraft:feather_falling",
+        knockback = "minecraft:knockback",
+        sharpness = "minecraft:sharpness",
+        // Sounds
+        noteBlockBaseDrum = "minecraft:block.note_block.basedrum",
+        noteBlockPling = "minecraft:block.note_block.pling",
+        playerHurt = "minecraft:entity.player.death",
+        anvilLand = "minecraft:block.anvil.land",
+        // Effects
+        dolphinsGrace = "minecraft:dolphins_grace",
+        instantHeal = "minecraft:instant_heal",
+        jumpBoost = "minecraft:jump_boost",
+        regen = "minecraft:regeneration",
+        speedBoost = "minecraft:speed",
+        waterBreathing = "minecraft:water_breathing",
+    )
+
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
     override val serverVersion: String = BuildInfo.minecraft
 
-    val config = KhsConfig()
-    val itemsConfig = KhsItemsConfig()
+    val config = KhsConfig.default(testTypes)
+    val itemsConfig = KhsItemsConfig.default(testTypes)
     val mapsConfig = KhsMapsConfig()
     val boardConfig = KhsBoardConfig()
     val locale = KhsLocale()
 
-    val plugin = Khs(this)
+    val plugin = Khs(this, testTypes)
     val game = plugin.game
 
     val alice = TestPlayer(this, "alice", UUID(1L, 1L))

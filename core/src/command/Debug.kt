@@ -14,7 +14,7 @@ class KhsDebug : Command {
     override fun execute(plugin: Khs, player: Player, args: List<String>) {
         runChecks(plugin, player) { gameMapExists() }
 
-        val inv = DebugMenu.create(plugin) ?: return
+        val inv = DebugMenu(plugin).create() ?: return
         player.showInventory(inv)
     }
 

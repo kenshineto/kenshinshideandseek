@@ -782,7 +782,7 @@ class Game(val plugin: Khs) {
             // open block hunt picker
             if (map?.config?.blockHunt?.enabled == true) {
                 val map = map ?: return
-                val inv = BlockHuntMenu.create(plugin, map) ?: return
+                val inv = BlockHuntMenu(plugin).create(map) ?: return
                 hider.showInventory(inv)
             }
 

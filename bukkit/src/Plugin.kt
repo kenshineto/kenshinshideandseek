@@ -20,7 +20,7 @@ import org.bukkit.scheduler.BukkitTask
 
 class KhsPlugin : JavaPlugin() {
     val shim: BukkitKhsShim = BukkitKhsShim(this)
-    val khs: Khs = Khs(shim)
+    val khs: Khs = Khs(shim, bukkitTypes(this))
 
     private var doTickTask: BukkitTask? = null
 

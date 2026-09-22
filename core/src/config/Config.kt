@@ -1,5 +1,6 @@
 package cat.freya.khs.config
 
+import cat.freya.khs.KhsTypes
 import cat.freya.khs.world.Location
 import kotlin.UInt
 import kotlin.annotation.AnnotationTarget
@@ -62,7 +63,7 @@ data class DatabaseConfig(
 
 data class ItemConfig(
     @Omittable var name: String? = null,
-    var material: String = "DIRT",
+    var material: String = "BLOCK",
     var lore: List<String> = emptyList(),
     var enchantments: Map<String, UInt> = emptyMap(),
     @Omittable var unbreakable: Boolean? = null,
@@ -71,12 +72,12 @@ data class ItemConfig(
     @Omittable var effect: String? = null,
     var slot: UInt? = null,
 ) {
-    fun migrate() {
+    fun migrate(types: KhsTypes) {
         val parts = material.uppercase().split(":")
         if (parts.size != 2) return
 
         // migrate effect field
-        if (parts[0].endsWith("POTION") && effect == null) {
+        if (types.isPotion(parts[0]) && effect == null) {
             material = parts[0]
             effect = parts[1]
         }
@@ -107,19 +108,25 @@ data class GlowConfig(
     var enabled: Boolean = true,
     @Comment("The length in seconds that the power-up lasts") var time: ULong = 30u,
     @Comment("Allows multiple uses of the power-up to stack the duration") var stackable: Boolean = true,
-    @Comment("The config for the power-up item")
-    var item: ItemConfig =
-        ItemConfig(
-            name = "Glow Power-up",
-            material = "SNOWBALL",
-            lore =
-                listOf(
-                    "Throw to make all seekers glow",
-                    "Last 30s, all hiders can see it",
-                    "Time stacks on multi use",
-                ),
-        ),
-)
+    @Comment("The config for the power-up item") var item: ItemConfig,
+) {
+    companion object {
+        fun default(types: KhsTypes) =
+            GlowConfig(
+                item =
+                    ItemConfig(
+                        name = "Glow Power-up",
+                        material = types.snowball,
+                        lore =
+                            listOf(
+                                "Throw to make all seekers glow",
+                                "Last 30s, all hiders can see it",
+                                "Time stacks on multi use",
+                            ),
+                    )
+            )
+    }
+}
 
 data class LobbyConfig(
     @Comment("Time in seconds the lobby waits until the game starts. Set to 0 to disable") var countdown: ULong = 60u,
@@ -127,36 +134,50 @@ data class LobbyConfig(
     var changeCountdown: UInt = 5u,
     @Comment("Minimum amount of players required to start the countdown") var min: UInt = 3u,
     @Comment("Maximum amount of players allowed in a lobby") var max: UInt = 10u,
-    @Comment("Item to leave the lobby")
-    var leaveItem: ItemConfig =
-        ItemConfig(
-            name = "&c Leave Lobby",
-            material = "BED",
-            lore = listOf("Go back to server hub"),
-            slot = 0u,
-        ),
-    @Comment("Admin item to force start the game")
-    var startItem: ItemConfig = ItemConfig(name = "&bStart Game", material = "CLOCK", slot = 8u),
-)
+    @Comment("Item to leave the lobby") var leaveItem: ItemConfig,
+    @Comment("Admin item to force start the game") var startItem: ItemConfig,
+) {
+    companion object {
+        fun default(types: KhsTypes) =
+            LobbyConfig(
+                leaveItem =
+                    ItemConfig(
+                        name = "&c Leave Lobby",
+                        material = types.bed,
+                        lore = listOf("Go back to server hub"),
+                        slot = 0u,
+                    ),
+                startItem = ItemConfig(name = "&bStart Game", material = types.clock, slot = 8u),
+            )
+    }
+}
 
 data class SpectatorItemsConfig(
     /** Item for spectators to toggle flight */
-    var flight: ItemConfig =
-        ItemConfig(
-            name = "&bToggle Flight",
-            material = "FEATHER",
-            lore = listOf("Turns flying on and off"),
-            slot = 6u,
-        ),
+    var flight: ItemConfig,
     /** Item for spectators to teleport to other players */
-    var teleport: ItemConfig =
-        ItemConfig(
-            name = "&bTeleport to Others",
-            material = "COMPASS",
-            lore = listOf("Allows you to teleport to all other players in game"),
-            slot = 3u,
-        ),
-)
+    var teleport: ItemConfig,
+) {
+    companion object {
+        fun default(types: KhsTypes) =
+            SpectatorItemsConfig(
+                flight =
+                    ItemConfig(
+                        name = "&bToggle Flight",
+                        material = types.feather,
+                        lore = listOf("Turns flying on and off"),
+                        slot = 6u,
+                    ),
+                teleport =
+                    ItemConfig(
+                        name = "&bTeleport to Others",
+                        material = types.compass,
+                        lore = listOf("Allows you to teleport to all other players in game"),
+                        slot = 3u,
+                    ),
+            )
+    }
+}
 
 data class SeekerPingDistancesConfig(
     var level1: UInt = 30u,
@@ -165,19 +186,31 @@ data class SeekerPingDistancesConfig(
 )
 
 data class SeekerPingConfigSounds(
-    @Comment("The noise for the heartbeat") var heartbeatNoise: String = "BLOCK_NOTE_BLOCK_BASEDRUM",
-    @Comment("The noise for the ringing") var ringingNoise: String = "BLOCK_NOTE_BLOCK_PLING",
+    @Comment("The noise for the heartbeat") var heartbeatNoise: String,
+    @Comment("The noise for the ringing") var ringingNoise: String,
     var leadingVolume: Double = 0.5,
     var volume: Double = 0.3,
     var pitch: Double = 1.0,
-)
+) {
+    companion object {
+        fun default(types: KhsTypes) =
+            SeekerPingConfigSounds(
+                heartbeatNoise = types.noteBlockBaseDrum,
+                ringingNoise = types.noteBlockPling,
+            )
+    }
+}
 
 data class SeekerPingConfig(
     var enabled: Boolean = true,
     @Comment("The distances for the volume to change")
     var distances: SeekerPingDistancesConfig = SeekerPingDistancesConfig(),
-    @Comment("The sounds that players will hear") var sounds: SeekerPingConfigSounds = SeekerPingConfigSounds(),
-)
+    @Comment("The sounds that players will hear") var sounds: SeekerPingConfigSounds,
+) {
+    companion object {
+        fun default(types: KhsTypes) = SeekerPingConfig(sounds = SeekerPingConfigSounds.default(types))
+    }
+}
 
 data class CommandHooksConfig(
     @Comment("When enabled, the plugin will execute the commands for each player when the game starts and when it ends")
@@ -212,9 +245,8 @@ data class KhsConfig(
     @Comment("If enabled, a HIDER will join the SPECTATOR team on death instead of the SEEKER team.")
     var respawnAsSpectator: Boolean = false,
     @Comment("Along with a chat message, display a title describing the game over") var gameOverTitle: Boolean = true,
-    @Comment("Configure items given to spectators") var spectatorItems: SpectatorItemsConfig = SpectatorItemsConfig(),
-    @Comment("Configure the sounds that plays when a seeker is near")
-    var seekerPing: SeekerPingConfig = SeekerPingConfig(),
+    @Comment("Configure items given to spectators") var spectatorItems: SpectatorItemsConfig,
+    @Comment("Configure the sounds that plays when a seeker is near") var seekerPing: SeekerPingConfig,
     @Comment("If to notify a seeker if they revealed a player in block hunt") var blockHuntNotify: Boolean = true,
     @Comment("For developers") var debug: Boolean = false,
     // Timing
@@ -267,7 +299,7 @@ data class KhsConfig(
     var leaveType: ConfigLeaveType = ConfigLeaveType.EXIT,
     @Comment("The server to teleport to when leaveType is set to PROXY") var leaveServer: String = "lobby",
     @Comment("If to leave the game lobby after a game ends") var leaveOnEnd: Boolean = false,
-    @Comment("Configure the \"waiting for players\" per map lobby") var lobby: LobbyConfig = LobbyConfig(),
+    @Comment("Configure the \"waiting for players\" per map lobby") var lobby: LobbyConfig,
     @Comment("Restore the players previously cleared inventory after leaving the game lobby")
     var saveInventory: Boolean = false,
     @Comment("Restore the players previously active score board after leaving the game lobby")
@@ -275,7 +307,7 @@ data class KhsConfig(
     // Events
     @Section("Events") @Comment("Taunt event") var taunt: TauntConfig = TauntConfig(),
     // Power-ups
-    @Section("Power-ups") @Comment("Glow power-up") var glow: GlowConfig = GlowConfig(),
+    @Section("Power-ups") @Comment("Glow power-up") var glow: GlowConfig,
     @Comment("Instead of having a glow power-up, always make seekers' position's known to hiders at all times.")
     var alwaysGlow: Boolean = false,
     // Protections
@@ -286,8 +318,7 @@ data class KhsConfig(
     var mapSaveEnabled: Boolean = true,
     @Comment("Block these commands for players in a game. Good for blocking communication")
     var blockedCommands: List<String> = listOf("msg", "reply", "me", "kill"),
-    @Comment("Don't allow players to interact with these blocks")
-    var blockedInteracts: List<String> = listOf("FURNACE", "CRAFTING_TABLE", "ANVIL", "CHEST", "BARREL"),
+    @Comment("Don't allow players to interact with these blocks") var blockedInteracts: List<String>,
     @Section("Command Hooks")
     @Comment("Trigger custom commands after game events")
     var commandHooks: CommandHooksConfig = CommandHooksConfig(),
@@ -296,16 +327,27 @@ data class KhsConfig(
     @Comment("Location where players are teleported to when they run (/hs leave).")
     var exit: Location? = null,
 ) {
-    fun migrate() {
+    fun migrate(types: KhsTypes) {
         // migrate items
-        glow.item.migrate()
-        lobby.leaveItem.migrate()
-        lobby.startItem.migrate()
-        spectatorItems.flight.migrate()
-        spectatorItems.teleport.migrate()
+        glow.item.migrate(types)
+        lobby.leaveItem.migrate(types)
+        lobby.startItem.migrate(types)
+        spectatorItems.flight.migrate(types)
+        spectatorItems.teleport.migrate(types)
 
         // migrate minimum values
         startingSeekerCount = max(startingSeekerCount, 1u)
         hidingLength = max(hidingLength, 10u)
+    }
+
+    companion object {
+        fun default(types: KhsTypes) =
+            KhsConfig(
+                glow = GlowConfig.default(types),
+                lobby = LobbyConfig.default(types),
+                seekerPing = SeekerPingConfig.default(types),
+                spectatorItems = SpectatorItemsConfig.default(types),
+                blockedInteracts = listOf(types.furnace, types.craftingTable, types.anvil, types.chest, types.barrel),
+            )
     }
 }

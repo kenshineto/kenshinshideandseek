@@ -33,7 +33,7 @@ class HideAndSeek(override val game: Game) : GameMode {
 
     override fun handleDeath(player: Player, attacker: Player?) {
         // play death sound
-        val soundName = if (plugin.shim.supports(9)) "ENTITY_PLAYER_DEATH" else "ENTITY_PLAYER_HURT"
+        val soundName = game.plugin.types.playerHurt
         player.getWorld()?.playSound(player.getPosition(), soundName, 1.0, 1.0)
 
         // update leaderboard
