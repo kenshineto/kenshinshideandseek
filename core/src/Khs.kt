@@ -28,10 +28,12 @@ import cat.freya.khs.packet.ClientSettings
 import cat.freya.khs.packet.KhsPacketListener
 import cat.freya.khs.type.BlockType
 import cat.freya.khs.type.Effect
+import cat.freya.khs.type.Id
 import cat.freya.khs.type.Item
 import cat.freya.khs.world.MAP_SAVE_PREFIX
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.World
+import cat.freya.khs.world.isMapSave
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.net.URI
 import java.util.UUID
@@ -323,10 +325,11 @@ class Khs(val shim: KhsShim) {
     }
 
     fun loadWorld(worldName: String): World? {
+        val id = Id(worldName)
         // if were attempting to teleport to a mapsave, use the world type
         // from the map's world
-        if (worldName.startsWith(MAP_SAVE_PREFIX)) {
-            val mapName = worldName.removePrefix(MAP_SAVE_PREFIX)
+        if (isMapSave(id)) {
+            val mapName = id.path().removePrefix(MAP_SAVE_PREFIX)
             val map = maps.get(mapName)
             if (map == null) {
                 shim.logger.warning("map does not exist for map save: ${worldName}")

@@ -1,7 +1,9 @@
 package cat.freya.khs.mod.event
 
 import cat.freya.khs.event.BreakEvent
+import cat.freya.khs.event.PlaceEvent
 import cat.freya.khs.event.onBreak
+import cat.freya.khs.event.onPlace
 import cat.freya.khs.mod.KhsMod
 import cat.freya.khs.mod.ModPlayer
 import dev.architectury.event.EventResult
@@ -16,6 +18,10 @@ class BreakListener(val mod: KhsMod) {
             handleBreak(player as ServerPlayer, state.block.name.string)
         }
 
+        BlockEvent.PLACE.register { _, _, state, player ->
+            handlePlace(player as ServerPlayer, state.block.name.string)
+        }
+
         InteractionEvent.INTERACT_ENTITY.register { player, entity, _ ->
             val type =
                 runCatching { EntityType.getKey(entity.type) }.getOrDefault(null) ?: return@register EventResult.pass()
@@ -28,6 +34,14 @@ class BreakListener(val mod: KhsMod) {
         val khsPlayer = ModPlayer(mod, player)
         val khsEvent = BreakEvent(mod.khs, khsPlayer, block)
         onBreak(khsEvent)
+
+        return eventResult(khsEvent)
+    }
+
+    private fun handlePlace(player: ServerPlayer, block: String): EventResult {
+        val khsPlayer = ModPlayer(mod, player)
+        val khsEvent = PlaceEvent(mod.khs, khsPlayer, block)
+        onPlace(khsEvent)
 
         return eventResult(khsEvent)
     }

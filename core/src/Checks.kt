@@ -2,9 +2,9 @@ package cat.freya.khs
 
 import cat.freya.khs.game.Game
 import cat.freya.khs.game.KhsMap
-import cat.freya.khs.world.MAP_SAVE_PREFIX
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.Position
+import cat.freya.khs.world.isMapSave
 
 class Checks(val plugin: Khs, val player: Player) {
     /** checks if there exists a map that is set up */
@@ -124,7 +124,7 @@ class Checks(val plugin: Khs, val player: Player) {
     /** Checks if a world is valid for a map */
     fun worldValid(worldName: String) {
         worldExists(worldName)
-        if (worldName.startsWith(MAP_SAVE_PREFIX)) {
+        if (isMapSave(worldName)) {
             error(plugin.locale.world.doesntExist.with(worldName))
         }
     }

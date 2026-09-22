@@ -2,6 +2,7 @@ package cat.freya.khs.game
 
 import cat.freya.khs.Khs
 import cat.freya.khs.config.MapConfig
+import cat.freya.khs.type.Id
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.MAP_SAVE_PREFIX
 import cat.freya.khs.world.Position
@@ -27,7 +28,13 @@ class KhsMap(val name: String, var config: MapConfig, var plugin: Khs) {
 
     fun reloadConfig() {
         worldName = config.world ?: error("map '$name' has no world set!")
-        gameWorldName = if (plugin.config.mapSaveEnabled) "$MAP_SAVE_PREFIX$name" else worldName
+        gameWorldName = worldName
+        if (plugin.config.mapSaveEnabled) {
+            val id = Id(worldName)
+            val path = "${MAP_SAVE_PREFIX}${name}"
+            gameWorldName = id.changePath(path).inner
+        }
+
         gameSpawn = config.spawns.game?.toLocation(gameWorldName)
         lobbySpawn = config.spawns.lobby?.toLocation(worldName)
         seekerLobbySpawn = config.spawns.seeker?.toLocation(gameWorldName)

@@ -3,9 +3,11 @@ package cat.freya.khs.mod.event
 import cat.freya.khs.event.DropEvent
 import cat.freya.khs.event.HungerEvent
 import cat.freya.khs.event.RegenEvent
+import cat.freya.khs.event.RespawnEvent
 import cat.freya.khs.event.onDrop
 import cat.freya.khs.event.onHunger
 import cat.freya.khs.event.onRegen
+import cat.freya.khs.event.onRespawn
 import cat.freya.khs.mod.KhsMod
 import cat.freya.khs.mod.ModItem
 import cat.freya.khs.mod.ModPlayer
@@ -27,6 +29,10 @@ class PlayerListener(val mod: KhsMod) {
 
         PlayerEvent.DROP_ITEM.register { player, itemEntity ->
             handleDrop(player as ServerPlayer, itemEntity)
+        }
+
+        PlayerEvent.PLAYER_RESPAWN.register { player, _, _ ->
+            handleRespawn(player as ServerPlayer)
         }
     }
 
@@ -72,5 +78,11 @@ class PlayerListener(val mod: KhsMod) {
         onDrop(khsEvent)
 
         return eventResult(khsEvent)
+    }
+
+    private fun handleRespawn(player: ServerPlayer) {
+        val khsPlayer = ModPlayer(mod, player)
+        val khsEvent = RespawnEvent(mod.khs, khsPlayer)
+        onRespawn(khsEvent)
     }
 }

@@ -332,7 +332,7 @@ style:
   UnusedParameter:
     active: true
     aliases:
-      - "UNUSED"
+      - "UNUSED_PARAMETER"
   UnusedPrivateClass:
     active: true
   UnusedPrivateFunction:

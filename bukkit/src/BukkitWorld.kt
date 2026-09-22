@@ -47,12 +47,12 @@ private class VoidGenerator : ChunkGenerator() {
     }
 
     // 1.8
-    @Suppress("UNUSED")
+    @Suppress("UNUSED_PARAMETER")
     fun generate(world: org.bukkit.World, random: Random, x: Int, z: Int): ByteArray {
         return ByteArray(world.maxHeight / 16)
     }
 
-    @Suppress("DEPRECATION", "UNUSED")
+    @Suppress("DEPRECATION", "UNUSED_PARAMETER")
     fun generateBlockSections(
         world: org.bukkit.World,
         random: Random,

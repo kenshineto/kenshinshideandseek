@@ -1,5 +1,6 @@
 package cat.freya.khs.world
 
+import cat.freya.khs.type.Id
 import java.nio.file.Path
 
 /**
@@ -75,5 +76,9 @@ data class WorldInfo(
 )
 
 fun isMapSave(worldName: String): Boolean {
-    return worldName.startsWith(MAP_SAVE_PREFIX)
+    return isMapSave(Id(worldName))
+}
+
+fun isMapSave(worldName: Id): Boolean {
+    return worldName.path().startsWith(MAP_SAVE_PREFIX)
 }

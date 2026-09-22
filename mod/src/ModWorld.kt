@@ -195,14 +195,14 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : World {
 
             val key = ResourceKey.create(Registries.DIMENSION, id)
             val dimension = getDimension(type)
-            val generator = getGenerator(mod, id, type)
+            val generator = getGenerator(mod, worldName, type)
             val level = mod.platform.createLevel(key, dimension, generator)
             if (level == null) {
                 mod.shim.logger.warning("failed to load level: ${worldName} as ${type}")
                 return null
             }
 
-            if (isMapSave(id.path)) {
+            if (isMapSave(worldName)) {
                 level.noSave = true
             }
 
@@ -211,11 +211,11 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : World {
             return level
         }
 
-        private fun getGenerator(mod: KhsMod, id: Identifier, type: World.Type): ChunkGenerator {
+        private fun getGenerator(mod: KhsMod, worldName: String, type: World.Type): ChunkGenerator {
             val server = mod.server.inner
             val defaultGen = server.overworld().chunkSource.generator
 
-            if (isMapSave(id.path)) {
+            if (isMapSave(worldName)) {
                 return voidGenerator(mod)
             }
 

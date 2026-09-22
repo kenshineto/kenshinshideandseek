@@ -21,6 +21,8 @@ class KhsMod(val platform: ModPlatform) {
         CommandRegistrationEvent.EVENT.register { dispatcher, _, _ ->
             ModCommand(this, khs.commandGroup, dispatcher)
         }
+
+        INSTANCE = this
     }
 
     // called once the minecraft
@@ -61,6 +63,9 @@ class KhsMod(val platform: ModPlatform) {
 
     companion object {
         const val ID: String = "khs"
+
+        var INSTANCE: KhsMod? = null
+            private set
 
         fun parseText(input: String): Component {
             var result = Component.empty()
