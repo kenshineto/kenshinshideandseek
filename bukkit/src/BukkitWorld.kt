@@ -128,6 +128,10 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : World 
         }
     }
 
+    override fun save() {
+        inner.save()
+    }
+
     companion object {
         fun folderNameToWorldName(shim: BukkitKhsShim, folderName: String): String {
             if (!shim.usingModernDimensionFormat()) return folderName

@@ -62,6 +62,9 @@ interface World {
      * WARNING: The handle to this object may stil exist even if the world is unloaded
      */
     fun unload()
+
+    /** Save the contents of this world to disk */
+    fun save()
 }
 
 data class WorldInfo(
