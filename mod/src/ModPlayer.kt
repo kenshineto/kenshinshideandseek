@@ -6,8 +6,10 @@ import cat.freya.khs.menu.Inventory
 import cat.freya.khs.type.BlockType
 import cat.freya.khs.world.Location
 import cat.freya.khs.world.Player
+import it.unimi.dsi.fastutil.ints.IntArrayList
 import kotlin.runCatching
 import net.luckperms.api.LuckPermsProvider
+import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
@@ -20,6 +22,11 @@ import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.entity.projectile.FireworkRocketEntity
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
+import net.minecraft.world.item.component.FireworkExplosion
+import net.minecraft.world.item.component.Fireworks
 import net.minecraft.world.level.GameType
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.scores.DisplaySlot
@@ -214,6 +221,42 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), P
     }
 
     override fun taunt() {
-        // TODO:
+        val world = getWorld()
+        val pos = getLocation()
+
+        val stack = ItemStack(Items.FIREWORK_ROCKET)
+        stack.set(
+            DataComponents.FIREWORKS,
+            Fireworks(
+                4,
+                listOf(
+                    FireworkExplosion(
+                        FireworkExplosion.Shape.STAR,
+                        IntArrayList(intArrayOf(0x0000FF)),
+                        IntArrayList(),
+                        true,
+                        true,
+                    ),
+                    FireworkExplosion(
+                        FireworkExplosion.Shape.SMALL_BALL,
+                        IntArrayList(intArrayOf(0xFF0000)),
+                        IntArrayList(),
+                        true,
+                        true,
+                    ),
+                    FireworkExplosion(
+                        FireworkExplosion.Shape.LARGE_BALL,
+                        IntArrayList(intArrayOf(0xFFFF00)),
+                        IntArrayList(),
+                        true,
+                        true,
+                    ),
+                ),
+            ),
+        )
+
+        val firework = FireworkRocketEntity(world.inner, stack, pos.x, pos.y, pos.z, false)
+
+        world.inner.addFreshEntity(firework)
     }
 }
