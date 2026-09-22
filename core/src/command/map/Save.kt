@@ -2,7 +2,7 @@ package cat.freya.khs.command.map
 
 import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
-import cat.freya.khs.game.MapSaver
+import cat.freya.khs.game.MapSave
 import cat.freya.khs.runChecks
 import cat.freya.khs.world.Player
 
@@ -22,7 +22,7 @@ class KhsMapSave : Command {
         val map = plugin.maps[name] ?: return
         val dir = map.getWorldInfo()?.dir ?: return
 
-        MapSaver(plugin, map, dir).save()
+        MapSave(plugin, map, dir).save()
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> =

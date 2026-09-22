@@ -7,7 +7,7 @@ import java.nio.file.Paths
 import kotlin.error
 import kotlin.io.path.exists
 
-class MapSaver(val plugin: Khs, val map: KhsMap, val rootSrcDir: Path) {
+class MapSave(val plugin: Khs, val map: KhsMap, val rootSrcDir: Path) {
     private val bounds = map.getBounds()
 
     private val worldContainer = rootSrcDir.parent
