@@ -238,4 +238,8 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) : Buk
         )
         firework.fireworkMeta = meta
     }
+
+    override fun toString(): String {
+        return "BukkitPlayer[$name]"
+    }
 }

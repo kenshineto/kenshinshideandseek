@@ -3,6 +3,9 @@
 kotlin = "2.4.+"
 kotlinx-coroutines = "1.+"
 
+# java
+java = "25"
+
 # tests
 junit = "6.+"
 mockito = "5.+"
@@ -42,7 +45,7 @@ architectury-plugin = "3.5-SNAPSHOT"
 
 # fabric
 fabric-loader = "0.14.+"
-fantasy = "0.8.+"
+fantasy = "0.8.4+26.3"
 
 # neoforge
 neoforge = "26.3.0.6-beta"

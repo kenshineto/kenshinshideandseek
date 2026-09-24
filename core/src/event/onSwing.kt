@@ -16,7 +16,7 @@ private const val BLOCKHUNT_MAX_REACH: Double = 5.0
  */
 private val debounce: MutableSet<UUID> = mutableSetOf()
 
-data class SwingEvent(val plugin: Khs, val player: Player) : Event()
+data class SwingEvent(val plugin: Khs, val player: Player) : Event(plugin)
 
 private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
     val player = disguise.player ?: return
@@ -51,6 +51,7 @@ private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
 
 fun onSwing(event: SwingEvent) {
     val (plugin, player) = event
+    event.debug()
 
     // ray cast to detect for
     // disguises
@@ -62,7 +63,9 @@ fun onSwing(event: SwingEvent) {
     val disguise =
         plugin.disguiser
             .mapDisguises { disguise ->
-                val loc = disguise.getCurrentBlockLocation() ?: return@mapDisguises null
+                // get location without offset, we want the location to
+                // be the middle of the player/block
+                val loc = disguise.getCurrentBlockLocation(false) ?: return@mapDisguises null
 
                 // make aabb
                 val vector = loc.toPosition().toVector()

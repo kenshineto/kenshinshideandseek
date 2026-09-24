@@ -21,7 +21,7 @@ class MovementListener(val mod: KhsMod) {
         val to = player.getLocation()
         val from = savedPrevLocation[player.uuid] ?: to
 
-        if (from.worldName == to.worldName) {
+        if (from.worldName == to.worldName && from.toPosition() != to.toPosition()) {
             val khsEvent = MoveEvent(mod.khs, player, from.toPosition(), to.toPosition())
             onMove(khsEvent)
 

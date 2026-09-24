@@ -22,4 +22,8 @@ data class Location(
     fun clone(): Location {
         return Location(x, y, z, worldName, yaw, pitch)
     }
+
+    override fun toString(): String {
+        return "Location[$x,$y,$z,$worldName]"
+    }
 }

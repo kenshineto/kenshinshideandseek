@@ -29,6 +29,7 @@ val modTypes =
         enchantedBook = "minecraft:enchanted_book",
         playerHead = "minecraft:player_head",
         skeletonSkull = "minecraft:skeleton_skull",
+        firework = "minecraft:firework_rocket",
         // Armor
         leatherHelmet = "minecraft:leather_helmet",
         leatherChestplate = "minecraft:leather_chestplate",
@@ -47,7 +48,7 @@ val modTypes =
         anvilLand = "minecraft:block.anvil.land",
         // Effects
         dolphinsGrace = "minecraft:dolphins_grace",
-        instantHeal = "minecraft:instant_heal",
+        instantHeal = "minecraft:instant_health",
         jumpBoost = "minecraft:jump_boost",
         regen = "minecraft:regeneration",
         speedBoost = "minecraft:speed",

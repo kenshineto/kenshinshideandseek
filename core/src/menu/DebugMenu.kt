@@ -14,6 +14,7 @@ class DebugMenu(val plugin: Khs) {
     private val removeDisguise = ItemConfig("&cRemove disguise", plugin.types.barrier)
     private val hideSelf = ItemConfig("&cHide self", plugin.types.redWool)
     private val showSelf = ItemConfig("&cShow self", plugin.types.greenWool)
+    private val tauntSelf = ItemConfig("&eTaunt self", plugin.types.firework)
 
     private val actions: Map<ItemConfig, (Player) -> Unit> =
         linkedMapOf(
@@ -24,6 +25,7 @@ class DebugMenu(val plugin: Khs) {
             removeDisguise to ::handleRemoveDisguise,
             hideSelf to ::handleHideSelf,
             showSelf to ::handleShowSelf,
+            tauntSelf to ::handleTauntSelf,
         )
 
     private fun handleBecomeHider(player: Player) {
@@ -55,6 +57,10 @@ class DebugMenu(val plugin: Khs) {
 
     private fun handleShowSelf(player: Player) {
         plugin.entityHider.showEntity(player)
+    }
+
+    private fun handleTauntSelf(player: Player) {
+        player.taunt()
     }
 
     fun create(): Inventory? {

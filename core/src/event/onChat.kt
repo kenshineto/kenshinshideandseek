@@ -3,11 +3,12 @@ package cat.freya.khs.event
 import cat.freya.khs.Khs
 import cat.freya.khs.world.Player
 
-data class ChatEvent(val plugin: Khs, val player: Player, val msg: String) : Event()
+data class ChatEvent(val plugin: Khs, val player: Player, val msg: String) : Event(plugin)
 
 fun onChat(event: ChatEvent) {
     val (plugin, player, msg) = event
     val game = plugin.game
+    event.debug()
 
     if (!game.teams.isSpectator(player.uuid)) return
 

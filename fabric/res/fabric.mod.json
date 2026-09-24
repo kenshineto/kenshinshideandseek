@@ -2,12 +2,13 @@
     "schemaVersion": 1,
     "depends": {
         "minecraft": "~${minecraft}",
-        "java": ">=25",
-        "packetevents": ">=${packetevents}",
-        "fantasy": ">=${fantasy}",
+        "java": "^${java}",
+        "packetevents": "^${packetevents}",
+        "fantasy": "^${fantasy}",
         "fabricloader": ">=${fabricloader}",
         "fabric-language-kotlin": "*",
-        "architectury": ">=${architectury}"
+        "architectury": "^${architectury}",
+        "org_jetbrains_kotlin_kotlin-stdlib": "^${kotlin}"
     },
     "icon": "assets/logo.png",
     "description": "The Best Hide and Seek and Block Hunt mod for Minecraft",

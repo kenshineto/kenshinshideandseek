@@ -185,6 +185,10 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : World {
         inner.save(null, true, inner.noSave)
     }
 
+    override fun toString(): String {
+        return "ModWorld[$name,$type]"
+    }
+
     companion object {
         fun createLevel(mod: KhsMod, worldName: String, type: World.Type): ServerLevel? {
             val id = Identifier.tryParse(worldName)

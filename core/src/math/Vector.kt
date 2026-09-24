@@ -21,4 +21,8 @@ data class Vector(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0)
     fun clone(): Vector {
         return Vector(x, y, z)
     }
+
+    companion object {
+        val ZERO = Vector(0.0, 0.0, 0.0)
+    }
 }

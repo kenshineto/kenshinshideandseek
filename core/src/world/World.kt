@@ -66,6 +66,8 @@ interface World {
 
     /** Save the contents of this world to disk */
     fun save()
+
+    override fun toString(): String
 }
 
 data class WorldInfo(

@@ -58,11 +58,15 @@ class TestWorld(override val name: String, override val type: World.Type) : Worl
     override fun unload() {}
 
     override fun save() {}
+
+    override fun toString() = "TestWorld[$name,$type]"
 }
 
 class TestItem(override val config: ItemConfig) : Item {
     override val name = config.material
     override val platformType = name
+
+    override fun toString() = "TestItem[$name,$platformType]"
 }
 
 open class TestInventory(override val title: String?, val size: UInt) : Inventory {
@@ -277,6 +281,8 @@ class TestPlayer(val shim: TestShim, override val name: String, override val uui
     override fun taunt() {}
 
     override fun title(title: String, subTitle: String) {}
+
+    override fun toString() = "TestPlayer[$name]"
 }
 
 abstract class TestShim : AbstractKhsShim("test") {
@@ -352,6 +358,7 @@ private val testTypes =
         enchantedBook = "minecraft:enchanted_book",
         playerHead = "minecraft:player_head",
         skeletonSkull = "minecraft:skeleton_skull",
+        firework = "minecraft:firework_rocket",
         // Armor
         leatherHelmet = "minecraft:leather_helmet",
         leatherChestplate = "minecraft:leather_chestplate",

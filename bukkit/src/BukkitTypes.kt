@@ -29,6 +29,7 @@ fun bukkitTypes(plugin: KhsPlugin) =
         enchantedBook = "ENCHANTED_BOOK",
         playerHead = "PLAYER_HEAD",
         skeletonSkull = "SKELETON_SKULL",
+        firework = "FIREWORK_ROCKET",
         // Armor
         leatherHelmet = "LEATHER_HELMET",
         leatherChestplate = "LEATHER_CHESTPLATE",

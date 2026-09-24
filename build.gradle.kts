@@ -101,7 +101,7 @@ subprojects {
         when (project.name) {
             "neoforge",
             "fabric",
-            "mod" -> 25
+            "mod" -> getJavaVersion()
             else -> 8
         }
 
@@ -123,7 +123,7 @@ subprojects {
 
     // tests always need to use the latest jvm version so that
     // junit can function
-    val testJvmVersion = 25
+    val testJvmVersion = getJavaVersion()
     val mockitoAgent = configurations.create("mockitoAgent")
 
     tasks.test {

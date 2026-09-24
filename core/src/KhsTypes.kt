@@ -26,6 +26,7 @@ data class KhsTypes(
     val enchantedBook: String,
     val playerHead: String,
     val skeletonSkull: String,
+    val firework: String,
     // Armor
     val leatherHelmet: String,
     val leatherChestplate: String,

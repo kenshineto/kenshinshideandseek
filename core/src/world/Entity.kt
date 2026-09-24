@@ -77,4 +77,6 @@ interface Entity {
 
         return EntityTypes.getByName(mcType)
     }
+
+    override fun toString(): String
 }

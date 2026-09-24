@@ -1,15 +1,20 @@
 package cat.freya.khs.mod.mixin
 
 import cat.freya.khs.event.CommandEvent
+import cat.freya.khs.event.DropEvent
 import cat.freya.khs.event.KickEvent
 import cat.freya.khs.event.SwingEvent
 import cat.freya.khs.event.onCommand
+import cat.freya.khs.event.onDrop
 import cat.freya.khs.event.onKick
 import cat.freya.khs.event.onSwing
 import cat.freya.khs.mod.KhsMod
+import cat.freya.khs.mod.ModItem
 import cat.freya.khs.mod.ModPlayer
 import net.minecraft.network.DisconnectionDetails
 import net.minecraft.network.protocol.game.ServerboundChatCommandPacket
+import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket
+import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket.Action
 import net.minecraft.network.protocol.game.ServerboundPunchPacket
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.network.ServerGamePacketListenerImpl
@@ -52,10 +57,28 @@ abstract class ServerGamePacketListenerImplMixin {
         val mod = KhsMod.INSTANCE ?: return
 
         val khsPlayer = ModPlayer(mod, player)
-        val event = KickEvent(mod.khs, khsPlayer, details.reason().toString())
+        val event = KickEvent(mod.khs, khsPlayer, details.reason().string)
         onKick(event)
 
         if (event.cancelled) {
+            ci.cancel()
+        }
+    }
+
+    @Inject(method = ["handlePlayerAction"], at = [At("HEAD")], cancellable = true)
+    private fun onPlayerAction(packet: ServerboundPlayerActionPacket, ci: CallbackInfo) {
+        val mod = KhsMod.INSTANCE ?: return
+
+        // ignore other actions
+        if (packet.action != Action.DROP_ITEM && packet.action != Action.DROP_ALL_ITEMS) return
+
+        val item = ModItem.wrap(player.inventory.selectedItem) ?: return
+        val khsPlayer = ModPlayer(mod, player)
+        val event = DropEvent(mod.khs, khsPlayer, item)
+        onDrop(event)
+
+        if (event.cancelled) {
+            player.inventoryMenu.sendAllDataToRemote()
             ci.cancel()
         }
     }

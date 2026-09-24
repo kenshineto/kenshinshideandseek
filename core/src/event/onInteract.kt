@@ -3,11 +3,12 @@ package cat.freya.khs.event
 import cat.freya.khs.Khs
 import cat.freya.khs.world.Player
 
-data class InteractEvent(val plugin: Khs, val player: Player, val block: String?) : Event()
+data class InteractEvent(val plugin: Khs, val player: Player, val block: String?) : Event(plugin)
 
 fun onInteract(event: InteractEvent) {
     val (plugin, player, block) = event
     val game = plugin.game
+    event.debug()
 
     if (!game.teams.contains(player.uuid)) return
 

@@ -9,24 +9,25 @@ import cat.freya.khs.mod.ModPlayer
 import dev.architectury.event.EventResult
 import dev.architectury.event.events.common.BlockEvent
 import dev.architectury.event.events.common.InteractionEvent
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.EntityType
 
 class BreakListener(val mod: KhsMod) {
     init {
         BlockEvent.BREAK.register { _, _, state, player ->
-            handleBreak(player as ServerPlayer, state.block.name.string)
+            val id = BuiltInRegistries.BLOCK.getKey(state.block)
+            handleBreak(player as ServerPlayer, id.toString())
         }
 
         BlockEvent.PLACE.register { _, _, state, player ->
-            handlePlace(player as ServerPlayer, state.block.name.string)
+            val id = BuiltInRegistries.BLOCK.getKey(state.block)
+            handlePlace(player as ServerPlayer, id.toString())
         }
 
         InteractionEvent.INTERACT_ENTITY.register { player, entity, _ ->
-            val type =
-                runCatching { EntityType.getKey(entity.type) }.getOrDefault(null) ?: return@register EventResult.pass()
-
-            handleBreak(player as ServerPlayer, type.toString())
+            val id = EntityType.getKey(entity.type)
+            handleBreak(player as ServerPlayer, id.toString())
         }
     }
 

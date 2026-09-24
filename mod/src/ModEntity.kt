@@ -1,5 +1,6 @@
 package cat.freya.khs.mod
 
+import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.math.Vector
 import cat.freya.khs.type.Effect
 import cat.freya.khs.world.Entity
@@ -7,7 +8,6 @@ import cat.freya.khs.world.Location
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.level.portal.TeleportTransition
 import net.minecraft.world.phys.Vec3
 import net.minecraft.world.scores.PlayerTeam
@@ -100,14 +100,24 @@ open class ModEntity(val mod: KhsMod, private val inner: net.minecraft.world.ent
     }
 
     override fun setSpeed(amplifier: UInt) {
-        val living = inner as? LivingEntity ?: return
-        val attribute = living.getAttribute(Attributes.MOVEMENT_SPEED)
-
-        if (attribute != null) attribute.baseValue = 0.1 * amplifier.toFloat()
+        val config =
+            EffectConfig(
+                type = "minecraft:speed",
+                duration = 1000000u,
+                amplifier = amplifier,
+                ambient = false,
+                particles = false,
+            )
+        val effect = ModEffect.parse(config) ?: return
+        giveEffect(effect)
     }
 
     override fun destroy() {
         val reason = net.minecraft.world.entity.Entity.RemovalReason.DISCARDED
         inner.remove(reason)
+    }
+
+    override fun toString(): String {
+        return "ModEntity[$entityId,$mcType]"
     }
 }

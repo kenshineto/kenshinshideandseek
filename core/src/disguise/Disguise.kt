@@ -1,6 +1,7 @@
 package cat.freya.khs.disguise
 
 import cat.freya.khs.Khs
+import cat.freya.khs.math.Vector
 import cat.freya.khs.packet.BlockChangePacket
 import cat.freya.khs.packet.EntityTeleportPacket
 import cat.freya.khs.type.BlockType
@@ -44,7 +45,11 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val blockType: BlockTyp
         player.setCollides(false)
     }
 
-    abstract fun createBlock(location: Location): Entity?
+    protected abstract fun createBlock(location: Location): Entity?
+
+    protected open fun getBlockOffset(): Vector {
+        return Vector.ZERO
+    }
 
     private fun destroyBlock() {
         block?.destroy()
@@ -101,14 +106,22 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val blockType: BlockTyp
         }
     }
 
-    fun getCurrentBlockLocation(): Location? {
+    fun getCurrentBlockLocation(offset: Boolean = true): Location? {
         val player = player ?: return null
         val loc = player.getLocation().clone()
+
         if (isSolid) {
             // center the block
             loc.x = round(loc.x + 0.5) - 0.5
             loc.y = round(loc.y)
             loc.z = round(loc.z + 0.5) - 0.5
+        }
+
+        if (offset) {
+            val offset = getBlockOffset()
+            loc.x += offset.x
+            loc.y += offset.y
+            loc.z += offset.z
         }
 
         return loc

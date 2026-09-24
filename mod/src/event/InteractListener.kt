@@ -10,6 +10,7 @@ import cat.freya.khs.mod.ModPlayer
 import dev.architectury.event.EventResult
 import dev.architectury.event.events.common.InteractionEvent
 import net.minecraft.core.BlockPos
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
 
@@ -33,13 +34,14 @@ class InteractListener(val mod: KhsMod) {
     }
 
     private fun handleInteract(player: ServerPlayer, pos: BlockPos?): EventResult {
-        val block = pos?.let { player.level().getBlockState(it) }
+        val state = pos?.let { player.level().getBlockState(it) } ?: return EventResult.pass()
+        val id = BuiltInRegistries.BLOCK.getKey(state.block)
 
         val khsPlayer = ModPlayer(mod, player)
-        val khsEvent = InteractEvent(mod.khs, khsPlayer, block?.block?.name?.string)
+        val khsEvent = InteractEvent(mod.khs, khsPlayer, id.toString())
         onInteract(khsEvent)
 
-        return if (khsEvent.cancelled) EventResult.interruptFalse() else EventResult.pass()
+        return eventResult(khsEvent)
     }
 
     private fun handleUse(player: ServerPlayer, hand: InteractionHand): EventResult {
@@ -50,6 +52,6 @@ class InteractListener(val mod: KhsMod) {
         val khsEvent = UseEvent(mod.khs, khsPlayer, khsItem)
         onUse(khsEvent)
 
-        return if (khsEvent.cancelled) EventResult.interruptFalse() else EventResult.pass()
+        return eventResult(khsEvent)
     }
 }

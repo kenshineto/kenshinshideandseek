@@ -120,4 +120,6 @@ interface Player : Entity {
 
     /** Spawn a taunt (usually a firework), at the location of the player to give away their location */
     fun taunt()
+
+    override fun toString(): String
 }

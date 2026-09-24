@@ -19,6 +19,10 @@ class BukkitItem(val inner: ItemStack, override val config: ItemConfig) : Item {
         return inner.isSimilar(item.inner)
     }
 
+    override fun toString(): String {
+        return "BukkitItem[$name,$platformType]"
+    }
+
     companion object {
         fun parse(itemConfig: ItemConfig): BukkitItem? {
             val config = YamlConfiguration()

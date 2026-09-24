@@ -4,11 +4,12 @@ import cat.freya.khs.Khs
 import cat.freya.khs.game.Game
 import cat.freya.khs.world.Player
 
-data class CommandEvent(val plugin: Khs, val player: Player, val msg: String) : Event()
+data class CommandEvent(val plugin: Khs, val player: Player, val msg: String) : Event(plugin)
 
 fun onCommand(event: CommandEvent) {
     val (plugin, player, msg) = event
     val game = plugin.game
+    event.debug()
 
     if (!game.teams.contains(player.uuid) || game.status == Game.Status.LOBBY) return
 

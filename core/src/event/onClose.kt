@@ -5,11 +5,12 @@ import cat.freya.khs.menu.Inventory
 import cat.freya.khs.world.Player
 import kotlin.text.startsWith
 
-data class CloseEvent(val plugin: Khs, val player: Player, val inventory: Inventory) : Event()
+data class CloseEvent(val plugin: Khs, val player: Player, val inventory: Inventory) : Event(plugin)
 
 fun onClose(event: CloseEvent) {
     val (plugin, player, inv) = event
     val game = plugin.game
+    event.debug()
 
     // only block hunt matters here
     if (inv.title?.startsWith(plugin.locale.menu.blockHuntPrefix) != true) return

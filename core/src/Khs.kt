@@ -375,4 +375,8 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
             }
             .getOrDefault(null)
     }
+
+    override fun toString(): String {
+        return "Khs[${shim.platform}]"
+    }
 }

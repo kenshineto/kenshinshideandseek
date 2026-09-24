@@ -34,6 +34,10 @@ data class Position(
     fun clone(): Position {
         return Position(x, y, z, yaw, pitch)
     }
+
+    override fun toString(): String {
+        return "Position[$x,$y,$z]"
+    }
 }
 
 fun Vector3d.toPosition() = Position(x, y, z)

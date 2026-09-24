@@ -9,6 +9,10 @@ class BukkitEffect(val inner: PotionEffect, override val config: EffectConfig) :
     @Suppress("DEPRECATION") override val name = inner.type.name
     override val platformType = inner.type.toString()
 
+    override fun toString(): String {
+        return "BukkitEffect[$platformType]"
+    }
+
     companion object {
         fun parse(config: EffectConfig): BukkitEffect? {
             @Suppress("DEPRECATION") val type = PotionEffectType.getByName(config.type.uppercase()) ?: return null

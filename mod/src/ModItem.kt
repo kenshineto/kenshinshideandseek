@@ -15,12 +15,28 @@ import net.minecraft.world.item.component.ResolvableProfile
 
 class ModItem(
     val inner: ItemStack,
+    val id: Identifier,
     override val config: ItemConfig,
 ) : Item {
     override val name: String = inner.displayName.string
 
-    private val mcType = BuiltInRegistries.ITEM.getId(inner.item).toString()
+    private val mcType = id.toString()
     override val platformType = mcType
+
+    override fun similar(config: ItemConfig): Boolean {
+        val server = KhsMod.INSTANCE?.server ?: return false
+        val item = ModItem.parse(server, config) ?: return false
+        return ItemStack.matches(inner, item.inner)
+    }
+
+    override fun similar(platformType: String): Boolean {
+        val id = Identifier.tryParse(platformType)
+        return this.platformType == id?.toString()
+    }
+
+    override fun toString(): String {
+        return "ModItem[$name,$platformType]"
+    }
 
     companion object {
         fun parse(server: ModServer, itemConfig: ItemConfig): ModItem? {
@@ -64,18 +80,13 @@ class ModItem(
                 }
             }
 
-            return ModItem(stack, itemConfig)
+            return ModItem(stack, id, itemConfig)
         }
 
         fun wrap(stack: ItemStack?): ModItem? {
             if (stack == null) return null
 
             val id = BuiltInRegistries.ITEM.getKey(stack.item)
-            if (id == null) {
-                println("failted to get key for ${stack.item}")
-                return null
-            }
-
             val config = ItemConfig()
             config.name = stack.displayName.string
             config.material = id.toString()
@@ -87,7 +98,7 @@ class ModItem(
                     enchant.registeredName to level.toUInt()
                 } ?: emptyMap()
 
-            return ModItem(stack, config)
+            return ModItem(stack, id, config)
         }
     }
 }

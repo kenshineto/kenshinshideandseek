@@ -8,12 +8,13 @@ data class DamageEvent(
     val player: Player,
     val attacker: Player?,
     val damage: Double,
-) : Event()
+) : Event(plugin)
 
 /** If the players are not in the game, then we should not care about the event */
 private fun eventHasJurisdiction(event: DamageEvent): Boolean {
     val (plugin, player, attacker, _) = event
     val game = plugin.game
+    event.debug()
 
     if (game.teams.contains(player.uuid)) return true
 

@@ -5,11 +5,12 @@ import cat.freya.khs.game.Game
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.Position
 
-data class MoveEvent(val plugin: Khs, val player: Player, val from: Position, val to: Position) : Event()
+data class MoveEvent(val plugin: Khs, val player: Player, val from: Position, val to: Position) : Event(plugin)
 
 fun onMove(event: MoveEvent) {
     val (plugin, player, _, to) = event
     val game = plugin.game
+    event.debug()
 
     if (!game.teams.contains(player.uuid)) return
 

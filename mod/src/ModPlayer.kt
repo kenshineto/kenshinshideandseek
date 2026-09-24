@@ -1,5 +1,7 @@
 package cat.freya.khs.mod
 
+import cat.freya.khs.event.ClickEvent
+import cat.freya.khs.event.onClick
 import cat.freya.khs.game.Board
 import cat.freya.khs.math.Vector
 import cat.freya.khs.menu.Inventory
@@ -12,8 +14,8 @@ import net.luckperms.api.LuckPermsProvider
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
+import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
-import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket
@@ -29,7 +31,6 @@ import net.minecraft.world.item.component.FireworkExplosion
 import net.minecraft.world.item.component.Fireworks
 import net.minecraft.world.level.GameType
 import net.minecraft.world.phys.HitResult
-import net.minecraft.world.scores.DisplaySlot
 
 class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), Player {
     override val name: String = inner.name.string
@@ -93,8 +94,8 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), P
     }
 
     override fun showInventory(inv: Inventory) {
-        val fabricInv = inv as? ModInventory ?: return
-        val title = KhsMod.parseText(fabricInv.title ?: "")
+        val modInv = inv as? ModInventory ?: return
+        val title = KhsMod.parseText(modInv.title ?: "")
 
         // close if inventory already open
         if (inner.containerMenu != inner.inventoryMenu) {
@@ -102,12 +103,22 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), P
             inner.connection.send(packet)
         }
 
-        val type = fabricInv.getMenuType()
-        val menu = fabricInv.createMenu(inner)
-        val packet = ClientboundOpenScreenPacket(menu.containerId, type, title)
-        inner.connection.send(packet)
+        val type = modInv.getMenuType()
+        val menu = modInv.createMenu(inner)
+        val openPacket = ClientboundOpenScreenPacket(menu.containerId, type, title)
+        val syncPacket = ClientboundContainerSetContentPacket(menu.containerId, menu.stateId, menu.items, menu.carried)
+        inner.connection.send(openPacket)
+        inner.connection.send(syncPacket)
         inner.containerMenu = menu
-        inner.initInventoryMenu()
+
+        // handle click events
+        val player = this
+        menu.listeners.add { slot ->
+            val item = modInv.get(slot.toUInt()) ?: return@add false
+            val event = ClickEvent(mod.khs, player, modInv, item)
+            onClick(event)
+            event.cancelled
+        }
     }
 
     override fun closeInventory() {
@@ -131,8 +142,18 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), P
     }
 
     override fun playSound(sound: String, volume: Double, pitch: Double) {
-        val id = Identifier.tryParse(name) ?: return
-        val holder = BuiltInRegistries.SOUND_EVENT.get(id).orElse(null) ?: return
+        val id = Identifier.tryParse(sound)
+        if (id == null) {
+            mod.shim.logger.warning("invalid sound id: ${sound}")
+            return
+        }
+
+        val holder = BuiltInRegistries.SOUND_EVENT.get(id).orElse(null)
+        if (holder == null) {
+            mod.shim.logger.warning("invalid sound: ${id}")
+            return
+        }
+
         val packet =
             ClientboundSoundPacket(
                 holder,
@@ -210,14 +231,13 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), P
     }
 
     override fun getScoreBoard(): ModBoard {
-        return mod.server.getScoreBoard(uuid)
+        return mod.server.getPlayerScoreBoard(uuid)
     }
 
     override fun setScoreBoard(board: Board?) {
-        val fabricBoard = board as? ModBoard ?: return
-        val objective = mod.server.setScoreBoard(this, fabricBoard)
-        val packet = ClientboundSetDisplayObjectivePacket(DisplaySlot.SIDEBAR, objective)
-        inner.connection.send(packet)
+        val modBoard = board as? ModBoard ?: return
+        mod.server.setScoreBoard(uuid, modBoard)
+        modBoard.sendTo(inner)
     }
 
     override fun taunt() {
@@ -258,5 +278,9 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), P
         val firework = FireworkRocketEntity(world.inner, stack, pos.x, pos.y, pos.z, false)
 
         world.inner.addFreshEntity(firework)
+    }
+
+    override fun toString(): String {
+        return "ModPlayer[$name]"
     }
 }

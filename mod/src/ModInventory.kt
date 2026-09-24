@@ -62,7 +62,7 @@ class ModContainer(val size: UInt, val title: String) : Container {
     }
 }
 
-typealias ClickEvent = (ServerPlayer, ModInventory, Int) -> Boolean
+typealias ClickEvent = (Int) -> Boolean
 
 class ModMenu(val player: ServerPlayer, val inv: ModInventory) :
     ChestMenu(inv.getMenuType(), -1, player.inventory, inv.container, inv.container.containerSize / 9) {
@@ -75,7 +75,7 @@ class ModMenu(val player: ServerPlayer, val inv: ModInventory) :
         _player: net.minecraft.world.entity.player.Player,
     ) {
         listeners.forEach { fn ->
-            if (fn(player, inv, slotId)) {
+            if (fn(slotId)) {
                 return
             }
         }

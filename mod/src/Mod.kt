@@ -51,7 +51,6 @@ class KhsMod(val platform: ModPlatform) {
     private fun registerListeners() {
         BreakListener(this)
         ChatListener(this)
-        // TODO: CommandListener(this)
         DamageListener(this)
         InteractListener(this)
         InventoryListener(this)

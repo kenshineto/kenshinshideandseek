@@ -15,11 +15,12 @@ data class ClickEvent(
     val player: Player,
     val inventory: Inventory,
     val clicked: Item,
-) : Event()
+) : Event(plugin)
 
 fun onClick(event: ClickEvent) {
     val (plugin, player, inv, item) = event
     val game = plugin.game
+    event.debug()
 
     // don't allow interactions in the lobby
     if (game.teams.contains(player.uuid) && game.status == Game.Status.LOBBY) {

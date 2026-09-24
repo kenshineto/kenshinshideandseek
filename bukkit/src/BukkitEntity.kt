@@ -108,4 +108,8 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
 
         runCatching { inner.remove() }
     }
+
+    override fun toString(): String {
+        return "BukkitEntity[${entityId},${inner.type}]"
+    }
 }

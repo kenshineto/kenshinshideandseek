@@ -14,4 +14,8 @@ class BlockType(val mcType: String, val platformType: String) {
         // parse 1.13+ resource key
         return StateTypes.getByName(mcType)?.createBlockState()?.globalId
     }
+
+    override fun toString(): String {
+        return "BlockType[$platformType]"
+    }
 }

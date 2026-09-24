@@ -17,4 +17,6 @@ interface Effect {
     fun similar(platformType: String): Boolean {
         return this.platformType == platformType
     }
+
+    override fun toString(): String
 }

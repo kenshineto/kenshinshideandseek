@@ -4,12 +4,17 @@ import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.tasks.TaskProvider
 
+fun Project.getJavaVersion(): Int {
+    return getVersion("java").toInt()
+}
+
 fun Project.getVersion(name: String): String {
-    val libs = extensions
+    val libs = rootProject.
+        extensions
         .getByType(VersionCatalogsExtension::class.java)
         .named("libs")
 
-    return libs.findVersion(name).get().requiredVersion.replace(".+", "")
+    return libs.findVersion(name).get().requiredVersion.replace(".+", "").split("+")[0]
 }
 
 fun Project.getBuildInfo(): Map<String, Any> = mapOf(
@@ -25,6 +30,8 @@ fun Project.getBuildInfo(): Map<String, Any> = mapOf(
     "packetevents" to getVersion("packetevents"),
     "architectury" to getVersion("architectury"),
     "fantasy" to getVersion("fantasy"),
+    "kotlin" to getVersion("kotlin"),
+    "java" to getVersion("java"),
 
     // telemetry
     "telemetry" to providers.gradleProperty("khs.telemetry").map(String::toBoolean).getOrElse(false),
