@@ -85,8 +85,6 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
         out.writeUTF("Connect")
         out.writeUTF(plugin.khs.config.leaveServer)
         player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray())
-
-        // TODO: check if there was an error...
         return true
     }
 

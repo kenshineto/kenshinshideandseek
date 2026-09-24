@@ -80,7 +80,7 @@ class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform.name) {
     }
 
     override fun sendPlayerToServer(uuid: UUID, server: String): Boolean {
-        // TODO:
+        // TODO: mod sendPlayerToServer
         return false
     }
 

@@ -9,12 +9,9 @@ interface Packet {
 
     fun send(player: Player) {
         runCatching {
-                val packet = create(player) ?: return
-                val handle = player.getHandle()
-                PacketEvents.getAPI().playerManager.sendPacket(handle, packet)
-            }
-            .onFailure {
-                // TODO: where to log error message?
-            }
+            val packet = create(player) ?: return
+            val handle = player.getHandle()
+            PacketEvents.getAPI().playerManager.sendPacket(handle, packet)
+        }
     }
 }

@@ -18,11 +18,11 @@ class KhsModNeoForge : ModPlatform("NeoForge") {
         dimension: ResourceKey<DimensionType>,
         generator: ChunkGenerator,
     ): ServerLevel? {
-        // TODO:
+        // TODO: neoforge createLevel
         return null
     }
 
     override fun unloadLevel(key: ResourceKey<Level>) {
-        // TODO:
+        // TODO: neoforge unloadLevel
     }
 }
