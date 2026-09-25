@@ -2,7 +2,6 @@ package cat.freya.khs.mod
 
 import cat.freya.khs.mod.internal.LevelManager
 import dev.architectury.event.events.common.LifecycleEvent
-import dev.architectury.event.events.common.PlayerEvent
 import dev.architectury.event.events.common.TickEvent
 import java.nio.file.Path
 import java.util.UUID
@@ -23,8 +22,7 @@ class ModServer(val mod: KhsMod) {
     private var levelManager: LevelManager? = null
     private val tasks: MutableSet<() -> Boolean> = mutableSetOf()
 
-    private val activeScoreBoards: MutableMap<UUID, String> = mutableMapOf()
-    private val playerSeenObjective: MutableMap<UUID, MutableSet<String>> = mutableMapOf()
+    private val activeObjectives: MutableMap<UUID, String> = mutableMapOf()
 
     // called when our mod is being initialized
     fun init() {
@@ -43,12 +41,6 @@ class ModServer(val mod: KhsMod) {
         LifecycleEvent.SERVER_BEFORE_START.register { server ->
             this.inner = server
             mod.init()
-        }
-
-        PlayerEvent.PLAYER_JOIN.register { player ->
-            synchronized(playerSeenObjective) {
-                playerSeenObjective.remove(player.uuid)
-            }
         }
     }
 
@@ -119,17 +111,6 @@ class ModServer(val mod: KhsMod) {
         return inner.getWorldPath(LevelResource("dimensions"))
     }
 
-    fun getPlayerScoreBoard(uuid: UUID): ModBoard {
-        val current = activeScoreBoards[uuid]
-        if (current != null) {
-            return getScoreBoard(current)
-        }
-
-        val scoreboard = inner.scoreboard
-        val objective = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR)
-        return ModBoard(mod, scoreboard, objective)
-    }
-
     fun getScoreBoard(objectiveName: String): ModBoard {
         val scoreboard = inner.scoreboard
         val objective =
@@ -146,24 +127,22 @@ class ModServer(val mod: KhsMod) {
         return ModBoard(mod, scoreboard, objective)
     }
 
-    fun setScoreBoard(uuid: UUID, board: ModBoard) {
-        if (board.objective == null) {
-            activeScoreBoards.remove(uuid)
-        } else {
-            activeScoreBoards[uuid] = board.objective.name
+    fun getPlayerScoreBoard(uuid: UUID): ModBoard {
+        val current = activeObjectives[uuid]
+        if (current != null) {
+            return getScoreBoard(current)
         }
+
+        val scoreboard = inner.scoreboard
+        val objective = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR)
+        return ModBoard(mod, scoreboard, objective)
     }
 
-    fun hasSeenObjective(uuid: UUID, objectiveName: String): Boolean {
-        synchronized(playerSeenObjective) {
-            val seen = playerSeenObjective[uuid] ?: mutableSetOf()
-            if (seen.contains(objectiveName)) return true
-
-            // mark as seen
-            seen.add(objectiveName)
-            playerSeenObjective[uuid] = seen
-
-            return false
+    fun setPlayerScoreBoard(uuid: UUID, board: ModBoard) {
+        if (board.objective == null) {
+            activeObjectives.remove(uuid)
+        } else {
+            activeObjectives[uuid] = board.objective.name
         }
     }
 

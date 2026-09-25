@@ -236,7 +236,7 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), P
 
     override fun setScoreBoard(board: Board?) {
         val modBoard = board as? ModBoard ?: return
-        mod.server.setScoreBoard(uuid, modBoard)
+        mod.server.setPlayerScoreBoard(uuid, modBoard)
         modBoard.sendTo(inner)
     }
 
