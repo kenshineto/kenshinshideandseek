@@ -23,7 +23,6 @@ allprojects {
         maven("https://maven.architectury.dev/")
         maven("https://repo.codemc.io/repository/maven-releases/")
         maven("https://repo.extendedclip.com/releases/")
-        maven("https://maven.nucleoid.xyz/")
     }
 
     apply(plugin = "com.diffplug.spotless")

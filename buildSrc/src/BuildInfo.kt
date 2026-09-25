@@ -29,7 +29,6 @@ fun Project.getBuildInfo(): Map<String, Any> = mapOf(
     "fabricloader" to getVersion("fabric-loader"),
     "packetevents" to getVersion("packetevents"),
     "architectury" to getVersion("architectury"),
-    "fantasy" to getVersion("fantasy"),
     "kotlin" to getVersion("kotlin"),
     "java" to getVersion("java"),
 

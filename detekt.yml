@@ -126,6 +126,7 @@ naming:
     active: true
   FunctionNaming:
     active: true
+    functionPattern: "(`?[a-z][a-zA-Z0-9$]*`?)"
   FunctionParameterNaming:
     active: true
   InvalidPackageDeclaration:
@@ -209,7 +210,7 @@ potential-bugs:
   IteratorHasNextCallsNextMethod:
     active: true
   IteratorNotThrowingNoSuchElementException:
-    active: true
+    active: false
   LateinitUsage:
     active: false
   MapGetWithNotNullAssertionOperator:

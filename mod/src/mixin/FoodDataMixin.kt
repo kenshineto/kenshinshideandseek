@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 abstract class FoodDataMixin {
 
     @Inject(method = ["tick"], at = [At("HEAD")], cancellable = true)
-    private fun onFoodDataTick(player: ServerPlayer, ci: CallbackInfo) {
+    private fun `khs$tick`(player: ServerPlayer, ci: CallbackInfo) {
         val mod = KhsMod.INSTANCE ?: return
 
         val khsPlayer = ModPlayer(mod, player)

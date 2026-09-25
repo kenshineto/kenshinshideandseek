@@ -1,33 +1,30 @@
 package cat.freya.khs.mod
 
+import cat.freya.khs.mod.internal.LevelManager
 import dev.architectury.event.events.common.LifecycleEvent
 import dev.architectury.event.events.common.PlayerEvent
 import dev.architectury.event.events.common.TickEvent
 import java.nio.file.Path
 import java.util.UUID
+import net.minecraft.core.MappedRegistry
+import net.minecraft.core.Registry
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.Identifier
 import net.minecraft.resources.ResourceKey
 import net.minecraft.server.MinecraftServer
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.storage.LevelResource
 import net.minecraft.world.scores.DisplaySlot
 import net.minecraft.world.scores.criteria.ObjectiveCriteria
 
 class ModServer(val mod: KhsMod) {
-    private var server: MinecraftServer? = null
-    private val tasks: MutableSet<() -> Boolean> = mutableSetOf()
+    lateinit var inner: MinecraftServer
 
-    private val levels: MutableMap<ResourceKey<Level>, ServerLevel> = mutableMapOf()
+    private var levelManager: LevelManager? = null
+    private val tasks: MutableSet<() -> Boolean> = mutableSetOf()
 
     private val activeScoreBoards: MutableMap<UUID, String> = mutableMapOf()
     private val playerSeenObjective: MutableMap<UUID, MutableSet<String>> = mutableMapOf()
-
-    // allow non-null access to MinecraftServer, but also add sanity
-    // checks
-    val inner: MinecraftServer
-        get() = server ?: error("inner called before initialization")
 
     // called when our mod is being initialized
     fun init() {
@@ -44,7 +41,7 @@ class ModServer(val mod: KhsMod) {
         }
 
         LifecycleEvent.SERVER_BEFORE_START.register { server ->
-            this.server = server
+            this.inner = server
             mod.init()
         }
 
@@ -86,6 +83,14 @@ class ModServer(val mod: KhsMod) {
         return inner.playerList.players.map { ModPlayer(mod, it) }
     }
 
+    fun levelManager(): LevelManager {
+        val levelManager = this.levelManager ?: LevelManager(this)
+        if (this.levelManager == null) {
+            this.levelManager = levelManager
+        }
+        return levelManager
+    }
+
     fun getWorld(name: String): ModWorld? {
         val id = Identifier.tryParse(name) ?: return null
         val key = ResourceKey.create(Registries.DIMENSION, id)
@@ -93,7 +98,7 @@ class ModServer(val mod: KhsMod) {
     }
 
     fun getWorld(key: ResourceKey<Level>): ModWorld? {
-        val level = inner.getLevel(key) ?: levels.get(key) ?: return null
+        val level = inner.getLevel(key) ?: levelManager().get(key) ?: return null
         return ModWorld(mod, level)
     }
 
@@ -101,13 +106,13 @@ class ModServer(val mod: KhsMod) {
         return inner.allLevels.map { ModWorld(mod, it) }
     }
 
-    fun registerLevel(level: ServerLevel) {
-        val id = level.dimension()
-        levels[id] = level
+    fun <T : Any> getRegistry(type: ResourceKey<out Registry<out T>>): Registry<T> {
+        val registries = mod.server.inner.registryAccess()
+        return registries.lookupOrThrow(type)
     }
 
-    fun unregisterLevel(id: ResourceKey<Level>) {
-        levels.remove(id)
+    fun <T : Any> getMappedRegistry(type: ResourceKey<out Registry<out T>>): MappedRegistry<T> {
+        return getRegistry(type) as MappedRegistry<T>
     }
 
     fun getWorldContainer(): Path {

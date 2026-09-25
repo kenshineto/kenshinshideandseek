@@ -24,7 +24,7 @@ class ModDisguise(val mod: KhsMod, uuid: UUID, blockType: BlockType) : Disguise(
         val type = BuiltInRegistries.BLOCK.getValue(id) ?: return null
         val state = type.defaultBlockState()
 
-        (block as BlockDisplayMixin).invokeSetBlockState(state)
+        (block as BlockDisplayMixin).`khs$setBlockState`(state)
 
         world.inner.addFreshEntity(block)
 

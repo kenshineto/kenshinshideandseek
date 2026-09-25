@@ -4,7 +4,6 @@
         "minecraft": "~${minecraft}",
         "java": "^${java}",
         "packetevents": "^${packetevents}",
-        "fantasy": "^${fantasy}",
         "fabricloader": ">=${fabricloader}",
         "fabric-language-kotlin": "*",
         "architectury": "^${architectury}",

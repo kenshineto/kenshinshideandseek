@@ -31,7 +31,7 @@ abstract class ServerGamePacketListenerImplMixin {
 
     @Suppress("UNUSED_PARAMETER")
     @Inject(method = ["handlePunch"], at = [At("HEAD")])
-    private fun onPlayerSwing(packet: ServerboundPunchPacket, ci: CallbackInfo) {
+    private fun `khs$handlePunch`(packet: ServerboundPunchPacket, ci: CallbackInfo) {
         val mod = KhsMod.INSTANCE ?: return
 
         val khsPlayer = ModPlayer(mod, player)
@@ -40,7 +40,7 @@ abstract class ServerGamePacketListenerImplMixin {
     }
 
     @Inject(method = ["handleChatCommand"], at = [At("HEAD")], cancellable = true)
-    private fun onChatCommand(packet: ServerboundChatCommandPacket, ci: CallbackInfo) {
+    private fun `khs$handleChatCommand`(packet: ServerboundChatCommandPacket, ci: CallbackInfo) {
         val mod = KhsMod.INSTANCE ?: return
 
         val khsPlayer = ModPlayer(mod, player)
@@ -53,7 +53,7 @@ abstract class ServerGamePacketListenerImplMixin {
     }
 
     @Inject(method = ["onDisconnect"], at = [At("HEAD")], cancellable = true)
-    private fun onPlayerDisconnect(details: DisconnectionDetails, ci: CallbackInfo) {
+    private fun `khs$onDisconnect`(details: DisconnectionDetails, ci: CallbackInfo) {
         val mod = KhsMod.INSTANCE ?: return
 
         val khsPlayer = ModPlayer(mod, player)
@@ -66,7 +66,7 @@ abstract class ServerGamePacketListenerImplMixin {
     }
 
     @Inject(method = ["handlePlayerAction"], at = [At("HEAD")], cancellable = true)
-    private fun onPlayerAction(packet: ServerboundPlayerActionPacket, ci: CallbackInfo) {
+    private fun `khs$handlePlayerAction`(packet: ServerboundPlayerActionPacket, ci: CallbackInfo) {
         val mod = KhsMod.INSTANCE ?: return
 
         // ignore other actions

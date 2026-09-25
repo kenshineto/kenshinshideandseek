@@ -7,5 +7,5 @@ import org.spongepowered.asm.mixin.gen.Invoker
 
 @Mixin(BlockDisplay::class)
 interface BlockDisplayMixin {
-    @Invoker("setBlockState") fun invokeSetBlockState(blockState: BlockState)
+    @Invoker("setBlockState") fun `khs$setBlockState`(blockState: BlockState)
 }

@@ -17,7 +17,7 @@ abstract class ServerPlayerMixin {
 
     @Suppress("UNUSED_PARAMETER")
     @Inject(method = ["jumpFromGround"], at = [At("HEAD")])
-    private fun onPlayerJump(ci: CallbackInfo) {
+    private fun `khs$jumpFromGround`(ci: CallbackInfo) {
         val mod = KhsMod.INSTANCE ?: return
 
         @Suppress("CAST_NEVER_SUCCEEDS") val player = this as ServerPlayer
@@ -28,7 +28,7 @@ abstract class ServerPlayerMixin {
     }
 
     @Inject(method = ["tickRegeneration"], at = [At("HEAD")], cancellable = true)
-    private fun onPlayerRegen(ci: CallbackInfo) {
+    private fun `khs$tickRegeneration`(ci: CallbackInfo) {
         val mod = KhsMod.INSTANCE ?: return
 
         @Suppress("CAST_NEVER_SUCCEEDS") val player = this as ServerPlayer

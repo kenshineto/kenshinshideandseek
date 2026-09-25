@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
 
-class KhsMod(val platform: ModPlatform) {
+class KhsMod(val platform: String) {
     val enabled = AtomicBoolean(true)
     val server = ModServer(this)
     val shim = ModKhsShim(this)
