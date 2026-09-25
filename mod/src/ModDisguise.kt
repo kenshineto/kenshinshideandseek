@@ -21,8 +21,8 @@ class ModDisguise(val mod: KhsMod, uuid: UUID, blockType: BlockType) : Disguise(
         block.setPos(location.x, location.y, location.z)
 
         val id = Identifier.tryParse(blockType.mcType) ?: return null
-        val type = BuiltInRegistries.BLOCK.getValue(id) ?: return null
-        val state = type.defaultBlockState()
+        val type = BuiltInRegistries.BLOCK.get(id).orElse(null) ?: return null
+        val state = type.value().defaultBlockState()
 
         (block as BlockDisplayMixin).`khs$setBlockState`(state)
 
