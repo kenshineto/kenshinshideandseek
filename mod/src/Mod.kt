@@ -2,6 +2,7 @@ package cat.freya.khs.mod
 
 import cat.freya.khs.Khs
 import cat.freya.khs.mod.event.*
+import cat.freya.khs.mod.internal.CommandManager
 import dev.architectury.event.events.common.CommandRegistrationEvent
 import java.util.concurrent.atomic.AtomicBoolean
 import net.minecraft.ChatFormatting
@@ -19,7 +20,7 @@ class KhsMod(val platform: String) {
         server.init()
 
         CommandRegistrationEvent.EVENT.register { dispatcher, _, _ ->
-            ModCommand(this, khs.commandGroup, dispatcher)
+            CommandManager(this, khs.commandGroup, dispatcher)
         }
 
         INSTANCE = this

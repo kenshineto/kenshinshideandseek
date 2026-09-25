@@ -1,6 +1,8 @@
-package cat.freya.khs.mod
+package cat.freya.khs.mod.internal
 
 import cat.freya.khs.command.util.CommandGroup
+import cat.freya.khs.mod.KhsMod
+import cat.freya.khs.mod.ModPlayer
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -14,10 +16,10 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Predicate
 import net.minecraft.commands.CommandSourceStack
 
-class ModCommand<T : CommandSourceStack>(
-    val mod: KhsMod,
-    val command: CommandGroup,
-    val dispatcher: CommandDispatcher<T>,
+class CommandManager<T : CommandSourceStack>(
+    private val mod: KhsMod,
+    private val command: CommandGroup,
+    private val dispatcher: CommandDispatcher<T>,
 ) : Command<T>, Predicate<T>, SuggestionProvider<T> {
     init {
         dispatcher.register(
