@@ -27,7 +27,7 @@ class KhsWorldCreate : Command {
         plugin.worldsConfig.update(name) {
             this.type = type
         }
-        plugin.reloadConfig()
+        plugin.saveConfig()
 
         player.teleport(world.getSpawn())
         player.message(plugin.locale.prefix.default + plugin.locale.world.added.with(name))
