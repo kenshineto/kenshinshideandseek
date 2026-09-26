@@ -29,6 +29,10 @@ object ModLogger : KhsShim.Logger {
     override fun error(message: String) {
         logger?.error(message)
     }
+
+    override fun debug(message: String) {
+        logger?.debug(message)
+    }
 }
 
 class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform) {

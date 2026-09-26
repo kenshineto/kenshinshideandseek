@@ -22,6 +22,8 @@ class BukkitLogger(val plugin: KhsPlugin) : KhsShim.Logger {
     override fun warning(message: String) = plugin.logger.warning(message)
 
     override fun error(message: String) = plugin.logger.severe(message)
+
+    override fun debug(message: String) = info(message)
 }
 
 class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {

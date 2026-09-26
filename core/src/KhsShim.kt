@@ -29,6 +29,8 @@ interface KhsShim {
         fun warning(message: String)
 
         fun error(message: String)
+
+        fun debug(message: String)
     }
 
     /** Platforms implementation of a logger */

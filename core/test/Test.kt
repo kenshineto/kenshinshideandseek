@@ -29,11 +29,13 @@ import org.mockito.Answers
 import org.mockito.Mockito
 
 private object TestLogger : KhsShim.Logger {
-    override fun info(message: String) = println(message)
+    override fun info(message: String) = println("[INFO] ${message}")
 
-    override fun warning(message: String) = println(message)
+    override fun warning(message: String) = println("[WARNING] ${message}")
 
-    override fun error(message: String) = println(message)
+    override fun error(message: String) = println("[ERROR] ${message}")
+
+    override fun debug(message: String) = println("[DEBUG] ${message}")
 }
 
 class TestBorder : World.Border {
