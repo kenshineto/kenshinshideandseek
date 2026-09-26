@@ -1,0 +1,29 @@
+# This is a Gradle generated file for dependency locking.
+# Manual edits can break the build and are not advised.
+# This file is expected to be part of source control.
+# To regenerate this file, run: ./gradlew :mod:dependencies --write-locks
+com.fasterxml.jackson.core:jackson-annotations:2.22=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+com.fasterxml.jackson.core:jackson-core:2.22.3=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+com.fasterxml.jackson.core:jackson-databind:2.22.3=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.3=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+com.fasterxml.jackson.module:jackson-module-kotlin:2.22.3=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+com.fasterxml.jackson:jackson-bom:2.22.3=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+com.github.retrooper:packetevents-api:2.13.0=mainCompileDependencyResolve
+com.google.protobuf:protobuf-java:4.31.1=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+com.mysql:mysql-connector-j:26.7.0=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+com.zaxxer:HikariCP:4.0.3=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+dev.architectury:architectury-injectables:1.0.10=mainCompileDependencyResolve
+dev.architectury:architectury:22.0.2=mainCompileDependencyResolve
+net.fabricmc:fabric-loader:0.19.5=mainCompileDependencyResolve
+net.luckperms:api:5.5=mainCompileDependencyResolve
+org.checkerframework:checker-qual:3.55.1=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+org.jetbrains.exposed:exposed-core:1.5.0=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+org.jetbrains.exposed:exposed-jdbc:1.5.0=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+org.jetbrains.kotlin:kotlin-stdlib:2.4.20=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+org.jetbrains:annotations:13.0=mainRuntimeDependencyResolve
+org.jetbrains:annotations:26.0.2=mainCompileDependencyResolve
+org.postgresql:postgresql:42.7.13=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+org.slf4j:slf4j-api:2.0.20=mainCompileDependencyResolve
+org.xerial:sqlite-jdbc:3.53.4.0=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+org.yaml:snakeyaml:2.5=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+empty=

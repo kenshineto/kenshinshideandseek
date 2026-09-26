@@ -1,0 +1,9 @@
+# This is a Gradle generated file for dependency locking.
+# Manual edits can break the build and are not advised.
+# This file is expected to be part of source control.
+# To regenerate this file, run: ./gradlew :fabric:dependencies --write-locks
+net.fabricmc:fabric-loader:0.14.25=mainCompileDependencyResolve
+org.jetbrains.kotlin:kotlin-stdlib:2.4.20=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+org.jetbrains:annotations:13.0=mainRuntimeDependencyResolve
+org.jetbrains:annotations:26.0.2=mainCompileDependencyResolve
+empty=

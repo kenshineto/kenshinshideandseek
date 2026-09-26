@@ -1,0 +1,11 @@
+# This is a Gradle generated file for dependency locking.
+# Manual edits can break the build and are not advised.
+# This file is expected to be part of source control.
+# To regenerate this file, run: ./gradlew :neoforge:dependencies --write-locks
+com.google.code.findbugs:jsr305:3.0.2=mainCompileDependencyResolve
+net.neoforged:neoforge:26.3.0.6-beta=forgeInstaller,neoForge
+net.neoforged:neoform:26.3-1=mcp
+org.jetbrains.kotlin:kotlin-stdlib:2.4.20=mainCompileDependencyResolve,mainRuntimeDependencyResolve
+org.jetbrains:annotations:13.0=mainRuntimeDependencyResolve
+org.jetbrains:annotations:26.0.2=mainCompileDependencyResolve
+empty=

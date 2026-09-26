@@ -82,6 +82,10 @@ allprojects {
     tasks.named("build") {
         dependsOn.removeIf { it.toString().contains("check") }
     }
+
+    dependencyLocking {
+        lockAllConfigurations()
+    }
 }
 
 subprojects {
@@ -234,4 +238,19 @@ tasks.register("format") {
 
 tasks.register("coverage") {
     dependsOn(tasks.named("koverHtmlReport"))
+}
+
+tasks.register("lock") {
+    doFirst {
+        require(gradle.startParameter.isWriteDependencyLocks) {
+            "$path must be run from the command line with the `--write-locks` flag"
+        }
+    }
+    doLast {
+        configurations
+            .filter {
+                it.isCanBeResolved
+            }
+            .forEach { it.resolve() }
+    }
 }
