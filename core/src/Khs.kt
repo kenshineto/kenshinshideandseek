@@ -146,6 +146,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
         val ansiBlue = "\u001B[94m"
         val ansiGreen = "\u001B[92m"
         val ansiGray = "\u001B[90m"
+        val ansiYellow = "\u001B[93m"
 
         val fullMcVersion = "${ansiGray}Running on ${shim.serverVersion}-${shim.platform}"
         val fullPluginVersion = "${ansiGreen}Version ${BuildInfo.version}"
@@ -155,6 +156,15 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
         shim.logger.info("$ansiBlue| ' /| |_| \\___ \\    $fullMcVersion$ansiReset")
         shim.logger.info("$ansiBlue| . \\|  _  |___) |$ansiReset")
         shim.logger.info("$ansiBlue|_|\\_\\_| |_|____/$ansiReset")
+
+        if (shim.experimental) {
+            shim.logger.warning(
+                "${ansiYellow}${shim.platform} support is currently marked experimental. Expect bugs, issues, or other hiccups that may effect gameplay.${ansiReset}"
+            )
+            shim.logger.warning(
+                "${ansiYellow}If any issues are found, please make bug reports at: https://github.com/kenshineto/kenshinshideandseek/issues.${ansiReset}"
+            )
+        }
     }
 
     private fun registerCommands(): CommandGroup {
@@ -221,20 +231,14 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
 
     fun reloadConfig(): Result<Unit> {
         return runCatching {
-            shim.logger.info("Loading config...")
+            shim.logger.info("Loading configuration")
             config = deserialize(KhsConfig::class, shim.readConfigFile("config.yml"), KhsConfig.default(types))
-            shim.logger.info("Loading items...")
             itemsConfig =
                 deserialize(KhsItemsConfig::class, shim.readConfigFile("items.yml"), KhsItemsConfig.default(types))
-            shim.logger.info("Loading maps...")
             mapsConfig = deserialize(KhsMapsConfig::class, shim.readConfigFile("maps.yml"))
-            shim.logger.info("Loading board locale...")
             boardConfig = deserialize(KhsBoardConfig::class, shim.readConfigFile("board.yml"))
-            shim.logger.info("Loading worlds...")
             worldsConfig = deserialize(KhsWorldsConfig::class, shim.readConfigFile("worlds.yml"))
-            shim.logger.info("Loading locale...")
             locale = deserialize(KhsLocale::class, shim.readConfigFile("locale.yml"))
-            shim.logger.info("Loading database...")
 
             // migrate configs
             config.migrate(types)
@@ -244,6 +248,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
             // database config could have changed so we need to
             // reconnect to the database
             if (config.database.type != DatabaseType.DISABLED) {
+                shim.logger.info("Loading database")
                 database = Database(this)
             }
 
@@ -261,7 +266,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
                 saveConfig()
             }
             .onFailure {
-                shim.logger.error("failed to reload config: ${it.message}")
+                shim.logger.error("Failed to reload config: ${it.message}")
                 // for (line in it.stackTraceToString().lines()) shim.logger.error(line)
             }
     }

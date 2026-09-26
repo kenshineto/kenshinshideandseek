@@ -23,6 +23,9 @@ interface KhsShim {
     /** Name of the platform we are running on (e.g. Bukkit) */
     val platform: String
 
+    /** If the platform is marked as experimental */
+    val experimental: Boolean
+
     interface Logger {
         fun info(message: String)
 
@@ -149,7 +152,7 @@ interface KhsShim {
     fun runInConsole(command: String): Boolean
 }
 
-abstract class AbstractKhsShim(override val platform: String) : KhsShim {
+abstract class AbstractKhsShim(override val platform: String, override val experimental: Boolean) : KhsShim {
     /** Parsed minecraft server version string */
     private var parsedServerVersion: List<UInt>? = null
 

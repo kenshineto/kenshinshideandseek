@@ -287,7 +287,7 @@ class TestPlayer(val shim: TestShim, override val name: String, override val uui
     override fun toString() = "TestPlayer[$name]"
 }
 
-abstract class TestShim : AbstractKhsShim("test") {
+abstract class TestShim : AbstractKhsShim("test", false) {
     override val logger: KhsShim.Logger = TestLogger
 
     // player

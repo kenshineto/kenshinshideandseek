@@ -35,7 +35,7 @@ object ModLogger : KhsShim.Logger {
     }
 }
 
-class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform) {
+class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform, true) {
     override val serverVersion: String
         get() = mod.server.inner.serverVersion
 
