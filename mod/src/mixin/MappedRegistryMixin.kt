@@ -41,12 +41,12 @@ abstract class MappedRegistryMixin<T : Any> : RemoveFromRegistry<T>, WritableReg
         }
 
         return runCatching {
-                byKey.remove(registryEntry.key())
-                byLocation.remove(registryEntry.key().identifier())
-                byValue.remove(entry)
-                byId[rawId] = null
-                @Suppress("UNCHECKED_CAST") registrationInfos.remove(key as ResourceKey<T>)
-            }
+            byKey.remove(registryEntry.key())
+            byLocation.remove(registryEntry.key().identifier())
+            byValue.remove(entry)
+            byId[rawId] = null
+            @Suppress("UNCHECKED_CAST") registrationInfos.remove(key as ResourceKey<T>)
+        }
             .isSuccess
     }
 

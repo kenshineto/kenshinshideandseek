@@ -111,40 +111,36 @@ class MapSave(val plugin: Khs, val map: KhsMap, val rootSrcDir: Path) {
         }
 
         return runCatching {
-                plugin.shim.logger.info("starting map save for: ${map.worldName}")
-                plugin.shim.broadcast(plugin.locale.prefix.default + plugin.locale.map.save.start)
-                plugin.shim.broadcast(plugin.locale.prefix.warning + plugin.locale.map.save.warning)
+            plugin.shim.logger.info("starting map save for: ${map.worldName}")
+            plugin.shim.broadcast(plugin.locale.prefix.default + plugin.locale.map.save.start)
+            plugin.shim.broadcast(plugin.locale.prefix.warning + plugin.locale.map.save.warning)
 
-                if (!rootSrcDir.exists()) {
-                    plugin.shim.broadcast(plugin.locale.prefix.error + plugin.locale.map.save.failedLocate)
-                    error("there is no map to save")
-                }
-
-                unloadGameWorld()
-
-                saveFolder("data")
-                saveFolder("datapacks")
-                saveFolder("dimensions")
-                saveFolder("entities")
-                saveFolder("region")
-                saveFolder("DIM1")
-                saveFolder("DIM-1")
-                saveFile("level.dat")
-
-                if (rootDestDir.exists() && !rootDestDir.toFile().deleteRecursively()) {
-                    plugin.shim.broadcast(
-                        plugin.locale.prefix.error + plugin.locale.map.save.failedDir.with(rootDestDir)
-                    )
-                    error("could not delete destination directory")
-                }
-
-                if (!rootTempDir.toFile().renameTo(rootDestDir.toFile())) {
-                    plugin.shim.broadcast(
-                        plugin.locale.prefix.error + plugin.locale.map.save.failedDir.with(rootTempDir)
-                    )
-                    error("could not rename: $rootTempDir")
-                }
+            if (!rootSrcDir.exists()) {
+                plugin.shim.broadcast(plugin.locale.prefix.error + plugin.locale.map.save.failedLocate)
+                error("there is no map to save")
             }
+
+            unloadGameWorld()
+
+            saveFolder("data")
+            saveFolder("datapacks")
+            saveFolder("dimensions")
+            saveFolder("entities")
+            saveFolder("region")
+            saveFolder("DIM1")
+            saveFolder("DIM-1")
+            saveFile("level.dat")
+
+            if (rootDestDir.exists() && !rootDestDir.toFile().deleteRecursively()) {
+                plugin.shim.broadcast(plugin.locale.prefix.error + plugin.locale.map.save.failedDir.with(rootDestDir))
+                error("could not delete destination directory")
+            }
+
+            if (!rootTempDir.toFile().renameTo(rootDestDir.toFile())) {
+                plugin.shim.broadcast(plugin.locale.prefix.error + plugin.locale.map.save.failedDir.with(rootTempDir))
+                error("could not rename: $rootTempDir")
+            }
+        }
             .onSuccess {
                 plugin.saving.set(false)
                 plugin.shim.broadcast(plugin.locale.prefix.default + plugin.locale.map.save.finished)

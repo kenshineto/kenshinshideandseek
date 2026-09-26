@@ -15,6 +15,7 @@ kotlinx-kover = "0.9.+"
 shadow = "9.6.+"
 spotless = "8.+"
 detekt = "2.0.0-alpha.6"
+ktfmt = "0.64"
 
 # libs
 packetevents = "2.13.+"

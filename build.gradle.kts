@@ -43,9 +43,11 @@ allprojects {
         }
     }
 
+    val ktfmtVersion = getVersion("ktfmt")
+
     spotless {
         kotlin {
-            ktfmt().kotlinlangStyle().configure {
+            ktfmt(ktfmtVersion).kotlinlangStyle().configure {
                 it.setMaxWidth(120)
                 it.setBlockIndent(4)
                 it.setContinuationIndent(4)
@@ -53,7 +55,7 @@ allprojects {
             }
         }
         kotlinGradle {
-            ktfmt().kotlinlangStyle().configure {
+            ktfmt(ktfmtVersion).kotlinlangStyle().configure {
                 it.setMaxWidth(120)
                 it.setBlockIndent(4)
                 it.setContinuationIndent(4)

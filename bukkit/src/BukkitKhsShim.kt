@@ -182,9 +182,9 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
 
     override fun getBoard(name: String): BukkitBoard? {
         return runCatching {
-                val board = plugin.server.scoreboardManager?.newScoreboard ?: return null
-                return BukkitBoard(this, board)
-            }
+            val board = plugin.server.scoreboardManager?.newScoreboard ?: return null
+            return BukkitBoard(this, board)
+        }
             .getOrElse { null }
     }
 
@@ -202,8 +202,8 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit") {
 
     override fun runInConsole(command: String): Boolean {
         return runCatching {
-                plugin.server.dispatchCommand(plugin.server.consoleSender, command)
-            }
+            plugin.server.dispatchCommand(plugin.server.consoleSender, command)
+        }
             .getOrElse {
                 logger.warning("Failed to execute command: $command")
                 false

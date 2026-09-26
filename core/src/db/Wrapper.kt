@@ -39,15 +39,16 @@ class KhsConnection(val inner: Connection) : Connection by inner {
 class KhsPreparedStatement(val inner: PreparedStatement) : PreparedStatement by inner {
     override fun isClosed(): Boolean = runCatching { inner.isClosed }.getOrElse { false }
 
-    override fun getResultSet(): ResultSet? =
-        runCatching { inner.resultSet }
-            .getOrElse {
-                // we need to return null instead of throwing, as
-                // that is the correct modern jdbc behavior
+    override fun getResultSet(): ResultSet? = runCatching {
+        inner.resultSet
+    }
+        .getOrElse {
+            // we need to return null instead of throwing, as
+            // that is the correct modern jdbc behavior
 
-                val msg = it.message ?: ""
-                if (!msg.contains("no ResultSet available")) throw it
+            val msg = it.message ?: ""
+            if (!msg.contains("no ResultSet available")) throw it
 
-                return null
-            }
+            return null
+        }
 }
