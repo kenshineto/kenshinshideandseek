@@ -21,7 +21,7 @@ class KhsWorldCreate : Command {
         }
 
         // update world metadata
-        plugin.worldsConfig.update(name, plugin.types) {
+        plugin.worldsConfig.update(world.name, plugin.types) {
             this.type = dimensionType
         }
         plugin.saveConfig()

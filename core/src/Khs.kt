@@ -41,10 +41,10 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
-data class Request(val fn: () -> Unit, val lengthSeconds: Long) {
+data class Request(val lengthSeconds: Long, val fn: () -> Unit) {
     val start = System.currentTimeMillis()
     val expired: Boolean
-        get() = (System.currentTimeMillis() - start) < lengthSeconds * 1000
+        get() = (System.currentTimeMillis() - start) >= lengthSeconds * 1000
 }
 
 /** Plugin wrapper */
