@@ -7,11 +7,8 @@ import cat.freya.khs.world.isMapSave
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.Identifier
-import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundSource
-import net.minecraft.world.level.dimension.BuiltinDimensionTypes
-import net.minecraft.world.level.dimension.DimensionType
 
 class ModWorldBorder(val level: ServerLevel) : World.Border {
     private val border = level.worldBorder
@@ -38,25 +35,14 @@ class ModWorldBorder(val level: ServerLevel) : World.Border {
 class ModWorld(val mod: KhsMod, val inner: ServerLevel) : World {
     override val name = inner.dimension().identifier().toString()
 
-    override val type: World.Type = getKhsWorldType()
-
-    private fun getDimensionType(): ResourceKey<DimensionType>? {
-        val registry = mod.server.inner.registryAccess().lookupOrThrow(Registries.DIMENSION_TYPE)
-        return registry.getResourceKey(inner.dimensionType()).orElse(null)
-    }
-
-    private fun getKhsWorldType(): World.Type {
-        if (inner.isFlat) return World.Type.FLAT
-
-        return when (getDimensionType()) {
-            BuiltinDimensionTypes.OVERWORLD -> World.Type.NORMAL
-            BuiltinDimensionTypes.NETHER -> World.Type.NETHER
-            BuiltinDimensionTypes.END -> World.Type.END
-            else -> World.Type.UNKNOWN
-        }
-    }
+    override val dimensionType = getDimensionTypeKey()?.toString() ?: "unknown"
 
     override val border = ModWorldBorder(inner)
+
+    private fun getDimensionTypeKey(): Identifier? {
+        val registry = mod.server.getRegistry(Registries.DIMENSION_TYPE)
+        return registry.getKey(inner.dimensionType())
+    }
 
     override fun getSpawn(): Location {
         val pos = inner.respawnData.pos()
@@ -99,20 +85,25 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : World {
     }
 
     override fun toString(): String {
-        return "ModWorld[$name,$type]"
+        return "ModWorld[$name,$dimensionType]"
     }
 
     companion object {
-        fun createLevel(mod: KhsMod, worldName: String, type: World.Type): ServerLevel? {
+        fun createLevel(mod: KhsMod, worldName: String, dimensionType: String, isFlat: Boolean): ServerLevel? {
             val id = Identifier.tryParse(worldName)
             if (id == null) {
-                mod.shim.logger.warning("invalid world name: ${worldName}")
+                mod.shim.logger.error("invalid world name: ${worldName}")
                 return null
             }
 
-            val key = ResourceKey.create(Registries.DIMENSION, id)
+            val dimension = Identifier.tryParse(dimensionType)
+            if (dimension == null) {
+                mod.shim.logger.error("invalid dimension name: ${dimensionType}")
+                return null
+            }
+
             val levelManager = mod.server.levelManager()
-            return levelManager.create(key, type)
+            return levelManager.create(id, dimension, isFlat)
         }
     }
 }

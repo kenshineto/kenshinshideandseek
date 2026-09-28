@@ -267,6 +267,7 @@ data class LocaleWorldConfig(
     @Comment("{1} - the world name") var loadFailed: LocaleString1 = LocaleString1("Failed to load: {1}"),
     @Comment("{1} - the given world type") var invalidType: LocaleString1 = LocaleString1("Invalid world type: {1}"),
     var notEmpty: String = "World must be empty to be deleted",
+    var builtin: String = "That world is builtin and must not be removed",
     var list: String = "The following worlds are",
     var none: String = "Failed to fetch any worlds",
 )

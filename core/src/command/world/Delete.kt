@@ -13,6 +13,7 @@ class KhsWorldDelete : Command {
     override fun execute(plugin: Khs, player: Player, args: List<String>) {
         val (name) = args
         runChecks(plugin, player) {
+            worldNotBuiltIn(name)
             worldExists(name)
             worldNotInUse(name)
         }

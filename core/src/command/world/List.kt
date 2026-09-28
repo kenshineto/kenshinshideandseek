@@ -22,16 +22,9 @@ class KhsWorldList : Command {
             appendLine(plugin.locale.world.list)
             for (worldName in worlds) {
                 val world = plugin.shim.getWorld(worldName)
-                val status =
-                    when (world?.type) {
-                        World.Type.NORMAL -> "&aNORMAL"
-                        World.Type.FLAT -> "&aFLAT"
-                        World.Type.NETHER -> "&cNETHER"
-                        World.Type.END -> "&eEND"
-                        World.Type.UNKNOWN -> "&7UNKNOWN"
-                        null -> "&7NOT LOADED"
-                    }
-                appendLine("&e- &f$worldName: $status")
+                val dimension = world?.dimensionType ?: "NOT LOADED"
+                val color = World.dimensionTypeColor(dimension)
+                appendLine("&e- &f$worldName: ${color}${dimension}")
             }
         }
         player.message(message)

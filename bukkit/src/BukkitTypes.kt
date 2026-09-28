@@ -53,4 +53,6 @@ fun bukkitTypes(plugin: KhsPlugin) =
         regen = "REGEN",
         speedBoost = "SPEED",
         waterBreathing = "WATER_BREATHING",
+        // World
+        defaultDimensionType = "NORMAL",
     )

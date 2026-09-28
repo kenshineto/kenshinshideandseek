@@ -14,19 +14,11 @@ const val MAP_SAVE_PREFIX = "hs2_"
 
 /** Represents a minecraft world */
 interface World {
+    /* The name/dimension of the world */
     val name: String
 
-    /** Represents the type of world/dimension that this world is */
-    enum class Type {
-        NORMAL,
-        FLAT,
-        NETHER,
-        END,
-        UNKNOWN,
-    }
-
-    /** The type of world/dimension that this world is */
-    val type: Type
+    /** The dimension type that this world is */
+    val dimensionType: String
 
     /** Represents a minecraft world border */
     interface Border {
@@ -68,6 +60,34 @@ interface World {
     fun save()
 
     override fun toString(): String
+
+    companion object {
+        fun dimensionTypeColor(dimension: String?): String =
+            when (dimension) {
+                "NORMAL",
+                "minecraft:overworld" -> "&a"
+                "NETHER",
+                "minecraft:the_nether" -> "&c"
+                "THE_END",
+                "minecraft:the_end" -> "&e"
+                else -> "&7"
+            }
+
+        fun getDefaultDimensionType(worldName: String?): String? =
+            when (worldName) {
+                "world" -> "NORMAL"
+                "world_nether" -> "NETHER"
+                "world_the_end" -> "THE_END"
+                "minecraft:overworld",
+                "minecraft:the_nether",
+                "minecraft:the_end" -> worldName
+                else -> null
+            }
+
+        fun isWorldBuiltIn(worldName: String?): Boolean {
+            return getDefaultDimensionType(worldName) != null
+        }
+    }
 }
 
 data class WorldInfo(

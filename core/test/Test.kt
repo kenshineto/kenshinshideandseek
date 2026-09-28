@@ -50,7 +50,7 @@ class TestBorder : World.Border {
     }
 }
 
-class TestWorld(override val name: String, override val type: World.Type) : World {
+class TestWorld(override val name: String, override val dimensionType: String) : World {
     override val border = TestBorder()
 
     override fun getSpawn() = Location(worldName = name)
@@ -61,7 +61,7 @@ class TestWorld(override val name: String, override val type: World.Type) : Worl
 
     override fun save() {}
 
-    override fun toString() = "TestWorld[$name,$type]"
+    override fun toString() = "TestWorld[$name,$dimensionType]"
 }
 
 class TestItem(override val config: ItemConfig) : Item {
@@ -302,9 +302,12 @@ abstract class TestShim : AbstractKhsShim("test", false) {
     // world
     override fun getWorlds() = emptyList<WorldInfo>()
 
-    override fun getWorld(worldName: String) = createWorld(worldName, World.Type.NORMAL)
+    override fun getWorld(worldName: String) = createWorld(worldName, "minecraft:overworld", false)
 
-    override fun createWorld(worldName: String, type: World.Type) = TestWorld(worldName, type)
+    override fun getDimensionTypes() = listOf<String>()
+
+    override fun createWorld(worldName: String, dimensionType: String, isFlat: Boolean) =
+        TestWorld(worldName, dimensionType)
 
     // items
     override fun parseItem(itemConfig: ItemConfig) = TestItem(itemConfig)
@@ -384,6 +387,8 @@ private val testTypes =
         regen = "minecraft:regeneration",
         speedBoost = "minecraft:speed",
         waterBreathing = "minecraft:water_breathing",
+        // World
+        defaultDimensionType = "minecraft:overworld",
     )
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -403,7 +408,7 @@ abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
     val bob = TestPlayer(this, "bob", UUID(2L, 2L))
     val eve = TestPlayer(this, "eve", UUID(3L, 3L))
     val mallory = TestPlayer(this, "mallory", UUID(4L, 4L))
-    val world = TestWorld("world", World.Type.NORMAL)
+    val world = TestWorld("world", testTypes.defaultDimensionType)
 
     @BeforeEach
     fun setup() {

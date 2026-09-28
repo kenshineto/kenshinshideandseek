@@ -120,12 +120,15 @@ interface KhsShim {
     /** @return a loaded world on the server */
     fun getWorld(worldName: String): World?
 
+    /** @return a list of valid dimension types */
+    fun getDimensionTypes(): List<String>
+
     /**
      * Create a new world if it doesn't exist, or load a world if it does.
      *
      * @return a newly created world or null on failure
      */
-    fun createWorld(worldName: String, type: World.Type): World?
+    fun createWorld(worldName: String, dimensionType: String, isFlat: Boolean): World?
 
     /** @return minimum y position for the server */
     fun getMinY(): Int = if (supports(18)) -64 else 0

@@ -86,20 +86,8 @@ class BukkitWorldBorder(val inner: org.bukkit.WorldBorder) : World.Border {
 
 class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : World {
     override val name = inner.name
-    override val type: World.Type = getTypeImpl()
 
-    private fun getTypeImpl(): World.Type {
-        val env = inner.environment
-        if (env == org.bukkit.World.Environment.NETHER) return World.Type.NETHER
-        if (env == org.bukkit.World.Environment.THE_END) return World.Type.END
-
-        @Suppress("DEPRECATION")
-        return when (inner.worldType) {
-            WorldType.NORMAL -> World.Type.NORMAL
-            WorldType.FLAT -> World.Type.FLAT
-            else -> World.Type.UNKNOWN
-        }
-    }
+    @Suppress("DEPRECATION") override val dimensionType = inner.worldType.toString()
 
     override val border = BukkitWorldBorder(inner.worldBorder)
 
@@ -133,7 +121,7 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : World 
     }
 
     override fun toString(): String {
-        return "BukkitWorld[$name,$type]"
+        return "BukkitWorld[$name,$dimensionType]"
     }
 
     companion object {
@@ -159,24 +147,19 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : World 
             }
         }
 
-        fun create(plugin: KhsPlugin, worldName: String, type: World.Type): BukkitWorld? {
+        fun create(plugin: KhsPlugin, worldName: String, dimensionType: String, isFlat: Boolean): BukkitWorld? {
             val creator = WorldCreator(worldName)
 
-            if (type != World.Type.UNKNOWN) {
-                // specify superflat or normal
-                if (type == World.Type.FLAT) {
-                    creator.type(WorldType.FLAT)
-                } else {
-                    creator.type(WorldType.NORMAL)
-                }
+            val environment = org.bukkit.World.Environment.values().firstOrNull { it.name == dimensionType }
+            val type = if (isFlat) WorldType.FLAT else WorldType.NORMAL
 
-                // specify level stem
-                when (type) {
-                    World.Type.NETHER -> creator.environment(org.bukkit.World.Environment.NETHER)
-                    World.Type.END -> creator.environment(org.bukkit.World.Environment.THE_END)
-                    else -> creator.environment(org.bukkit.World.Environment.NORMAL)
-                }
+            if (environment == null) {
+                plugin.shim.logger.error("invalid dimension type: ${dimensionType}")
+                return null
             }
+
+            creator.type(type)
+            creator.environment(environment)
 
             if (isMapSave(worldName)) {
                 // generate empty chunks on a map save (wont be saved)

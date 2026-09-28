@@ -53,4 +53,6 @@ val modTypes =
         regen = "minecraft:regeneration",
         speedBoost = "minecraft:speed",
         waterBreathing = "minecraft:water_breathing",
+        // World
+        defaultDimensionType = "minecraft:overworld",
     )

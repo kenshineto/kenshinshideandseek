@@ -4,28 +4,25 @@ import cat.freya.khs.Khs
 import cat.freya.khs.command.util.Command
 import cat.freya.khs.runChecks
 import cat.freya.khs.world.Player
-import cat.freya.khs.world.World
 
 class KhsWorldCreate : Command {
     override val label = "create"
-    override val usage = listOf("name", "type")
+    override val usage = listOf("name", "type", "isFlat")
     override val description = "Create a new world"
 
     override fun execute(plugin: Khs, player: Player, args: List<String>) {
-        val (name, typeStr) = args
+        val (name, dimensionType, isFlat) = args
         runChecks(plugin, player) { worldDoesNotExist(name) }
 
-        val type = World.Type.entries.find { it.name.equals(typeStr, ignoreCase = true) } ?: World.Type.NORMAL
-
-        val world = plugin.shim.createWorld(name, type)
+        val world = plugin.shim.createWorld(name, dimensionType, isFlat == "true")
         if (world == null) {
             player.message(plugin.locale.prefix.error + plugin.locale.world.addedFailed.with(name))
             return
         }
 
         // update world metadata
-        plugin.worldsConfig.update(name) {
-            this.type = type
+        plugin.worldsConfig.update(name, plugin.types) {
+            this.type = dimensionType
         }
         plugin.saveConfig()
 
@@ -40,8 +37,10 @@ class KhsWorldCreate : Command {
             }
 
             "type" -> {
-                World.Type.entries.map { it.name.lowercase() }.filter { it.startsWith(typed) && it != "unknown" }
+                plugin.shim.getDimensionTypes().filter { it.startsWith(typed) }
             }
+
+            "isFlat" -> listOf("true", "false").filter { it.startsWith(typed) }
 
             else -> {
                 listOf()

@@ -17,6 +17,7 @@ import cat.freya.khs.config.KhsItemsConfig
 import cat.freya.khs.config.KhsLocale
 import cat.freya.khs.config.KhsMapsConfig
 import cat.freya.khs.config.KhsWorldsConfig
+import cat.freya.khs.config.WorldConfig
 import cat.freya.khs.config.deserialize
 import cat.freya.khs.config.serialize
 import cat.freya.khs.db.Database
@@ -243,6 +244,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
             // migrate configs
             config.migrate(types)
             itemsConfig.migrate(types)
+            worldsConfig.migrate()
             locale.migrate()
 
             // database config could have changed so we need to
@@ -307,45 +309,25 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
         return effectCache.getOrPut(effectConfig) { shim.parseEffect(effectConfig) }
     }
 
-    private fun getWorldType(worldName: String): World.Type {
-        val worldConfig = worldsConfig.worlds[worldName]
-        if (worldConfig != null) {
-            return worldConfig.type
-        }
-
-        // check for built-in world names
-        when (worldName) {
-            "minecraft:the_nether",
-            "the_nether",
-            "world_nether" -> return World.Type.NETHER
-            "minecraft:the_end",
-            "the_end",
-            "world_the_end" -> return World.Type.END
-            else -> {}
-        }
-
-        // return UNKNOWN which means use the default behavior of the
-        // minecraft server. we used to not track this, so this is done
-        // to not break old servers
-        return World.Type.UNKNOWN
-    }
-
     fun loadWorld(worldName: String): World? {
         val id = Id(worldName)
+        var cfgKey = worldName
+
         // if were attempting to teleport to a mapsave, use the world type
         // from the map's world
         if (isMapSave(id)) {
             val mapName = id.path().removePrefix(MAP_SAVE_PREFIX)
             val map = maps.get(mapName)
             if (map == null) {
-                shim.logger.warning("map does not exist for map save: ${worldName}")
+                shim.logger.error("map does not exist for map save: ${worldName}")
                 return null
             }
 
-            return shim.createWorld(worldName, getWorldType(map.worldName))
+            cfgKey = map.worldName
         }
 
-        return shim.createWorld(worldName, getWorldType(worldName))
+        val cfg = worldsConfig.worlds[cfgKey] ?: WorldConfig.default(types)
+        return shim.createWorld(worldName, cfg.type, cfg.isFlat)
     }
 
     fun runCommandsFor(playerId: UUID, commands: List<String>): Unit {

@@ -5,11 +5,11 @@ import cat.freya.khs.KhsShim
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.type.BlockType
-import cat.freya.khs.world.World
 import cat.freya.khs.world.WorldInfo
 import java.nio.file.Path
 import java.util.UUID
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.registries.Registries
 import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import org.slf4j.Logger
@@ -113,11 +113,16 @@ class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform, true) {
         return getWorlds().firstOrNull { it.name == id.toString() }
     }
 
-    override fun createWorld(worldName: String, type: World.Type): ModWorld? {
+    override fun getDimensionTypes(): List<String> {
+        val registry = mod.server.getRegistry(Registries.DIMENSION_TYPE)
+        return registry.keySet().map(Identifier::toString)
+    }
+
+    override fun createWorld(worldName: String, dimensionType: String, isFlat: Boolean): ModWorld? {
         val world = getWorld(worldName)
         if (world != null) return world
 
-        val level = ModWorld.createLevel(mod, worldName, type) ?: return null
+        val level = ModWorld.createLevel(mod, worldName, dimensionType, isFlat) ?: return null
         return ModWorld(mod, level)
     }
 

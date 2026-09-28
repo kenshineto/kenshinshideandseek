@@ -50,6 +50,8 @@ data class KhsTypes(
     val regen: String,
     val speedBoost: String,
     val waterBreathing: String,
+    // Worlds
+    val defaultDimensionType: String,
 ) {
     val potionTypes = listOf(potion, splashPotion, lingeringPotion)
 

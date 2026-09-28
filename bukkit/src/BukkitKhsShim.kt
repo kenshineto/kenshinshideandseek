@@ -171,8 +171,12 @@ class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit", false) {
         return BukkitWorld(this, world)
     }
 
-    override fun createWorld(worldName: String, type: World.Type): BukkitWorld? {
-        return getWorld(worldName) ?: BukkitWorld.create(plugin, worldName, type)
+    override fun getDimensionTypes(): List<String> {
+        return org.bukkit.World.Environment.values().map(org.bukkit.World.Environment::name).filter { it != "CUSTOM" }
+    }
+
+    override fun createWorld(worldName: String, dimensionType: String, isFlat: Boolean): BukkitWorld? {
+        return getWorld(worldName) ?: BukkitWorld.create(plugin, worldName, dimensionType, isFlat)
     }
 
     override fun createInventory(title: String, size: UInt): BukkitInventory {

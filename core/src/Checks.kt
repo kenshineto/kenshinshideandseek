@@ -4,6 +4,7 @@ import cat.freya.khs.game.Game
 import cat.freya.khs.game.KhsMap
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.Position
+import cat.freya.khs.world.World
 import cat.freya.khs.world.isMapSave
 
 class Checks(val plugin: Khs, val player: Player) {
@@ -111,6 +112,13 @@ class Checks(val plugin: Khs, val player: Player) {
     fun worldExists(worldName: String) {
         if (plugin.shim.getWorldInfo(worldName) == null) {
             error(plugin.locale.world.doesntExist.with(worldName))
+        }
+    }
+
+    /** Checks if a world is not built in */
+    fun worldNotBuiltIn(worldName: String?) {
+        if (World.isWorldBuiltIn(worldName)) {
+            error(plugin.locale.world.builtin)
         }
     }
 

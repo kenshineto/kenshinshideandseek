@@ -2,12 +2,12 @@ package cat.freya.khs.mod.internal
 
 import cat.freya.khs.mod.ModServer
 import cat.freya.khs.mod.mixin.MinecraftServerAccess
-import cat.freya.khs.world.World
 import cat.freya.khs.world.isMapSave
 import com.google.common.collect.ImmutableList
 import net.minecraft.core.Holder
 import net.minecraft.core.RegistrationInfo
 import net.minecraft.core.registries.Registries
+import net.minecraft.resources.Identifier
 import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.Util
@@ -16,7 +16,6 @@ import net.minecraft.world.level.biome.BiomeManager
 import net.minecraft.world.level.biome.Biomes
 import net.minecraft.world.level.biome.FixedBiomeSource
 import net.minecraft.world.level.chunk.ChunkGenerator
-import net.minecraft.world.level.dimension.BuiltinDimensionTypes
 import net.minecraft.world.level.dimension.DimensionType
 import net.minecraft.world.level.dimension.LevelStem
 import net.minecraft.world.level.levelgen.FlatLevelSource
@@ -35,14 +34,6 @@ class LevelManager(modServer: ModServer) {
     private val placedFeatures = modServer.getRegistry(Registries.PLACED_FEATURE)
     private val structureSets = modServer.getRegistry(Registries.STRUCTURE_SET)
 
-    private val theOverworld = server.overworld()
-    private val theNether = server.getLevel(Level.NETHER)
-    private val theEnd = server.getLevel(Level.END)
-
-    private val overworldGenerator = theOverworld.chunkSource.generator
-    private val netherGenerator = theNether?.chunkSource?.generator ?: overworldGenerator
-    private val endGenerator = theEnd?.chunkSource?.generator ?: overworldGenerator
-
     private val voidGenerator: ChunkGenerator
     private val flatGenerator: ChunkGenerator
 
@@ -54,16 +45,15 @@ class LevelManager(modServer: ModServer) {
         flatGenerator = FlatLevelSource(flatGenSettings)
     }
 
-    fun create(key: ResourceKey<Level>, type: World.Type): ServerLevel {
-        val dimensionType = getDimensionType(type)
-        val generator = getGenerator(key, type)
+    fun create(id: Identifier, dimension: Identifier, isFlat: Boolean): ServerLevel? {
+        val dimensionType = getDimensionType(dimension) ?: return null
+        val generator = getGenerator(id, dimension, isFlat)
         val levelStem = LevelStem(dimensionType, generator)
-        val seed = theOverworld.seed
+        val seed = server.overworld().seed
         val worldData = server.worldData
         val levelData = DerivedLevelData(worldData, worldData.overworldData())
 
         RemoveFromRegistry.thaw(dimensions).use {
-            val id = key.identifier()
             if (!dimensions.containsKey(id)) {
                 val levelStemKey = ResourceKey.create(Registries.LEVEL_STEM, id)
                 dimensions.register(levelStemKey, levelStem, RegistrationInfo.BUILT_IN)
@@ -76,7 +66,7 @@ class LevelManager(modServer: ModServer) {
                 Util.backgroundExecutor(),
                 serverAccess.getStorageSource(),
                 levelData,
-                key,
+                ResourceKey.create(Registries.DIMENSION, id),
                 levelStem,
                 false,
                 BiomeManager.obfuscateSeed(seed),
@@ -84,8 +74,7 @@ class LevelManager(modServer: ModServer) {
                 true,
             )
 
-        val worldName = key.identifier().toString()
-        if (isMapSave(worldName)) {
+        if (isMapSave(id.toString())) {
             level.noSave = true
         }
 
@@ -115,29 +104,22 @@ class LevelManager(modServer: ModServer) {
         return levels.get(key)
     }
 
-    private fun getDimensionTypeKey(type: World.Type): ResourceKey<DimensionType> {
-        when (type) {
-            World.Type.NETHER -> return BuiltinDimensionTypes.NETHER
-            World.Type.END -> return BuiltinDimensionTypes.END
-            else -> return BuiltinDimensionTypes.OVERWORLD
-        }
+    private fun getDimensionType(dimension: Identifier): Holder<DimensionType>? {
+        val key = ResourceKey.create(Registries.DIMENSION_TYPE, dimension)
+        return dimensionTypes.get(key).orElse(null)
     }
 
-    private fun getDimensionType(type: World.Type): Holder<DimensionType> {
-        return dimensionTypes.getOrThrow(getDimensionTypeKey(type))
-    }
-
-    private fun getGenerator(key: ResourceKey<Level>, type: World.Type): ChunkGenerator {
-        val worldName = key.identifier().toString()
-        if (isMapSave(worldName)) {
+    private fun getGenerator(id: Identifier, dimension: Identifier, isFlat: Boolean): ChunkGenerator {
+        if (isMapSave(id.toString())) {
             return voidGenerator
         }
 
-        when (type) {
-            World.Type.NETHER -> return netherGenerator
-            World.Type.END -> return endGenerator
-            World.Type.FLAT -> return flatGenerator
-            else -> return overworldGenerator
+        if (isFlat) {
+            return flatGenerator
         }
+
+        val key = ResourceKey.create(Registries.DIMENSION, dimension)
+        val level = server.getLevel(key) ?: server.overworld()
+        return level.chunkSource.generator
     }
 }
