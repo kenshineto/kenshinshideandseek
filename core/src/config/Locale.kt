@@ -288,7 +288,8 @@ data class LocaleDatabaseConfig(
 data class LocaleConfirmConfig(
     var none: String = "You have nothing to confirm",
     var timedOut: String = "The confirmation has timed out",
-    var confirm: String = "Run /hs confirm within 10s to confirm",
+    @Comment("{1} - the length of time in ticks a player has to confirm an action")
+    var confirm: LocaleString1 = LocaleString1("Run /hs confirm within {1}s to confirm"),
 )
 
 data class LocaleMenuConfig(

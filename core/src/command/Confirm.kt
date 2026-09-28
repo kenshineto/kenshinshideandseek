@@ -10,19 +10,7 @@ class KhsConfirm : Command {
     override val description = "Confirm a request of a previously run command"
 
     override fun execute(plugin: Khs, player: Player, args: List<String>) {
-        val request = plugin.requests.remove(player.uuid)
-
-        if (request == null) {
-            player.message(plugin.locale.prefix.error + plugin.locale.confirm.none)
-            return
-        }
-
-        if (request.expired) {
-            player.message(plugin.locale.prefix.error + plugin.locale.confirm.timedOut)
-            return
-        }
-
-        request.fn()
+        plugin.requestManager.execute(player)
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> {

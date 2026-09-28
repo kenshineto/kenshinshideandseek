@@ -1,7 +1,6 @@
 package cat.freya.khs.command.world
 
 import cat.freya.khs.Khs
-import cat.freya.khs.Request
 import cat.freya.khs.command.util.Command
 import cat.freya.khs.runChecks
 import cat.freya.khs.world.Player
@@ -19,27 +18,23 @@ class KhsWorldDelete : Command {
             worldNotInUse(name)
         }
 
-        val request =
-            Request(10L) {
-                // make sure world is not loaded
-                val world = plugin.shim.getWorld(name)
-                world?.unload()
+        plugin.requestManager.request(player, 20UL * 10UL) {
+            // make sure world is not loaded
+            val world = plugin.shim.getWorld(name)
+            world?.unload()
 
-                val info = plugin.shim.getWorldInfo(name) ?: return@Request
-                if (!info.dir.toFile().deleteRecursively()) {
-                    player.message(plugin.locale.prefix.error + plugin.locale.world.removedFailed.with(name))
-                    return@Request
-                }
-
-                // remove from worlds.yml
-                plugin.worldsConfig.worlds.remove(info.name)
-                plugin.saveConfig()
-
-                player.message(plugin.locale.prefix.default + plugin.locale.world.removed.with(name))
+            val info = plugin.shim.getWorldInfo(name) ?: return@request
+            if (!info.dir.toFile().deleteRecursively()) {
+                player.message(plugin.locale.prefix.error + plugin.locale.world.removedFailed.with(name))
+                return@request
             }
 
-        plugin.requests[player.uuid] = request
-        player.message(plugin.locale.prefix.default + plugin.locale.confirm.confirm)
+            // remove from worlds.yml
+            plugin.worldsConfig.worlds.remove(info.name)
+            plugin.saveConfig()
+
+            player.message(plugin.locale.prefix.default + plugin.locale.world.removed.with(name))
+        }
     }
 
     override fun autoComplete(plugin: Khs, parameter: String, typed: String): List<String> {

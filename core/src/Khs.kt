@@ -41,12 +41,6 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
-data class Request(val lengthSeconds: Long, val fn: () -> Unit) {
-    val start = System.currentTimeMillis()
-    val expired: Boolean
-        get() = (System.currentTimeMillis() - start) >= lengthSeconds * 1000
-}
-
 /** Plugin wrapper */
 class Khs(val shim: KhsShim, val types: KhsTypes) {
     /** The main plugin config */
@@ -100,7 +94,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
     val entityHider: EntityHider = EntityHider(this)
 
     /** Known requests that need to be completed with `/hs confirm` */
-    val requests: MutableMap<UUID, Request> = ConcurrentHashMap()
+    val requestManager: RequestManager = RequestManager(this)
 
     /** Client settings per player */
     val clientSettings: MutableMap<UUID, ClientSettings> = ConcurrentHashMap()
@@ -289,6 +283,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
     fun doTick() {
         game.doTick()
         disguiser.update()
+        requestManager.update()
     }
 
     @Synchronized
