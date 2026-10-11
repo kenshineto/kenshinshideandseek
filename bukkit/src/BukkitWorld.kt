@@ -87,7 +87,7 @@ class BukkitWorldBorder(val inner: org.bukkit.WorldBorder) : World.Border {
 class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : World {
     override val name = inner.name
 
-    @Suppress("DEPRECATION") override val dimensionType = inner.worldType.toString()
+    @Suppress("DEPRECATION") override val dimensionType = inner.environment.toString()
 
     override val border = BukkitWorldBorder(inner.worldBorder)
 
