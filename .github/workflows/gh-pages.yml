@@ -1,0 +1,31 @@
+name: "Publish Docs"
+"on":
+  push:
+    branches:
+      - "main"
+jobs:
+  deploy:
+    runs-on: "ubuntu-latest"
+    permissions:
+      contents: "read"
+      pages: "write"
+      id-token: "write"
+    concurrency:
+      group: "${{ github.workflow }}-${{ github.ref }}"
+    steps:
+      - name: "SCM"
+        uses: "actions/checkout@v7"
+      - name: "Setup mdBook"
+        uses: "peaceiris/actions-mdbook@v2"
+        with:
+          mdbook-version: "latest"
+      - run: "mdbook build docs"
+      - name: "Setup pages"
+        uses: "actions/configure-pages@v6"
+      - name: "Upload pages"
+        uses: "actions/upload-pages-artifact@v5"
+        with:
+          path: "docs/book"
+      - name: "Deploy pages"
+        id: "deployment"
+        uses: "actions/deploy-pages@v5"

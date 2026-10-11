@@ -1,17 +1,17 @@
-### **Placeholders**
+# Placeholders
 
-This plugin supports software such as [PlaceholderAPI](https://placeholderapi.com/)
+This plugin supports software such as [PlaceholderAPI](https://placeholderapi.com/).
 
-A placeholder is a string such as `%hs_team%`, which in this case returns what team you are on
+A placeholder is a string such as `%hs_team%`, which in this case returns what team the player is on.
 
-#### Teams
+## Teams
 
 The following teams: `hiders`, `seekers`, and `spectators` can be used in `%hs_<team>%` to get
 the number of players currently in that team.
 
-Also `%hs_team%` returns your current team.
+Also `%hs_team%` returns the players current team.
 
-#### Rankings
+## Rankings
 
 The valid player statistics are:
 - `wins`, `hiderWins`, `seekerWins`
@@ -33,7 +33,7 @@ The valid player statistics are:
 - %hs_rank_deaths_KenshinEto$
 - %hs_rank_games_1%
 
-#### Stats
+## Stats
 
 **To get the VALUE of a statistic for a target use:**
 
@@ -48,7 +48,7 @@ The valid player statistics are:
 - %hs_stat_deaths_KenshinEto$
 - %hs_stat_games_1%
 
-#### Last Winners
+## Last Winners
 
 The following placeholders return information about the last game played.
 

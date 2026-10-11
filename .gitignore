@@ -9,3 +9,4 @@ bukkit/build
 core/build
 neoforge/runs
 gradle.properties
+docs/book
