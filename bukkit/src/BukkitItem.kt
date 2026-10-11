@@ -51,12 +51,14 @@ class BukkitItem(val inner: ItemStack, override val config: ItemConfig) : Item {
                 config.set("model-data", itemConfig.modelData?.toInt())
             }
 
-            // TODO: potions are broken on 1.8
-
             // set potion data
             if (material.endsWith("POTION")) {
                 val potionType = itemConfig.effect ?: "AWKWARD"
                 config.set("base-type", potionType)
+
+                // support legacy 1.8 potions
+                val splash = material == "SPLASH_POTION"
+                config.set("base-effect", "${potionType},false,${splash}")
             }
 
             val item = runCatching {
