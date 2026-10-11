@@ -12,7 +12,7 @@ plugins {
 
 group = "cat.freya.khs"
 
-version = "2.2.0"
+version = "2.3.0"
 
 allprojects {
     repositories {

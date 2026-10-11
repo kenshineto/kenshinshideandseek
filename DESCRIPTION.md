@@ -8,7 +8,7 @@
 - Block hunt with custom disguises
 - Multiple maps per server
 
-**Supported Versions: 1.8.x - 26.2.x**
+**Supported Versions: 1.8.x - 26.3.x**
 
 **Resources**
 
