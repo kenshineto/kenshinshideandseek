@@ -34,7 +34,7 @@ hikari = "4.0.3"
 
 # bukkit
 spigot = "26.3-R0.1-SNAPSHOT"
-xseries = "13.7.+"
+xseries = "14.0.+"
 placeholderapi = "2.+"
 bstats = "3.+"
 
