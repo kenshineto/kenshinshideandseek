@@ -19,8 +19,6 @@ To build the project run `gradle build`. Jar files can be found in `{bukkit,fabr
 
 To build for only one platform run `gradle :{platform}:build`
 
-Note, PacketEvents currently does not have a NeoForge version so that module cannot currently be tested or run.
-
 ## Contributing
 
 Contributions are always welcome. GitHub is used to make contributing as easy as possible.
