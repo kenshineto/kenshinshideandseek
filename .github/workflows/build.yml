@@ -7,7 +7,7 @@ name: "Build"
     branches:
       - "main"
 jobs:
-  build:
+  khs:
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
@@ -39,3 +39,13 @@ jobs:
         with:
           path: "${{ matrix.platform }}/build/libs/*+${{ matrix.platform }}.jar"
           archive: false
+  docs:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "SCM"
+        uses: "actions/checkout@v7"
+      - name: "Setup mdBook"
+        uses: "peaceiris/actions-mdbook@v2"
+        with:
+          mdbook-version: "latest"
+      - run: "mdbook build docs"
