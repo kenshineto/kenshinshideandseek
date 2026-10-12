@@ -55,7 +55,7 @@ class EntityHider(val plugin: Khs) {
 
         val destroy = EntityDestroyPacket(entity)
         val spawn = EntitySpawnPacket(entity)
-        val meta = EntityMetadataPacket(plugin, entity, EntityMetadataPacket.Flags())
+        val meta = EntityMetadataPacket(plugin, entity, entity.getEntityMetadata())
 
         val entityPlayer = entity as? Player
         val spawnPlayer = entityPlayer?.let { PlayerSpawnPacket(it) }

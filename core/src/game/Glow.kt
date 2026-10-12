@@ -35,7 +35,9 @@ class Glow(val game: Game) {
 
         hiders.forEach { hider ->
             seekers.forEach { seeker ->
-                val flags = EntityMetadataPacket.Flags(glow)
+                var flags = seeker.getEntityMetadata()
+                flags.glowing = glow
+
                 val packet = EntityMetadataPacket(game.plugin, seeker, flags)
                 packet.send(hider)
             }

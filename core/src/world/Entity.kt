@@ -1,6 +1,7 @@
 package cat.freya.khs.world
 
 import cat.freya.khs.math.Vector
+import cat.freya.khs.packet.EntityMetadata
 import cat.freya.khs.type.Effect
 import com.github.retrooper.packetevents.protocol.entity.type.EntityType
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes
@@ -76,6 +77,12 @@ interface Entity {
         }
 
         return EntityTypes.getByName(mcType)
+    }
+
+    /** @return the entities curent metadata */
+    fun getEntityMetadata(): EntityMetadata {
+        // we eventually want to track this
+        return EntityMetadata()
     }
 
     override fun toString(): String
