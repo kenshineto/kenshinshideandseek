@@ -22,4 +22,4 @@ jobs:
         with:
           add-job-summary: "never"
       - name: "Lint"
-        run: "./gradlew check"
+        run: "./gradlew lint"
