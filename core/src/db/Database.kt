@@ -1,5 +1,6 @@
 package cat.freya.khs.db
 
+import cat.freya.alloy.db.Driver
 import cat.freya.khs.Khs
 import java.util.UUID
 import org.jetbrains.exposed.v1.core.*
@@ -8,7 +9,7 @@ import org.jetbrains.exposed.v1.jdbc.Database as Exposed
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class Database(plugin: Khs) {
-    private val driver = getDriver(plugin)
+    private val driver = Driver.getDriver(plugin.config.database, plugin.getSqliteDbPath())
     private val source = driver.connect()
     private val db = Exposed.connect(source)
 

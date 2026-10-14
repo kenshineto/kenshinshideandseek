@@ -1,18 +1,11 @@
 package cat.freya.khs.config
 
+import cat.freya.alloy.annotation.*
+import cat.freya.alloy.db.Driver.DatabaseConfig
 import cat.freya.khs.KhsTypes
 import cat.freya.khs.world.Location
 import kotlin.UInt
-import kotlin.annotation.AnnotationTarget
 import kotlin.math.max
-
-@Target(AnnotationTarget.PROPERTY) annotation class Section(val text: String)
-
-@Repeatable @Target(AnnotationTarget.PROPERTY) annotation class Comment(val text: String)
-
-@Target(AnnotationTarget.PROPERTY) annotation class Omittable
-
-@Target(AnnotationTarget.PROPERTY) annotation class KhsDeprecated(val since: String)
 
 enum class ConfigCountdownDisplay {
     CHAT,
@@ -47,19 +40,6 @@ enum class DatabaseType {
     POSTGRES,
     DISABLED,
 }
-
-data class DatabaseConfig(
-    @Comment("The type of database to store user data in")
-    @Comment("SQLITE - local file in plugin directory, fine for most small servers")
-    @Comment("MYSQL - remote sql server running mysql")
-    @Comment("POSTGRES - remote sql server running postgresql")
-    var type: DatabaseType = DatabaseType.SQLITE,
-    @Comment("The following options are only required for mysql or postgres") var host: String = "localhost",
-    var port: ULong? = null,
-    var username: String = "postgres",
-    var password: String = "postgres",
-    var database: String = "postgres",
-)
 
 data class ItemConfig(
     @Omittable var name: String? = null,

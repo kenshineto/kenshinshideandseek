@@ -1,5 +1,4 @@
 plugins {
-    alias(libs.plugins.shadow)
     alias(libs.plugins.architectury.loom)
     alias(libs.plugins.architectury.plugin)
 }
@@ -7,6 +6,11 @@ plugins {
 architectury {
     platformSetupLoomIde()
     neoForge()
+}
+
+lodestone {
+    resources("META-INF/neoforge.mods.toml")
+    shadow()
 }
 
 dependencies {

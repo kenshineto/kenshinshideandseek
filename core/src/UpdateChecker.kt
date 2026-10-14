@@ -1,5 +1,6 @@
 package cat.freya.khs
 
+import cat.freya.alloy.fetchJson
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
@@ -19,7 +20,8 @@ class UpdateChecker(val plugin: Khs) {
         }
 
         val endpoint = "https://api.github.com/repos/kenshineto/kenshinshideandseek/releases/latest"
-        val release: GitHubRelease = plugin.fetchJson(endpoint) ?: return
+        val userAgent = "${BuildInfo.id} ${BuildInfo.version}"
+        val release: GitHubRelease = fetchJson<GitHubRelease>(endpoint, userAgent).getOrDefault(null) ?: return
 
         val currentVersion = BuildInfo.version
         val latestVersion = release.tagName.removePrefix("v")

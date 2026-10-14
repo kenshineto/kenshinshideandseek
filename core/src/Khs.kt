@@ -1,5 +1,7 @@
 package cat.freya.khs
 
+import cat.freya.alloy.config.deserialize
+import cat.freya.alloy.config.serialize
 import cat.freya.khs.command.*
 import cat.freya.khs.command.map.*
 import cat.freya.khs.command.map.blockhunt.*
@@ -8,7 +10,6 @@ import cat.freya.khs.command.map.set.*
 import cat.freya.khs.command.map.unset.*
 import cat.freya.khs.command.util.CommandGroup
 import cat.freya.khs.command.world.*
-import cat.freya.khs.config.DatabaseType
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.config.KhsBoardConfig
@@ -18,8 +19,6 @@ import cat.freya.khs.config.KhsLocale
 import cat.freya.khs.config.KhsMapsConfig
 import cat.freya.khs.config.KhsWorldsConfig
 import cat.freya.khs.config.WorldConfig
-import cat.freya.khs.config.deserialize
-import cat.freya.khs.config.serialize
 import cat.freya.khs.db.Database
 import cat.freya.khs.disguise.Disguiser
 import cat.freya.khs.disguise.EntityHider
@@ -35,8 +34,7 @@ import cat.freya.khs.world.MAP_SAVE_PREFIX
 import cat.freya.khs.world.Player
 import cat.freya.khs.world.World
 import cat.freya.khs.world.isMapSave
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import java.net.URI
+import java.io.File
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
@@ -243,10 +241,8 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
 
             // database config could have changed so we need to
             // reconnect to the database
-            if (config.database.type != DatabaseType.DISABLED) {
-                shim.logger.info("Loading database")
-                database = Database(this)
-            }
+            shim.logger.info("Loading database")
+            database = Database(this)
 
             // reload maps
             // we need a separate newMaps, in case one of the maps below fails
@@ -342,20 +338,12 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
         }
     }
 
-    inline fun <reified T : Any> fetchJson(url: String): T? {
-        return runCatching {
-                val connection = URI(url).toURL().openConnection()
-                connection.setRequestProperty("Accept", "application/json")
-                connection.setRequestProperty("User-Agent", "${BuildInfo.id} ${BuildInfo.version}")
-
-                val response = connection.inputStream.bufferedReader().use { it.readText() }
-                val mapper = jacksonObjectMapper()
-                return mapper.readValue(response, T::class.java)
-            }
-            .onFailure {
-                shim.logger.warning("Failed to fetch '$url': ${it.message}")
-            }
-            .getOrDefault(null)
+    fun getSqliteDbPath(): String {
+        val dir = shim.dataDirectory.toFile()
+        val oldPath = File(dir, "database.db")
+        val newPath = File(dir, "khs.db")
+        if (oldPath.exists()) return oldPath.path
+        return newPath.path
     }
 
     override fun toString(): String {

@@ -31,7 +31,4 @@ dependencies {
 
     // compileOnly(libs.architectury)
     compileOnly(libs.architectury)
-
-    // fabric or forge do not shade sqlite
-    implementation(libs.sqlite)
 }

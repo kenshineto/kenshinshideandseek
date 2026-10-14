@@ -1,5 +1,7 @@
 package cat.freya.khs
 
+import cat.freya.alloy.config.serialize
+import cat.freya.alloy.db.Driver
 import cat.freya.khs.config.*
 import cat.freya.khs.game.Board
 import cat.freya.khs.game.Game
@@ -412,7 +414,7 @@ abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
 
     @BeforeEach
     fun setup() {
-        config.database.type = DatabaseType.DISABLED
+        config.database.type = Driver.DatabaseType.MEMORY
         config.mapSaveEnabled = false
 
         PacketEvents.setAPI(Mockito.mock(PacketEventsAPI::class.java, Answers.RETURNS_DEEP_STUBS))

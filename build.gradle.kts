@@ -1,13 +1,9 @@
+import cat.freya.lodestone.getKotlinVersion
+import cat.freya.lodestone.getVersion
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import dev.detekt.gradle.Detekt
-import org.gradle.api.attributes.java.TargetJvmVersion
 
 plugins {
-    alias(libs.plugins.kotlin)
-    alias(libs.plugins.spotless)
-    alias(libs.plugins.detekt)
-    alias(libs.plugins.shadow) apply false
-    alias(libs.plugins.kotlinx.kover)
+    alias(libs.plugins.lodestone)
 }
 
 group = "cat.freya.khs"
@@ -15,6 +11,49 @@ group = "cat.freya.khs"
 version = "2.3.0"
 
 allprojects {
+    apply(plugin = "cat.freya.lodestone")
+
+    lodestone {
+        var jvmVersion =
+            when (project.name) {
+                "neoforge",
+                "fabric",
+                "mod" -> 25
+                else -> 8
+            }
+        jvm(jvmVersion)
+        buildInfo {
+            put("id", rootProject.name)
+            put("version", rootProject.version)
+            put("name", "Kenshin's Hide and Seek")
+            put("author", "KenshinEto")
+            put("architectury", getVersion("architectury"))
+            put("fabricloader", getVersion("fabric-loader"))
+            put("minecraft", getVersion("minecraft"))
+            put("packetevents", getVersion("packetevents"))
+            put("java", jvmVersion)
+            put("kotlin", getKotlinVersion())
+            put("telemetry", false)
+            put("bstatsId", 0)
+        }
+        // configure shadow but
+        // dont apply just yet
+        shadow(false) {
+            includeProjectName = true
+            // core
+            relocations.add("com.fasterxml.jackson")
+            relocations.add("com.zaxxer.hikari")
+            relocations.add("org.jetbrains.exposed")
+            relocations.add("org.yaml.snakeyaml")
+            // bukkit
+            relocations.add("com.cryptomorin.xseries")
+            relocations.add("org.bstats")
+        }
+        detekt()
+        spotless()
+        kover()
+    }
+
     repositories {
         mavenCentral()
         maven("https://hub.spigotmc.org/nexus/content/repositories/public/")
@@ -24,222 +63,17 @@ allprojects {
         maven("https://repo.codemc.io/repository/maven-releases/")
         maven("https://repo.extendedclip.com/releases/")
     }
-
-    apply(plugin = "com.diffplug.spotless")
-    apply(plugin = "dev.detekt")
-    apply(plugin = "org.jetbrains.kotlinx.kover")
-
-    detekt {
-        config.setFrom("$rootDir/detekt.yml")
-        source.setFrom("src", "test")
-    }
-
-    tasks.withType<Detekt>().configureEach {
-        reports {
-            html.required.set(false)
-            checkstyle.required.set(false)
-            sarif.required.set(false)
-            markdown.required.set(false)
-        }
-    }
-
-    val ktfmtVersion = getVersion("ktfmt")
-
-    spotless {
-        kotlin {
-            ktfmt(ktfmtVersion).kotlinlangStyle().configure {
-                it.setMaxWidth(120)
-                it.setBlockIndent(4)
-                it.setContinuationIndent(4)
-                it.setRemoveUnusedImports(true)
-            }
-        }
-        kotlinGradle {
-            ktfmt(ktfmtVersion).kotlinlangStyle().configure {
-                it.setMaxWidth(120)
-                it.setBlockIndent(4)
-                it.setContinuationIndent(4)
-                it.setRemoveUnusedImports(true)
-            }
-        }
-        yaml {
-            target("**/*.yml")
-            jackson()
-                .yamlFeature("WRITE_DOC_START_MARKER", false)
-                .yamlFeature("INDENT_ARRAYS_WITH_INDICATOR", true)
-                .yamlFeature("LITERAL_BLOCK_STYLE", true)
-        }
-        json {
-            target("**/*.json")
-            simple().indentWithSpaces(4)
-        }
-        freshmark {
-            target("**/*.md")
-            trimTrailingWhitespace()
-            endWithNewline()
-        }
-    }
-
-    // dont check on builds
-    tasks.named("build") {
-        dependsOn.removeIf { it.toString().contains("check") }
-    }
 }
 
 subprojects {
-    // jvm
-    apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "java-library")
-
     // make projects like cat.freya.khs.bukkit to be in
     // the .bukkit package
     if (project.name != "core") {
         group = "${rootProject.group}.${project.name}"
     }
 
-    // we need to support java 8 so that we can support old bukkit
-    val srcJvmVersion =
-        when (project.name) {
-            "neoforge",
-            "fabric",
-            "mod" -> getJavaVersion()
-            else -> 8
-        }
-
-    kotlin {
-        jvmToolchain(srcJvmVersion)
-
-        sourceSets {
-            main {
-                kotlin.srcDirs("src")
-                resources.srcDirs("res")
-            }
-            test {
-                kotlin.srcDirs("test")
-            }
-        }
-    }
-
-    java { toolchain { languageVersion.set(JavaLanguageVersion.of(srcJvmVersion)) } }
-
-    // tests always need to use the latest jvm version so that
-    // junit can function
-    val testJvmVersion = getJavaVersion()
-    val mockitoAgent = configurations.create("mockitoAgent")
-
-    tasks.test {
-        useJUnitPlatform()
-        jvmArgs.add("-javaagent:${mockitoAgent.asPath}")
-        javaLauncher = javaToolchains.launcherFor {
-            languageVersion = JavaLanguageVersion.of(testJvmVersion)
-        }
-    }
-
-    // use the modern jvm version for tests in the core module
-    // instead of just using java 8
-    configurations
-        .matching { it.name in setOf("testCompileClasspath", "testRuntimeClasspath") }
-        .configureEach {
-            attributes { attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, testJvmVersion) }
-        }
-
-    dependencies {
-        testImplementation(rootProject.libs.junit.jupiter.api)
-        testImplementation(rootProject.libs.junit.jupiter.params)
-        testRuntimeOnly(rootProject.libs.junit.jupiter.engine)
-        testRuntimeOnly(rootProject.libs.junit.platform.launcher)
-        testImplementation(rootProject.libs.mockito.core)
-        mockitoAgent(rootProject.libs.mockito.core) { isTransitive = false }
-    }
-
-    tasks.processResources {
-        inputs.properties(rootProject.getBuildInfo())
-
-        val templates = listOf("**/*.yml", "**/*.json", "**/*.toml")
-        templates.forEach { resource ->
-            filesMatching(resource) { expand(rootProject.getBuildInfo()) }
-        }
-    }
-
     tasks.withType<ShadowJar>().configureEach {
-        val jarName = rootProject.name
-        val jarVersion = rootProject.version.toString()
-        val jarPlatform = project.name
-
-        // calculate jar name
-        archiveBaseName.set(jarName)
-        archiveVersion.set(jarVersion)
-        archiveClassifier.set(jarPlatform)
-        destinationDirectory.set(layout.buildDirectory.dir("libs"))
-        archiveFileName.set("$jarName-$jarVersion+$jarPlatform.jar")
-
-        // we need to process resources before
-        // putting them in the jar
-        dependsOn(tasks.processResources)
-
-        // only include shadow'd depends (not implementation)
-        configurations = listOf(project.configurations.named("shadow").get())
-
         // load in image assets
-        from(tasks.jar)
         from("../img") { into("assets") }
-
-        // relocate shaded deps
-        val relocations =
-            setOf(
-                // core
-                "com.fasterxml.jackson",
-                "com.zaxxer.hikari",
-                "org.jetbrains.exposed",
-                "org.yaml.snakeyaml",
-                // bukkit
-                "com.cryptomorin.xseries",
-                "org.bstats",
-            )
-
-        relocations.forEach { pkg ->
-            runCatching {
-                // try to relocate and ignore on failure
-                val module = pkg.split('.').last()
-                relocate(pkg, "${rootProject.group}.depend.$module")
-            }
-        }
-
-        // multiple database drivers may collide here
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        mergeServiceFiles { include("META-INF/services/java.sql.Driver") }
-
-        // remove META-INF crap
-        exclude {
-            it.path.startsWith("META-INF/") &&
-                !it.path.startsWith("META-INF/services/") &&
-                !it.path.endsWith(".kotlin_module") &&
-                !it.path.endsWith("neoforge.mods.toml")
-        }
     }
-
-    tasks.withType<ShadowJar>().all { tasks.findByName("assemble")?.dependsOn(this) }
-}
-
-dependencies {
-    subprojects.forEach {
-        kover(project(it.path))
-    }
-}
-
-tasks.named<Jar>("jar") { enabled = false }
-
-tasks.register("lint") {
-    dependsOn(subprojects.map { it.tasks.named("spotlessCheck") })
-    dependsOn(tasks.named("spotlessCheck"))
-    dependsOn(subprojects.map { it.tasks.named("detekt") })
-}
-
-tasks.register("format") {
-    dependsOn(subprojects.map { it.tasks.named("spotlessApply") })
-    dependsOn(tasks.named("spotlessApply"))
-}
-
-tasks.register("coverage") {
-    dependsOn(tasks.named("koverHtmlReport"))
 }

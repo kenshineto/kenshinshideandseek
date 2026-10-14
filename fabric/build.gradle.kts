@@ -1,5 +1,4 @@
 plugins {
-    alias(libs.plugins.shadow)
     alias(libs.plugins.architectury.loom)
     alias(libs.plugins.architectury.plugin)
 }
@@ -7,6 +6,11 @@ plugins {
 architectury {
     platformSetupLoomIde()
     fabric()
+}
+
+lodestone {
+    resources("fabric.mod.json")
+    shadow()
 }
 
 dependencies {

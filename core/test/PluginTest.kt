@@ -1,5 +1,6 @@
 package cat.freya.khs
 
+import cat.freya.alloy.db.Driver
 import cat.freya.khs.config.DatabaseType
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
@@ -43,7 +44,7 @@ class PluginTest : KhsTest(false) {
     @DisplayName("Plugin crashes if it cannot connect to the database")
     fun pluginCrashesOnDatabaseFailure() {
         // we will have no postgres serer running, mwahahaha
-        config.database.type = DatabaseType.POSTGRES
+        config.database.type = Driver.DatabaseType.POSTGRES
         config.database.port = 0u // lol
         assertThrows { plugin.init() }
     }

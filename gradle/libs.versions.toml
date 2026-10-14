@@ -1,36 +1,10 @@
 [versions]
-# kotlin
-kotlin = "2.4.+"
-kotlinx-coroutines = "1.+"
-
-# java
-java = "25"
-
-# tests
-junit = "6.+"
-mockito = "5.+"
-kotlinx-kover = "0.9.+"
-
-# gradle
-shadow = "9.6.+"
-spotless = "8.+"
-detekt = "2.0.0-alpha.6"
-ktfmt = "0.64"
-
-# libs
-packetevents = "2.13.+"
-luckperms = "5.+"
-slf4j = "2.0.+"
-jackson = "2.22.+"
-
-# orm
+# core
+alloy = "0.1.0"
 exposed = "1.+"
-
-# database
-sqlite = "3.+"
-mysql = "26.+"
-postgres = "42.+"
-hikari = "4.0.3"
+lodestone = "0.1.0"
+luckperms = "5.+"
+packetevents = "2.13.+"
 
 # bukkit
 spigot = "26.3-R0.1-SNAPSHOT"
@@ -38,11 +12,12 @@ xseries = "14.0.+"
 placeholderapi = "2.+"
 bstats = "3.+"
 
-# modding
-minecraft = "26.3"
+# mod
 architectury = "22.+"
 architectury-loom = "1.17-SNAPSHOT"
 architectury-plugin = "3.5-SNAPSHOT"
+minecraft = "26.3"
+slf4j = "2.0.+"
 
 # fabric
 fabric-loader = "0.14.+"
@@ -51,37 +26,13 @@ fabric-loader = "0.14.+"
 neoforge = "26.3.0.6-beta"
 
 [libraries]
-# kotlin
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
-
-# tests
-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
-junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
-junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
-
-# libs
-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
-jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
-jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
-
-# plugins/mods
-packetevents-api = { module = "com.github.retrooper:packetevents-api", version.ref = "packetevents" }
-packetevents-spigot = { module = "com.github.retrooper:packetevents-spigot", version.ref = "packetevents" }
-luckperms-api = { module = "net.luckperms:api", version.ref = "luckperms" }
-
-# orm
+# core
+alloy = { module = "cat.freya:alloy", version.ref = "alloy" }
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
-
-# database
-sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite" }
-mysql = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
-postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
-hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
+luckperms-api = { module = "net.luckperms:api", version.ref = "luckperms" }
+packetevents-api = { module = "com.github.retrooper:packetevents-api", version.ref = "packetevents" }
+packetevents-spigot = { module = "com.github.retrooper:packetevents-spigot", version.ref = "packetevents" }
 
 # bukkit
 spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
@@ -89,9 +40,10 @@ xseries = { module = "com.github.cryptomorin:XSeries", version.ref = "xseries" }
 placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
 bstats-bukkit = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
 
-# modding
-minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+# mod
 architectury = { module = "dev.architectury:architectury", version.ref = "architectury" }
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 
 # fabric
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
@@ -99,11 +51,10 @@ fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-l
 # neoforge
 neoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
 
+# plugins
+lodestone = { module= "cat.freya:lodestone-gradle-plugin", version.ref = "lodestone" }
+
 [plugins]
-kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
-spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-detekt = { id = "dev.detekt", version.ref = "detekt" }
 architectury-loom = { id = "dev.architectury.loom-no-remap", version.ref = "architectury-loom" }
 architectury-plugin = { id = "architectury-plugin", version.ref = "architectury-plugin" }
-kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kotlinx-kover" }
+lodestone = { id = "cat.freya.lodestone", version.ref = "lodestone" }

@@ -1,5 +1,7 @@
 package cat.freya.khs.config
 
+import cat.freya.alloy.annotation.*
+
 data class LobbyBoardConfig(
     var title: String = "&eHIDE AND SEEK",
     var content: List<String> =

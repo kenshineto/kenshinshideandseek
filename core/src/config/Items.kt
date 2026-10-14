@@ -1,5 +1,6 @@
 package cat.freya.khs.config
 
+import cat.freya.alloy.annotation.*
 import cat.freya.khs.KhsTypes
 
 data class KhsItemsConfig(

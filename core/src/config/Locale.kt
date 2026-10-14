@@ -1,5 +1,7 @@
 package cat.freya.khs.config
 
+import cat.freya.alloy.annotation.*
+
 @JvmInline
 value class LocaleString1(val inner: String) {
     fun with(arg1: Any): String {
