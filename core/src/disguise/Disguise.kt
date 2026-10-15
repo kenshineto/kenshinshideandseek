@@ -115,6 +115,8 @@ abstract class Disguise(val plugin: Khs, val uuid: UUID, val blockType: BlockTyp
             loc.x = round(loc.x + 0.5) - 0.5
             loc.y = round(loc.y)
             loc.z = round(loc.z + 0.5) - 0.5
+            loc.yaw = 0f
+            loc.pitch = 0f
         }
 
         if (offset) {

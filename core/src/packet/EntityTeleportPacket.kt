@@ -9,9 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEn
 data class EntityTeleportPacket(val entity: Entity, val location: Location) : Packet {
     override fun create(player: Player): WrapperPlayServerEntityTeleport {
         val vector = Vector3d(location.x, location.y, location.z)
-        val yaw = entity.getYaw()
-        val pitch = entity.getPitch()
         val onGround = false
-        return WrapperPlayServerEntityTeleport(entity.entityId, vector, yaw, pitch, onGround)
+        return WrapperPlayServerEntityTeleport(entity.entityId, vector, location.yaw, location.pitch, onGround)
     }
 }
