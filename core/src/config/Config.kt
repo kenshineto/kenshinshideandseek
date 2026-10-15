@@ -198,15 +198,15 @@ data class CommandHooksConfig(
     @Comment(
         "Commands to execute when the game starts for every player. Use {name} for player name and {uuid} for their UUID"
     )
-    var onGameStart: List<String> = listOf(""),
+    var onGameStart: List<String> = emptyList(),
     @Comment(
         "Commands to execute when the game ends for every player on the winning team. Use {name} for player name and {uuid} for their UUID"
     )
-    var onGameEndWin: List<String> = listOf(""),
+    var onGameEndWin: List<String> = emptyList(),
     @Comment(
         "Commands to execute when the game ends for every player on the losing team. Use {name} for player name and {uuid} for their UUID"
     )
-    var onGameEndLose: List<String> = listOf(""),
+    var onGameEndLose: List<String> = emptyList(),
 )
 
 data class KhsConfig(
