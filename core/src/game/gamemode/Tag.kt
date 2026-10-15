@@ -48,10 +48,10 @@ class Tag(override val game: Game) : GameMode {
         }
 
         if (game.teams.seekerCount() < 1u) {
-            if (playerLeft) {
-                return Game.WinType.PLAYERS_LEFT
+            return if (playerLeft) {
+                Game.WinType.PLAYERS_LEFT
             } else {
-                return Game.WinType.HIDERS_WIN
+                Game.WinType.HIDERS_WIN
             }
         }
 

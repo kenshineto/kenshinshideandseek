@@ -32,7 +32,7 @@ data class KhsWorldsConfig(
     var worlds: MutableMap<String, WorldConfig> = mutableMapOf()
 ) {
     fun update(name: String, types: KhsTypes, fn: WorldConfig.() -> Unit) {
-        val config = worlds.get(name) ?: WorldConfig.default(types)
+        val config = worlds[name] ?: WorldConfig.default(types)
         fn(config)
         worlds[name] = config
     }

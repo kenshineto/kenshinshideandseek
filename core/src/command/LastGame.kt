@@ -21,8 +21,8 @@ class KhsLastGame : Command {
         val message = buildString {
             appendLine("&f&l" + "=".repeat(30))
             appendLine(plugin.locale.database.lastGame)
-            appendLine(plugin.locale.database.lastWinners.with(lastWinners.map(Player::name).joinToString(" ")))
-            appendLine(plugin.locale.database.lastLoosers.with(lastLoosers.map(Player::name).joinToString(" ")))
+            appendLine(plugin.locale.database.lastWinners.with(lastWinners.joinToString(" ", transform = Player::name)))
+            appendLine(plugin.locale.database.lastLoosers.with(lastLoosers.joinToString(" ", transform = Player::name)))
             appendLine("&f&l" + "=".repeat(30))
         }
 

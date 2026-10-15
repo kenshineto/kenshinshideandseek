@@ -308,9 +308,9 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
         // from the map's world
         if (isMapSave(id)) {
             val mapName = id.path().removePrefix(MAP_SAVE_PREFIX)
-            val map = maps.get(mapName)
+            val map = maps[mapName]
             if (map == null) {
-                shim.logger.error("map does not exist for map save: ${worldName}")
+                shim.logger.error("map does not exist for map save: $worldName")
                 return null
             }
 

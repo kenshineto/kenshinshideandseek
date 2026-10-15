@@ -62,7 +62,7 @@ class MapSave(val plugin: Khs, val map: KhsMap, val rootSrcDir: Path) {
             return
         }
 
-        src.listFiles().forEach { file ->
+        src.listFiles()?.forEach { file ->
             val filePath = path.resolve(file.name)
 
             if (isFileIgnored(filePath)) {

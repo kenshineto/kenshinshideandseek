@@ -31,13 +31,13 @@ import org.mockito.Answers
 import org.mockito.Mockito
 
 private object TestLogger : KhsShim.Logger {
-    override fun info(message: String) = println("[INFO] ${message}")
+    override fun info(message: String) = println("[INFO] $message")
 
-    override fun warning(message: String) = println("[WARNING] ${message}")
+    override fun warning(message: String) = println("[WARNING] $message")
 
-    override fun error(message: String) = println("[ERROR] ${message}")
+    override fun error(message: String) = println("[ERROR] $message")
 
-    override fun debug(message: String) = println("[DEBUG] ${message}")
+    override fun debug(message: String) = println("[DEBUG] $message")
 }
 
 class TestBorder : World.Border {
@@ -78,7 +78,7 @@ open class TestInventory(override val title: String?, val size: UInt) : Inventor
 
     override fun get(index: UInt): Item? {
         if (index >= size) return null
-        return items.get(index.toInt())
+        return items[index.toInt()]
     }
 
     override fun set(index: UInt, item: Item?) {
@@ -459,15 +459,15 @@ abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
         config.exit = Location(worldName = world.name)
 
         plugin.reloadConfig()
-        val map = plugin.maps.get("map")
-        assertNotNull(plugin.maps.get("map"))
+        val map = plugin.maps["map"]
+        assertNotNull(plugin.maps["map"])
         assert(isMapSetup())
 
         return map!!
     }
 
     fun isMapSetup(): Boolean {
-        return plugin.maps.get("map")?.isSetup() == true
+        return plugin.maps["map"]?.isSetup() == true
     }
 
     fun skipTicks(ticks: ULong) {
@@ -484,7 +484,7 @@ abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
         var timer = withinSeconds
         do {
             skipSeconds(1UL)
-            assertNotEquals(0UL, --timer, "game status did not change to ${status} within ${withinSeconds} seconds")
+            assertNotEquals(0UL, --timer, "game status did not change to $status within $withinSeconds seconds")
         } while (game.status != status)
     }
 

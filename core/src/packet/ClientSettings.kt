@@ -35,7 +35,7 @@ data class ClientSettings(
 
     companion object {
         fun fromPacket(packet: WrapperCommonClientSettings<*>): ClientSettings {
-            return ClientSettings(packet.getSkinMask(), packet.getMainHand())
+            return ClientSettings(packet.skinMask, packet.mainHand)
         }
     }
 }

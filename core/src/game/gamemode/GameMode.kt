@@ -22,9 +22,7 @@ interface GameMode {
 
         if (attacker == null) {
             // assume natural causes
-            if (!plugin.config.pvp && !plugin.config.allowNaturalCauses) return false
-
-            return true
+            return plugin.config.pvp || plugin.config.allowNaturalCauses
         }
 
         // attackers must be in the game to attack the player

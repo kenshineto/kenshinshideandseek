@@ -59,10 +59,10 @@ class HideAndSeek(override val game: Game) : GameMode {
         }
 
         if (game.teams.seekerCount() < 1u) {
-            if (playerLeft) {
-                return Game.WinType.PLAYERS_LEFT
+            return if (playerLeft) {
+                Game.WinType.PLAYERS_LEFT
             } else {
-                return Game.WinType.HIDERS_WIN
+                Game.WinType.HIDERS_WIN
             }
         }
 
@@ -70,12 +70,12 @@ class HideAndSeek(override val game: Game) : GameMode {
             val hider = game.teams.getHiderPlayers().firstOrNull()
             lastHider = hider?.uuid
             lastHiderName = hider?.name
-            if (playerLeft) {
-                return Game.WinType.PLAYERS_LEFT
+            return if (playerLeft) {
+                Game.WinType.PLAYERS_LEFT
             } else if (lastHider != null) {
-                return Game.WinType.LAST_HIDER_WIN
+                Game.WinType.LAST_HIDER_WIN
             } else {
-                return Game.WinType.SEEKERS_WIN
+                Game.WinType.SEEKERS_WIN
             }
         }
 
@@ -87,7 +87,7 @@ class HideAndSeek(override val game: Game) : GameMode {
     }
 
     override fun getEffectiveTeam(uuid: UUID): Game.Team? {
-        return game.getInitialTeams().get(uuid)
+        return game.getInitialTeams()[uuid]
     }
 
     override fun getMinPlayers(): UInt {

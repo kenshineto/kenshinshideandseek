@@ -45,7 +45,7 @@ class Teams(val shim: KhsShim) {
 
     fun get(uuid: UUID): Team? {
         synchronized(lock) {
-            return mappings.get(uuid)
+            return mappings[uuid]
         }
     }
 

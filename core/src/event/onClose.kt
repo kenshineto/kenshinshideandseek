@@ -18,7 +18,7 @@ fun onClose(event: CloseEvent) {
     // ignore seekers closing inventory, this fixes a race condition
     // when the inventory is closed during a team switch
     // from hider -> seeker. seekers should not be disguised
-    if (game.teams.isHider(player.uuid) == false) return
+    if (!game.teams.isHider(player.uuid)) return
 
     val blocks = game.map?.config?.blockHunt?.blocks ?: return
     val defaultBlock = blocks.firstOrNull() ?: return

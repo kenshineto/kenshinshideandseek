@@ -26,9 +26,7 @@ class RequestManager(private val plugin: Khs) {
                     requests.remove(uuid)
 
                     val player = plugin.shim.getPlayer(uuid)
-                    if (player != null) {
-                        player.message(plugin.locale.prefix.error + plugin.locale.confirm.timedOut)
-                    }
+                    player?.message(plugin.locale.prefix.error + plugin.locale.confirm.timedOut)
                 }
             }
         }

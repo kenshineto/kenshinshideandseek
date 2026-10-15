@@ -108,12 +108,12 @@ private fun handleLastGame(req: PlaceholderRequest): String {
         return req.noData
     }
 
-    if (index != null) {
+    return if (index != null) {
         // display a given winner
-        return players.getOrNull(index.toInt())?.let(Player::name) ?: req.noData
+        players.getOrNull(index.toInt())?.let(Player::name) ?: req.noData
     } else {
         // display all winners
-        return players.map(Player::name).joinToString(" ")
+        players.joinToString(" ", transform = Player::name)
     }
 }
 

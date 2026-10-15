@@ -16,10 +16,10 @@ value class Id(val inner: String) {
 
     fun changePath(newPath: String): Id {
         val namespace = namespace()
-        if (namespace != null) {
-            return Id("${namespace}:${newPath}")
+        return if (namespace != null) {
+            Id("${namespace}:${newPath}")
         } else {
-            return Id(newPath)
+            Id(newPath)
         }
     }
 
