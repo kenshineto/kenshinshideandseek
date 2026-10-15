@@ -8,7 +8,6 @@ import kotlin.synchronized
 
 class Disguiser(val plugin: Khs) {
     private val disguises = mutableMapOf<UUID, Disguise>()
-    private val debounce = mutableSetOf<UUID>()
 
     fun getDisguise(uuid: UUID): Disguise? = disguises[uuid]
 
@@ -45,27 +44,5 @@ class Disguiser(val plugin: Khs) {
 
     fun cleanup() {
         synchronized(disguises) { for (uuid in disguises.keys) reveal(uuid) }
-        synchronized(debounce) { debounce.clear() }
-    }
-
-    fun isDebounced(uuid: UUID): Boolean {
-        synchronized(debounce) {
-            return debounce.contains(uuid)
-        }
-    }
-
-    fun setDebounce(uuid: UUID) {
-        synchronized(debounce) {
-            debounce.add(uuid)
-        }
-        plugin.shim.scheduleEvent(10UL) {
-            removeDebounce(uuid)
-        }
-    }
-
-    fun removeDebounce(uuid: UUID) {
-        synchronized(debounce) {
-            debounce.remove(uuid)
-        }
     }
 }

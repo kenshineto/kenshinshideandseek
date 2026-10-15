@@ -791,7 +791,7 @@ class Game(val plugin: Khs) {
             return
         }
 
-        val nextSlot =
+        var nextSlot =
             if (plugin.config.pvp) {
                 givePlayerItems(hider, plugin.itemsConfig.hiderItems)
             } else {
@@ -802,7 +802,14 @@ class Game(val plugin: Khs) {
         // glow power-up
         if (!plugin.config.alwaysGlow && plugin.config.glow.enabled) {
             val item = plugin.parseItem(plugin.config.glow.item)
-            val slot = plugin.config.glow.item.slot ?: nextSlot
+            val slot = plugin.config.glow.item.slot ?: (nextSlot++)
+            item?.let { hider.getInventory().set(slot, it) }
+        }
+
+        // block hunt switch item
+        if (plugin.config.blockHunt.allowSwitching.enabled && map?.config?.blockHunt?.enabled == true) {
+            val item = plugin.parseItem(plugin.config.blockHunt.allowSwitching.item)
+            val slot = plugin.config.blockHunt.allowSwitching.item.slot ?: (nextSlot++)
             item?.let { hider.getInventory().set(slot, it) }
         }
 

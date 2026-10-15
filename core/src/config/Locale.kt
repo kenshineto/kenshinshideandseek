@@ -253,6 +253,8 @@ data class LocaleBlockHuntConfig(
     var block: LocaleBlockHuntBlockConfig = LocaleBlockHuntBlockConfig(),
     @Comment("{1} - The player that was revealed in block hunt")
     var notify: LocaleString1 = LocaleString1("&oYou have revealed {1}!"),
+    @Comment("{1} - time in seconds until the player may switch their disguise")
+    var switchCooldown: LocaleString1 = LocaleString1("&c&oYou cannot do that right now! Please wait {1} seconds."),
 )
 
 data class LocaleWorldConfig(

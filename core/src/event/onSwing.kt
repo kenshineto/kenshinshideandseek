@@ -5,7 +5,6 @@ import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.math.AABB
 import cat.freya.khs.math.Vector
 import cat.freya.khs.world.Player
-import java.util.UUID
 import kotlin.math.min
 
 private const val BLOCKHUNT_MAX_REACH: Double = 5.0
@@ -14,16 +13,14 @@ private const val BLOCKHUNT_MAX_REACH: Double = 5.0
  * Don't let people spam attack disguised players. Since we are emulating the attacks ourselves, we have to emulate this
  * too
  */
-private val debounce: MutableSet<UUID> = mutableSetOf()
-
 data class SwingEvent(val plugin: Khs, val player: Player) : Event(plugin)
 
 private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
     val player = disguise.player ?: return
     if (player.uuid == attacker.uuid) return
 
-    val debounceUUID = player.uuid
-    if (plugin.disguiser.isDebounced(debounceUUID)) return
+    val debouncer = plugin.debounceManager.blockHuntAttack
+    if (debouncer.isDebounced(player.uuid)) return
 
     // trigger an attack event
     val damage = attacker.getAttackDamage()
@@ -33,7 +30,7 @@ private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
     // emulate the attacker attacking the
     // player
     if (!khsEvent.cancelled) {
-        if (plugin.config.blockHuntNotify && disguise.shouldBeSolid) {
+        if (plugin.config.blockHunt.notifySeekers && disguise.shouldBeSolid) {
             attacker.message(plugin.locale.blockHunt.notify.with(player.name))
         }
 
@@ -46,7 +43,7 @@ private fun handleAttack(plugin: Khs, disguise: Disguise, attacker: Player) {
     }
 
     // set and soon turn off debounce
-    plugin.disguiser.setDebounce(debounceUUID)
+    debouncer.setDebounce(player.uuid, 10UL)
 }
 
 fun onSwing(event: SwingEvent) {

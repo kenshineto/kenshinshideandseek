@@ -16,7 +16,6 @@ The `config.yml` file contains all the general settings for the plugin, ranging 
 | startingSeekerCount | Amount of initial seekers when teh game starts, minimum of 1. | uint | 1 |
 | respawnAsSpectator | Respawn dead hiders as spectators instead of seekers. | bool | false |
 | gameOverTitle | Display a title describing the game over along with the chat message. | bool | true |
-| blockHuntNotify | Notify a seeker when the undisguise a hider in block hunt. | bool | true |
 | debug | Show plugin debug output in the server console. | bool | false |
 
 **Spectator items**
@@ -93,6 +92,17 @@ When playng `HIDE_AND_SEEK`, the two available scoring modes are: `ALL_HIDERS_FO
 | gameMode | The game mode that the plugin will operate under. | enum | HIDE_AND_SEEK |
 | scoringMode | The scoring mode decides the hider win condition for the HIDE_AND_SEEK game moed only. | enum | ALL_HIDERS_FOUND |
 | dontRewardQuit | End the game abruptly without updating any scores if a player leaving the game causes a game over. | bool | true |
+
+**Block hunt**
+
+Part of sub-section `blockHunt`.
+
+| name | description | type | default |
+| ---- | ----------- | ---- | ------- |
+| notifySeekers | Notify a seeker when the undisguise a hider in block hunt. | bool | true |
+| allowSwitching.enabled | Allow switching disguises mid game | bool | false |
+| allowSwitching.item | Item hiders use to switch their disguise | item | |
+| allowSwitching.cooldown | Time in seconds hiders must wait to switch their disguise again | ulong | 60 |
 
 ## PvP
 

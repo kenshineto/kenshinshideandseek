@@ -106,6 +106,9 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
     /** listens for packets */
     val packetListener = KhsPacketListener(this)
 
+    /** manages cooldowns */
+    val debounceManager = DebounceManager()
+
     /** Caches parseBlock requests */
     private val blockCache: MutableMap<String, BlockType?> = mutableMapOf()
 
@@ -132,6 +135,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
     fun cleanup() {
         game.teams.getUUIDs().forEach { game.leave(it) }
         disguiser.cleanup()
+        debounceManager.cleanup()
     }
 
     private fun printBanner() {
@@ -280,6 +284,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
         game.doTick()
         disguiser.update()
         requestManager.update()
+        debounceManager.update()
     }
 
     @Synchronized

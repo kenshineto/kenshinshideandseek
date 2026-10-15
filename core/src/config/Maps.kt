@@ -24,14 +24,14 @@ data class WorldBorderConfig(
     var move: ULong? = null,
 )
 
-data class BlockHuntConfig(var enabled: Boolean = false, var blocks: List<String> = emptyList())
+data class MapBlockHuntConfig(var enabled: Boolean = false, var blocks: List<String> = emptyList())
 
 data class MapConfig(
     var world: String? = null,
     var spawns: SpawnsConfig = SpawnsConfig(),
     var bounds: BoundsConfig = BoundsConfig(),
     var worldBorder: WorldBorderConfig = WorldBorderConfig(),
-    var blockHunt: BlockHuntConfig = BlockHuntConfig(),
+    var blockHunt: MapBlockHuntConfig = MapBlockHuntConfig(),
 )
 
 data class KhsMapsConfig(

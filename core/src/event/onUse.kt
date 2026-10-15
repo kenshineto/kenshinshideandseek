@@ -2,6 +2,7 @@ package cat.freya.khs.event
 
 import cat.freya.khs.Khs
 import cat.freya.khs.game.Game
+import cat.freya.khs.menu.BlockHuntMenu
 import cat.freya.khs.menu.TeleportMenu
 import cat.freya.khs.type.Item
 import cat.freya.khs.world.Player
@@ -31,6 +32,22 @@ private fun onUseInGame(event: UseEvent) {
         event.cancel()
         plugin.game.glow.start()
         player.getInventory().remove(item)
+    } else if (
+        item.similar(plugin.config.blockHunt.allowSwitching.item) &&
+            plugin.config.blockHunt.allowSwitching.enabled &&
+            plugin.game.map?.config?.blockHunt?.enabled == true
+    ) {
+        event.cancel()
+        val debouncer = plugin.debounceManager.disguiseSwitch
+        val delay = debouncer.getDebounce(player.uuid)
+        if (delay != null) {
+            player.message(plugin.locale.blockHunt.switchCooldown.with(delay / 20UL))
+            return
+        }
+        debouncer.setDebounce(player.uuid, plugin.config.blockHunt.allowSwitching.cooldown * 20UL)
+        val map = plugin.game.map ?: return
+        val inv = BlockHuntMenu(plugin).create(map) ?: return
+        player.showInventory(inv)
     }
 }
 

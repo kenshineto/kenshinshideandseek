@@ -209,6 +209,33 @@ data class CommandHooksConfig(
     var onGameEndLose: List<String> = emptyList(),
 )
 
+data class BlockHuntSwitchingConfig(
+    @Comment("Allow switching disguises mid-game") var enabled: Boolean = false,
+    @Comment("Items hiders use to switch their block") var item: ItemConfig,
+    @Comment("Time in seconds that players must wait to switch blocks") var cooldown: ULong = 60u,
+) {
+    companion object {
+        fun default(types: KhsTypes) =
+            BlockHuntSwitchingConfig(
+                item =
+                    ItemConfig(
+                        name = "&bSwitch Block",
+                        material = types.craftingTable,
+                        lore = listOf("Change your disguise", "Cooldown 60s"),
+                    )
+            )
+    }
+}
+
+data class BlockHuntConfig(
+    @Comment("If to notify a seeker if they revealed a player in block hunt") var notifySeekers: Boolean = true,
+    var allowSwitching: BlockHuntSwitchingConfig,
+) {
+    companion object {
+        fun default(types: KhsTypes) = BlockHuntConfig(allowSwitching = BlockHuntSwitchingConfig.default(types))
+    }
+}
+
 data class KhsConfig(
     // General
     @Section("General")
@@ -227,7 +254,7 @@ data class KhsConfig(
     @Comment("Along with a chat message, display a title describing the game over") var gameOverTitle: Boolean = true,
     @Comment("Configure items given to spectators") var spectatorItems: SpectatorItemsConfig,
     @Comment("Configure the sounds that plays when a seeker is near") var seekerPing: SeekerPingConfig,
-    @Comment("If to notify a seeker if they revealed a player in block hunt") var blockHuntNotify: Boolean = true,
+    @Omittable var blockHuntNotify: Boolean? = null,
     @Comment("For developers") var debug: Boolean = false,
     // Timing
     @Section("Timing")
@@ -255,6 +282,7 @@ data class KhsConfig(
     @Comment("Trigger a win type of NONE if a player leaving the game triggers a win condition.")
     @Comment("This can be used as a way to prevent players from quitting to get someone else points.")
     var dontRewardQuit: Boolean = true,
+    @Comment("Global block hunt settings") var blockHunt: BlockHuntConfig,
     // PVP
     @Section("PVP")
     @Comment("If enabled, a seeker must sucessfully kill a hider in pvp to 'find' that hider.")
@@ -318,11 +346,18 @@ data class KhsConfig(
         // migrate minimum values
         startingSeekerCount = max(startingSeekerCount, 1u)
         hidingLength = max(hidingLength, 10u)
+
+        // moved fields
+        blockHuntNotify?.let {
+            blockHunt.notifySeekers = it
+            blockHuntNotify = null
+        }
     }
 
     companion object {
         fun default(types: KhsTypes) =
             KhsConfig(
+                blockHunt = BlockHuntConfig.default(types),
                 glow = GlowConfig.default(types),
                 lobby = LobbyConfig.default(types),
                 seekerPing = SeekerPingConfig.default(types),
