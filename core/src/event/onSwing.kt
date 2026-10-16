@@ -62,7 +62,7 @@ fun onSwing(event: SwingEvent) {
             .mapDisguises { disguise ->
                 // get location without offset, we want the location to
                 // be the middle of the player/block
-                val loc = disguise.getCurrentBlockLocation(false) ?: return@mapDisguises null
+                val loc = disguise.getCurrentBlockLocation() ?: return@mapDisguises null
 
                 // make aabb
                 val vector = loc.toPosition().toVector()

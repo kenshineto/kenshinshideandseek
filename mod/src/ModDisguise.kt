@@ -1,15 +1,16 @@
 package cat.freya.khs.mod
 
 import cat.freya.khs.disguise.Disguise
-import cat.freya.khs.math.Vector
 import cat.freya.khs.mod.mixin.BlockDisplayMixin
 import cat.freya.khs.type.BlockType
 import cat.freya.khs.world.Location
+import com.mojang.math.Transformation
 import java.util.UUID
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.Display.BlockDisplay
 import net.minecraft.world.entity.EntityTypes
+import org.joml.Vector3f
 
 class ModDisguise(val mod: KhsMod, uuid: UUID, blockType: BlockType) : Disguise(mod.khs, uuid, blockType) {
     override fun createBlock(location: Location): ModEntity? {
@@ -24,16 +25,12 @@ class ModDisguise(val mod: KhsMod, uuid: UUID, blockType: BlockType) : Disguise(
         val type = BuiltInRegistries.BLOCK.get(id).orElse(null) ?: return null
         val state = type.value().defaultBlockState()
 
-        (block as BlockDisplayMixin).`khs$setBlockState`(state)
+        val mixin = block as BlockDisplayMixin
+        mixin.`khs$setBlockState`(state)
+        mixin.`khs$setTransformation`(Transformation(Vector3f(-0.5f, 0f, -0.5f), null, Vector3f(1f, 1f, 1f), null))
 
         world.inner.addFreshEntity(block)
 
         return ModEntity(mod, block)
-    }
-
-    override fun getBlockOffset(): Vector {
-        // unlike falling sand, display entities have their
-        // position based from the corner, not the center
-        return Vector(-0.5, 0.0, -0.5)
     }
 }

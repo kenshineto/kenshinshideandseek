@@ -1,7 +1,6 @@
 package cat.freya.khs.bukkit
 
 import cat.freya.khs.disguise.Disguise
-import cat.freya.khs.math.Vector
 import cat.freya.khs.type.BlockType
 import cat.freya.khs.world.Entity
 import cat.freya.khs.world.Location
@@ -10,22 +9,15 @@ import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 import org.bukkit.Bukkit
 import org.bukkit.entity.BlockDisplay
+import org.bukkit.util.Transformation
+import org.joml.AxisAngle4f
+import org.joml.Vector3f
 
 class BukkitDisguise(
     private val bukkitPlugin: KhsPlugin,
     uuid: UUID,
     blockType: BlockType,
 ) : Disguise(bukkitPlugin.khs, uuid, blockType) {
-
-    override fun getBlockOffset(): Vector {
-        if (bukkitPlugin.shim.supports(19, 4)) {
-            // unlike falling sand, display entities have their
-            // position based from the corner, not the center
-            return Vector(-0.5, 0.0, -0.5)
-        }
-
-        return super.getBlockOffset()
-    }
 
     override fun createBlock(location: Location): Entity? {
         val player = player ?: return null
@@ -40,6 +32,8 @@ class BukkitDisguise(
             block =
                 world.spawn(loc, BlockDisplay::class.java) {
                     it.block = Bukkit.createBlockData(material)
+                    it.transformation =
+                        Transformation(Vector3f(-0.5f, 0f, -0.5f), AxisAngle4f(), Vector3f(1f, 1f, 1f), AxisAngle4f())
                 }
         } else {
             @Suppress("DEPRECATION")
