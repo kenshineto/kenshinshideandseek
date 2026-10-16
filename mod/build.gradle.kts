@@ -28,7 +28,4 @@ dependencies {
     compileOnly(libs.slf4j.api)
     compileOnly(libs.luckperms.api)
     compileOnly(libs.packetevents.api)
-
-    // compileOnly(libs.architectury)
-    compileOnly(libs.architectury)
 }

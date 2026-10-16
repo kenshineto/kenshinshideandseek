@@ -1,8 +1,6 @@
 package cat.freya.khs.mod
 
 import cat.freya.khs.mod.internal.LevelManager
-import dev.architectury.event.events.common.LifecycleEvent
-import dev.architectury.event.events.common.TickEvent
 import java.nio.file.Path
 import java.util.UUID
 import net.minecraft.core.MappedRegistry
@@ -18,33 +16,17 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria
 
 class ModServer(val mod: KhsMod) {
     lateinit var inner: MinecraftServer
+        private set
 
     private var levelManager: LevelManager? = null
     private val tasks: MutableSet<() -> Boolean> = mutableSetOf()
-
     private val activeObjectives: MutableMap<UUID, String> = mutableMapOf()
 
-    // called when our mod is being initialized
-    fun init() {
-        // register core event listeners
-        // we cannot initialize yet since we don't
-        // have access to a MinecraftServer instance yet
-        TickEvent.SERVER_POST.register { _ ->
-            handleScheduledTasks()
-            mod.doTick()
-        }
-
-        LifecycleEvent.SERVER_STOPPING.register { _ ->
-            mod.onShutdown()
-        }
-
-        LifecycleEvent.SERVER_BEFORE_START.register { server ->
-            this.inner = server
-            mod.init()
-        }
+    fun init(inner: MinecraftServer) {
+        this.inner = inner
     }
 
-    private fun handleScheduledTasks() {
+    fun doTick() {
         for (task in tasks) {
             val finished = task()
             if (finished) tasks.remove(task)
@@ -99,7 +81,7 @@ class ModServer(val mod: KhsMod) {
     }
 
     fun <T : Any> getRegistry(type: ResourceKey<out Registry<out T>>): Registry<T> {
-        val registries = mod.server.inner.registryAccess()
+        val registries = inner.registryAccess()
         return registries.lookupOrThrow(type)
     }
 

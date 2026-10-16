@@ -15,6 +15,7 @@ lodestone {
 
 dependencies {
     minecraft(libs.minecraft)
+    compileOnly(libs.fabric.api)
     compileOnly(libs.fabric.loader)
 
     shadow(project(":mod", configuration = "transformProductionFabric"))

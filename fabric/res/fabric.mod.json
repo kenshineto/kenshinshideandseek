@@ -2,11 +2,11 @@
     "schemaVersion": 1,
     "depends": {
         "minecraft": "~${minecraft}",
+        "fabric-api": ">=${fabricapi}",
         "java": "^${java}",
         "packetevents": "^${packetevents}",
         "fabricloader": ">=${fabricloader}",
         "fabric-language-kotlin": "*",
-        "architectury": "^${architectury}",
         "org_jetbrains_kotlin_kotlin-stdlib": "^${kotlin}"
     },
     "icon": "assets/logo.png",

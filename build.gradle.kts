@@ -27,8 +27,8 @@ allprojects {
             put("version", rootProject.version)
             put("name", "Kenshin's Hide and Seek")
             put("author", "KenshinEto")
-            put("architectury", getVersion("architectury"))
-            put("fabricloader", getVersion("fabric-loader"))
+            put("fabricapi", getVersion("fabricapi"))
+            put("fabricloader", getVersion("fabricloader"))
             put("minecraft", getVersion("minecraft"))
             put("packetevents", getVersion("packetevents"))
             put("java", jvmVersion)
@@ -59,7 +59,6 @@ allprojects {
         maven("https://hub.spigotmc.org/nexus/content/repositories/public/")
         maven("https://maven.neoforged.net/releases")
         maven("https://maven.fabricmc.net/")
-        maven("https://maven.architectury.dev/")
         maven("https://repo.codemc.io/repository/maven-releases/")
         maven("https://repo.extendedclip.com/releases/")
     }

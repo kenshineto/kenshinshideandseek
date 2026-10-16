@@ -1,18 +1,18 @@
-package cat.freya.khs.mod.event
+package cat.freya.khs.fabric.event
 
 import cat.freya.khs.event.MoveEvent
 import cat.freya.khs.event.onMove
 import cat.freya.khs.mod.KhsMod
 import cat.freya.khs.mod.ModPlayer
 import cat.freya.khs.world.Location
-import dev.architectury.event.events.common.TickEvent
 import java.util.UUID
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 
 class MovementListener(val mod: KhsMod) {
     private val savedPrevLocation: MutableMap<UUID, Location> = mutableMapOf()
 
     init {
-        TickEvent.SERVER_POST.register { _ ->
+        ServerTickEvents.END_SERVER_TICK.register { _ ->
             mod.server.getPlayers().forEach { handlePlayer(it) }
         }
     }

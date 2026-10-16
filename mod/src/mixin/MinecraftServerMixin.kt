@@ -16,7 +16,7 @@ abstract class MinecraftServerMixin {
     @Suppress("UNUSED_PARAMETER")
     @Redirect(
         method = ["tickChildren"],
-        at = [At(value = "INVOKE", target = TICK_CHILDREN_TARGET, ordinal = 0)],
+        at = At(value = "INVOKE", target = TICK_CHILDREN_TARGET, ordinal = 0),
         require = 0,
     )
     private fun `khs$copyBeforeTicking`(instance: Iterable<ServerLevel>): Iterator<ServerLevel> {

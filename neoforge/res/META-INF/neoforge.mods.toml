@@ -29,13 +29,6 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.khs]]
-modId = "architectury"
-type = "required"
-versionRange = "[${architectury},)"
-ordering = "AFTER"
-side = "BOTH"
-
-[[dependencies.khs]]
 modId = "packetevents"
 type = "required"
 versionRange = "[${packetevents},)"

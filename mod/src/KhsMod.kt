@@ -1,14 +1,12 @@
 package cat.freya.khs.mod
 
 import cat.freya.khs.Khs
-import cat.freya.khs.mod.event.*
-import cat.freya.khs.mod.internal.CommandManager
-import dev.architectury.event.events.common.CommandRegistrationEvent
 import java.util.concurrent.atomic.AtomicBoolean
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
+import net.minecraft.server.MinecraftServer
 
 class KhsMod(val platform: String) {
     val enabled = AtomicBoolean(true)
@@ -17,26 +15,15 @@ class KhsMod(val platform: String) {
     val khs = Khs(shim, modTypes)
 
     init {
-        server.init()
-
-        CommandRegistrationEvent.EVENT.register { dispatcher, _, _ ->
-            CommandManager(this, khs.commandGroup, dispatcher)
-        }
-
         INSTANCE = this
     }
 
-    // called once the minecraft
-    // server is starting
-    fun init() {
+    fun init(inner: MinecraftServer) {
+        server.init(inner)
         khs.init()
 
         // khs.init() can disable us
         if (!enabled.get()) return
-
-        // TODO: register bungeecord
-
-        registerListeners()
     }
 
     fun onShutdown() {
@@ -46,19 +33,8 @@ class KhsMod(val platform: String) {
 
     fun doTick() {
         if (!enabled.get()) return
+        server.doTick()
         khs.doTick()
-    }
-
-    private fun registerListeners() {
-        BreakListener(this)
-        ChatListener(this)
-        DamageListener(this)
-        InteractListener(this)
-        InventoryListener(this)
-        JoinLeaveListener(this)
-        MovementListener(this)
-        PlayerListener(this)
-        RespawnListener(this)
     }
 
     companion object {

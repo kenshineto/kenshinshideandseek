@@ -1,4 +1,4 @@
-package cat.freya.khs.mod.event
+package cat.freya.khs.fabric.event
 
 import cat.freya.khs.event.JoinEvent
 import cat.freya.khs.event.LeaveEvent
@@ -6,17 +6,17 @@ import cat.freya.khs.event.onJoin
 import cat.freya.khs.event.onLeave
 import cat.freya.khs.mod.KhsMod
 import cat.freya.khs.mod.ModPlayer
-import dev.architectury.event.events.common.PlayerEvent
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.minecraft.server.level.ServerPlayer
 
 class JoinLeaveListener(val mod: KhsMod) {
     init {
-        PlayerEvent.PLAYER_JOIN.register { player ->
-            handleJoin(player)
+        ServerPlayConnectionEvents.JOIN.register { handler, _, _ ->
+            handleJoin(handler.player)
         }
 
-        PlayerEvent.PLAYER_QUIT.register { player ->
-            handleLeave(player)
+        ServerPlayConnectionEvents.DISCONNECT.register { handler, _ ->
+            handleLeave(handler.player)
         }
     }
 

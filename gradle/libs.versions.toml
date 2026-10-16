@@ -5,6 +5,7 @@ exposed = "1.+"
 lodestone = "0.1.0"
 luckperms = "5.+"
 packetevents = "2.13.+"
+slf4j = "2.0.+"
 
 # bukkit
 spigot = "26.3-R0.1-SNAPSHOT"
@@ -13,14 +14,14 @@ placeholderapi = "2.+"
 bstats = "3.+"
 
 # mod
+minecraft = "26.3"
 architectury = "22.+"
 architectury-loom = "1.17-SNAPSHOT"
 architectury-plugin = "3.5-SNAPSHOT"
-minecraft = "26.3"
-slf4j = "2.0.+"
 
 # fabric
-fabric-loader = "0.14.+"
+fabricapi = "0.160.5+26.3"
+fabricloader = "0.19.3"
 
 # neoforge
 neoforge = "26.3.0.6-beta"
@@ -33,6 +34,7 @@ exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "e
 luckperms-api = { module = "net.luckperms:api", version.ref = "luckperms" }
 packetevents-api = { module = "com.github.retrooper:packetevents-api", version.ref = "packetevents" }
 packetevents-spigot = { module = "com.github.retrooper:packetevents-spigot", version.ref = "packetevents" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 
 # bukkit
 spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
@@ -41,18 +43,14 @@ placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholder
 bstats-bukkit = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
 
 # mod
-architectury = { module = "dev.architectury:architectury", version.ref = "architectury" }
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 
 # fabric
-fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricloader" }
+fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricapi" }
 
 # neoforge
 neoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
-
-# plugins
-lodestone = { module= "cat.freya:lodestone-gradle-plugin", version.ref = "lodestone" }
 
 [plugins]
 architectury-loom = { id = "dev.architectury.loom-no-remap", version.ref = "architectury-loom" }
