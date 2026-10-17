@@ -2,6 +2,7 @@ package cat.freya.khs.mod
 
 import cat.freya.khs.disguise.Disguise
 import cat.freya.khs.mod.mixin.BlockDisplayMixin
+import cat.freya.khs.mod.mixin.DisplayMixin
 import cat.freya.khs.type.BlockType
 import cat.freya.khs.world.Location
 import com.mojang.math.Transformation
@@ -25,9 +26,8 @@ class ModDisguise(val mod: KhsMod, uuid: UUID, blockType: BlockType) : Disguise(
         val type = BuiltInRegistries.BLOCK.get(id).orElse(null) ?: return null
         val state = type.value().defaultBlockState()
 
-        val mixin = block as BlockDisplayMixin
-        mixin.`khs$setBlockState`(state)
-        mixin.`khs$setTransformation`(Transformation(Vector3f(-0.5f, 0f, -0.5f), null, Vector3f(1f, 1f, 1f), null))
+        (block as BlockDisplayMixin).`khs$setBlockState`(state)
+        (block as DisplayMixin).`khs$setTransformation`(Transformation(Vector3f(-0.5f, 0f, -0.5f), null, Vector3f(1f, 1f, 1f), null))
 
         world.inner.addFreshEntity(block)
 

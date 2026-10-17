@@ -1,6 +1,7 @@
 {
     "mixins": [
         "BlockDisplayMixin",
+        "DisplayMixin",
         "FoodDataMixin",
         "MappedRegistryMixin",
         "MinecraftServerAccess",
