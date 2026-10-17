@@ -2,7 +2,7 @@
 # core
 alloy = "0.1-SNAPSHOT"
 exposed = "1.+"
-lodestone = "0.1-SNAPSHOT"
+lodestone = "0.2-SNAPSHOT"
 luckperms = "5.+"
 packetevents = "2.13.+"
 slf4j = "2.0.+"
