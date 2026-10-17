@@ -61,6 +61,7 @@ allprojects {
         maven("https://maven.fabricmc.net/")
         maven("https://repo.codemc.io/repository/maven-releases/")
         maven("https://repo.extendedclip.com/releases/")
+        maven("https://maven.freya.cat")
     }
 }
 
