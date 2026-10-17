@@ -1,11 +1,5 @@
 plugins {
-    alias(libs.plugins.architectury.loom)
-    alias(libs.plugins.architectury.plugin)
-}
-
-architectury {
-    platformSetupLoomIde()
-    fabric()
+    alias(libs.plugins.fabric.loom)
 }
 
 lodestone {
@@ -17,6 +11,5 @@ dependencies {
     minecraft(libs.minecraft)
     compileOnly(libs.fabric.api)
     compileOnly(libs.fabric.loader)
-
-    shadow(project(":mod", configuration = "transformProductionFabric"))
+    shadow(project(":mod"))
 }

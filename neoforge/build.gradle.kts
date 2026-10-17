@@ -1,11 +1,5 @@
 plugins {
-    alias(libs.plugins.architectury.loom)
-    alias(libs.plugins.architectury.plugin)
-}
-
-architectury {
-    platformSetupLoomIde()
-    neoForge()
+    alias(libs.plugins.neoforge.moddev)
 }
 
 lodestone {
@@ -13,9 +7,10 @@ lodestone {
     shadow()
 }
 
-dependencies {
-    minecraft(libs.minecraft)
-    neoForge(libs.neoforge)
+neoForge {
+    version = libs.neoforge.get().version
+}
 
-    shadow(project(":mod", configuration = "transformProductionNeoForge"))
+dependencies {
+    shadow(project(":mod"))
 }

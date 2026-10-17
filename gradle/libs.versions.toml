@@ -15,16 +15,15 @@ bstats = "3.+"
 
 # mod
 minecraft = "26.3"
-architectury = "22.+"
-architectury-loom = "1.17-SNAPSHOT"
-architectury-plugin = "3.5-SNAPSHOT"
 
 # fabric
-fabricapi = "0.160.5+26.3"
-fabricloader = "0.19.3"
+fabric-api = "0.160.5+26.3"
+fabric-loader = "0.19.3"
+fabric-loom = "1.18-SNAPSHOT"
 
 # neoforge
 neoforge = "26.3.0.6-beta"
+neoforge-moddev = "2.+"
 
 [libraries]
 # core
@@ -46,13 +45,13 @@ bstats-bukkit = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 
 # fabric
-fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricloader" }
-fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricapi" }
+fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
 
 # neoforge
 neoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
 
 [plugins]
-architectury-loom = { id = "dev.architectury.loom-no-remap", version.ref = "architectury-loom" }
-architectury-plugin = { id = "architectury-plugin", version.ref = "architectury-plugin" }
+fabric-loom = { id = "net.fabricmc.fabric-loom", version.ref = "fabric-loom" }
 lodestone = { id = "cat.freya.lodestone", version.ref = "lodestone" }
+neoforge-moddev = { id = "net.neoforged.moddev", version.ref = "neoforge-moddev" }

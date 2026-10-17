@@ -1,25 +1,10 @@
 plugins {
-    alias(libs.plugins.architectury.loom)
-    alias(libs.plugins.architectury.plugin)
-}
-
-architectury {
-    common(listOf("fabric", "neoforge"))
-}
-
-configurations {
-    named("transformProductionFabric") {
-        extendsFrom(named("implementation").get())
-    }
-
-    named("transformProductionNeoForge") {
-        extendsFrom(named("implementation").get())
-    }
+    alias(libs.plugins.fabric.loom)
 }
 
 dependencies {
     minecraft(libs.minecraft)
-    implementation(project(":core"))
+    api(project(":core"))
 
     // we depend on this to get @Mixin
     // do NOT use any other code from Fabric Loader
