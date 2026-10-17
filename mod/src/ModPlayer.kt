@@ -104,21 +104,12 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), P
         }
 
         val type = modInv.getMenuType()
-        val menu = modInv.createMenu(inner)
+        val menu = modInv.createMenu(mod, inner)
         val openPacket = ClientboundOpenScreenPacket(menu.containerId, type, title)
         val syncPacket = ClientboundContainerSetContentPacket(menu.containerId, menu.stateId, menu.items, menu.carried)
         inner.connection.send(openPacket)
         inner.connection.send(syncPacket)
         inner.containerMenu = menu
-
-        // handle click events
-        val player = this
-        menu.listeners.add { slot ->
-            val item = modInv.get(slot.toUInt()) ?: return@add false
-            val event = ClickEvent(mod.khs, player, modInv, item)
-            onClick(event)
-            event.cancelled
-        }
     }
 
     override fun closeInventory() {

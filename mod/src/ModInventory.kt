@@ -1,5 +1,8 @@
 package cat.freya.khs.mod
 
+import cat.freya.khs.event.CloseEvent
+import cat.freya.khs.event.onClick
+import cat.freya.khs.event.onClose
 import cat.freya.khs.menu.Inventory
 import cat.freya.khs.menu.PlayerInventory
 import cat.freya.khs.type.Item
@@ -64,7 +67,7 @@ class ModContainer(val size: UInt, val title: String) : Container {
 
 typealias ClickEvent = (Int) -> Boolean
 
-class ModMenu(val player: ServerPlayer, val inv: ModInventory) :
+class ModMenu(val mod: KhsMod, val player: ServerPlayer, val inv: ModInventory) :
     ChestMenu(inv.getMenuType(), -1, player.inventory, inv.container, inv.container.containerSize / 9) {
     val listeners: MutableList<ClickEvent> = mutableListOf()
 
@@ -72,15 +75,23 @@ class ModMenu(val player: ServerPlayer, val inv: ModInventory) :
         slotId: Int,
         button: Int,
         input: ContainerInput,
-        _player: net.minecraft.world.entity.player.Player,
+        player: Player,
     ) {
-        listeners.forEach { fn ->
-            if (fn(slotId)) {
-                return
-            }
+        val khsPlayer = ModPlayer(mod, player as ServerPlayer)
+        val khsItem = inv.get(slotId.toUInt())
+        if (khsItem != null) {
+            val khsEvent = cat.freya.khs.event.ClickEvent(mod.khs, khsPlayer, inv, khsItem)
+            onClick(khsEvent)
+            if (khsEvent.cancelled) return
         }
 
         super.clicked(slotId, button, input, player)
+    }
+
+    override fun removed(player: Player) {
+        val khsPlayer = ModPlayer(mod, player as ServerPlayer)
+        val khsEvent = CloseEvent(mod.khs, khsPlayer, inv)
+        onClose(khsEvent)
     }
 }
 
@@ -109,8 +120,8 @@ open class ModInventory(open val shim: ModKhsShim, val container: Container) : I
         }
     }
 
-    fun createMenu(player: ServerPlayer): ModMenu {
-        return ModMenu(player, this)
+    fun createMenu(mod: KhsMod, player: ServerPlayer): ModMenu {
+        return ModMenu(mod, player, this)
     }
 
     override fun get(index: UInt): Item? {
