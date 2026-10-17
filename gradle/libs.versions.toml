@@ -1,8 +1,8 @@
 [versions]
 # core
-alloy = "0.1.0"
+alloy = "0.1.1"
 exposed = "1.+"
-lodestone = "0.1.0"
+lodestone = "0.1.1"
 luckperms = "5.+"
 packetevents = "2.13.+"
 slf4j = "2.0.+"
