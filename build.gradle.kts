@@ -1,3 +1,4 @@
+import cat.freya.lodestone.License
 import cat.freya.lodestone.getKotlinVersion
 import cat.freya.lodestone.getVersion
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
@@ -8,7 +9,7 @@ plugins {
 
 group = "cat.freya.khs"
 
-version = "2.3.0"
+version = "2.4.0-SNAPSHOT"
 
 allprojects {
     apply(plugin = "cat.freya.lodestone")
@@ -66,6 +67,8 @@ allprojects {
 }
 
 subprojects {
+    version = rootProject.version
+
     // make projects like cat.freya.khs.bukkit to be in
     // the .bukkit package
     if (project.name != "core") {
@@ -76,4 +79,18 @@ subprojects {
         // load in image assets
         from("../img") { into("assets") }
     }
+
+    lodestone {
+        publish {
+            group = "cat.freya.khs"
+            artifact = project.name
+            author = "KenshinEto"
+            url = "https://g.freya.cat/kenshinshideandseek"
+            license = License.AGPL3
+        }
+    }
+}
+
+tasks.register("publish") {
+    dependsOn(subprojects.mapNotNull { it.tasks.findByName("publish") })
 }
