@@ -105,14 +105,14 @@ class KhsPlugin : JavaPlugin() {
         metrics.addCustomChart(
             SimplePie("locale") {
                 khs.locale.locale
-            }
+            },
         )
 
         // players in game
         metrics.addCustomChart(
             SingleLineChart("inGamePlayers") {
                 khs.game.teams.size().toInt()
-            }
+            },
         )
 
         // track some config values
@@ -124,7 +124,7 @@ class KhsPlugin : JavaPlugin() {
                     "Glow" to khs.config.glow.enabled.toInt(),
                     "Block Hunt" to khs.maps.values.any { it.config.blockHunt.enabled }.toInt(),
                 )
-            }
+            },
         )
     }
 

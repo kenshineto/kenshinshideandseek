@@ -234,7 +234,7 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) : Buk
                 .with(FireworkEffect.Type.BALL_LARGE)
                 .flicker(true)
                 .withTrail()
-                .build()
+                .build(),
         )
         firework.fireworkMeta = meta
     }

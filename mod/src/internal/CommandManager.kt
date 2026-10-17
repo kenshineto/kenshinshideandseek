@@ -28,8 +28,8 @@ class CommandManager<T : CommandSourceStack>(
                 .then(
                     RequiredArgumentBuilder.argument<T, String>("args", StringArgumentType.greedyString())
                         .suggests(this)
-                        .executes(this)
-                )
+                        .executes(this),
+                ),
         )
     }
 

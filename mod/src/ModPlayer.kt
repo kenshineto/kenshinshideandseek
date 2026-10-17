@@ -1,7 +1,5 @@
 package cat.freya.khs.mod
 
-import cat.freya.khs.event.ClickEvent
-import cat.freya.khs.event.onClick
 import cat.freya.khs.game.Board
 import cat.freya.khs.math.Vector
 import cat.freya.khs.menu.Inventory
@@ -203,7 +201,7 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), P
                 Player.GameMode.CREATIVE -> GameType.CREATIVE
                 Player.GameMode.ADVENTURE -> GameType.ADVENTURE
                 Player.GameMode.SPECTATOR -> GameType.SPECTATOR
-            }
+            },
         )
     }
 

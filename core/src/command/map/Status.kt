@@ -35,7 +35,7 @@ class KhsMapStatus : Command {
                 if (map.config.blockHunt.enabled && map.config.blockHunt.blocks.isEmpty()) {
                     appendLine(plugin.locale.map.setup.blockHunt)
                 }
-            }
+            },
         )
     }
 

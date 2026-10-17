@@ -156,10 +156,10 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
 
         if (shim.experimental) {
             shim.logger.warning(
-                "${ansiYellow}${shim.platform} support is currently marked experimental. Expect bugs, issues, or other hiccups that may effect gameplay.${ansiReset}"
+                "${ansiYellow}${shim.platform} support is currently marked experimental. Expect bugs, issues, or other hiccups that may effect gameplay.${ansiReset}",
             )
             shim.logger.warning(
-                "${ansiYellow}If any issues are found, please make bug reports at: https://github.com/kenshineto/kenshinshideandseek/issues.${ansiReset}"
+                "${ansiYellow}If any issues are found, please make bug reports at: https://github.com/kenshineto/kenshinshideandseek/issues.${ansiReset}",
             )
         }
     }

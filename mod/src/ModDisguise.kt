@@ -27,7 +27,9 @@ class ModDisguise(val mod: KhsMod, uuid: UUID, blockType: BlockType) : Disguise(
         val state = type.value().defaultBlockState()
 
         (block as BlockDisplayMixin).`khs$setBlockState`(state)
-        (block as DisplayMixin).`khs$setTransformation`(Transformation(Vector3f(-0.5f, 0f, -0.5f), null, Vector3f(1f, 1f, 1f), null))
+        (block as DisplayMixin).`khs$setTransformation`(
+            Transformation(Vector3f(-0.5f, 0f, -0.5f), null, Vector3f(1f, 1f, 1f), null),
+        )
 
         world.inner.addFreshEntity(block)
 

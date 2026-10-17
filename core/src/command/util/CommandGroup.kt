@@ -26,7 +26,7 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
         player.message(
             "&b&l${BuildInfo.name} &7(&f${BuildInfo.version}&7)\n" +
                 "&7Author: &f[${BuildInfo.author}]\n" +
-                "&7Help Command: &b/hs &fhelp"
+                "&7Help Command: &b/hs &fhelp",
         )
     }
 

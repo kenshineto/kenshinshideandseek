@@ -119,7 +119,7 @@ class ModBoard(val mod: KhsMod, val board: Scoreboard, val objective: Objective?
                     score.value(),
                     Optional.of(display),
                     Optional.empty(),
-                )
+                ),
             )
         }
     }

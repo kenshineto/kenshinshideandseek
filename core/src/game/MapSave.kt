@@ -148,7 +148,7 @@ class MapSave(val plugin: Khs, val map: KhsMap, val rootSrcDir: Path) {
             .onFailure {
                 plugin.saving.set(false)
                 plugin.shim.broadcast(
-                    plugin.locale.prefix.error + plugin.locale.map.save.failed.with(it.message ?: "unknown error")
+                    plugin.locale.prefix.error + plugin.locale.map.save.failed.with(it.message ?: "unknown error"),
                 )
             }
     }

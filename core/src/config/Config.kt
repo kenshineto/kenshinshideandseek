@@ -103,7 +103,7 @@ data class GlowConfig(
                                 "Last 30s, all hiders can see it",
                                 "Time stacks on multi use",
                             ),
-                    )
+                    ),
             )
     }
 }
@@ -196,15 +196,15 @@ data class CommandHooksConfig(
     @Comment("When enabled, the plugin will execute the commands for each player when the game starts and when it ends")
     var enable: Boolean = false,
     @Comment(
-        "Commands to execute when the game starts for every player. Use {name} for player name and {uuid} for their UUID"
+        "Commands to execute when the game starts for every player. Use {name} for player name and {uuid} for their UUID",
     )
     var onGameStart: List<String> = emptyList(),
     @Comment(
-        "Commands to execute when the game ends for every player on the winning team. Use {name} for player name and {uuid} for their UUID"
+        "Commands to execute when the game ends for every player on the winning team. Use {name} for player name and {uuid} for their UUID",
     )
     var onGameEndWin: List<String> = emptyList(),
     @Comment(
-        "Commands to execute when the game ends for every player on the losing team. Use {name} for player name and {uuid} for their UUID"
+        "Commands to execute when the game ends for every player on the losing team. Use {name} for player name and {uuid} for their UUID",
     )
     var onGameEndLose: List<String> = emptyList(),
 )
@@ -222,7 +222,7 @@ data class BlockHuntSwitchingConfig(
                         name = "&bSwitch Block",
                         material = types.craftingTable,
                         lore = listOf("Change your disguise", "Cooldown 60s"),
-                    )
+                    ),
             )
     }
 }

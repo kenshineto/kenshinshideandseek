@@ -26,7 +26,7 @@ class KhsHelp : Command {
                     appendLine("&7?&f  &7&o$description")
                 }
                 appendLine("&b=====================================================")
-            }
+            },
         )
     }
 

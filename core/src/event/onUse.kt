@@ -66,7 +66,7 @@ private fun onUseSpectator(event: UseEvent) {
                 plugin.locale.spectator.flyingEnabled
             } else {
                 plugin.locale.spectator.flyingDisabled
-            }
+            },
         )
     }
 

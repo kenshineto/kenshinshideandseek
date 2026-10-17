@@ -319,11 +319,11 @@ data class LocaleMenuConfig(
 data class LocaleMiscConfig(
     @Comment("{1} - The current plugin version")
     @Comment("{2} - The available plugin version to update to")
-    var updateAvailable: LocaleString2 = LocaleString2("An update is available: &c{1} &f-> &a{2}")
+    var updateAvailable: LocaleString2 = LocaleString2("An update is available: &c{1} &f-> &a{2}"),
 )
 
 data class LocaleMetaConfig(
-    @Comment("This marks the revision of your locale.yml file, DO NOT EDIT THIS!!") var revision: UInt? = null
+    @Comment("This marks the revision of your locale.yml file, DO NOT EDIT THIS!!") var revision: UInt? = null,
 )
 
 data class KhsLocale(

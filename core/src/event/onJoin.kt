@@ -26,7 +26,7 @@ fun onJoin(event: JoinEvent) {
         val latestVersion = plugin.updateChecker.latestVersion ?: ""
 
         player.message(
-            plugin.locale.prefix.default + plugin.locale.misc.updateAvailable.with(currentVersion, latestVersion)
+            plugin.locale.prefix.default + plugin.locale.misc.updateAvailable.with(currentVersion, latestVersion),
         )
     }
 

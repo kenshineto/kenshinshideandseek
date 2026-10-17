@@ -56,7 +56,7 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
         val bukkitWorld = (world as? BukkitWorld)?.inner ?: return
 
         inner.teleport(
-            org.bukkit.Location(bukkitWorld, location.x, location.y, location.z, location.yaw, location.pitch)
+            org.bukkit.Location(bukkitWorld, location.x, location.y, location.z, location.yaw, location.pitch),
         )
     }
 
