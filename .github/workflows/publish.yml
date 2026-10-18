@@ -20,6 +20,6 @@ jobs:
           add-job-summary: "never"
       - name: "Publish"
         env:
-          mavenUsername: "${{ secrets.MAVEN_USERNAME }}"
-          mavenPassword: "${{ secrets.MAVEN_PASSWORD }}"
+          MAVEN_USERNAME: "${{ secrets.MAVEN_USERNAME }}"
+          MAVEN_PASSWORD: "${{ secrets.MAVEN_PASSWORD }}"
         run: "./gradlew publish"

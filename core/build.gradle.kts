@@ -4,6 +4,7 @@ group = "cat.freya.khs"
 
 lodestone {
     generateBuildInfo()
+    junit()
 }
 
 dependencies {

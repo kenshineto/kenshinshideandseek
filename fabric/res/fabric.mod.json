@@ -6,8 +6,7 @@
         "java": "^${java}",
         "packetevents": "^${packetevents}",
         "fabricloader": ">=${fabricloader}",
-        "fabric-language-kotlin": "*",
-        "org_jetbrains_kotlin_kotlin-stdlib": "^${kotlin}"
+        "fabric-language-kotlin": "*"
     },
     "icon": "assets/logo.png",
     "description": "The Best Hide and Seek and Block Hunt mod for Minecraft",

@@ -1,6 +1,5 @@
-import cat.freya.lodestone.License
-import cat.freya.lodestone.getKotlinVersion
 import cat.freya.lodestone.getVersion
+import cat.freya.lodestone.publishing.License
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
@@ -22,7 +21,8 @@ allprojects {
                 "mod" -> 25
                 else -> 8
             }
-        jvm(jvmVersion)
+        java(jvmVersion)
+        kotlin()
         buildInfo {
             put("id", rootProject.name)
             put("version", rootProject.version)
@@ -33,7 +33,6 @@ allprojects {
             put("minecraft", getVersion("minecraft"))
             put("packetevents", getVersion("packetevents"))
             put("java", jvmVersion)
-            put("kotlin", getKotlinVersion())
             put("telemetry", false)
             put("bstatsId", 0)
         }
@@ -82,11 +81,12 @@ subprojects {
 
     lodestone {
         publish {
-            group = "cat.freya.khs"
             artifact = project.name
+            group = "cat.freya.khs"
             author = "KenshinEto"
-            url = "https://g.freya.cat/kenshinshideandseek"
             license = License.AGPL3
+            gitRepo = "https://g.freya.cat/kenshinshideandseek"
+            reposilite("https://maven.freya.cat")
         }
     }
 }
