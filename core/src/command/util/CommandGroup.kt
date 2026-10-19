@@ -23,11 +23,15 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
     }
 
     private fun messageAbout(player: Player) {
-        player.message(
-            "&b&l${BuildInfo.name} &7(&f${BuildInfo.version}&7)\n" +
-                "&7Author: &f[${BuildInfo.author}]\n" +
-                "&7Help Command: &b/hs &fhelp",
-        )
+        val msg = buildString {
+            appendLine("&b&l${BuildInfo.name} &7(&f${BuildInfo.version}&7)")
+            appendLine("&7Author: &f[${BuildInfo.author}]")
+            appendLine("&7Help Command: &b/hs &fhelp")
+            appendLine("&7Build Date: &f${BuildInfo.buildDate}")
+            appendLine("&7Git Revision: &f${BuildInfo.gitRev}")
+        }
+
+        player.message(msg)
     }
 
     fun handleCommand(player: Player, args: List<String>) {

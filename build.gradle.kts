@@ -1,6 +1,7 @@
 import cat.freya.lodestone.getVersion
 import cat.freya.lodestone.publishing.License
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import java.time.Instant
 
 plugins {
     alias(libs.plugins.lodestone)
@@ -9,6 +10,15 @@ plugins {
 group = "cat.freya.khs"
 
 version = "2.4.0-SNAPSHOT"
+
+val gitCommitHash: Provider<String> =
+    providers
+        .exec {
+            commandLine("git", "rev-parse", "--short", "HEAD")
+        }
+        .standardOutput
+        .asText
+        .map { it.trim() }
 
 allprojects {
     apply(plugin = "cat.freya.lodestone")
@@ -35,6 +45,8 @@ allprojects {
             put("java", jvmVersion)
             put("telemetry", false)
             put("bstatsId", 0)
+            put("gitRev", gitCommitHash.get())
+            put("buildDate", Instant.now().toString())
         }
         // configure shadow but
         // dont apply just yet
