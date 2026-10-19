@@ -10,7 +10,7 @@ class UpdateChecker(val plugin: Khs) {
     var updateExists: Boolean = false
         private set
 
-    var latestVersion: String? = null
+    var latestVersion: Version? = null
         private set
 
     fun check() {
@@ -23,16 +23,12 @@ class UpdateChecker(val plugin: Khs) {
         val userAgent = "${BuildInfo.id} ${BuildInfo.version}"
         val release: GitHubRelease = fetchJson<GitHubRelease>(endpoint, userAgent).getOrDefault(null) ?: return
 
-        val currentVersion = BuildInfo.version
-        val latestVersion = release.tagName.removePrefix("v")
+        val currentVersion = Version(BuildInfo.version)
+        val latestVersion = Version(release.tagName.removePrefix("v"))
+
         plugin.shim.logger.info("Latest plugin version: $latestVersion")
 
-        val currentParts = currentVersion.split(".").map(String::toUInt)
-        val latestParts = latestVersion.split(".").map(String::toUInt)
-
         this.latestVersion = latestVersion
-        this.updateExists =
-            currentParts.zip(latestParts).firstOrNull { (c, l) -> c != l }?.let { (c, l) -> c < l }
-                ?: (latestParts.size > currentParts.size)
+        this.updateExists = latestVersion > currentVersion
     }
 }

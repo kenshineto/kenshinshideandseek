@@ -149,46 +149,12 @@ interface KhsShim {
     fun scheduleEvent(ticks: ULong, event: () -> Unit)
 
     /** Checks if the minecraft server is greater or equal to the given version */
-    fun supports(vararg versions: Int): Boolean
+    fun supports(vararg versions: Int): Boolean {
+        val current = Version(serverVersion)
+        val check = Version.buildMc(*versions)
+        return current >= check
+    }
 
     /** Executes a command in the console */
     fun runInConsole(command: String): Boolean
-}
-
-abstract class AbstractKhsShim(override val platform: String, override val experimental: Boolean) : KhsShim {
-    /** Parsed minecraft server version string */
-    private var parsedServerVersion: List<UInt>? = null
-
-    /** Helper function that turns "26.1" into listOf(26u, 1u) */
-    private fun parseServerVersion(version: String?): List<UInt> {
-        if (version == null) return emptyList()
-        return version
-            .split('.')
-            .asSequence()
-            .mapNotNull { it.toUIntOrNull() }
-            // the 1. in old 1.x.x releases is useless
-            .let { seq -> if (seq.firstOrNull() == 1u) seq.drop(1) else seq }
-            .toList()
-    }
-
-    // don't make this vararg over UInt, otherwise kotlin complains
-    // about "unstable features"
-    override fun supports(vararg versions: Int): Boolean {
-        if (parsedServerVersion == null) {
-            parsedServerVersion = parseServerVersion(serverVersion)
-        }
-
-        val parsed = parsedServerVersion ?: return false
-        val count = minOf(versions.size, parsed.size)
-
-        for (i in 0 until count) {
-            val want = versions[i].toUInt()
-            val has = parsed[i]
-
-            if (want < has) return true
-            if (want > has) return false
-        }
-
-        return true
-    }
 }

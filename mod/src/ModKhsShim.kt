@@ -1,6 +1,5 @@
 package cat.freya.khs.mod
 
-import cat.freya.khs.AbstractKhsShim
 import cat.freya.khs.KhsShim
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
@@ -35,9 +34,13 @@ object ModLogger : KhsShim.Logger {
     }
 }
 
-class ModKhsShim(val mod: KhsMod) : AbstractKhsShim(mod.platform, true) {
+class ModKhsShim(val mod: KhsMod) : KhsShim {
     override val serverVersion: String
         get() = mod.server.inner.serverVersion
+
+    override val platform: String = mod.platform
+
+    override val experimental: Boolean = true
 
     override val logger: KhsShim.Logger = ModLogger
 

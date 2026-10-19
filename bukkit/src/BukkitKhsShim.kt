@@ -1,6 +1,5 @@
 package cat.freya.khs.bukkit
 
-import cat.freya.khs.AbstractKhsShim
 import cat.freya.khs.KhsShim
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
@@ -26,10 +25,14 @@ class BukkitLogger(val plugin: KhsPlugin) : KhsShim.Logger {
     override fun debug(message: String) = info(message)
 }
 
-class BukkitKhsShim(val plugin: KhsPlugin) : AbstractKhsShim("Bukkit", false) {
+class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
     override val serverVersion: String =
         Regex("""MC:\s*([\d.]+)""").find(plugin.server.version)?.groupValues?.get(1)
             ?: error("failed to parse mc version")
+
+    override val platform: String = "Bukkit"
+
+    override val experimental: Boolean = false
 
     override val logger = BukkitLogger(plugin)
 
