@@ -1,6 +1,6 @@
 [versions]
 # core
-alloy = "0.1-SNAPSHOT"
+alloy = "0.1.1"
 exposed = "1.+"
 lodestone = "0.3-SNAPSHOT"
 luckperms = "5.+"
