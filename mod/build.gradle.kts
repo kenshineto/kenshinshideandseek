@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
     minecraft(libs.minecraft)
-    api(project(":core"))
+    implementation(project(":core"))
 
     // we depend on this to get @Mixin
     // do NOT use any other code from Fabric Loader

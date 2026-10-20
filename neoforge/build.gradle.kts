@@ -12,5 +12,6 @@ neoForge {
 }
 
 dependencies {
+    shadow(project(":core"))
     shadow(project(":mod"))
 }
