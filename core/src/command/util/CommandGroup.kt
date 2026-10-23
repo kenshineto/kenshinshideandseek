@@ -2,6 +2,7 @@ package cat.freya.khs.command.util
 
 import cat.freya.khs.BuildInfo
 import cat.freya.khs.Khs
+import cat.freya.khs.Version
 import cat.freya.khs.world.Player
 
 private data class CommandData(val command: Command, val permission: String, val args: List<String>)
@@ -23,12 +24,16 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
     }
 
     private fun messageAbout(player: Player) {
+        val version = Version(BuildInfo.version)
+
         val msg = buildString {
             appendLine("&b&l${BuildInfo.name} &7(&f${BuildInfo.version}&7)")
             appendLine("&7Author: &f[${BuildInfo.author}]")
             appendLine("&7Help Command: &b/hs &fhelp")
-            appendLine("&7Build Date: &f${BuildInfo.buildDate}")
-            appendLine("&7Git Revision: &f${BuildInfo.gitRev}")
+            if (version.isSnapshot) {
+                appendLine("&7Build Date: &f${BuildInfo.buildDate}")
+                appendLine("&7Git Revision: &f${BuildInfo.gitRev}")
+            }
         }
 
         player.message(msg)
