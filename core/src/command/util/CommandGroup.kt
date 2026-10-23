@@ -58,9 +58,9 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
                 player.message(plugin.locale.prefix.error + (it.message ?: plugin.locale.command.unknownError))
 
                 if (plugin.config.debug) {
-                    plugin.shim.logger.warning("=== KHS BEGIN DEBUG TRACE ===")
-                    plugin.shim.logger.warning(it.stackTraceToString())
-                    plugin.shim.logger.warning("=== KHS END DEBUG TRACE ===")
+                    plugin.logger.warn("=== KHS BEGIN DEBUG TRACE ===")
+                    plugin.logger.warn(it.stackTraceToString())
+                    plugin.logger.warn("=== KHS END DEBUG TRACE ===")
                 }
             }
     }

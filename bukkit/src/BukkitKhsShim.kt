@@ -1,6 +1,7 @@
 package cat.freya.khs.bukkit
 
 import cat.freya.khs.KhsShim
+import cat.freya.khs.Version
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.type.BlockType
@@ -14,37 +15,26 @@ import java.nio.file.Path
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 import org.bukkit.ChatColor
-
-class BukkitLogger(val plugin: KhsPlugin) : KhsShim.Logger {
-    override fun info(message: String) = plugin.logger.info(message)
-
-    override fun warning(message: String) = plugin.logger.warning(message)
-
-    override fun error(message: String) = plugin.logger.severe(message)
-
-    override fun debug(message: String) = info(message)
-}
+import org.bukkit.Material
 
 class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
-    override val serverVersion: String =
-        Regex("""MC:\s*([\d.]+)""").find(plugin.server.version)?.groupValues?.get(1)
+    override val serverVersion: Version =
+        Regex("""MC:\s*([\d.]+)""").find(plugin.server.version)?.groupValues?.get(1)?.let { Version(it) }
             ?: error("failed to parse mc version")
 
     override val platform: String = "Bukkit"
 
     override val experimental: Boolean = false
 
-    override val logger = BukkitLogger(plugin)
-
     override val dataDirectory: Path = plugin.dataFolder.toPath()
 
     override fun getBlocks(): List<String> {
-        return org.bukkit.Material.entries.filter { it.isBlock() }.map { it.name }
+        return Material.entries.filter(Material::isBlock).map(Material::name)
     }
 
     override fun parseBlock(platformType: String): BlockType? {
         val material = XMaterial.matchXMaterial(platformType).getOrNull()?.get() ?: return null
-        if (!material.isBlock()) return null
+        if (!material.isBlock) return null
 
         val mcType: String
         if (supports(13)) {
@@ -125,7 +115,7 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
         if (container != null) return container
 
         container = locateWorldContainer()
-        logger.info("Using world container: ${container.path}")
+        plugin.khs.logger.info("Using world container: ${container.path}")
 
         cachedWorldContainer = container
         return container
@@ -175,7 +165,7 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
     }
 
     override fun getDimensionTypes(): List<String> {
-        return org.bukkit.World.Environment.values().map(org.bukkit.World.Environment::name).filter { it != "CUSTOM" }
+        return org.bukkit.World.Environment.entries.map(org.bukkit.World.Environment::name).filter { it != "CUSTOM" }
     }
 
     override fun createWorld(worldName: String, dimensionType: String, isFlat: Boolean): BukkitWorld? {
@@ -212,7 +202,7 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
             plugin.server.dispatchCommand(plugin.server.consoleSender, command)
         }
             .getOrElse {
-                logger.warning("Failed to execute command: $command")
+                plugin.khs.logger.warn("Failed to execute command: $command")
                 false
             }
     }

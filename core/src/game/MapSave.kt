@@ -57,7 +57,7 @@ class MapSave(val plugin: Khs, val map: KhsMap, val rootSrcDir: Path) {
         if (!src.exists()) return
 
         if (!dest.exists() && !dest.mkdirs()) {
-            plugin.shim.logger.error("could not create directory: ${dest.path}")
+            plugin.logger.error("could not create directory: ${dest.path}")
             failed = true
             return
         }
@@ -106,12 +106,12 @@ class MapSave(val plugin: Khs, val map: KhsMap, val rootSrcDir: Path) {
         val saving = plugin.saving.getAndSet(true)
         if (saving) {
             // map save is already in progress, abort
-            plugin.shim.logger.warning("mapSave called while map save is in progress")
+            plugin.logger.warn("mapSave called while map save is in progress")
             return Result.success(Unit)
         }
 
         return runCatching {
-            plugin.shim.logger.info("starting map save for: ${map.worldName}")
+            plugin.logger.info("starting map save for: ${map.worldName}")
             plugin.shim.broadcast(plugin.locale.prefix.default + plugin.locale.map.save.start)
             plugin.shim.broadcast(plugin.locale.prefix.warning + plugin.locale.map.save.warning)
 

@@ -92,13 +92,13 @@ class ModWorld(val mod: KhsMod, val inner: ServerLevel) : World {
         fun createLevel(mod: KhsMod, worldName: String, dimensionType: String, isFlat: Boolean): ServerLevel? {
             val id = Identifier.tryParse(worldName)
             if (id == null) {
-                mod.shim.logger.error("invalid world name: ${worldName}")
+                mod.khs.logger.error("invalid world name: $worldName")
                 return null
             }
 
             val dimension = Identifier.tryParse(dimensionType)
             if (dimension == null) {
-                mod.shim.logger.error("invalid dimension name: ${dimensionType}")
+                mod.khs.logger.error("invalid dimension name: $dimensionType")
                 return null
             }
 

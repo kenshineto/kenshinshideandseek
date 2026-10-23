@@ -12,6 +12,7 @@ spigot = "26.3-R0.1-SNAPSHOT"
 xseries = "14.0.+"
 placeholderapi = "2.+"
 bstats = "3.+"
+bukkit-slf4j = "3.1.+"
 
 # mod
 minecraft = "26.3"
@@ -40,6 +41,7 @@ spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
 xseries = { module = "com.github.cryptomorin:XSeries", version.ref = "xseries" }
 placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
 bstats-bukkit = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
+bukkit-slf4j = { module = "com.djaytan.bukkit:bukkit-slf4j", version.ref = "bukkit-slf4j" }
 
 # mod
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }

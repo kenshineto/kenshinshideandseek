@@ -32,7 +32,7 @@ class BlockHuntMenu(val plugin: Khs) {
 
         val blockType = plugin.parseBlock(item.platformType)
         if (blockType == null) {
-            plugin.shim.logger.warning("invalid block type for disguise: ${item.platformType}")
+            plugin.logger.warn("invalid block type for disguise: ${item.platformType}")
             return
         }
 

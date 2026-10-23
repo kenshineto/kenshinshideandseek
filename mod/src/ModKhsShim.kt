@@ -1,6 +1,7 @@
 package cat.freya.khs.mod
 
 import cat.freya.khs.KhsShim
+import cat.freya.khs.Version
 import cat.freya.khs.config.EffectConfig
 import cat.freya.khs.config.ItemConfig
 import cat.freya.khs.type.BlockType
@@ -11,41 +12,17 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-
-object ModLogger : KhsShim.Logger {
-    private val logger: Logger? = LoggerFactory.getLogger(KhsMod.ID)
-
-    override fun info(message: String) {
-        logger?.info(message)
-    }
-
-    override fun warning(message: String) {
-        logger?.warn(message)
-    }
-
-    override fun error(message: String) {
-        logger?.error(message)
-    }
-
-    override fun debug(message: String) {
-        logger?.debug(message)
-    }
-}
 
 class ModKhsShim(val mod: KhsMod) : KhsShim {
-    override val serverVersion: String
-        get() = mod.server.inner.serverVersion
+    override val serverVersion: Version by lazy { Version(mod.server.inner.serverVersion) }
 
     override val platform: String = mod.platform
 
     override val experimental: Boolean = true
 
-    override val logger: KhsShim.Logger = ModLogger
+    override val dataDirectory: Path by lazy { mod.server.inner.serverDirectory.resolve("config").resolve(KhsMod.ID) }
 
-    override val dataDirectory: Path
-        get() = mod.server.inner.serverDirectory.resolve("config").resolve(KhsMod.ID)
+    override fun getLoggerId(): String = KhsMod.ID
 
     override fun getBlocks(): List<String> {
         return BuiltInRegistries.BLOCK.keySet().map(Identifier::toString)

@@ -38,8 +38,9 @@ import java.io.File
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
-/** Plugin wrapper */
 class Khs(val shim: KhsShim, val types: KhsTypes) {
     /** The main plugin config */
     var config: KhsConfig = KhsConfig.default(types)
@@ -82,6 +83,9 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
     var database: Database? = null
         private set
 
+    /** The logger of the plugin */
+    val logger: Logger = LoggerFactory.getLogger(shim.getLoggerId())
+
     /** Commands known to this plugin */
     val commandGroup: CommandGroup = registerCommands()
 
@@ -122,13 +126,13 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
         printBanner()
         reloadConfig()
             .onFailure {
-                shim.logger.warning("Plugin loaded with errors :(")
+                logger.warn("Plugin loaded with errors :(")
                 shim.disable()
             }
             .onSuccess {
                 packetListener.init()
                 updateChecker.check()
-                shim.logger.info("Plugin loaded successfully!")
+                logger.info("Plugin loaded successfully!")
             }
     }
 
@@ -148,17 +152,17 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
         val fullMcVersion = "${ansiGray}Running on ${shim.serverVersion}-${shim.platform}"
         val fullPluginVersion = "${ansiGreen}Version ${BuildInfo.version}"
 
-        shim.logger.info("$ansiBlue _  ___   _ ____$ansiReset")
-        shim.logger.info("$ansiBlue| |/ / | | / ___|    $fullPluginVersion$ansiReset")
-        shim.logger.info("$ansiBlue| ' /| |_| \\___ \\    $fullMcVersion$ansiReset")
-        shim.logger.info("$ansiBlue| . \\|  _  |___) |$ansiReset")
-        shim.logger.info("$ansiBlue|_|\\_\\_| |_|____/$ansiReset")
+        logger.info("$ansiBlue _  ___   _ ____$ansiReset")
+        logger.info("$ansiBlue| |/ / | | / ___|    $fullPluginVersion$ansiReset")
+        logger.info("$ansiBlue| ' /| |_| \\___ \\    $fullMcVersion$ansiReset")
+        logger.info("$ansiBlue| . \\|  _  |___) |$ansiReset")
+        logger.info("$ansiBlue|_|\\_\\_| |_|____/$ansiReset")
 
         if (shim.experimental) {
-            shim.logger.warning(
+            logger.warn(
                 "${ansiYellow}${shim.platform} support is currently marked experimental. Expect bugs, issues, or other hiccups that may effect gameplay.${ansiReset}",
             )
-            shim.logger.warning(
+            logger.warn(
                 "${ansiYellow}If any issues are found, please make bug reports at: https://github.com/kenshineto/kenshinshideandseek/issues.${ansiReset}",
             )
         }
@@ -228,7 +232,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
 
     fun reloadConfig(): Result<Unit> {
         return runCatching {
-            shim.logger.info("Loading configuration")
+            logger.info("Loading configuration")
             config = deserialize(KhsConfig::class, shim.readConfigFile("config.yml"), KhsConfig.default(types))
             itemsConfig =
                 deserialize(KhsItemsConfig::class, shim.readConfigFile("items.yml"), KhsItemsConfig.default(types))
@@ -245,7 +249,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
 
             // database config could have changed so we need to
             // reconnect to the database
-            shim.logger.info("Loading database")
+            logger.info("Loading database")
             database = Database(this)
 
             // reload maps
@@ -262,8 +266,8 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
                 saveConfig()
             }
             .onFailure {
-                shim.logger.error("Failed to reload config: ${it.message}")
-                // for (line in it.stackTraceToString().lines()) shim.logger.error(line)
+                logger.error("Failed to reload config: ${it.message}")
+                // for (line in it.stackTraceToString().lines()) logger.error(line)
             }
     }
 
@@ -277,7 +281,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
             shim.writeConfigFile("worlds.yml", serialize(worldsConfig))
             shim.writeConfigFile("locale.yml", serialize(locale))
         }
-            .onFailure { shim.logger.error("failed to save config: ${it.message}") }
+            .onFailure { logger.error("failed to save config: ${it.message}") }
     }
 
     fun doTick() {
@@ -315,7 +319,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
             val mapName = id.path().removePrefix(MAP_SAVE_PREFIX)
             val map = maps[mapName]
             if (map == null) {
-                shim.logger.error("map does not exist for map save: $worldName")
+                logger.error("map does not exist for map save: $worldName")
                 return null
             }
 
@@ -330,7 +334,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
         val player = shim.getPlayer(playerId)
 
         if (player == null) {
-            shim.logger.warning("Player $playerId not found when trying to run commands")
+            logger.warn("Player $playerId not found when trying to run commands")
             return
         }
 

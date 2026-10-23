@@ -26,7 +26,7 @@ class UpdateChecker(val plugin: Khs) {
         val currentVersion = Version(BuildInfo.version)
         val latestVersion = Version(release.tagName.removePrefix("v"))
 
-        plugin.shim.logger.info("Latest plugin version: $latestVersion")
+        plugin.logger.info("Latest plugin version: $latestVersion")
 
         this.latestVersion = latestVersion
         this.updateExists = latestVersion > currentVersion

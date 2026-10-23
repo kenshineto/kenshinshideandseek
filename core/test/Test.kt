@@ -30,16 +30,6 @@ import org.junit.jupiter.api.TestInstance
 import org.mockito.Answers
 import org.mockito.Mockito
 
-private object TestLogger : KhsShim.Logger {
-    override fun info(message: String) = println("[INFO] $message")
-
-    override fun warning(message: String) = println("[WARNING] $message")
-
-    override fun error(message: String) = println("[ERROR] $message")
-
-    override fun debug(message: String) = println("[DEBUG] $message")
-}
-
 class TestBorder : World.Border {
     override var x: Double = 0.0
     override var z: Double = 0.0
@@ -294,8 +284,6 @@ abstract class TestShim : KhsShim {
 
     override val experimental: Boolean = false
 
-    override val logger: KhsShim.Logger = TestLogger
-
     // player
     override fun getPlayers() = emptyList<TestPlayer>()
 
@@ -399,7 +387,7 @@ private val testTypes =
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
-    override val serverVersion: String = BuildInfo.minecraft
+    override val serverVersion: Version = Version(BuildInfo.minecraft)
 
     val config = KhsConfig.default(testTypes)
     val itemsConfig = KhsItemsConfig.default(testTypes)

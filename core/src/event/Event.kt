@@ -35,6 +35,6 @@ abstract class Event(private val plugin: Khs) {
             }
         }
 
-        plugin.shim.logger.debug(message)
+        plugin.logger.debug(message)
     }
 }

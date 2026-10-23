@@ -18,7 +18,7 @@ import java.util.UUID
 /** Root interface that allows the core mod/plugin interface with the underlying platform */
 interface KhsShim {
     /** Friendly string of the minecraft server version */
-    val serverVersion: String
+    val serverVersion: Version
 
     /** Name of the platform we are running on (e.g. Bukkit) */
     val platform: String
@@ -26,21 +26,11 @@ interface KhsShim {
     /** If the platform is marked as experimental */
     val experimental: Boolean
 
-    interface Logger {
-        fun info(message: String)
-
-        fun warning(message: String)
-
-        fun error(message: String)
-
-        fun debug(message: String)
-    }
-
-    /** Platforms implementation of a logger */
-    val logger: Logger
-
     /** Directory where config files and sqlitedb are stored */
     val dataDirectory: Path
+
+    /** The logger id for slf4j */
+    fun getLoggerId(): String = BuildInfo.id
 
     /** Read a config file from the platform */
     fun readConfigFile(fileName: String): InputStream? {
@@ -149,10 +139,8 @@ interface KhsShim {
     fun scheduleEvent(ticks: ULong, event: () -> Unit)
 
     /** Checks if the minecraft server is greater or equal to the given version */
-    fun supports(vararg versions: Int): Boolean {
-        val current = Version(serverVersion)
-        val check = Version.buildMc(*versions)
-        return current >= check
+    fun supports(vararg parts: Int): Boolean {
+        return serverVersion >= parts
     }
 
     /** Executes a command in the console */

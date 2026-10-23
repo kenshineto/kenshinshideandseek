@@ -133,13 +133,13 @@ class ModPlayer(mod: KhsMod, val inner: ServerPlayer) : ModEntity(mod, inner), P
     override fun playSound(sound: String, volume: Double, pitch: Double) {
         val id = Identifier.tryParse(sound)
         if (id == null) {
-            mod.shim.logger.warning("invalid sound id: ${sound}")
+            mod.khs.logger.warn("invalid sound id: $sound")
             return
         }
 
         val holder = BuiltInRegistries.SOUND_EVENT.get(id).orElse(null)
         if (holder == null) {
-            mod.shim.logger.warning("invalid sound: ${id}")
+            mod.khs.logger.warn("invalid sound: $id")
             return
         }
 

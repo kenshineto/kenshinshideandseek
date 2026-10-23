@@ -10,6 +10,7 @@ lodestone {
 dependencies {
     // libs
     compileOnly(libs.packetevents.api)
+    compileOnly(libs.slf4j.api)
     implementation(libs.alloy)
     implementation(libs.exposed.core, excludeKotlin)
     implementation(libs.exposed.jdbc, excludeKotlin)

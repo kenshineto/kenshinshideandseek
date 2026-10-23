@@ -112,7 +112,7 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : World 
         }
 
         if (!plugin.server.unloadWorld(name, false)) {
-            plugin.shim.logger.error("could not unload world: $name")
+            plugin.khs.logger.error("could not unload world: $name")
         }
     }
 
@@ -154,7 +154,7 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : World 
             val type = if (isFlat) WorldType.FLAT else WorldType.NORMAL
 
             if (environment == null) {
-                plugin.shim.logger.error("invalid dimension type: ${dimensionType}")
+                plugin.khs.logger.error("invalid dimension type: $dimensionType")
                 return null
             }
 
@@ -169,7 +169,7 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : World 
             plugin.server.createWorld(creator)
             val world = plugin.server.getWorld(worldName)
             if (world == null) {
-                plugin.shim.logger.error("could not create/load world: $worldName")
+                plugin.khs.logger.error("could not create/load world: $worldName")
                 return null
             }
 
