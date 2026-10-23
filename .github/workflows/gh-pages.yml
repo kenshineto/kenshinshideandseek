@@ -16,9 +16,9 @@ jobs:
       - name: "SCM"
         uses: "actions/checkout@v7"
       - name: "Setup mdBook"
-        uses: "peaceiris/actions-mdbook@v2"
+        uses: "taiki-e/install-action@v2"
         with:
-          mdbook-version: "latest"
+          tool: mdbook
       - run: "mdbook build docs"
       - name: "Setup pages"
         uses: "actions/configure-pages@v6"
