@@ -28,7 +28,7 @@ class BukkitDisguise(
         val material = XMaterial.matchXMaterial(blockType.platformType).getOrNull()?.get() ?: return null
 
         val block: org.bukkit.entity.Entity?
-        if (bukkitPlugin.shim.supports(19, 4)) {
+        if (bukkitPlugin.shim.supports(1, 19, 4)) {
             block =
                 world.spawn(loc, BlockDisplay::class.java) {
                     it.block = Bukkit.createBlockData(material)
@@ -38,7 +38,7 @@ class BukkitDisguise(
         } else {
             @Suppress("DEPRECATION")
             block = runCatching { world.spawnFallingBlock(loc, material, 0x0) }.getOrElse { null }
-            if (plugin.shim.supports(10)) block?.setGravity(false)
+            if (plugin.shim.supports(1, 10)) block?.setGravity(false)
             block?.dropItem = false
             block?.isInvulnerable = true
         }

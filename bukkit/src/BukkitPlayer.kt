@@ -34,13 +34,13 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) : Buk
 
     @Suppress("DEPRECATION")
     override fun heal() {
-        if (!plugin.shim.supports(9)) {
+        if (!plugin.shim.supports(1, 9)) {
             // 1.8 doesnt support attributes
             inner.health = inner.maxHealth
             return
         }
 
-        val attributeName = if (plugin.shim.supports(21, 6)) "MAX_HEALTH" else "GENERIC_MAX_HEALTH"
+        val attributeName = if (plugin.shim.supports(1, 21, 6)) "MAX_HEALTH" else "GENERIC_MAX_HEALTH"
         val attribute = inner.getAttribute(Attribute.valueOf(attributeName))
         inner.health = attribute?.value ?: 20.0
     }
@@ -122,9 +122,9 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) : Buk
     @Suppress("DEPRECATION")
     override fun getAttackDamage(): Double {
         // attributes are 1.9+ only...
-        if (!plugin.shim.supports(9)) return 0.0
+        if (!plugin.shim.supports(1, 9)) return 0.0
 
-        val attributeName = if (plugin.shim.supports(21)) "ATTACK_DAMAGE" else "GENERIC_ATTACK_DAMAGE"
+        val attributeName = if (plugin.shim.supports(1, 21)) "ATTACK_DAMAGE" else "GENERIC_ATTACK_DAMAGE"
         val attribute = inner.getAttribute(Attribute.valueOf(attributeName))
         return attribute?.value ?: return 0.0
     }
@@ -170,7 +170,7 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) : Buk
     }
 
     override fun getReach(maxReach: Double): Double? {
-        return if (plugin.shim.supports(13, 2)) {
+        return if (plugin.shim.supports(1, 13, 2)) {
             modernRayTrace(maxReach)
         } else {
             legacyRayTrace(maxReach)
@@ -216,7 +216,7 @@ class BukkitPlayer(plugin: KhsPlugin, val inner: org.bukkit.entity.Player) : Buk
         val bukkitLocation = org.bukkit.Location(world.inner, location.x, location.y, location.z)
 
         // spawn firework
-        val fireworkTypeName = if (plugin.shim.supports(13)) "FIREWORK_ROCKET" else "FIREWORK"
+        val fireworkTypeName = if (plugin.shim.supports(1, 13)) "FIREWORK_ROCKET" else "FIREWORK"
         val fireworkType = EntityType.valueOf(fireworkTypeName)
         val firework = world.inner.spawnEntity(bukkitLocation, fireworkType) as Firework
         firework.velocity = org.bukkit.util.Vector(0, 1, 0)

@@ -15,7 +15,7 @@ class BukkitTeam(val shim: BukkitKhsShim, val inner: org.bukkit.scoreboard.Team)
     }
 
     override fun setCanCollide(canCollide: Boolean) {
-        if (!shim.supports(9)) return
+        if (!shim.supports(1, 9)) return
 
         val value =
             if (canCollide) {
@@ -28,7 +28,7 @@ class BukkitTeam(val shim: BukkitKhsShim, val inner: org.bukkit.scoreboard.Team)
     }
 
     override fun setNameTagsVisible(nameTagsVisible: Boolean) {
-        if (!shim.supports(9)) {
+        if (!shim.supports(1, 9)) {
             // 1.8 does not have team options
             val value =
                 if (nameTagsVisible) {

@@ -150,7 +150,7 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : World 
         fun create(plugin: KhsPlugin, worldName: String, dimensionType: String, isFlat: Boolean): BukkitWorld? {
             val creator = WorldCreator(worldName)
 
-            val environment = org.bukkit.World.Environment.values().firstOrNull { it.name == dimensionType }
+            val environment = org.bukkit.World.Environment.entries.firstOrNull { it.name == dimensionType }
             val type = if (isFlat) WorldType.FLAT else WorldType.NORMAL
 
             if (environment == null) {
@@ -175,7 +175,7 @@ class BukkitWorld(val shim: BukkitKhsShim, val inner: org.bukkit.World) : World 
 
             if (isMapSave(worldName)) {
                 world.isAutoSave = false
-                if (plugin.shim.supports(21, 6)) {
+                if (plugin.shim.supports(1, 21, 6)) {
                     world.setGameRule(GameRule.LOCATOR_BAR, false)
                 }
             } else {

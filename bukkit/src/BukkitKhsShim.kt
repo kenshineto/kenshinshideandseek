@@ -37,7 +37,7 @@ class BukkitKhsShim(val plugin: KhsPlugin) : KhsShim {
         if (!material.isBlock) return null
 
         val mcType: String
-        if (supports(13)) {
+        if (supports(1, 13)) {
             mcType = SpigotConversionUtil.fromBukkitBlockData(material.createBlockData()).type.toString()
         } else {
             @Suppress("DEPRECATION")

@@ -28,11 +28,11 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
     }
 
     override fun getPitch(): Float {
-        return inner.getLocation().pitch
+        return inner.location.pitch
     }
 
     override fun getYaw(): Float {
-        return inner.getLocation().yaw
+        return inner.location.yaw
     }
 
     override fun getHeadYaw(): Float? {
@@ -69,7 +69,7 @@ open class BukkitEntity(val plugin: KhsPlugin, private val inner: org.bukkit.ent
     }
 
     override fun setCollides(collides: Boolean) {
-        if (plugin.shim.supports(9)) {
+        if (plugin.shim.supports(1, 9)) {
             val team = getCollidesTeam() ?: return
             val id = inner.uniqueId.toString()
             if (collides) team.removeEntry(id) else team.addEntry(id)

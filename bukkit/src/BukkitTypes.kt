@@ -44,7 +44,7 @@ fun bukkitTypes(plugin: KhsPlugin) =
         // Sounds
         noteBlockBaseDrum = "BLOCK_NOTE_BLOCK_BASEDRUM",
         noteBlockPling = "BLOCK_NOTE_BLOCK_PLING",
-        playerHurt = if (plugin.shim.supports(9)) "ENTITY_PLAYER_DEATH" else "ENTITY_PLAYER_HURT",
+        playerHurt = if (plugin.shim.supports(1, 9)) "ENTITY_PLAYER_DEATH" else "ENTITY_PLAYER_HURT",
         anvilLand = "ANVIL_LAND",
         // Effects
         dolphinsGrace = "DOLPHINS_GRACE",

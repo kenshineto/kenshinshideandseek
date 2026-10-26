@@ -150,7 +150,7 @@ class Checks(val plugin: Khs, val player: Player) {
 
     /** Checks if blockhunt is supported */
     fun blockHuntSupported() {
-        if (!plugin.shim.supports(9)) error(plugin.locale.blockHunt.notSupported)
+        if (!plugin.shim.supports(1, 9)) error(plugin.locale.blockHunt.notSupported)
     }
 
     /** Checks if a map has block hunt enabled */

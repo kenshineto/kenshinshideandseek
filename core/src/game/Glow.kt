@@ -9,7 +9,7 @@ class Glow(val game: Game) {
 
     // glow is only supported on 1.9+
     val supported: Boolean
-        get() = game.plugin.shim.supports(9)
+        get() = game.plugin.shim.supports(1, 9)
 
     fun start() {
         if (!supported) return

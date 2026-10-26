@@ -121,7 +121,7 @@ interface KhsShim {
     fun createWorld(worldName: String, dimensionType: String, isFlat: Boolean): World?
 
     /** @return minimum y position for the server */
-    fun getMinY(): Int = if (supports(18)) -64 else 0
+    fun getMinY(): Int = if (supports(1, 18)) -64 else 0
 
     /** @return an empty custom inventory */
     fun createInventory(title: String, size: UInt): Inventory?

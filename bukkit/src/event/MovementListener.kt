@@ -23,7 +23,7 @@ class MovementListener(val plugin: KhsPlugin) : Listener {
     }
 
     private fun isOnGround(player: org.bukkit.entity.Player): Boolean {
-        if (plugin.shim.supports(16, 1)) {
+        if (plugin.shim.supports(1, 16, 1)) {
             val below = player.location.clone().subtract(0.0, 0.1, 0.0).block
             return below.type.isSolid
         } else {
