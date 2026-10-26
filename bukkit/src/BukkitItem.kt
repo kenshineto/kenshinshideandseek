@@ -31,7 +31,7 @@ class BukkitItem(val inner: ItemStack, override val config: ItemConfig) : Item {
             // set name and material
             config.set("name", itemConfig.name?.let { formatText(it) })
             config.set("material", material)
-            if (!itemConfig.lore.isEmpty()) {
+            if (itemConfig.lore.isNotEmpty()) {
                 config.set("lore", itemConfig.lore.map { formatText(it) })
             }
             config.set("unbreakable", itemConfig.unbreakable ?: false)

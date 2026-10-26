@@ -48,10 +48,7 @@ class CommandManager<T : CommandSourceStack>(
     }
 
     override fun getSuggestions(ctx: CommandContext<T>, builder: SuggestionsBuilder): CompletableFuture<Suggestions> {
-        val player = ctx.source.player
-        if (player == null) {
-            return builder.buildFuture()
-        }
+        val player = ctx.source.player ?: return builder.buildFuture()
 
         val khsPlayer = ModPlayer(mod, player)
         val args = ctx.input.split(" ").drop(1)

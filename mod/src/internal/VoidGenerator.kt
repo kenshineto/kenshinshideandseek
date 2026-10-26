@@ -23,8 +23,8 @@ class VoidGenerator(biomeSource: BiomeSource) : ChunkGenerator(biomeSource) {
     override fun codec(): MapCodec<ChunkGenerator> {
         val biomeCodec = BiomeSource.CODEC.fieldOf("biome_source")
 
-        return RecordCodecBuilder.mapCodec {
-            it.group(biomeCodec.forGetter { it.biomeSource }).apply(it) { VoidGenerator(it) }
+        return RecordCodecBuilder.mapCodec { codec ->
+            codec.group(biomeCodec.forGetter(ChunkGenerator::getBiomeSource)).apply(codec, ::VoidGenerator)
         }
     }
 
