@@ -1,7 +1,6 @@
 package cat.freya.khs
 
 import cat.freya.alloy.db.Driver
-import cat.freya.khs.config.DatabaseType
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 

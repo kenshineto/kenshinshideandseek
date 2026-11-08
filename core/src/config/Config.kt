@@ -33,14 +33,6 @@ data class DelayedRespawnConfig(
     @Comment("How long do players have to wait in seconds before respawning") var delay: UInt = 5u,
 )
 
-enum class DatabaseType {
-    SQLITE,
-    MEMORY,
-    MYSQL,
-    POSTGRES,
-    DISABLED,
-}
-
 data class ItemConfig(
     @Omittable var name: String? = null,
     var material: String = "BLOCK",
