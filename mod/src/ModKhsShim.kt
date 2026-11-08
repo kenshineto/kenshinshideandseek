@@ -22,8 +22,6 @@ class ModKhsShim(val mod: KhsMod) : KhsShim {
 
     override val dataDirectory: Path by lazy { mod.server.inner.serverDirectory.resolve("config").resolve(KhsMod.ID) }
 
-    override fun getLoggerId(): String = KhsMod.ID
-
     override fun getBlocks(): List<String> {
         return BuiltInRegistries.BLOCK.keySet().map(Identifier::toString)
     }

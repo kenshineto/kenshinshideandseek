@@ -29,9 +29,6 @@ interface KhsShim {
     /** Directory where config files and sqlitedb are stored */
     val dataDirectory: Path
 
-    /** The logger id for slf4j */
-    fun getLoggerId(): String = BuildInfo.id
-
     /** Read a config file from the platform */
     fun readConfigFile(fileName: String): InputStream? {
         val dir = dataDirectory.toFile()

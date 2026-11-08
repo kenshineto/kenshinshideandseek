@@ -39,9 +39,8 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
-class Khs(val shim: KhsShim, val types: KhsTypes) {
+class Khs(val shim: KhsShim, val types: KhsTypes, logger: Any?) {
     /** The main plugin config */
     var config: KhsConfig = KhsConfig.default(types)
         private set
@@ -84,7 +83,7 @@ class Khs(val shim: KhsShim, val types: KhsTypes) {
         private set
 
     /** The logger of the plugin */
-    val logger: Logger = LoggerFactory.getLogger(shim.getLoggerId())
+    val logger: Logger = getLogger(this, logger)
 
     /** Commands known to this plugin */
     val commandGroup: CommandGroup = registerCommands()

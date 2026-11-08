@@ -1,6 +1,7 @@
 package cat.freya.khs.mod
 
 import cat.freya.khs.Khs
+import com.mojang.logging.LogUtils
 import java.util.concurrent.atomic.AtomicBoolean
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
@@ -12,7 +13,7 @@ class KhsMod(val platform: String) {
     val enabled = AtomicBoolean(true)
     val server = ModServer(this)
     val shim = ModKhsShim(this)
-    val khs = Khs(shim, modTypes)
+    val khs = Khs(shim, modTypes, LogUtils.getLogger())
 
     init {
         INSTANCE = this

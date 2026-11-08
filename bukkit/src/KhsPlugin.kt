@@ -6,7 +6,6 @@ import cat.freya.khs.PlaceholderRequest
 import cat.freya.khs.bukkit.event.*
 import cat.freya.khs.handlePlaceholder
 import cat.freya.khs.math.toInt
-import com.djaytan.bukkit.slf4j.api.BukkitLoggerFactory
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bstats.bukkit.Metrics
 import org.bstats.charts.SimpleBarChart
@@ -21,13 +20,11 @@ import org.bukkit.scheduler.BukkitTask
 
 class KhsPlugin : JavaPlugin() {
     val shim: BukkitKhsShim = BukkitKhsShim(this)
-    val khs: Khs = Khs(shim, bukkitTypes(this))
+    val khs: Khs = Khs(shim, bukkitTypes(this), logger)
 
     private var doTickTask: BukkitTask? = null
 
     override fun onEnable() {
-        BukkitLoggerFactory.provideBukkitLogger(this.logger)
-
         khs.init()
 
         // khs.init() may disable us

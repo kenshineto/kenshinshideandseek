@@ -10,7 +10,6 @@ dependencies {
     compileOnly(libs.packetevents.spigot)
     compileOnly(libs.placeholderapi)
     compileOnly(libs.slf4j.api)
-    shadow(libs.bukkit.slf4j)
     shadow(libs.xseries)
     shadow(libs.bstats.bukkit)
     shadow(project(":core"))

@@ -395,7 +395,7 @@ abstract class KhsTest(val initOnSetup: Boolean = true) : TestShim() {
     val boardConfig = KhsBoardConfig()
     val locale = KhsLocale()
 
-    val plugin = Khs(this, testTypes)
+    val plugin = Khs(this, testTypes, null)
     val game = plugin.game
 
     val alice = TestPlayer(this, "alice", UUID(1L, 1L))
