@@ -83,13 +83,10 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
     }
 
     private fun debugEntityMetadata(event: PacketSendEvent) {
-        if (event.packetType != ENTITY_METADATA) return
-
         val packet = WrapperPlayServerEntityMetadata(event)
-
-        println("DEBUG METADATA: ${packet.entityId}")
+        plugin.logger.debug("ENTITY METADATA: ${packet.entityId}")
         for (data in packet.entityMetadata) {
-            println("${data.index} ${data.type} ${data.value}")
+            plugin.logger.debug("${data.index} ${data.type} ${data.value}")
         }
     }
 
@@ -97,7 +94,7 @@ class KhsPacketListener(val plugin: Khs) : PacketListener {
         val canceled = handleHiddenEntity(event) || handleSpectatorSound(event)
         event.isCancelled = canceled
 
-        // debugEntityMetadata(event)
+        if (event.packetType == ENTITY_METADATA && plugin.config.debug) debugEntityMetadata(event)
     }
 
     // we need to get the players

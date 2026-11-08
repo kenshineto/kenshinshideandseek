@@ -61,12 +61,9 @@ class CommandGroup(val plugin: Khs, override val label: String, vararg commands:
         runCatching { data.command.execute(plugin, player, data.args) }
             .onFailure {
                 player.message(plugin.locale.prefix.error + (it.message ?: plugin.locale.command.unknownError))
-
-                if (plugin.config.debug) {
-                    plugin.logger.warn("=== KHS BEGIN DEBUG TRACE ===")
-                    plugin.logger.warn(it.stackTraceToString())
-                    plugin.logger.warn("=== KHS END DEBUG TRACE ===")
-                }
+                plugin.logger.debug("=== KHS BEGIN TRACE ===")
+                plugin.logger.debug(it.stackTraceToString())
+                plugin.logger.debug("=== KHS END TRACE ===")
             }
     }
 
