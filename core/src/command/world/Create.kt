@@ -23,6 +23,7 @@ class KhsWorldCreate : Command {
         // update world metadata
         plugin.worldsConfig.update(world.name, plugin.types) {
             this.type = dimensionType
+            this.isFlat = isFlat == "true"
         }
         plugin.saveConfig()
 
