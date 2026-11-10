@@ -43,7 +43,6 @@ allprojects {
             put("minecraft", getVersion("minecraft"))
             put("packetevents", getVersion("packetevents"))
             put("java", jvmVersion)
-            put("telemetry", false)
             put("bstatsId", 0)
             put("gitRev", gitCommitHash.get())
             put("buildDate", Instant.now().toString())

@@ -14,8 +14,7 @@ class UpdateChecker(val plugin: Khs) {
         private set
 
     fun check() {
-        // both must be set for update checking to work
-        if (!plugin.config.checkForUpdates || !BuildInfo.telemetry) {
+        if (!plugin.config.checkForUpdates || Version(BuildInfo.version).isSnapshot) {
             return
         }
 

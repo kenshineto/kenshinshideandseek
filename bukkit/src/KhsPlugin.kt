@@ -5,12 +5,8 @@ import cat.freya.khs.Khs
 import cat.freya.khs.PlaceholderRequest
 import cat.freya.khs.bukkit.event.*
 import cat.freya.khs.handlePlaceholder
-import cat.freya.khs.math.toInt
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bstats.bukkit.Metrics
-import org.bstats.charts.SimpleBarChart
-import org.bstats.charts.SimplePie
-import org.bstats.charts.SingleLineChart
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -44,10 +40,7 @@ class KhsPlugin : JavaPlugin() {
 
         registerListeners()
         registerPAPI()
-
-        if (BuildInfo.telemetry) {
-            registerMetrics()
-        }
+        registerMetrics()
     }
 
     override fun onDisable() {
@@ -98,34 +91,10 @@ class KhsPlugin : JavaPlugin() {
     }
 
     private fun registerMetrics() {
+        if (!khs.config.enableTelemetry || BuildInfo.bstatsId == 0) return
+
         // hook into bstats
-        val metrics = Metrics(this, BuildInfo.bstatsId)
-
-        // track server locale
-        metrics.addCustomChart(
-            SimplePie("locale") {
-                khs.locale.locale
-            },
-        )
-
-        // players in game
-        metrics.addCustomChart(
-            SingleLineChart("inGamePlayers") {
-                khs.game.teams.size().toInt()
-            },
-        )
-
-        // track some config values
-        metrics.addCustomChart(
-            SimpleBarChart("features") {
-                mapOf(
-                    "PVP" to khs.config.pvp.toInt(),
-                    "Taunt" to khs.config.taunt.enabled.toInt(),
-                    "Glow" to khs.config.glow.enabled.toInt(),
-                    "Block Hunt" to khs.maps.values.any { it.config.blockHunt.enabled }.toInt(),
-                )
-            },
-        )
+        Metrics(this, BuildInfo.bstatsId)
     }
 
     fun scheduleTask(fn: () -> Unit) {

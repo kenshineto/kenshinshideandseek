@@ -233,6 +233,8 @@ data class KhsConfig(
     @Section("General")
     @Comment("Notify plugin admins of new updates (requires hs.debug permission)")
     var checkForUpdates: Boolean = true,
+    @Comment("Allow collecting metrics and other telemetry for bStats or other services")
+    var enableTelemetry: Boolean = true,
     @Comment("Allow players to drop their items mid-game") var dropItems: Boolean = false,
     @Comment("Where the plugin will state the length of time in seconds left to hide.")
     @Comment("Below you can set CHAT, ACTIONBAR, or TITLE. Any invalid option will revert to CHAT.")
